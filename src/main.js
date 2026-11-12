@@ -109,7 +109,7 @@ function applyQuality() {
 function chooseQuality(q) {
   qualSetting = q;
   localStorage.setItem(QUAL_KEY, q);
-  setTier(q === 'auto' ? localStorage.getItem(AUTO_KEY) || (isTouch ? 'mid' : 'high') : q);
+  setTier(q === 'auto' ? (!isTouch && localStorage.getItem(AUTO_KEY)) || 'high' : q);
   applyQuality();
 }
 // „Auto“: bleibt die Bildrate länger unter 40, wird eine Stufe heruntergeschaltet (und gemerkt)
@@ -131,12 +131,14 @@ function watchPerformance(rawDt) {
   dynamicResolution(rawDt);
   if (qualSetting !== 'auto' || game.mode !== 'run' || document.hidden || rawDt > 0.25) return;
   fpsEma += (1 / Math.max(rawDt, 1e-3) - fpsEma) * 0.05;
-  slowT = fpsEma < 40 && renderScale <= minScale() + 0.01 ? slowT + rawDt : 0;
+  // Handys: im Stromsparmodus sind 30 Bilder/s gedeckelt – das ist kein Grund, die Grafik zu senken
+  const slowFps = isTouch ? 27 : 40, slowNeed = isTouch ? 4 : 2.5;
+  slowT = fpsEma < slowFps && renderScale <= minScale() + 0.01 ? slowT + rawDt : 0;
   const idx = ORDER.indexOf(Q.tier);
-  if (slowT > 2.5 && idx < ORDER.length - 1) {
+  if (slowT > slowNeed && idx < ORDER.length - 1) {
     slowT = 0; fpsEma = 60;
     setTier(ORDER[idx + 1]);
-    localStorage.setItem(AUTO_KEY, Q.tier);
+    if (!isTouch) localStorage.setItem(AUTO_KEY, Q.tier);   // Handys starten jedes Mal neu oben
     applyQuality();
     showMsg('Grafik angepasst – läuft jetzt flüssiger', 'good');
   }
@@ -163,8 +165,15 @@ const zeroInp = { steer: 0, tuck: 0, brake: 0, jump: false };
 const vis = {
   lean: 0, crouch: 0, compress: 0, plow: 0, air: 0, up: new THREE.Vector3(0, 1, 0), crashAngle: 0, crashSpin: 0,
   tuck: 0, spin: 0, extend: 0, zoom: 0, shake: 0, crashCam: 0,
-  camSide: 1, flipCam: 0, bigAir: 0, dip: 0,
+  camSide: 1, flipCam: 0, bigAir: 0, dip: 0, fpv: 0,
 };
+// Kameraperspektive: false = Verfolger, true = Ego-Sicht (Helmkamera). Wird gemerkt.
+let firstPerson = localStorage.getItem('gipfelsturm_fpv') === '1';
+function toggleView() {
+  firstPerson = !firstPerson;
+  try { localStorage.setItem('gipfelsturm_fpv', firstPerson ? '1' : '0'); } catch {}
+  showMsg(firstPerson ? 'Ego-Sicht' : 'Verfolger-Kamera', 'good');
+}
 const trick = { pitch: 0, yaw: 0, pv: 0, yv: 0, grab: 0, grabT: 0, wasAir: false };
 let jumpQueued = false;
 let quietCrash = false;
@@ -386,6 +395,7 @@ window.addEventListener('keydown', (e) => {
   else if (k === 'KeyT' || k === 'Backspace') toCheckpoint();
   else if (k === 'Escape') toMenu();
   else if (k === 'KeyM') audio.setMuted(!audio.muted);
+  else if (k === 'KeyC' || k === 'KeyV') toggleView();
   if (k.startsWith('Arrow') || k === 'Space') e.preventDefault();
 });
 window.addEventListener('keyup', (e) => {
@@ -544,12 +554,43 @@ function updateCamera(dt, time) {
     camPos.z + (C.vnoise(time * 19, 4.1) - 0.5) * sh);
   camera.lookAt(lookSm);
   camera.rotateZ(-vis.lean * 0.09 + (C.vnoise(time * 17, 9.2) - 0.5) * vis.shake * 0.12);
-  const fov = 60 + 22 * smoothstep(8, 44, sp) + inp.tuck * 2 - 15 * z - 20 * cc + 6 * ba;
+  let fov = 60 + 22 * smoothstep(8, 44, sp) + inp.tuck * 2 - 15 * z - 20 * cc + 6 * ba;
+
+  // ---- Ego-Sicht (Helmkamera): Augen im Kopf des Fahrers, dreht bei Flips und Spins voll mit,
+  // neigt sich in die Kurve, federt bei Landungen, zittert mit Tempo und Untergrund. Beim Sturz Verfolgerkamera.
+  vis.fpv += ((firstPerson && game.mode !== 'menu' ? 1 : 0) - vis.fpv) * (1 - Math.exp(-dt * 4));
+  const f = vis.fpv * (1 - smoothstep(0.05, 0.5, cc));
+  skier.setFirstPerson(f > 0.55);
+  if (f > 0.002) {
+    skier.root.updateMatrixWorld(true);
+    fpEye.copy(EYE0).applyMatrix4(skier.bones[2].matrixWorld);
+    skier.pivot.getWorldQuaternion(fpQ);
+    // Blick leicht nach unten (Skispitzen im Bild), in Kurven mitneigen, beim Bremsen nach vorn
+    fpE.set(-0.37 - 0.1 * vis.crouch - 0.08 * vis.plow + vis.dip * 0.25 + (phys.grounded ? 0 : 0.06), 0, -vis.lean * 0.32);
+    fpQ.multiply(fpQ2.setFromEuler(fpE));
+    // Kopf stabilisiert sich am Boden (weich), in der Luft folgt er den Drehungen direkt
+    fpCam.slerp(fpQ, camSnap || fpFirst ? 1 : 1 - Math.exp(-dt * (phys.grounded ? 12 : 26)));
+    fpFirst = false;
+    // Zittern: Tempo, Rutschen, Tiefschnee, Aufprall
+    const shk = (Math.pow(clamp(sp / 35, 0, 1), 2) * 0.006 + phys.skid * 0.0015 + phys.pow * 0.004 * clamp(sp / 20, 0, 1)) * (phys.grounded ? 1 : 0.3) + vis.shake * 0.02;
+    fpE.set((C.vnoise(time * 31, 2.1) - 0.5) * shk * 2, (C.vnoise(time * 27, 5.3) - 0.5) * shk, (C.vnoise(time * 23, 8.7) - 0.5) * shk);
+    fpQ2.setFromEuler(fpE);
+    tV.copy(fpEye); tV.y -= vis.dip * 0.12 + vis.compress * 0.05;
+    camera.position.lerp(tV, f);
+    camera.quaternion.slerp(fpQ2.premultiply(fpCam), f);
+    fov = lerp(fov, 80 + 18 * smoothstep(8, 42, sp) + inp.tuck * 4 + vis.bigAir * 4, f);
+  } else fpFirst = true;
+  const near = f > 0.5 ? 0.06 : 0.3;
+  if (camera.near !== near) { camera.near = near; camera.updateProjectionMatrix(); }
   if (Math.abs(fov - camera.fov) > 0.01) {
-    camera.fov = lerp(camera.fov, fov, 1 - Math.exp(-dt * 4));
+    camera.fov = lerp(camera.fov, fov, 1 - Math.exp(-dt * (f > 0.5 ? 6 : 4)));
     camera.updateProjectionMatrix();
   }
+  grade.uniforms.uVig.value = 0.22 + f * (0.08 + 0.12 * smoothstep(15, 40, sp));   // Tunnelblick bei hohem Tempo
 }
+const EYE0 = new THREE.Vector3(0, 1.72, 0.14);   // Augenpunkt (Kopfknochen), etwas hinter dem Gesicht, damit die Skispitzen ins Bild kommen
+const fpEye = new THREE.Vector3(), fpQ = new THREE.Quaternion(), fpQ2 = new THREE.Quaternion(), fpCam = new THREE.Quaternion(), fpE = new THREE.Euler(0, 0, 0, 'YXZ');
+let fpFirst = true;
 
 // ---------------------------------------------------------------- Spuren & Gischt
 function stampTracks() {
@@ -983,7 +1024,7 @@ function tick(dt, render) {
 
 // ---------------------------------------------------------------- Start
 (async () => {
-  setTier(qualSetting === 'auto' ? localStorage.getItem(AUTO_KEY) || (isTouch ? 'low' : 'high') : qualSetting);
+  setTier(qualSetting === 'auto' ? (!isTouch && localStorage.getItem(AUTO_KEY)) || 'high' : qualSetting);
   resize();
   buildMenuControls();
   const models = await loadModels();

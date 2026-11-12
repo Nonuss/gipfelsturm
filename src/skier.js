@@ -91,6 +91,7 @@ export class Skier {
       this.bones.push(b);
     }
     this.skeleton = new THREE.Skeleton(this.bones);
+    this.fpvMats = [this.jacketMat, this.accentMat, this.pantsMat, fixedMat, lensMat];   // in der Ego-Sicht unsichtbar (Schatten bleibt)
     for (const [name, mat] of [['Sk_Jacket', this.jacketMat], ['Sk_JacketAcc', this.accentMat], ['Sk_Pants', this.pantsMat], ['Sk_Fixed', fixedMat], ['Sk_Lens', lensMat]]) {
       const m = makeSkinned(models[name], mat);
       this.body.add(m);
@@ -104,15 +105,17 @@ export class Skier {
       parent.add(o);
       return o;
     };
+    const bootMat = fixedMat.clone(), poleMat = skiMat.clone();
+    this.fpvMats.push(poleMat);
     this.sides = [-1, 1].map((side) => {
       const foot = new THREE.Object3D();
       foot.rotation.order = 'YXZ';
       this.body.add(foot);
-      const boot = rigid('Sk_Boot', fixedMat, foot);
+      const boot = rigid('Sk_Boot', bootMat, foot);
       boot.position.set(0, 0.036, 0);
       const ski = rigid('Sk_Ski', skiMat, this.body);
       return {
-        side, foot, ski, pole: rigid('Sk_Pole', skiMat, this.body), loose: null,
+        side, foot, ski, pole: rigid('Sk_Pole', poleMat, this.body), loose: null,
         hip: V(0, 0, 0), knee: V(0, 0, 0), ankle: V(0, 0, 0), shoulder: V(0, 0, 0), elbow: V(0, 0, 0), hand: V(0, 0, 0),
       };
     });
@@ -123,6 +126,13 @@ export class Skier {
     this.mPel = new THREE.Matrix4();
     this.mCh = new THREE.Matrix4();
     this.t = 0;
+  }
+
+  /** Ego-Sicht: Körper, Helm und Stöcke nicht zeichnen (sie würden die Kamera verdecken), ihr Schatten bleibt sichtbar. */
+  setFirstPerson(on) {
+    if (this.fpv === on) return;
+    this.fpv = on;
+    for (const m of this.fpvMats) { m.colorWrite = !on; m.depthWrite = !on; }
   }
 
   setColors(jacket, accent, pants) {

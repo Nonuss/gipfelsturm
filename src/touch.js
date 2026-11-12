@@ -133,6 +133,7 @@ export function setupTouch({ isAir, isRunning, onResize }) {
       <button class="tsm" id="tCp" aria-label="Respawn-Punkt setzen">⚑ Punkt</button>
       <button class="tsm" id="tBack" aria-label="Zurück zum Respawn-Punkt oder auf die Piste">↺ Zurück</button>
       <button class="tsm" id="tTilt" aria-label="Neigungssteuerung an oder aus">Neigen</button>
+      <button class="tsm" id="tCam" aria-label="Kamera wechseln: Verfolger oder Ego-Sicht">🎥</button>
       <button class="tsm" id="tMenu" aria-label="Menü">☰</button>
     </div>
     <div id="tHelp">Handy neigen = lenken · Wischen ↑↓ in der Luft = Flip · neigen in der Luft = Spin</div>`;
@@ -150,7 +151,7 @@ export function setupTouch({ isAir, isRunning, onResize }) {
   hold($('tTuck'), 'KeyW');
   hold($('tBrake'), 'KeyS');
   const tap = (el, code) => el.addEventListener('click', (e) => { e.preventDefault(); key(code, true); key(code, false); });
-  tap($('tCp'), 'KeyF'); tap($('tBack'), 'KeyT'); tap($('tMenu'), 'Escape');
+  tap($('tCp'), 'KeyF'); tap($('tBack'), 'KeyT'); tap($('tMenu'), 'Escape'); tap($('tCam'), 'KeyC');
   const tiltBtn = $('tTilt');
   const showTilt = () => tiltBtn.classList.toggle('on', touch.tilt);
   tiltBtn.addEventListener('click', async () => {

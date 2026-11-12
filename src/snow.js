@@ -52,6 +52,9 @@ const FRAG_NORMAL = /* glsl */ `
   vec3 Vw = toCam / camDist;
   vec2 p = vSnowPos.xz;
   float rockF = smoothstep(0.72, 0.5, Nw.y);
+  // Wie viele Meter Boden deckt ein Bildpunkt ab? Details, die kleiner als ein paar Pixel wären, werden ausgeblendet –
+  // sonst flimmern sie in der Ferne und das Bild wirkt pixelig (besonders bei niedriger Auflösung am Handy).
+  float pxw = max(length(fwidth(p)), 1e-4);
 #ifdef LOWQ
   vec2 grad = vec2(0.);
 #else
@@ -60,7 +63,7 @@ const FRAG_NORMAL = /* glsl */ `
   float e = 0.05 + camDist*0.004;
   float h0 = snowH(p, fNear), hx = snowH(p+vec2(e,0.), fNear), hz = snowH(p+vec2(0.,e), fNear);
   float rough = mix(1.0, 0.35, vPiste) * (1.0 - rockF) * (1.0 - 0.6*vPow);
-  vec2 grad = vec2(hx-h0, hz-h0)/e * 0.11 * fMid * rough;
+  vec2 grad = vec2(hx-h0, hz-h0)/e * 0.11 * fMid * rough * (1.0 - smoothstep(0.06, 0.3, pxw));
 #endif
 
   vec2 tuv = (p - uTrackCenter)/uTrackSize + 0.5;
@@ -83,7 +86,7 @@ const FRAG_NORMAL = /* glsl */ `
   grad.x += -sin(ph) * 0.22 * cord;
   // Fels an Klippen: grobe, geschichtete Struktur
   float strata = sNoise(vec2(p.x*0.22, vSnowPos.y*1.7)) * 0.6 + sNoise(vec2(p.x*1.3, vSnowPos.y*4.0 + p.y*0.6)) * 0.4;
-  grad += vec2(sNoise(p*2.1 + 7.0) - 0.5, strata - 0.5) * 1.6 * rockF;
+  grad += vec2(sNoise(p*2.1 + 7.0) - 0.5, strata - 0.5) * 1.6 * rockF * (1.0 - smoothstep(0.12, 0.6, pxw));
   grad += tgrad * 1.9;
 
   Nw = normalize(Nw - vec3(grad.x, 0., grad.y));
@@ -105,9 +108,9 @@ const FRAG_NORMAL = /* glsl */ `
 #ifdef LOWQ
   snowGlint = 0.0;
 #else
-  float g1 = glintLayer(p, 30.0, Vw, uSunDir) * (1.0 - smoothstep(3.0, 20.0, camDist));
-  float g2 = glintLayer(p, 9.0, Vw, uSunDir) * (1.0 - smoothstep(12.0, 70.0, camDist)) * smoothstep(1.5, 8.0, camDist);
-  float g3 = glintLayer(p, 2.6, Vw, uSunDir) * (1.0 - smoothstep(50.0, 190.0, camDist)) * smoothstep(8.0, 40.0, camDist) * 0.7;
+  float g1 = glintLayer(p, 30.0, Vw, uSunDir) * (1.0 - smoothstep(3.0, 20.0, camDist)) * smoothstep(0.012, 0.006, pxw);
+  float g2 = glintLayer(p, 9.0, Vw, uSunDir) * (1.0 - smoothstep(12.0, 70.0, camDist)) * smoothstep(1.5, 8.0, camDist) * smoothstep(0.04, 0.02, pxw);
+  float g3 = glintLayer(p, 2.6, Vw, uSunDir) * (1.0 - smoothstep(50.0, 190.0, camDist)) * smoothstep(8.0, 40.0, camDist) * 0.7 * smoothstep(0.14, 0.07, pxw);
   snowGlint = (g1 + g2 + g3) * (1.0 - tr.r*0.8) * (1.0 - rockF) * (1.0 + 0.9*vPow);
 #endif
   diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.20, 0.21, 0.24) * (0.55 + 0.9*strata), rockF);

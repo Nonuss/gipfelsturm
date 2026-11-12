@@ -64,7 +64,8 @@ const audio = new GameAudio();
 // wie es für flüssige Bilder nötig ist. Danach wird langsam wieder hochgeregelt.
 let renderScale = 0;
 const maxScale = () => Math.min(window.devicePixelRatio || 1, Q.pr);
-const minScale = () => Math.min(maxScale(), Q.minPR || 0.75);
+// Handys: Auflösung nie unter 1,5 (bzw. die Pixeldichte) – unscharfes Bild stört dort mehr als ein paar Effekte weniger
+const minScale = () => Math.min(maxScale(), isTouch ? Math.max(1.5, Q.minPR || 0.75) : Q.minPR || 0.75);
 function resize() {
   const { w, h } = viewSize();   // Handy hochkant: Spiel wird gedreht, Breite und Höhe tauschen
   if (!renderScale) renderScale = maxScale();
@@ -85,6 +86,9 @@ window.addEventListener('resize', resize);
 const QUAL_KEY = 'gipfelsturm_quality', AUTO_KEY = 'gipfelsturm_auto_tier2';   // neuer Schlüssel: alte, zu niedrige Automatik-Wahl verwerfen
 let qualSetting = localStorage.getItem(QUAL_KEY) || 'auto';
 function applyQuality() {
+  // Handys: Leistung in Auflösung statt in Effekte stecken – kein Leuchten, FXAA statt MSAA (MSAA auf Gleitkomma-
+  // Zwischenbildern ist auf iOS unsicher und teuer)
+  if (isTouch) { Q.msaa = 0; Q.bloom = false; Q.pr = Math.max(Q.pr, 2.0); }
   for (const rt of [composer.renderTarget1, composer.renderTarget2]) {
     if (rt.samples !== Q.msaa) { rt.samples = Q.msaa; rt.dispose(); }
   }

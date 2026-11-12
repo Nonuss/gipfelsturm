@@ -12,6 +12,7 @@ import { Spray, DiamondDust } from './particles.js';
 import { GameAudio } from './audio.js';
 import { Q, setTier, ORDER } from './quality.js';
 import { PowderPatch } from './powder.js';
+import { setupTouch, updateTouch, touch, isTouch } from './touch.js';
 
 const { clamp, lerp, smoothstep, G } = C;
 const $ = (id) => document.getElementById(id);
@@ -73,7 +74,7 @@ function applyQuality() {
 function chooseQuality(q) {
   qualSetting = q;
   localStorage.setItem(QUAL_KEY, q);
-  setTier(q === 'auto' ? localStorage.getItem(AUTO_KEY) || 'high' : q);
+  setTier(q === 'auto' ? localStorage.getItem(AUTO_KEY) || (isTouch ? 'low' : 'high') : q);
   applyQuality();
 }
 // „Auto“: bleibt die Bildrate länger unter 40, wird eine Stufe heruntergeschaltet (und gemerkt)
@@ -93,13 +94,19 @@ function watchPerformance(rawDt) {
 }
 
 // ---------------------------------------------------------------- Zustand
-const BEST_KEY = 'gipfelsturm_best', BEST_E_KEY = 'gipfelsturm_best_endless', OUTFIT_KEY = 'gipfelsturm_outfit2';
+const BEST_KEY = 'gipfelsturm_best', BEST_E_KEY = 'gipfelsturm_best_points', BEST_D_KEY = 'gipfelsturm_best_dist', OUTFIT_KEY = 'gipfelsturm_outfit2';
 const game = {
   mode: 'loading', kind: 'race', time: 0, penalty: 0, passed: 0, gateIdx: 0, topSpeed: 0, bestJump: 0, countdown: 0, lastCount: 0, finishT: 0,
   score: 0, maxD: 0, bestTrick: '', bestTrickPts: 0, tricks: 0, cp: null,
   best: parseFloat(localStorage.getItem(BEST_KEY) || '0') || 0,
   bestEndless: parseInt(localStorage.getItem(BEST_E_KEY) || '0', 10) || 0,
+  bestDist: parseInt(localStorage.getItem(BEST_D_KEY) || '0', 10) || 0,
+  // Endlos-Welt: Punkte sind ein Risiko-Konto. Trickpunkte sind erst „gesichert“, wenn man nach der Landung sauber
+  // weiterfährt; ein Sturz löscht alle Punkte, die Meter bleiben. Saubere Tricks hintereinander erhöhen den Multiplikator.
+  pend: 0, pendT: 0, combo: 1, comboT: 0,
 };
+const PEND_TIME = 1.6;      // so lange muss man nach einer Landung ohne Sturz weiterfahren
+const COMBO_TIME = 14;      // ohne neuen Trick fällt der Multiplikator danach zurück
 const keys = { left: false, right: false, up: false, down: false, space: false };
 const airKey = { left: false, right: false, up: false, down: false, space: false };
 const inp = { steer: 0, tuck: 0, brake: 0, jump: false };
@@ -214,7 +221,7 @@ function startRun() {
   setTimeout(() => $('hint').classList.add('fade'), 14000);
   Object.assign(game, {
     mode: 'countdown', time: 0, penalty: 0, passed: 0, gateIdx: 0, topSpeed: 0, bestJump: 0, countdown: 3.0, lastCount: 4, finishT: 0,
-    score: 0, maxD: 0, bestTrick: '', bestTrickPts: 0, tricks: 0,
+    score: 0, maxD: 0, bestTrick: '', bestTrickPts: 0, tricks: 0, pend: 0, pendT: 0, combo: 1, comboT: 0,
   });
   $('penalty').textContent = '';
 }
@@ -230,11 +237,39 @@ function toMenu() {
   $('count').innerHTML = '';
 }
 
-const totalScore = () => Math.round(game.maxD + game.score);
+const totalScore = () => Math.round(game.score);
 function saveEndlessBest() {
   if (game.kind !== 'endless' || game.mode === 'menu' || game.mode === 'loading') return;
   const t = totalScore();
   if (t > game.bestEndless) { game.bestEndless = t; localStorage.setItem(BEST_E_KEY, String(t)); }
+  const m = Math.round(game.maxD);
+  if (m > game.bestDist) { game.bestDist = m; localStorage.setItem(BEST_D_KEY, String(m)); }
+}
+/** Endlos-Welt: Punkte einer Landung vormerken; gesichert werden sie erst nach sauberem Weiterfahren. */
+function addPending(pts, isTrick) {
+  if (game.kind !== 'endless') { game.score += pts; return pts; }
+  const mult = isTrick ? game.combo : 1;
+  const p = Math.round(pts * mult);
+  game.pend += p;
+  game.pendT = PEND_TIME;
+  if (isTrick) { game.combo = Math.min(5, game.combo + 0.5); game.comboT = COMBO_TIME; }
+  return p;
+}
+function updatePoints(dt) {
+  if (game.kind !== 'endless' || game.mode !== 'run') return;
+  if (game.pend > 0 && phys.grounded && phys.crashed <= 0) {
+    game.pendT -= dt;
+    if (game.pendT <= 0) {
+      game.score += game.pend;
+      showMsg(`Gesichert  +${num(game.pend)}`, 'good');
+      game.pend = 0;
+      saveEndlessBest();
+    }
+  }
+  if (game.combo > 1 && phys.crashed <= 0) {
+    game.comboT -= dt;
+    if (game.comboT <= 0) { game.combo = 1; }
+  }
 }
 
 function finishRun() {
@@ -301,8 +336,10 @@ window.addEventListener('keyup', (e) => {
   if (name) { keys[name] = false; airKey[name] = false; }
 });
 window.addEventListener('blur', () => { for (const k in keys) { keys[k] = false; airKey[k] = false; } });
-$('startBtn').addEventListener('click', () => { if (game.mode === 'menu') startRun(); });
-$('againBtn').addEventListener('click', () => startRun());
+// Handy: Knöpfe, Neigungssteuerung (Erlaubnis wird beim Start-Tipp eingeholt)
+const touchCtl = setupTouch({ isAir: () => game.mode === 'run' && !phys.grounded && phys.crashed <= 0, isRunning: () => game.mode === 'run' });
+$('startBtn').addEventListener('click', () => { if (touchCtl) touchCtl.onStart(); if (game.mode === 'menu') startRun(); });
+$('againBtn').addEventListener('click', () => { if (touchCtl) touchCtl.onStart(); startRun(); });
 $('menuBtn').addEventListener('click', () => toMenu());
 for (const b of document.querySelectorAll('.mode')) {
   b.addEventListener('click', () => { if (game.mode === 'menu' && game.kind !== b.dataset.mode) setKind(b.dataset.mode); b.blur(); });
@@ -390,14 +427,15 @@ function scoreLanding(e) {
     if (cats > 1) pts = Math.round(pts * 1.5);
     pts += airPts;
     const name = parts.join(' + ');
-    game.score += pts;
+    const comboNow = game.combo;
+    pts = addPending(pts, true);
     game.tricks++;
     if (pts > game.bestTrickPts) { game.bestTrickPts = pts; game.bestTrick = name; }
-    showMsg(`${name}  +${num(pts)}`, 'gold');
+    showMsg(`${name}  +${num(pts)}${game.kind === 'endless' && comboNow > 1 ? `  (×${comboNow.toFixed(1).replace('.0', '')})` : ''}`, 'gold');
     audio.gate();
   } else if (e.airTime > 0.55) {
-    game.score += airPts;
-    showMsg(`${e.dist.toFixed(1)} m Sprung${game.kind === 'endless' ? `  +${airPts}` : ''}`, 'gold');
+    const p = addPending(airPts, false);
+    showMsg(`${e.dist.toFixed(1)} m Sprung${game.kind === 'endless' ? `  +${p}` : ''}`, 'gold');
   }
 }
 
@@ -612,8 +650,15 @@ function handleEvents() {
       tV.copy(phys.vel);
       skier.detachSkis(scene, tV);
       if (game.mode === 'run') {
-        if (game.kind === 'endless') game.score = Math.max(0, game.score - 250);
-        if (!quietCrash) showMsg(game.kind === 'endless' ? 'Sturz!  −250' : 'Sturz!', 'bad');
+        let lostMsg = 'Sturz!';
+        if (game.kind === 'endless') {
+          saveEndlessBest();
+          const lost = game.score + game.pend;
+          lostMsg = lost > 0 ? `Sturz!  ${num(lost)} Punkte verloren` : 'Sturz!';
+          game.score = 0; game.pend = 0; game.pendT = 0; game.combo = 1; game.comboT = 0;
+        }
+        if (!quietCrash) showMsg(lostMsg, 'bad');
+        else if (game.kind === 'endless' && lostMsg !== 'Sturz!') setTimeout(() => showMsg(lostMsg, 'bad'), 900);
         quietCrash = false;
       }
     } else if (e.type === 'respawn') {
@@ -780,10 +825,10 @@ function updateHud(dt) {
   $('speed').textContent = Math.round(phys.speed * 3.6);
   $('speedfill').style.width = `${clamp(phys.speed / 42, 0, 1) * 100}%`;
   if (game.kind === 'endless') {
-    $('time').textContent = num(totalScore());
-    $('best').textContent = `${num(game.maxD)} m · Rekord ${num(Math.max(game.bestEndless, totalScore()))}`;
+    $('time').innerHTML = num(totalScore()) + (game.pend > 0 ? `<span class="pend"> +${num(game.pend)}</span>` : '');
+    $('best').textContent = `${num(game.maxD)} m${game.combo > 1 ? ` · ×${game.combo.toFixed(1).replace('.0', '')}` : ''} · Rekord ${num(Math.max(game.bestEndless, totalScore()))} P / ${num(Math.max(game.bestDist, game.maxD))} m`;
     $('gates').innerHTML = game.cp ? '<span class="lives">✓ gesetzt</span>' : '<span class="lives">–</span>';
-    $('penalty').textContent = game.cp ? 'T = zurück · F = neu setzen' : 'F = Punkt setzen';
+    $('penalty').textContent = isTouch ? (game.cp ? '↺ zurück · ⚑ neu setzen' : '⚑ = Punkt setzen') : game.cp ? 'T = zurück · F = neu setzen' : 'F = Punkt setzen';
   } else {
     $('time').textContent = fmt(game.time + game.penalty);
     $('gates').innerHTML = `${game.passed}<span>/${C.gates.length}</span>`;
@@ -811,7 +856,11 @@ function frame(now) {
 function tick(dt, render) {
   time += dt;
 
-  const st = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
+  const airNow = game.mode === 'run' && !phys.grounded && phys.crashed <= 0;
+  updateTouch(airNow);
+  if (touchCtl) touchCtl.setRunning(game.mode === 'run' || game.mode === 'countdown');
+  // Handy: analoger Lenkwert aus Neigung/Daumen (am Boden); sonst Tasten
+  const st = touch.steer !== null && !airNow ? touch.steer : (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
   const rate = st === 0 ? 9 : Math.sign(st) !== Math.sign(inp.steer) && inp.steer !== 0 ? 12 : 6;
   inp.steer += clamp(st - inp.steer, -rate * dt, rate * dt);
   inp.tuck += clamp((keys.up ? 1 : 0) - inp.tuck, -5 * dt, 5 * dt);
@@ -850,6 +899,7 @@ function tick(dt, render) {
     }
     if (game.mode === 'run') game.maxD = Math.max(game.maxD, -phys.pos.z);
     handleEvents();
+    updatePoints(dt);
     updateTricks(dt);
     if (game.mode === 'run' && game.kind === 'race') checkGates();
     if (game.mode === 'finished' && game.finishT > 1.6) { $('finish').classList.remove('hidden'); $('hud').classList.add('hidden'); }
@@ -875,7 +925,7 @@ function tick(dt, render) {
 
 // ---------------------------------------------------------------- Start
 (async () => {
-  setTier(qualSetting === 'auto' ? localStorage.getItem(AUTO_KEY) || 'high' : qualSetting);
+  setTier(qualSetting === 'auto' ? localStorage.getItem(AUTO_KEY) || (isTouch ? 'low' : 'high') : qualSetting);
   resize();
   buildMenuControls();
   const models = await loadModels();

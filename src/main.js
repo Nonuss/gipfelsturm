@@ -56,7 +56,7 @@ composer.addPass(grade);
 const fxaa = new FXAAPass();
 composer.addPass(fxaa);
 
-let world, skier, tracks, spray, dust, patch;
+let world, skier, tracks, spray, dust, patch, blob;
 const phys = new SkiPhysics();
 const audio = new GameAudio();
 
@@ -65,7 +65,9 @@ const audio = new GameAudio();
 let renderScale = 0;
 const maxScale = () => Math.min(window.devicePixelRatio || 1, Q.pr);
 // Handys: Auflösung nie unter 1,5 (bzw. die Pixeldichte) – unscharfes Bild stört dort mehr als ein paar Effekte weniger
-const minScale = () => Math.min(maxScale(), isTouch ? Math.max(1.5, Q.minPR || 0.75) : Q.minPR || 0.75);
+// Nie unter die echte Bildschirmauflösung (am Handy nie unter 1,5): unscharfes, pixeliges Bild stört mehr als
+// fehlende Effekte. Schwache Geräte sparen stattdessen über die Grafikstufe (Schatten, Bäume, Leuchten).
+const minScale = () => Math.min(maxScale(), isTouch ? Math.max(1.5, Q.minPR || 0.75) : Math.max(1.0, Q.minPR || 0.75));
 function resize() {
   const { w, h } = viewSize();   // Handy hochkant: Spiel wird gedreht, Breite und Höhe tauschen
   if (!renderScale) renderScale = maxScale();
@@ -94,11 +96,14 @@ function applyQuality() {
   }
   bloom.enabled = Q.bloom;
   fxaa.enabled = Q.msaa === 0;
+  // Niedrig: keine Echtzeit-Schatten (größter Einzelposten auf schwacher Grafik); Geländeform bleibt durch die
+  // vorberechnete Schattierung lesbar
+  renderer.shadowMap.enabled = Q.shadow > 0;
   renderScale = maxScale();
   C.cfg.treeMul = Q.trees;
   if (world) {
     world.setLowQuality(Q.tier === 'low');
-    world.setShadowSize(Q.shadow);
+    if (Q.shadow > 0) world.setShadowSize(Q.shadow);
     if (C.cfg.endless) scene.fog.far = Q.view - 30;
   }
   if (dust) dust.points.visible = Q.dust;
@@ -850,6 +855,18 @@ function updateSkier(dt) {
     speed: phys.speed, grab: trick.grab, tuck: vis.tuck, spin: vis.spin, extend: vis.extend, crash: crashed ? 1 : 0, crashA: vis.crashAngle,
   }, dt);
   skier.updateLoose(dt, C.height);
+  if (blob) {
+    blob.visible = !renderer.shadowMap.enabled && phys.crashed <= 0;
+    if (blob.visible) {
+      const gy = C.height(phys.pos.x, phys.pos.z), hgt = Math.max(0, phys.pos.y - gy);
+      blob.position.set(phys.pos.x, gy + 0.04, phys.pos.z);
+      blob.quaternion.setFromUnitVectors(tV.set(0, 0, 1), phys.normal);
+      blob.rotateZ(-phys.heading);
+      const k = 1 / (1 + hgt * 0.25);
+      blob.scale.setScalar(0.8 + 0.6 * (1 - k));
+      blob.material.opacity = k;
+    }
+  }
 }
 
 // ---------------------------------------------------------------- Minikarte & Zonen
@@ -1035,6 +1052,17 @@ function tick(dt, render) {
   world = new World(scene, models);
   skier = new Skier(models);
   scene.add(skier.root);
+  // Ohne Echtzeit-Schatten (niedrige Stufe): weicher Kontaktschatten unter dem Fahrer, damit man Höhe und Landung abschätzen kann
+  {
+    const c = document.createElement('canvas'); c.width = c.height = 64;
+    const x = c.getContext('2d'), gr = x.createRadialGradient(32, 32, 2, 32, 32, 31);
+    gr.addColorStop(0, 'rgba(20,30,50,0.55)'); gr.addColorStop(1, 'rgba(20,30,50,0)');
+    x.fillStyle = gr; x.fillRect(0, 0, 64, 64);
+    blob = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 2.4), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false, fog: false }));
+    blob.rotation.order = 'YXZ';
+    blob.renderOrder = 5;
+    scene.add(blob);
+  }
   tracks = new SnowTracks(renderer);
   patch = new PowderPatch(scene);
   spray = new Spray(scene);

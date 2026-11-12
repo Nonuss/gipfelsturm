@@ -70,7 +70,7 @@ export class World {
     this.scene.add(this.course);
     this.grp = this.course;
     if (C.cfg.endless) {
-      this.scene.fog.near = 140;
+      this.scene.fog.near = 230;   // weiter vorne klar sehen, Nebel erst in der Ferne
       this.scene.fog.far = Q.view - 30;
       this.job = null;
       this.buildColumnsE(Q.grid);

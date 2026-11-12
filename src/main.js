@@ -3,6 +3,8 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { FXAAPass } from 'three/addons/postprocessing/FXAAPass.js';
 import * as C from './course.js';
 import { World, loadModels } from './world.js';
 import { SnowTracks } from './snow.js';
@@ -33,14 +35,41 @@ composer.addPass(new RenderPass(scene, camera));
 const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.28, 0.55, 1.0);
 composer.addPass(bloom);
 composer.addPass(new OutputPass());
+// Farblook: etwas mehr Kontrast und Sättigung, kühle Schatten, warme Lichter, leichte Vignette (sehr günstig)
+const grade = new ShaderPass({
+  uniforms: { tDiffuse: { value: null }, uVig: { value: 0.22 } },
+  vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+  fragmentShader: `uniform sampler2D tDiffuse; uniform float uVig; varying vec2 vUv;
+    void main(){
+      vec3 c = texture2D(tDiffuse, vUv).rgb;
+      float l = dot(c, vec3(0.299, 0.587, 0.114));
+      c = mix(vec3(l), c, 1.1);                                   // Sättigung
+      c = c + (c - 0.5) * 0.06 * (1.0 - abs(c - 0.5) * 2.0);      // sanfte S-Kurve
+      c *= mix(vec3(0.97, 0.99, 1.04), vec3(1.03, 1.0, 0.96), smoothstep(0.25, 0.85, l));   // Schatten kühl, Lichter warm
+      vec2 q = vUv - 0.5;
+      c *= 1.0 - uVig * smoothstep(0.35, 0.85, length(q * vec2(1.15, 1.0)));
+      gl_FragColor = vec4(clamp(c, 0.0, 1.0), 1.0);
+    }`,
+});
+composer.addPass(grade);
+// Kantenglättung per Nachbearbeitung, wenn MSAA aus ist (niedrige Stufe, Handys)
+const fxaa = new FXAAPass();
+composer.addPass(fxaa);
 
 let world, skier, tracks, spray, dust, patch;
 const phys = new SkiPhysics();
 const audio = new GameAudio();
 
+// Dynamische Auflösung: startet scharf (bis zur vollen Pixeldichte der Stufe) und regelt nur so weit herunter,
+// wie es für flüssige Bilder nötig ist. Danach wird langsam wieder hochgeregelt.
+let renderScale = 0;
+const maxScale = () => Math.min(window.devicePixelRatio || 1, Q.pr);
+const minScale = () => Math.min(maxScale(), Q.minPR || 0.75);
 function resize() {
   const { w, h } = viewSize();   // Handy hochkant: Spiel wird gedreht, Breite und Höhe tauschen
-  const pr = Math.min(window.devicePixelRatio || 1, Q.pr);
+  if (!renderScale) renderScale = maxScale();
+  renderScale = clamp(renderScale, minScale(), maxScale());
+  const pr = renderScale;
   renderer.setPixelRatio(pr);
   renderer.setSize(w, h, false);
   composer.setPixelRatio(pr);
@@ -53,13 +82,15 @@ function resize() {
 window.addEventListener('resize', resize);
 
 // ---------------------------------------------------------------- Leistungsstufen
-const QUAL_KEY = 'gipfelsturm_quality', AUTO_KEY = 'gipfelsturm_auto_tier';
+const QUAL_KEY = 'gipfelsturm_quality', AUTO_KEY = 'gipfelsturm_auto_tier2';   // neuer Schlüssel: alte, zu niedrige Automatik-Wahl verwerfen
 let qualSetting = localStorage.getItem(QUAL_KEY) || 'auto';
 function applyQuality() {
   for (const rt of [composer.renderTarget1, composer.renderTarget2]) {
     if (rt.samples !== Q.msaa) { rt.samples = Q.msaa; rt.dispose(); }
   }
   bloom.enabled = Q.bloom;
+  fxaa.enabled = Q.msaa === 0;
+  renderScale = maxScale();
   C.cfg.treeMul = Q.trees;
   if (world) {
     world.setLowQuality(Q.tier === 'low');
@@ -74,15 +105,29 @@ function applyQuality() {
 function chooseQuality(q) {
   qualSetting = q;
   localStorage.setItem(QUAL_KEY, q);
-  setTier(q === 'auto' ? localStorage.getItem(AUTO_KEY) || (isTouch ? 'low' : 'high') : q);
+  setTier(q === 'auto' ? localStorage.getItem(AUTO_KEY) || (isTouch ? 'mid' : 'high') : q);
   applyQuality();
 }
 // „Auto“: bleibt die Bildrate länger unter 40, wird eine Stufe heruntergeschaltet (und gemerkt)
 let fpsEma = 60, slowT = 0;
+let drsT = 0, drsN = 0, drsUpBlock = 0, drsStable = 0;
+function dynamicResolution(rawDt) {
+  if (game.mode !== 'run' || document.hidden || rawDt > 0.25) { drsT = 0; drsN = 0; return; }
+  drsT += rawDt; drsN++;
+  drsUpBlock = Math.max(0, drsUpBlock - rawDt);
+  if (drsT < 0.8) return;
+  const fps = drsN / drsT;
+  drsT = 0; drsN = 0;
+  const old = renderScale;
+  if (fps < 50) { renderScale = Math.max(minScale(), renderScale * (fps < 38 ? 0.8 : 0.9)); drsStable = 0; drsUpBlock = 12; }
+  else if (fps > 58) { drsStable += 0.8; if (drsStable > 4 && drsUpBlock <= 0) { renderScale = Math.min(maxScale(), renderScale * 1.07); drsStable = 0; } }
+  if (Math.abs(renderScale - old) > 0.01) resize();
+}
 function watchPerformance(rawDt) {
+  dynamicResolution(rawDt);
   if (qualSetting !== 'auto' || game.mode !== 'run' || document.hidden || rawDt > 0.25) return;
   fpsEma += (1 / Math.max(rawDt, 1e-3) - fpsEma) * 0.05;
-  slowT = fpsEma < 40 ? slowT + rawDt : 0;
+  slowT = fpsEma < 40 && renderScale <= minScale() + 0.01 ? slowT + rawDt : 0;
   const idx = ORDER.indexOf(Q.tier);
   if (slowT > 2.5 && idx < ORDER.length - 1) {
     slowT = 0; fpsEma = 60;

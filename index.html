@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gipfelsturm – Skiabfahrt</title>
+  <meta name="theme-color" content="#2f6fd0" />
+  <meta name="description" content="Endloser Ski-Berg im Browser – läuft nach dem ersten Laden auch offline." />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Gipfelsturm" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <canvas id="c"></canvas>
+
+  <div id="hud" class="hidden">
+    <div class="panel tl">
+      <div class="label" id="lblMain">Zeit</div>
+      <div id="time" class="big">0:00.00</div>
+      <div id="best" class="small">Bestzeit –</div>
+    </div>
+    <div class="panel tr">
+      <div class="label" id="lblSide">Tore</div>
+      <div id="gates" class="big">0<span>/0</span></div>
+      <div id="penalty" class="small"></div>
+    </div>
+    <div class="speedo">
+      <div id="speed">0</div>
+      <div class="unit">km/h</div>
+      <div class="bar"><div id="speedfill"></div></div>
+    </div>
+    <div id="progress"><div id="progfill"></div><div id="progdot"></div><div class="flag">ZIEL</div></div>
+    <div id="msg"></div>
+    <div id="zone"></div>
+    <canvas id="minimap" width="150" height="230"></canvas>
+    <div id="hint">A/D lenken · W Hocke · S bremsen · Leertaste springen &nbsp;|&nbsp; Luft: S Backflip · W Frontflip · A/D Spin · Leertaste Grab &nbsp;|&nbsp; F Respawn-Punkt · T zurück · Minikarte: blau/rot/schwarz = Piste, gelb = Waldbahn</div>
+  </div>
+
+  <div id="count"></div>
+
+  <div id="menu" class="overlay">
+    <div class="card">
+      <div class="kicker" id="menuKicker">Abfahrt · 2,4 km · 650 Höhenmeter</div>
+      <h1>GIPFELSTURM</h1>
+
+      <div class="modes">
+        <button class="mode sel" data-mode="race"><b>Rennen</b><span>2,4 km auf Zeit, 39 Tore</span></button>
+        <button class="mode" data-mode="endless"><b>Freeride-Berg</b><span>Endloser Zufallsberg: Waldbahnen, Pulverhänge, Klippen, Rinnen, Big Air</span></button>
+      </div>
+
+      <div class="keys">
+        <div><kbd>A</kbd><kbd>D</kbd><span>Lenken</span><kbd>W</kbd><span>Hocke</span><kbd>S</kbd><span>Bremsen</span><kbd class="wide">Leertaste</kbd><span>Springen</span></div>
+        <div class="air"><em>In der Luft</em><kbd>S</kbd><span>Backflip</span><kbd>W</kbd><span>Frontflip</span><kbd>A</kbd><kbd>D</kbd><span>Spin</span><kbd class="wide">Leertaste</kbd><span>Grab</span></div>
+        <div class="air"><em>Respawn</em><kbd>F</kbd><span>Punkt setzen</span><kbd>T</kbd><span>dorthin zurück</span></div>
+      </div>
+
+      <details class="opts">
+        <summary>Outfit &amp; Grafik</summary>
+        <div class="outfit">
+          <div class="row"><span>Jacke</span><div class="swatches" id="swJacket"></div><input type="color" id="colJacket" aria-label="Eigene Jackenfarbe" /></div>
+          <div class="row"><span>Akzent</span><div class="swatches" id="swAccent"></div><input type="color" id="colAccent" aria-label="Eigene Akzentfarbe" /></div>
+          <div class="row"><span>Hose</span><div class="swatches" id="swPants"></div><input type="color" id="colPants" aria-label="Eigene Hosenfarbe" /></div>
+          <div class="row"><span>Grafik</span>
+            <div class="seg" id="quality">
+              <button data-q="auto">Auto</button><button data-q="high">Hoch</button><button data-q="mid">Mittel</button><button data-q="low">Niedrig</button>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <button id="startBtn" class="cta">Start <small>Leertaste</small></button>
+      <div id="loading">Lade Berg …</div>
+    </div>
+  </div>
+
+  <div id="finish" class="overlay hidden">
+    <div class="card">
+      <div class="kicker" id="finTitle">Im Ziel</div>
+      <h1 id="finTime">0:00.00</h1>
+      <div class="stats" id="finStats"></div>
+      <button id="againBtn" class="cta">Nochmal <small>R</small></button>
+      <button id="menuBtn" class="ghost">Menü <small>Esc</small></button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

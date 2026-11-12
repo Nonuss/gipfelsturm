@@ -3,48 +3,34 @@
   "seed": 8,
   "mode": "Frei -85 aufrecht",
   "reached": 3800,
-  "time": 216.8,
+  "time": 232.3,
   "crashes": [],
   "landings": [
    {
-    "d": 1031,
-    "impact": 5,
-    "air": 0.76,
-    "dist": 16.8,
+    "d": 1053,
+    "impact": 8.8,
+    "air": 1.46,
+    "dist": 17.3,
+    "feat": "cliff"
+   },
+   {
+    "d": 2790,
+    "impact": 15.6,
+    "air": 2.71,
+    "dist": 35.5,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1973,
-    "impact": 6.2,
-    "air": 0.94,
-    "dist": 12.2,
-    "feat": "cliff"
-   },
-   {
-    "d": 3467,
-    "impact": 9.1,
-    "air": 1.47,
-    "dist": 29,
+    "d": 2969,
+    "impact": 18.1,
+    "air": 2.75,
+    "dist": 47.6,
     "feat": "-",
     "lane": -1
-   },
-   {
-    "d": 3582,
-    "impact": 5.5,
-    "air": 0.79,
-    "dist": 14,
-    "feat": "cliff"
-   },
-   {
-    "d": 3612,
-    "impact": 7.6,
-    "air": 0.73,
-    "dist": 14,
-    "feat": "cliff"
    }
   ],
-  "topSpeed": 27.93046785931735,
+  "topSpeed": 32.43149446921079,
   "stuck": 1,
   "hits": 0,
   "respawns": 0,
@@ -57,84 +43,86 @@
     "sl": 0.24
    }
   ],
-  "issues": [
-   "Zone 1: Kicker bei 374 m verworfen (keine sichere Landung)",
-   "Zone 5: Kicker bei 1656 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1655 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1655 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1655 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1655 m verworfen (keine sichere Landung)",
-   "Zone 11: Kicker (Seitenlinie) bei 3949 m verworfen (keine sichere Landung)",
-   "Zone 12: Waldkicker bei 4230 m verworfen (keine sichere Landung)",
-   "Zone 12: Waldkicker bei 4230 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 1037,
+    "v": 12.5,
+    "vy": -2.7,
+    "x": -81
+   },
+   {
+    "d": 2777,
+    "v": 14.1,
+    "vy": 2,
+    "x": -51
+   },
+   {
+    "d": 2921,
+    "v": 19.8,
+    "vy": -5.5,
+    "x": -26
+   }
   ],
-  "features": 60,
-  "skipped": 2,
-  "zones": "S220 C317 G306 S283 B315 G312 C364 S274 P528 B398 C438 C306 G372 C267 P566"
+  "issues": [],
+  "features": 66,
+  "skipped": 5,
+  "zones": "S220 C267 G355 C333 B387 G381 S269 P540 C242 G508 S269 C369 G420 C267 P632"
  },
  {
   "seed": 8,
   "mode": "Frei +85 Hocke",
   "reached": 3800,
-  "time": 174.3,
+  "time": 189.9,
   "crashes": [],
   "landings": [
    {
-    "d": 1202,
-    "impact": 3,
-    "air": 0.58,
-    "dist": 16.3,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 1315,
-    "impact": 8.2,
-    "air": 1.4,
-    "dist": 38.7,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 1981,
-    "impact": 5.1,
-    "air": 0.72,
-    "dist": 16.4,
+    "d": 1056,
+    "impact": 9.7,
+    "air": 1.38,
+    "dist": 26.2,
     "feat": "cliff"
    },
    {
-    "d": 2301,
-    "impact": 5.3,
-    "air": 0.8,
-    "dist": 20.8,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3106,
-    "impact": 6.7,
-    "air": 2.42,
-    "dist": 65.2,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3299,
-    "impact": 3.2,
-    "air": 0.92,
-    "dist": 25.9,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3615,
-    "impact": 11.6,
-    "air": 1.93,
-    "dist": 41.6,
+    "d": 1086,
+    "impact": 8.5,
+    "air": 1.25,
+    "dist": 25.2,
     "feat": "cliff"
+   },
+   {
+    "d": 1733,
+    "impact": 6.6,
+    "air": 1.5,
+    "dist": 37.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2568,
+    "impact": 5,
+    "air": 1.12,
+    "dist": 29.7,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2784,
+    "impact": 21.2,
+    "air": 3.12,
+    "dist": 39.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2954,
+    "impact": 13,
+    "air": 1.22,
+    "dist": 25.1,
+    "feat": "-",
+    "lane": -1
    }
   ],
-  "topSpeed": 33.47818905397229,
+  "topSpeed": 33.56105427360081,
   "stuck": 1,
   "hits": 0,
   "respawns": 0,
@@ -147,396 +135,521 @@
     "sl": 0.24
    }
   ],
-  "issues": [
-   "Zone 1: Kicker bei 374 m verworfen (keine sichere Landung)",
-   "Zone 5: Kicker bei 1656 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1655 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1655 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1655 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1655 m verworfen (keine sichere Landung)",
-   "Zone 11: Kicker (Seitenlinie) bei 3949 m verworfen (keine sichere Landung)",
-   "Zone 12: Waldkicker bei 4230 m verworfen (keine sichere Landung)",
-   "Zone 12: Waldkicker bei 4230 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 1031,
+    "v": 19.8,
+    "vy": -4.1,
+    "x": 92
+   },
+   {
+    "d": 1061,
+    "v": 21.4,
+    "vy": -5.5,
+    "x": 87
+   },
+   {
+    "d": 1697,
+    "v": 26.1,
+    "vy": -0.6,
+    "x": 87
+   },
+   {
+    "d": 2541,
+    "v": 27.2,
+    "vy": 1,
+    "x": 64
+   },
+   {
+    "d": 2777,
+    "v": 13.3,
+    "vy": 1.1,
+    "x": 61
+   },
+   {
+    "d": 2929,
+    "v": 27.9,
+    "vy": -17.7,
+    "x": -21
+   }
   ],
-  "features": 60,
-  "skipped": 2,
-  "zones": "S220 C317 G306 S283 B315 G312 C364 S274 P528 B398 C438 C306 G372 C267 P566"
+  "issues": [],
+  "features": 66,
+  "skipped": 5,
+  "zones": "S220 C267 G355 C333 B387 G381 S269 P540 C242 G508 S269 C369 G420 C267 P632"
  },
  {
   "seed": 8,
   "mode": "Frei +40 Hocke",
   "reached": 3800,
-  "time": 160.9,
+  "time": 164.5,
   "crashes": [],
   "landings": [
    {
-    "d": 526,
-    "impact": 2.4,
-    "air": 0.32,
-    "dist": 8.5,
-    "feat": "-",
-    "lane": -1
+    "d": 1073,
+    "impact": 3.1,
+    "air": 1.82,
+    "dist": 36,
+    "feat": "cliff"
    },
    {
-    "d": 968,
-    "impact": 4.8,
-    "air": 1.06,
-    "dist": 26.3,
-    "feat": "-",
-    "lane": -1
+    "d": 2407,
+    "impact": 6.2,
+    "air": 0.81,
+    "dist": 21.2,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
    },
    {
-    "d": 1005,
-    "impact": 4.4,
-    "air": 0.43,
-    "dist": 10.8,
-    "feat": "-",
-    "lane": -1
+    "d": 2442,
+    "impact": 7.5,
+    "air": 0.73,
+    "dist": 19.2,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
    },
    {
-    "d": 1156,
+    "d": 2614,
+    "impact": 8.2,
+    "air": 1.47,
+    "dist": 34.3,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2852,
     "impact": 11.8,
-    "air": 0.38,
-    "dist": 9.6,
+    "air": 2.44,
+    "dist": 59.2,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1200,
-    "impact": 5.6,
-    "air": 1.78,
-    "dist": 43,
+    "d": 2985,
+    "impact": 20,
+    "air": 3.07,
+    "dist": 63.9,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1621,
-    "impact": 4.4,
-    "air": 1.09,
-    "dist": 27.6,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 1982,
-    "impact": 5.1,
-    "air": 1.14,
-    "dist": 22.8,
-    "feat": "cliff"
-   },
-   {
-    "d": 2929,
-    "impact": 2.3,
-    "air": 0.31,
-    "dist": 7.6,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3329,
-    "impact": 4.1,
-    "air": 0.94,
-    "dist": 25,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3611,
-    "impact": 9.4,
-    "air": 1.97,
-    "dist": 41.3,
-    "feat": "cliff"
+    "d": 3371,
+    "impact": 6.3,
+    "air": 1.13,
+    "dist": 26.3,
+    "feat": "Waldkicker",
+    "lane": 2
    }
   ],
-  "topSpeed": 31.636181383376076,
+  "topSpeed": 35.78214909685056,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
-  "issues": [
-   "Zone 1: Kicker bei 374 m verworfen (keine sichere Landung)",
-   "Zone 5: Kicker bei 1656 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1655 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1655 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1655 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1655 m verworfen (keine sichere Landung)",
-   "Zone 11: Kicker (Seitenlinie) bei 3949 m verworfen (keine sichere Landung)",
-   "Zone 12: Waldkicker bei 4230 m verworfen (keine sichere Landung)",
-   "Zone 12: Waldkicker bei 4230 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 1038,
+    "v": 20.9,
+    "vy": -3.6,
+    "x": 45
+   },
+   {
+    "d": 2386,
+    "v": 26.9,
+    "vy": -3.5,
+    "x": 46
+   },
+   {
+    "d": 2423,
+    "v": 27.3,
+    "vy": -6,
+    "x": 37
+   },
+   {
+    "d": 2582,
+    "v": 24.2,
+    "vy": 1.4,
+    "x": 28
+   },
+   {
+    "d": 2799,
+    "v": 26.2,
+    "vy": -2.6,
+    "x": 24
+   },
+   {
+    "d": 2921,
+    "v": 23.4,
+    "vy": -5.6,
+    "x": -28
+   },
+   {
+    "d": 3348,
+    "v": 23.8,
+    "vy": -0.4,
+    "x": 59
+   }
   ],
-  "features": 60,
-  "skipped": 2,
-  "zones": "S220 C317 G306 S283 B315 G312 C364 S274 P528 B398 C438 C306 G372 C267 P566"
+  "issues": [],
+  "features": 66,
+  "skipped": 5,
+  "zones": "S220 C267 G355 C333 B387 G381 S269 P540 C242 G508 S269 C369 G420 C267 P632"
  },
  {
   "seed": 8,
   "mode": "Quer-Slalom Hocke",
   "reached": 3800,
-  "time": 190.6,
+  "time": 200.5,
   "crashes": [],
   "landings": [
    {
-    "d": 528,
-    "impact": 3.6,
-    "air": 1.04,
-    "dist": 25.7,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 965,
-    "impact": 3.1,
-    "air": 0.23,
-    "dist": 5.6,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 971,
-    "impact": 3.7,
-    "air": 0.2,
-    "dist": 4.9,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 1427,
-    "impact": 9.5,
-    "air": 0.83,
-    "dist": 18.1,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 1449,
-    "impact": 3.9,
-    "air": 1.09,
-    "dist": 22.4,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 1980,
-    "impact": 7.4,
-    "air": 1.14,
-    "dist": 19.1,
+    "d": 1051,
+    "impact": 9.4,
+    "air": 1.47,
+    "dist": 20.1,
     "feat": "cliff"
    },
    {
-    "d": 2645,
-    "impact": 5.9,
-    "air": 1.12,
-    "dist": 27.8,
-    "feat": "Kicker (Seitenlinie)",
+    "d": 1431,
+    "impact": 2.4,
+    "air": 0.48,
+    "dist": 10.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1825,
+    "impact": 9.1,
+    "air": 2.03,
+    "dist": 44.4,
+    "feat": "Waldkicker",
     "lane": 1
    },
    {
-    "d": 3475,
-    "impact": 8.2,
-    "air": 1.59,
-    "dist": 39.2,
+    "d": 2796,
+    "impact": 15.8,
+    "air": 2.85,
+    "dist": 41.8,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3596,
-    "impact": 11.9,
-    "air": 1.5,
-    "dist": 29.7,
-    "feat": "cliff"
+    "d": 2956,
+    "impact": 13.6,
+    "air": 1.37,
+    "dist": 27.1,
+    "feat": "-",
+    "lane": -1
    },
    {
-    "d": 3617,
-    "impact": 7.5,
-    "air": 0.99,
-    "dist": 20.1,
-    "feat": "cliff"
+    "d": 3229,
+    "impact": 4.3,
+    "air": 1.07,
+    "dist": 24.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3284,
+    "impact": 2.7,
+    "air": 0.62,
+    "dist": 14.1,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3348,
+    "impact": 7.1,
+    "air": 1.31,
+    "dist": 29.2,
+    "feat": "Waldkicker",
+    "lane": 2
+   },
+   {
+    "d": 3532,
+    "impact": 3.4,
+    "air": 1,
+    "dist": 24.7,
+    "feat": "-",
+    "lane": -1
    }
   ],
-  "topSpeed": 27.189025675517335,
+  "topSpeed": 32.944902715588974,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
-  "issues": [
-   "Zone 1: Kicker bei 374 m verworfen (keine sichere Landung)",
-   "Zone 5: Kicker bei 1656 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1655 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1655 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1655 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1655 m verworfen (keine sichere Landung)",
-   "Zone 11: Kicker (Seitenlinie) bei 3949 m verworfen (keine sichere Landung)",
-   "Zone 12: Waldkicker bei 4230 m verworfen (keine sichere Landung)",
-   "Zone 12: Waldkicker bei 4230 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 1032,
+    "v": 14,
+    "vy": -2,
+    "x": 87
+   },
+   {
+    "d": 1421,
+    "v": 23.4,
+    "vy": -3.2,
+    "x": -58
+   },
+   {
+    "d": 1793,
+    "v": 23.3,
+    "vy": 5.2,
+    "x": -16
+   },
+   {
+    "d": 2777,
+    "v": 15.6,
+    "vy": 3,
+    "x": 51
+   },
+   {
+    "d": 2929,
+    "v": 26.7,
+    "vy": -16.5,
+    "x": -22
+   },
+   {
+    "d": 3206,
+    "v": 23.9,
+    "vy": -0.7,
+    "x": -72
+   },
+   {
+    "d": 3271,
+    "v": 23.2,
+    "vy": -1.4,
+    "x": -82
+   },
+   {
+    "d": 3322,
+    "v": 23,
+    "vy": 0.7,
+    "x": -86
+   },
+   {
+    "d": 3515,
+    "v": 25.7,
+    "vy": -3.7,
+    "x": -35
+   }
   ],
-  "features": 60,
-  "skipped": 2,
-  "zones": "S220 C317 G306 S283 B315 G312 C364 S274 P528 B398 C438 C306 G372 C267 P566"
+  "issues": [],
+  "features": 66,
+  "skipped": 5,
+  "zones": "S220 C267 G355 C333 B387 G381 S269 P540 C242 G508 S269 C369 G420 C267 P632"
  },
  {
   "seed": 8,
   "mode": "Quer-Slalom aufrecht",
   "reached": 3800,
-  "time": 271.7,
+  "time": 281.4,
   "crashes": [],
   "landings": [
    {
-    "d": 858,
-    "impact": 2.1,
-    "air": 0.23,
-    "dist": 4.9,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 952,
+    "d": 283,
     "impact": 3.1,
-    "air": 0.53,
-    "dist": 10.7,
+    "air": 0.75,
+    "dist": 15.9,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1132,
-    "impact": 4.5,
-    "air": 0.29,
-    "dist": 6.1,
+    "d": 598,
+    "impact": 3.4,
+    "air": 0.69,
+    "dist": 13.1,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1144,
-    "impact": 1.6,
-    "air": 0.38,
-    "dist": 8.2,
+    "d": 836,
+    "impact": 3.5,
+    "air": 0.21,
+    "dist": 4.2,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1468,
-    "impact": 3.9,
-    "air": 0.82,
-    "dist": 13.8,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 1969,
-    "impact": 6.7,
-    "air": 1.04,
+    "d": 1048,
+    "impact": 9.4,
+    "air": 1.47,
     "dist": 12.4,
     "feat": "cliff"
    },
    {
-    "d": 2247,
-    "impact": 3.7,
-    "air": 0.24,
-    "dist": 4.9,
+    "d": 1494,
+    "impact": 3.2,
+    "air": 0.71,
+    "dist": 10.1,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2255,
-    "impact": 3,
-    "air": 0.27,
-    "dist": 5.6,
+    "d": 2321,
+    "impact": 3.9,
+    "air": 0.81,
+    "dist": 14.7,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3064,
-    "impact": 4.3,
-    "air": 1.35,
-    "dist": 25.2,
+    "d": 2599,
+    "impact": 9.9,
+    "air": 2.08,
+    "dist": 37.3,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2621,
+    "impact": 3.4,
+    "air": 0.72,
+    "dist": 11.7,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2790,
+    "impact": 14.7,
+    "air": 2.48,
+    "dist": 31.4,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3208,
-    "impact": 2.6,
-    "air": 0.33,
-    "dist": 6.8,
+    "d": 3218,
+    "impact": 3.5,
+    "air": 1.06,
+    "dist": 18.1,
     "feat": "-",
     "lane": -1
-   },
-   {
-    "d": 3370,
-    "impact": 1.7,
-    "air": 0.21,
-    "dist": 3.9,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3590,
-    "impact": 11.1,
-    "air": 1.52,
-    "dist": 14.8,
-    "feat": "cliff"
    }
   ],
-  "topSpeed": 24.416321188330482,
+  "topSpeed": 24.80350250807526,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
-  "issues": [
-   "Zone 1: Kicker bei 374 m verworfen (keine sichere Landung)",
-   "Zone 5: Kicker bei 1656 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1655 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1655 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1655 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1655 m verworfen (keine sichere Landung)",
-   "Zone 11: Kicker (Seitenlinie) bei 3949 m verworfen (keine sichere Landung)",
-   "Zone 12: Waldkicker bei 4230 m verworfen (keine sichere Landung)",
-   "Zone 12: Waldkicker bei 4230 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 272,
+    "v": 21.7,
+    "vy": -1,
+    "x": 46
+   },
+   {
+    "d": 589,
+    "v": 19.4,
+    "vy": -0.2,
+    "x": -1
+   },
+   {
+    "d": 833,
+    "v": 21.2,
+    "vy": -6.5,
+    "x": 37
+   },
+   {
+    "d": 1036,
+    "v": 9,
+    "vy": -2.5,
+    "x": -95
+   },
+   {
+    "d": 1486,
+    "v": 14.6,
+    "vy": 1.3,
+    "x": -56
+   },
+   {
+    "d": 2311,
+    "v": 18.7,
+    "vy": 1.5,
+    "x": 24
+   },
+   {
+    "d": 2567,
+    "v": 19.9,
+    "vy": 5.9,
+    "x": 0
+   },
+   {
+    "d": 2613,
+    "v": 16.8,
+    "vy": 3.5,
+    "x": -39
+   },
+   {
+    "d": 2777,
+    "v": 13.4,
+    "vy": 0.9,
+    "x": -50
+   },
+   {
+    "d": 3203,
+    "v": 17.6,
+    "vy": 0.9,
+    "x": -72
+   }
   ],
-  "features": 60,
-  "skipped": 2,
-  "zones": "S220 C317 G306 S283 B315 G312 C364 S274 P528 B398 C438 C306 G372 C267 P566"
+  "issues": [],
+  "features": 66,
+  "skipped": 5,
+  "zones": "S220 C267 G355 C333 B387 G381 S269 P540 C242 G508 S269 C369 G420 C267 P632"
  },
  {
   "seed": 15,
   "mode": "Frei -85 aufrecht",
   "reached": 3800,
-  "time": 232.3,
+  "time": 231,
   "crashes": [],
   "landings": [
    {
-    "d": 815,
-    "impact": 6,
-    "air": 1.22,
-    "dist": 28.1,
+    "d": 1252,
+    "impact": 9.4,
+    "air": 1.37,
+    "dist": 15.7,
+    "feat": "cliff"
+   },
+   {
+    "d": 1708,
+    "impact": 19.7,
+    "air": 3.18,
+    "dist": 60.3,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1172,
-    "impact": 11.1,
-    "air": 1.54,
-    "dist": 19.1,
+    "d": 2275,
+    "impact": 10.5,
+    "air": 1.42,
+    "dist": 19.2,
     "feat": "cliff"
    },
    {
-    "d": 2240,
-    "impact": 10.1,
-    "air": 1.34,
-    "dist": 17.2,
+    "d": 2300,
+    "impact": 8.4,
+    "air": 0.88,
+    "dist": 13.8,
     "feat": "cliff"
    },
    {
-    "d": 2268,
-    "impact": 8.9,
-    "air": 1.01,
-    "dist": 15,
-    "feat": "cliff"
+    "d": 3431,
+    "impact": 5.9,
+    "air": 1.28,
+    "dist": 27.1,
+    "feat": "Waldkicker",
+    "lane": 1
    },
    {
-    "d": 3774,
-    "impact": 8.5,
-    "air": 1.07,
-    "dist": 14.2,
-    "feat": "cliff"
+    "d": 3458,
+    "impact": 3.5,
+    "air": 0.42,
+    "dist": 8.8,
+    "feat": "Waldkicker",
+    "lane": 1
    }
   ],
-  "topSpeed": 25.9186628900658,
+  "topSpeed": 36.618882960051586,
   "stuck": 1,
   "hits": 0,
   "respawns": 0,
@@ -549,90 +662,126 @@
     "sl": 0.24
    }
   ],
-  "issues": [
-   "Zone 1: Kicker bei 497 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 496 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 496 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 496 m verworfen (keine sichere Landung)",
-   "Zone 2: Kicker bei 816 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1890 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1890 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1890 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 1236,
+    "v": 12,
+    "vy": -2.6,
+    "x": -85
+   },
+   {
+    "d": 1648,
+    "v": 22.8,
+    "vy": -7.8,
+    "x": -33
+   },
+   {
+    "d": 2256,
+    "v": 14.3,
+    "vy": -3.1,
+    "x": -88
+   },
+   {
+    "d": 2286,
+    "v": 17.2,
+    "vy": -6.3,
+    "x": -88
+   },
+   {
+    "d": 3404,
+    "v": 22,
+    "vy": 1.2,
+    "x": -80
+   },
+   {
+    "d": 3449,
+    "v": 22.3,
+    "vy": -6.3,
+    "x": -81
+   },
+   {
+    "d": 3800,
+    "v": 14.4,
+    "vy": -2.7,
+    "x": -83
+   }
   ],
-  "features": 58,
-  "skipped": 5,
-  "zones": "S220 G376 C306 C436 B350 G319 C366 P538 S248 G377 C377 G370 S223 F158 C395"
+  "issues": [],
+  "features": 44,
+  "skipped": 4,
+  "zones": "S220 G328 C362 C563 C234 G324 C387 B420 S269 G464 C392 B353 S171 F181 C464"
  },
  {
   "seed": 15,
   "mode": "Frei +85 Hocke",
   "reached": 3800,
-  "time": 176.8,
+  "time": 186,
   "crashes": [],
   "landings": [
    {
-    "d": 461,
-    "impact": 8,
-    "air": 1.61,
-    "dist": 42.9,
+    "d": 452,
+    "impact": 6.8,
+    "air": 1.07,
+    "dist": 30.3,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1183,
-    "impact": 6,
-    "air": 1.45,
-    "dist": 27.9,
+    "d": 1263,
+    "impact": 8.7,
+    "air": 1.54,
+    "dist": 26.3,
     "feat": "cliff"
    },
    {
-    "d": 1530,
-    "impact": 4.7,
-    "air": 0.33,
-    "dist": 9.3,
+    "d": 1699,
+    "impact": 22.2,
+    "air": 2.77,
+    "dist": 59.9,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1559,
-    "impact": 4.8,
-    "air": 0.89,
-    "dist": 25.1,
+    "d": 1840,
+    "impact": 4.5,
+    "air": 1.1,
+    "dist": 28.1,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1640,
-    "impact": 2.4,
-    "air": 0.38,
-    "dist": 11,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2230,
-    "impact": 2.4,
-    "air": 0.38,
-    "dist": 9.8,
+    "d": 2269,
+    "impact": 3.5,
+    "air": 0.53,
+    "dist": 13.7,
     "feat": "cliff"
    },
    {
-    "d": 3392,
-    "impact": 5.8,
-    "air": 0.75,
-    "dist": 21.3,
+    "d": 2459,
+    "impact": 4.3,
+    "air": 0.26,
+    "dist": 7.1,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3775,
-    "impact": 5.5,
-    "air": 0.64,
-    "dist": 16,
-    "feat": "cliff"
+    "d": 2488,
+    "impact": 2.1,
+    "air": 0.53,
+    "dist": 14.4,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2819,
+    "impact": 1.5,
+    "air": 0.63,
+    "dist": 17.7,
+    "feat": "-",
+    "lane": -1
    }
   ],
-  "topSpeed": 30.980805550604597,
+  "topSpeed": 38.40535746698283,
   "stuck": 1,
   "hits": 0,
   "respawns": 0,
@@ -645,368 +794,556 @@
     "sl": 0.24
    }
   ],
-  "issues": [
-   "Zone 1: Kicker bei 497 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 496 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 496 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 496 m verworfen (keine sichere Landung)",
-   "Zone 2: Kicker bei 816 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1890 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1890 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1890 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 422,
+    "v": 29.6,
+    "vy": -4,
+    "x": 86
+   },
+   {
+    "d": 1237,
+    "v": 17.8,
+    "vy": -3.2,
+    "x": 87
+   },
+   {
+    "d": 1640,
+    "v": 27.2,
+    "vy": -12.6,
+    "x": 30
+   },
+   {
+    "d": 1816,
+    "v": 26.2,
+    "vy": 0.2,
+    "x": 79
+   },
+   {
+    "d": 2255,
+    "v": 27.7,
+    "vy": -9.4,
+    "x": 82
+   },
+   {
+    "d": 2452,
+    "v": 28.7,
+    "vy": -6.9,
+    "x": 88
+   },
+   {
+    "d": 2474,
+    "v": 28.7,
+    "vy": -6.8,
+    "x": 85
+   },
+   {
+    "d": 2802,
+    "v": 29.9,
+    "vy": -8.4,
+    "x": 97
+   }
   ],
-  "features": 58,
-  "skipped": 5,
-  "zones": "S220 G376 C306 C436 B350 G319 C366 P538 S248 G377 C377 G370 S223 F158 C395"
+  "issues": [],
+  "features": 44,
+  "skipped": 4,
+  "zones": "S220 G328 C362 C563 C234 G324 C387 B420 S269 G464 C392 B353 S171 F181 C464"
  },
  {
   "seed": 15,
   "mode": "Frei +40 Hocke",
   "reached": 3800,
-  "time": 163.7,
+  "time": 168.5,
   "crashes": [],
   "landings": [
    {
-    "d": 452,
-    "impact": 4.6,
-    "air": 0.95,
-    "dist": 24.6,
+    "d": 442,
+    "impact": 6.9,
+    "air": 1.02,
+    "dist": 26.7,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1187,
-    "impact": 5,
-    "air": 1.65,
-    "dist": 32,
+    "d": 1265,
+    "impact": 6.5,
+    "air": 1.52,
+    "dist": 27.7,
     "feat": "cliff"
    },
    {
-    "d": 1350,
-    "impact": 2.2,
-    "air": 0.58,
-    "dist": 14.9,
+    "d": 1580,
+    "impact": 16.5,
+    "air": 2.95,
+    "dist": 60,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1393,
-    "impact": 3.7,
-    "air": 1.04,
-    "dist": 27.4,
+    "d": 1701,
+    "impact": 12.4,
+    "air": 2.38,
+    "dist": 49.7,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1668,
-    "impact": 3.7,
-    "air": 0.24,
-    "dist": 6.1,
+    "d": 1835,
+    "impact": 3.8,
+    "air": 0.94,
+    "dist": 23.6,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2257,
-    "impact": 10.4,
-    "air": 2.03,
-    "dist": 41.9,
+    "d": 1856,
+    "impact": 2.7,
+    "air": 0.53,
+    "dist": 13.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2294,
+    "impact": 14,
+    "air": 2.06,
+    "dist": 43.9,
     "feat": "cliff"
    },
    {
-    "d": 2544,
-    "impact": 4.6,
-    "air": 0.15,
-    "dist": 3.5,
+    "d": 2429,
+    "impact": 3.1,
+    "air": 0.14,
+    "dist": 3.3,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2569,
-    "impact": 6.4,
-    "air": 0.99,
-    "dist": 22.7,
+    "d": 2450,
+    "impact": 2.1,
+    "air": 0.53,
+    "dist": 12.4,
     "feat": "-",
     "lane": -1
-   },
-   {
-    "d": 2670,
-    "impact": 4.8,
-    "air": 0.83,
-    "dist": 18.8,
-    "feat": "Tischsprung",
-    "lane": 0
-   },
-   {
-    "d": 3783,
-    "impact": 6.3,
-    "air": 1.36,
-    "dist": 27.3,
-    "feat": "cliff"
    }
   ],
-  "topSpeed": 29.44900632381513,
+  "topSpeed": 31.373948595735584,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
-  "issues": [
-   "Zone 1: Kicker bei 497 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 496 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 496 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 496 m verworfen (keine sichere Landung)",
-   "Zone 2: Kicker bei 816 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1890 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1890 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1890 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 416,
+    "v": 27.9,
+    "vy": -5.6,
+    "x": 39
+   },
+   {
+    "d": 1237,
+    "v": 19.1,
+    "vy": -3.3,
+    "x": 42
+   },
+   {
+    "d": 1530,
+    "v": 21.7,
+    "vy": 1.3,
+    "x": 21
+   },
+   {
+    "d": 1651,
+    "v": 22.4,
+    "vy": -3.8,
+    "x": -21
+   },
+   {
+    "d": 1817,
+    "v": 25.6,
+    "vy": -0.6,
+    "x": 26
+   },
+   {
+    "d": 1845,
+    "v": 25.5,
+    "vy": -2.5,
+    "x": 53
+   },
+   {
+    "d": 2250,
+    "v": 22.6,
+    "vy": -3.4,
+    "x": 38
+   },
+   {
+    "d": 2425,
+    "v": 23.9,
+    "vy": -5.5,
+    "x": 43
+   },
+   {
+    "d": 2438,
+    "v": 23.9,
+    "vy": -3.8,
+    "x": 43
+   },
+   {
+    "d": 3800,
+    "v": 21.4,
+    "vy": -3.7,
+    "x": 43
+   }
   ],
-  "features": 58,
-  "skipped": 5,
-  "zones": "S220 G376 C306 C436 B350 G319 C366 P538 S248 G377 C377 G370 S223 F158 C395"
+  "issues": [],
+  "features": 44,
+  "skipped": 4,
+  "zones": "S220 G328 C362 C563 C234 G324 C387 B420 S269 G464 C392 B353 S171 F181 C464"
  },
  {
   "seed": 15,
   "mode": "Quer-Slalom Hocke",
   "reached": 3800,
-  "time": 196.2,
+  "time": 203.4,
   "crashes": [],
   "landings": [
    {
-    "d": 431,
-    "impact": 4.7,
-    "air": 1.12,
-    "dist": 27,
+    "d": 443,
+    "impact": 7.4,
+    "air": 1.23,
+    "dist": 30.2,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1175,
+    "d": 1251,
     "impact": 8.7,
-    "air": 1.36,
-    "dist": 19.9,
+    "air": 1.28,
+    "dist": 19.7,
     "feat": "cliff"
    },
    {
-    "d": 2246,
-    "impact": 10.8,
+    "d": 1715,
+    "impact": 21,
+    "air": 3.45,
+    "dist": 73.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1860,
+    "impact": 10.7,
+    "air": 1.82,
+    "dist": 41.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2279,
+    "impact": 10.6,
     "air": 1.6,
-    "dist": 32,
+    "dist": 31.3,
     "feat": "cliff"
    },
    {
-    "d": 2263,
-    "impact": 6.4,
-    "air": 0.72,
-    "dist": 15,
+    "d": 2296,
+    "impact": 8.9,
+    "air": 0.86,
+    "dist": 17.8,
     "feat": "cliff"
    },
    {
-    "d": 2621,
-    "impact": 6.4,
-    "air": 1.22,
-    "dist": 26.9,
-    "feat": "Kicker (Seitenlinie)",
+    "d": 2484,
+    "impact": 2.9,
+    "air": 0.52,
+    "dist": 12.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2791,
+    "impact": 4.2,
+    "air": 1.02,
+    "dist": 18.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2832,
+    "impact": 4.3,
+    "air": 1.51,
+    "dist": 30.1,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3434,
+    "impact": 2.7,
+    "air": 0.62,
+    "dist": 15.4,
+    "feat": "Waldkicker",
     "lane": 1
-   },
-   {
-    "d": 2687,
-    "impact": 9.6,
-    "air": 1.71,
-    "dist": 36.5,
-    "feat": "Tischsprung",
-    "lane": 0
-   },
-   {
-    "d": 3052,
-    "impact": 9.2,
-    "air": 0.79,
-    "dist": 18.5,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3074,
-    "impact": 3.9,
-    "air": 0.74,
-    "dist": 17.6,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3527,
-    "impact": 2.5,
-    "air": 0.49,
-    "dist": 12.4,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3778,
-    "impact": 8.3,
-    "air": 1.32,
-    "dist": 22.3,
-    "feat": "cliff"
    }
   ],
-  "topSpeed": 28.920944143904446,
+  "topSpeed": 38.44561674745751,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
-  "issues": [
-   "Zone 1: Kicker bei 497 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 496 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 496 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 496 m verworfen (keine sichere Landung)",
-   "Zone 2: Kicker bei 816 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1890 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1890 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1890 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 415,
+    "v": 26,
+    "vy": -3.9,
+    "x": 39
+   },
+   {
+    "d": 1234,
+    "v": 15.9,
+    "vy": -2.9,
+    "x": 77
+   },
+   {
+    "d": 1642,
+    "v": 25.6,
+    "vy": -7.6,
+    "x": -33
+   },
+   {
+    "d": 1825,
+    "v": 23.7,
+    "vy": 2.9,
+    "x": 23
+   },
+   {
+    "d": 2253,
+    "v": 20.3,
+    "vy": -2.1,
+    "x": -19
+   },
+   {
+    "d": 2281,
+    "v": 21.8,
+    "vy": -5.5,
+    "x": -40
+   },
+   {
+    "d": 2472,
+    "v": 24.5,
+    "vy": -5.2,
+    "x": -108
+   },
+   {
+    "d": 2773,
+    "v": 18.9,
+    "vy": 0.3,
+    "x": 80
+   },
+   {
+    "d": 2802,
+    "v": 20.5,
+    "vy": 0.3,
+    "x": 95
+   },
+   {
+    "d": 3419,
+    "v": 25.5,
+    "vy": -2.6,
+    "x": -83
+   },
+   {
+    "d": 3794,
+    "v": 17.9,
+    "vy": -3.1,
+    "x": 107
+   }
   ],
-  "features": 58,
-  "skipped": 5,
-  "zones": "S220 G376 C306 C436 B350 G319 C366 P538 S248 G377 C377 G370 S223 F158 C395"
+  "issues": [],
+  "features": 44,
+  "skipped": 4,
+  "zones": "S220 G328 C362 C563 C234 G324 C387 B420 S269 G464 C392 B353 S171 F181 C464"
  },
  {
   "seed": 15,
   "mode": "Quer-Slalom aufrecht",
   "reached": 3800,
-  "time": 296.6,
+  "time": 313.4,
   "crashes": [],
   "landings": [
    {
-    "d": 1155,
+    "d": 318,
+    "impact": 3.5,
+    "air": 0.84,
+    "dist": 14.5,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 598,
     "impact": 2.3,
-    "air": 0.53,
+    "air": 0.29,
+    "dist": 5.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1566,
+    "impact": 4.3,
+    "air": 2.15,
+    "dist": 25.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1828,
+    "impact": 3.5,
+    "air": 0.75,
+    "dist": 11.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2263,
+    "impact": 10.7,
+    "air": 1.6,
+    "dist": 21.2,
+    "feat": "cliff"
+   },
+   {
+    "d": 2297,
+    "impact": 4.9,
+    "air": 0.38,
     "dist": 5.9,
     "feat": "cliff"
    },
    {
-    "d": 1163,
-    "impact": 8.3,
-    "air": 0.68,
-    "dist": 7.3,
-    "feat": "cliff"
-   },
-   {
-    "d": 1392,
-    "impact": 7.1,
-    "air": 1.04,
-    "dist": 18.9,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 1500,
-    "impact": 3.3,
-    "air": 0.74,
-    "dist": 10.5,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2223,
-    "impact": 6.8,
-    "air": 0.36,
-    "dist": 5,
-    "feat": "cliff"
-   },
-   {
-    "d": 2533,
+    "d": 2463,
     "impact": 3.7,
-    "air": 0.54,
-    "dist": 9,
+    "air": 0.22,
+    "dist": 2.9,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2616,
-    "impact": 3.7,
-    "air": 0.77,
-    "dist": 10.1,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 2622,
-    "impact": 4.8,
-    "air": 0.38,
-    "dist": 4.9,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 2815,
-    "impact": 5.8,
-    "air": 1.08,
-    "dist": 14.4,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 3394,
-    "impact": 2.9,
+    "d": 3351,
+    "impact": 3.1,
     "air": 0.55,
-    "dist": 11.8,
+    "dist": 10,
     "feat": "-",
     "lane": -1
+   },
+   {
+    "d": 3439,
+    "impact": 6,
+    "air": 1.42,
+    "dist": 23.7,
+    "feat": "Waldkicker",
+    "lane": 1
    }
   ],
-  "topSpeed": 23.81526697819949,
-  "stuck": 0,
+  "topSpeed": 24.003633771580432,
+  "stuck": 1,
   "hits": 0,
   "respawns": 0,
-  "issues": [
-   "Zone 1: Kicker bei 497 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 496 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 496 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 496 m verworfen (keine sichere Landung)",
-   "Zone 2: Kicker bei 816 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1890 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1890 m verworfen (keine sichere Landung)",
-   "Zone 5: Waldkicker bei 1890 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 308,
+    "v": 17.8,
+    "vy": -2.7,
+    "x": -1
+   },
+   {
+    "d": 594,
+    "v": 20.8,
+    "vy": -4.3,
+    "x": -1
+   },
+   {
+    "d": 1540,
+    "v": 12.6,
+    "vy": -1.7,
+    "x": -19
+   },
+   {
+    "d": 1818,
+    "v": 15.9,
+    "vy": -0.2,
+    "x": 79
+   },
+   {
+    "d": 2250,
+    "v": 13.9,
+    "vy": -1.7,
+    "x": -44
+   },
+   {
+    "d": 2293,
+    "v": 17,
+    "vy": -5.8,
+    "x": 9
+   },
+   {
+    "d": 2460,
+    "v": 14.4,
+    "vy": -4.7,
+    "x": 97
+   },
+   {
+    "d": 3343,
+    "v": 18.7,
+    "vy": -3.4,
+    "x": -77
+   },
+   {
+    "d": 3421,
+    "v": 17.5,
+    "vy": 2.7,
+    "x": 4
+   }
   ],
-  "features": 58,
-  "skipped": 5,
-  "zones": "S220 G376 C306 C436 B350 G319 C366 P538 S248 G377 C377 G370 S223 F158 C395"
+  "stuckAt": [
+   {
+    "d": 3786,
+    "x": -85,
+    "zone": "cliff",
+    "pow": 0.34,
+    "sl": 0.21
+   }
+  ],
+  "issues": [],
+  "features": 44,
+  "skipped": 4,
+  "zones": "S220 G328 C362 C563 C234 G324 C387 B420 S269 G464 C392 B353 S171 F181 C464"
  },
  {
   "seed": 22,
   "mode": "Frei -85 aufrecht",
   "reached": 3800,
-  "time": 222,
+  "time": 231.9,
   "crashes": [],
   "landings": [
    {
-    "d": 1835,
-    "impact": 5.8,
-    "air": 0.72,
-    "dist": 12.3,
+    "d": 2071,
+    "impact": 10.2,
+    "air": 1.49,
+    "dist": 18.9,
     "feat": "cliff"
    },
    {
-    "d": 2161,
-    "impact": 6.5,
-    "air": 2.12,
-    "dist": 46.5,
+    "d": 3483,
+    "impact": 3.8,
+    "air": 2.42,
+    "dist": 26.6,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3145,
-    "impact": 15.1,
-    "air": 2.65,
-    "dist": 34,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3343,
-    "impact": 13.3,
-    "air": 2.12,
-    "dist": 42.8,
+    "d": 3681,
+    "impact": 19.8,
+    "air": 2.7,
+    "dist": 48.3,
     "feat": "-",
     "lane": -1
    }
   ],
-  "topSpeed": 34.008210801493895,
+  "topSpeed": 35.04753870822879,
   "stuck": 1,
   "hits": 0,
   "respawns": 0,
@@ -1019,98 +1356,94 @@
     "sl": 0.24
    }
   ],
-  "issues": [
-   "Zone 7: Waldkicker bei 2497 m verworfen (keine sichere Landung)",
-   "Zone 8: Big Air bei 2852 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 11: Kicker bei 3993 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 3991 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 3991 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 3991 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 3991 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 2052,
+    "v": 13.3,
+    "vy": -2.6,
+    "x": -88
+   },
+   {
+    "d": 3471,
+    "v": 11.6,
+    "vy": 1.4,
+    "x": -54
+   },
+   {
+    "d": 3634,
+    "v": 22.2,
+    "vy": -9.9,
+    "x": -27
+   }
   ],
+  "issues": [],
   "features": 62,
-  "skipped": 2,
-  "zones": "S220 G373 S293 F128 P579 C400 B342 G340 B433 C260 B333 G416 C432 P493"
+  "skipped": 7,
+  "zones": "S220 G483 S353 F104 P699 C337 B377 G261 P613 C260 B391 G336 C325 P573"
  },
  {
   "seed": 22,
   "mode": "Frei +85 Hocke",
   "reached": 3800,
-  "time": 181.3,
+  "time": 183,
   "crashes": [],
   "landings": [
    {
-    "d": 465,
-    "impact": 5.2,
-    "air": 1.17,
-    "dist": 33,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 795,
-    "impact": 3.9,
-    "air": 0.73,
-    "dist": 19.8,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 1843,
-    "impact": 6.1,
-    "air": 0.83,
-    "dist": 19,
-    "feat": "cliff"
-   },
-   {
-    "d": 1869,
-    "impact": 7.3,
-    "air": 0.68,
-    "dist": 16.4,
-    "feat": "cliff"
-   },
-   {
-    "d": 2108,
-    "impact": 8.4,
-    "air": 1.92,
-    "dist": 53.7,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2203,
+    "d": 967,
     "impact": 3.7,
-    "air": 0.46,
-    "dist": 13,
+    "air": 1.22,
+    "dist": 32.5,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3142,
-    "impact": 17.3,
-    "air": 2.9,
-    "dist": 39.8,
+    "d": 2080,
+    "impact": 7.2,
+    "air": 0.94,
+    "dist": 22.3,
+    "feat": "cliff"
+   },
+   {
+    "d": 2101,
+    "impact": 5.8,
+    "air": 0.53,
+    "dist": 13.2,
+    "feat": "cliff"
+   },
+   {
+    "d": 2276,
+    "impact": 3.8,
+    "air": 0.54,
+    "dist": 15.3,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3491,
-    "impact": 3.9,
-    "air": 0.97,
-    "dist": 26.2,
+    "d": 2296,
+    "impact": 2.8,
+    "air": 0.35,
+    "dist": 9.9,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3553,
-    "impact": 3.6,
-    "air": 0.38,
-    "dist": 10.5,
+    "d": 3481,
+    "impact": 17.7,
+    "air": 2.85,
+    "dist": 37.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3652,
+    "impact": 11.4,
+    "air": 0.57,
+    "dist": 11.7,
     "feat": "-",
     "lane": -1
    }
   ],
-  "topSpeed": 32.12973723784862,
+  "topSpeed": 33.48726559669181,
   "stuck": 1,
   "hits": 0,
   "respawns": 0,
@@ -1123,363 +1456,520 @@
     "sl": 0.24
    }
   ],
-  "issues": [
-   "Zone 7: Waldkicker bei 2497 m verworfen (keine sichere Landung)",
-   "Zone 8: Big Air bei 2852 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 11: Kicker bei 3993 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 3991 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 3991 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 3991 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 3991 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 936,
+    "v": 30.3,
+    "vy": -10.9,
+    "x": 76
+   },
+   {
+    "d": 2058,
+    "v": 25.2,
+    "vy": -6.9,
+    "x": 83
+   },
+   {
+    "d": 2088,
+    "v": 27,
+    "vy": -9,
+    "x": 87
+   },
+   {
+    "d": 2261,
+    "v": 30,
+    "vy": -8.1,
+    "x": 79
+   },
+   {
+    "d": 2286,
+    "v": 30,
+    "vy": -9,
+    "x": 80
+   },
+   {
+    "d": 3471,
+    "v": 13.7,
+    "vy": 1.9,
+    "x": 55
+   },
+   {
+    "d": 3641,
+    "v": 31,
+    "vy": -22.7,
+    "x": -17
+   }
   ],
+  "issues": [],
   "features": 62,
-  "skipped": 2,
-  "zones": "S220 G373 S293 F128 P579 C400 B342 G340 B433 C260 B333 G416 C432 P493"
+  "skipped": 7,
+  "zones": "S220 G483 S353 F104 P699 C337 B377 G261 P613 C260 B391 G336 C325 P573"
  },
  {
   "seed": 22,
   "mode": "Frei +40 Hocke",
   "reached": 3800,
-  "time": 163.4,
+  "time": 161.4,
   "crashes": [],
   "landings": [
    {
-    "d": 452,
-    "impact": 4.6,
-    "air": 0.82,
-    "dist": 21.9,
-    "feat": "-",
-    "lane": -1
+    "d": 469,
+    "impact": 4.7,
+    "air": 0.77,
+    "dist": 19.4,
+    "feat": "Waldkicker",
+    "lane": 1
    },
    {
-    "d": 1251,
-    "impact": 4.8,
-    "air": 1.07,
-    "dist": 26.6,
+    "d": 1385,
+    "impact": 2.9,
+    "air": 0.77,
+    "dist": 19.8,
     "feat": "Tischsprung",
     "lane": 0
    },
    {
-    "d": 1437,
-    "impact": 7.1,
-    "air": 1.11,
-    "dist": 28.3,
-    "feat": "Step-up",
+    "d": 1398,
+    "impact": 4.6,
+    "air": 0.48,
+    "dist": 12,
+    "feat": "Tischsprung",
     "lane": 0
    },
    {
-    "d": 1852,
-    "impact": 10,
-    "air": 1.44,
-    "dist": 27.5,
-    "feat": "cliff"
+    "d": 1692,
+    "impact": 5.7,
+    "air": 0.58,
+    "dist": 14.7,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
    },
    {
-    "d": 1876,
-    "impact": 8.9,
-    "air": 1.03,
-    "dist": 21.4,
-    "feat": "cliff"
-   },
-   {
-    "d": 2466,
-    "impact": 2,
-    "air": 0.44,
-    "dist": 11.3,
+    "d": 1875,
+    "impact": 2.6,
+    "air": 0.28,
+    "dist": 7.3,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3271,
-    "impact": 15,
-    "air": 1.97,
-    "dist": 49.8,
+    "d": 2094,
+    "impact": 7,
+    "air": 1.87,
+    "dist": 37.7,
+    "feat": "cliff"
+   },
+   {
+    "d": 3015,
+    "impact": 8.6,
+    "air": 1.57,
+    "dist": 38.8,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 3108,
+    "impact": 3.3,
+    "air": 0.31,
+    "dist": 7.7,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3330,
-    "impact": 8.4,
-    "air": 1.42,
-    "dist": 25.2,
+    "d": 3285,
+    "impact": 7.9,
+    "air": 1.61,
+    "dist": 37.9,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 3533,
+    "impact": 6.4,
+    "air": 1.53,
+    "dist": 38.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3663,
+    "impact": 13.8,
+    "air": 2.82,
+    "dist": 65.8,
     "feat": "-",
     "lane": -1
    }
   ],
-  "topSpeed": 32.1086905768485,
+  "topSpeed": 35.96758716989134,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
-  "issues": [
-   "Zone 7: Waldkicker bei 2497 m verworfen (keine sichere Landung)",
-   "Zone 8: Big Air bei 2852 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 11: Kicker bei 3993 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 3991 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 3991 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 3991 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 3991 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 451,
+    "v": 26.1,
+    "vy": -4.2,
+    "x": 28
+   },
+   {
+    "d": 1366,
+    "v": 26,
+    "vy": -1,
+    "x": 52
+   },
+   {
+    "d": 1387,
+    "v": 26.3,
+    "vy": -6.2,
+    "x": 51
+   },
+   {
+    "d": 1678,
+    "v": 26.6,
+    "vy": -5.9,
+    "x": 51
+   },
+   {
+    "d": 1868,
+    "v": 27.3,
+    "vy": -5.5,
+    "x": 35
+   },
+   {
+    "d": 2057,
+    "v": 21.3,
+    "vy": -3.9,
+    "x": 36
+   },
+   {
+    "d": 2976,
+    "v": 25.6,
+    "vy": 2.4,
+    "x": 44
+   },
+   {
+    "d": 3100,
+    "v": 25.3,
+    "vy": -3.6,
+    "x": 38
+   },
+   {
+    "d": 3247,
+    "v": 24.5,
+    "vy": 2.6,
+    "x": 43
+   },
+   {
+    "d": 3498,
+    "v": 27,
+    "vy": -6.5,
+    "x": 18
+   },
+   {
+    "d": 3598,
+    "v": 26.8,
+    "vy": -7,
+    "x": -21
+   }
   ],
+  "issues": [],
   "features": 62,
-  "skipped": 2,
-  "zones": "S220 G373 S293 F128 P579 C400 B342 G340 B433 C260 B333 G416 C432 P493"
+  "skipped": 7,
+  "zones": "S220 G483 S353 F104 P699 C337 B377 G261 P613 C260 B391 G336 C325 P573"
  },
  {
   "seed": 22,
   "mode": "Quer-Slalom Hocke",
   "reached": 3800,
-  "time": 197.2,
+  "time": 193.6,
   "crashes": [],
   "landings": [
    {
-    "d": 422,
-    "impact": 5.3,
-    "air": 0.72,
-    "dist": 18,
-    "feat": "-",
-    "lane": -1
+    "d": 511,
+    "impact": 6.9,
+    "air": 1.14,
+    "dist": 27.5,
+    "feat": "Waldkicker",
+    "lane": 4
    },
    {
-    "d": 1374,
-    "impact": 6.1,
-    "air": 1.17,
-    "dist": 28.3,
-    "feat": "-",
-    "lane": -1
+    "d": 1405,
+    "impact": 12.9,
+    "air": 2.48,
+    "dist": 54.3,
+    "feat": "Tischsprung",
+    "lane": 0
    },
    {
-    "d": 1840,
-    "impact": 10,
-    "air": 1.37,
-    "dist": 23.4,
+    "d": 1453,
+    "impact": 6.2,
+    "air": 1.04,
+    "dist": 21.3,
+    "feat": "Tischsprung",
+    "lane": 0
+   },
+   {
+    "d": 2082,
+    "impact": 10.6,
+    "air": 1.48,
+    "dist": 26.1,
     "feat": "cliff"
    },
    {
-    "d": 2066,
-    "impact": 6.7,
-    "air": 0.46,
-    "dist": 10.2,
+    "d": 2099,
+    "impact": 6.4,
+    "air": 0.6,
+    "dist": 12.1,
+    "feat": "cliff"
+   },
+   {
+    "d": 3134,
+    "impact": 5.9,
+    "air": 0.88,
+    "dist": 20.8,
+    "feat": "Tischsprung",
+    "lane": 0
+   },
+   {
+    "d": 3512,
+    "impact": 10.8,
+    "air": 2.59,
+    "dist": 58.8,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2092,
-    "impact": 5.5,
-    "air": 1.01,
-    "dist": 23,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3247,
-    "impact": 15.9,
-    "air": 3.31,
-    "dist": 69.2,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3288,
-    "impact": 7,
-    "air": 1.25,
-    "dist": 28.5,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3334,
-    "impact": 5.8,
-    "air": 1.27,
-    "dist": 30.9,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3541,
-    "impact": 5.3,
-    "air": 1.32,
-    "dist": 32.7,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3660,
-    "impact": 3.5,
-    "air": 0.87,
-    "dist": 17.1,
+    "d": 3672,
+    "impact": 6.4,
+    "air": 1.39,
+    "dist": 32.9,
     "feat": "-",
     "lane": -1
    }
   ],
-  "topSpeed": 33.32851613246849,
+  "topSpeed": 30.81245696177649,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
-  "issues": [
-   "Zone 7: Waldkicker bei 2497 m verworfen (keine sichere Landung)",
-   "Zone 8: Big Air bei 2852 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 11: Kicker bei 3993 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 3991 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 3991 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 3991 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 3991 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 487,
+    "v": 24.8,
+    "vy": -1.5,
+    "x": -13
+   },
+   {
+    "d": 1359,
+    "v": 24.2,
+    "vy": 7.6,
+    "x": 8
+   },
+   {
+    "d": 1438,
+    "v": 21,
+    "vy": 2.4,
+    "x": -47
+   },
+   {
+    "d": 2056,
+    "v": 18.9,
+    "vy": -5.3,
+    "x": 98
+   },
+   {
+    "d": 2087,
+    "v": 22.2,
+    "vy": -8.5,
+    "x": 91
+   },
+   {
+    "d": 3117,
+    "v": 24,
+    "vy": 0,
+    "x": -6
+   },
+   {
+    "d": 3471,
+    "v": 24.3,
+    "vy": 0.1,
+    "x": -44
+   },
+   {
+    "d": 3640,
+    "v": 26,
+    "vy": -7.3,
+    "x": 13
+   }
   ],
+  "issues": [],
   "features": 62,
-  "skipped": 2,
-  "zones": "S220 G373 S293 F128 P579 C400 B342 G340 B433 C260 B333 G416 C432 P493"
+  "skipped": 7,
+  "zones": "S220 G483 S353 F104 P699 C337 B377 G261 P613 C260 B391 G336 C325 P573"
  },
  {
   "seed": 22,
   "mode": "Quer-Slalom aufrecht",
   "reached": 3800,
-  "time": 299.8,
+  "time": 281,
   "crashes": [],
   "landings": [
    {
-    "d": 1410,
-    "impact": 1.2,
+    "d": 1399,
+    "impact": 3.8,
+    "air": 0.63,
+    "dist": 11.1,
+    "feat": "Tischsprung",
+    "lane": 0
+   },
+   {
+    "d": 2063,
+    "impact": 10.4,
+    "air": 1.43,
+    "dist": 13,
+    "feat": "cliff"
+   },
+   {
+    "d": 2355,
+    "impact": 3,
+    "air": 0.64,
+    "dist": 10.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3147,
+    "impact": 6.9,
+    "air": 1.47,
+    "dist": 20.6,
+    "feat": "Tischsprung",
+    "lane": 0
+   },
+   {
+    "d": 3156,
+    "impact": 7.3,
+    "air": 0.54,
+    "dist": 7.6,
+    "feat": "Tischsprung",
+    "lane": 0
+   },
+   {
+    "d": 3548,
+    "impact": 14,
+    "air": 2.75,
+    "dist": 44.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3665,
+    "impact": 4.7,
     "air": 1.17,
-    "dist": 21,
-    "feat": "Step-up",
-    "lane": 0
-   },
-   {
-    "d": 1456,
-    "impact": 7.5,
-    "air": 1.32,
-    "dist": 23.9,
-    "feat": "Step-up",
-    "lane": 0
-   },
-   {
-    "d": 2563,
-    "impact": 5.2,
-    "air": 1.12,
-    "dist": 22,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2588,
-    "impact": 3.6,
-    "air": 0.68,
-    "dist": 12.4,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2824,
-    "impact": 6,
-    "air": 0.92,
-    "dist": 15,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 2868,
-    "impact": 4.1,
-    "air": 1.91,
-    "dist": 22.3,
-    "feat": "Big Air",
-    "lane": 0
-   },
-   {
-    "d": 2879,
-    "impact": 9.3,
-    "air": 0.8,
-    "dist": 10.5,
-    "feat": "Big Air",
-    "lane": 0
-   },
-   {
-    "d": 3342,
-    "impact": 13.6,
-    "air": 2.19,
-    "dist": 41.8,
+    "dist": 23.7,
     "feat": "-",
     "lane": -1
    }
   ],
-  "topSpeed": 33.530153643608834,
-  "stuck": 1,
+  "topSpeed": 29.101724364508332,
+  "stuck": 0,
   "hits": 0,
   "respawns": 0,
-  "stuckAt": [
+  "takeoffs": [
    {
-    "d": 1809,
-    "x": 89,
-    "zone": "cliff",
-    "pow": 0.58,
-    "sl": 0.22
+    "d": 1392,
+    "v": 17.8,
+    "vy": -0.3,
+    "x": 59
+   },
+   {
+    "d": 2054,
+    "v": 9.4,
+    "vy": -1.3,
+    "x": -59
+   },
+   {
+    "d": 2347,
+    "v": 16.4,
+    "vy": -2,
+    "x": 70
+   },
+   {
+    "d": 3131,
+    "v": 15.5,
+    "vy": 5.5,
+    "x": 6
+   },
+   {
+    "d": 3151,
+    "v": 14.7,
+    "vy": -3.4,
+    "x": -11
+   },
+   {
+    "d": 3504,
+    "v": 17.6,
+    "vy": -0.9,
+    "x": 21
+   },
+   {
+    "d": 3641,
+    "v": 22.2,
+    "vy": -6.6,
+    "x": 13
    }
   ],
-  "issues": [
-   "Zone 7: Waldkicker bei 2497 m verworfen (keine sichere Landung)",
-   "Zone 8: Big Air bei 2852 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 11: Kicker bei 3993 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 3991 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 3991 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 3991 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 3991 m verworfen (keine sichere Landung)"
-  ],
+  "issues": [],
   "features": 62,
-  "skipped": 2,
-  "zones": "S220 G373 S293 F128 P579 C400 B342 G340 B433 C260 B333 G416 C432 P493"
+  "skipped": 7,
+  "zones": "S220 G483 S353 F104 P699 C337 B377 G261 P613 C260 B391 G336 C325 P573"
  },
  {
   "seed": 29,
   "mode": "Frei -85 aufrecht",
   "reached": 3800,
-  "time": 216.5,
+  "time": 231.3,
   "crashes": [],
   "landings": [
    {
-    "d": 645,
-    "impact": 7.6,
-    "air": 1.52,
-    "dist": 30,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 787,
-    "impact": 5.5,
-    "air": 0.82,
-    "dist": 14.5,
+    "d": 865,
+    "impact": 6.6,
+    "air": 0.96,
+    "dist": 17.1,
     "feat": "cliff"
    },
    {
-    "d": 1311,
-    "impact": 7,
-    "air": 1.45,
-    "dist": 31.5,
+    "d": 2616,
+    "impact": 15.7,
+    "air": 2.54,
+    "dist": 25.6,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1825,
-    "impact": 6.5,
-    "air": 1.12,
-    "dist": 26,
+    "d": 2798,
+    "impact": 12.9,
+    "air": 2.26,
+    "dist": 44.9,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3038,
-    "impact": 5.6,
-    "air": 1.53,
-    "dist": 32.5,
+    "d": 2902,
+    "impact": 5.1,
+    "air": 1.22,
+    "dist": 19.5,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3476,
-    "impact": 5.9,
-    "air": 0.82,
-    "dist": 11.2,
-    "feat": "cliff"
+    "d": 3783,
+    "impact": 9.4,
+    "air": 1.77,
+    "dist": 38.9,
+    "feat": "-",
+    "lane": -1
    }
   ],
-  "topSpeed": 27.318562658315173,
+  "topSpeed": 29.990915052253523,
   "stuck": 1,
   "hits": 0,
   "respawns": 0,
@@ -1492,92 +1982,125 @@
     "sl": 0.24
    }
   ],
-  "issues": [
-   "Zone 6: Waldkicker bei 2163 m verworfen (keine sichere Landung)",
-   "Zone 6: Waldkicker bei 2163 m verworfen (keine sichere Landung)",
-   "Zone 6: Waldkicker bei 2163 m verworfen (keine sichere Landung)",
-   "Zone 6: Waldkicker bei 2163 m verworfen (keine sichere Landung)",
-   "Zone 9: Kicker bei 3062 m verworfen (keine sichere Landung)",
-   "Zone 9: Waldkicker bei 3063 m verworfen (keine sichere Landung)",
-   "Zone 9: Waldkicker bei 3063 m verworfen (keine sichere Landung)",
-   "Zone 9: Waldkicker bei 3063 m verworfen (keine sichere Landung)",
-   "Zone 9: Waldkicker bei 3063 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 848,
+    "v": 18.8,
+    "vy": -3.8,
+    "x": -82
+   },
+   {
+    "d": 2605,
+    "v": 10.7,
+    "vy": 1.3,
+    "x": -53
+   },
+   {
+    "d": 2753,
+    "v": 21.6,
+    "vy": -2.2,
+    "x": -19
+   },
+   {
+    "d": 2883,
+    "v": 17.2,
+    "vy": 5.3,
+    "x": -84
+   },
+   {
+    "d": 3744,
+    "v": 24.4,
+    "vy": -6.8,
+    "x": -82
+   }
   ],
-  "features": 53,
-  "skipped": 7,
-  "zones": "S220 C334 C381 S284 B381 C352 G353 S227 C316 G403 C369 P578 B377 C436"
+  "issues": [
+   "Zone 4: Step-down bei 1943 m verworfen (keine sichere Landung)"
+  ],
+  "features": 56,
+  "skipped": 1,
+  "zones": "S220 C417 C364 B439 P691 C448 C232 F104 G332 C395 S208 P476 G315 C276 C392"
  },
  {
   "seed": 29,
   "mode": "Frei +85 Hocke",
   "reached": 3800,
-  "time": 177.8,
+  "time": 185.7,
   "crashes": [],
   "landings": [
    {
-    "d": 455,
-    "impact": 7.7,
-    "air": 1.27,
-    "dist": 36.3,
-    "feat": "-",
-    "lane": -1
+    "d": 436,
+    "impact": 2.5,
+    "air": 0.52,
+    "dist": 13.2,
+    "feat": "Kicker",
+    "lane": 0
    },
    {
-    "d": 809,
-    "impact": 8.7,
-    "air": 1.81,
-    "dist": 35.1,
+    "d": 467,
+    "impact": 4.8,
+    "air": 0.53,
+    "dist": 13.3,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 877,
+    "impact": 0.9,
+    "air": 1.48,
+    "dist": 28.3,
     "feat": "cliff"
    },
    {
-    "d": 1279,
-    "impact": 2.7,
-    "air": 0.44,
-    "dist": 12.4,
+    "d": 1084,
+    "impact": 4.3,
+    "air": 0.76,
+    "dist": 19.4,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1424,
-    "impact": 5.5,
-    "air": 0.85,
-    "dist": 23.8,
+    "d": 1102,
+    "impact": 2.6,
+    "air": 0.53,
+    "dist": 13.7,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1831,
-    "impact": 8.3,
-    "air": 1.41,
-    "dist": 40.3,
+    "d": 2337,
+    "impact": 4.4,
+    "air": 0.41,
+    "dist": 10.3,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 2377,
+    "impact": 3,
+    "air": 0.43,
+    "dist": 10.9,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 2614,
+    "impact": 20,
+    "air": 2.94,
+    "dist": 44.9,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2144,
-    "impact": 8.4,
-    "air": 1.77,
-    "dist": 46.4,
+    "d": 2890,
+    "impact": 2.5,
+    "air": 0.38,
+    "dist": 9.6,
     "feat": "-",
     "lane": -1
-   },
-   {
-    "d": 3048,
-    "impact": 6.2,
-    "air": 1.62,
-    "dist": 44.8,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3484,
-    "impact": 6,
-    "air": 1.09,
-    "dist": 22.5,
-    "feat": "cliff"
    }
   ],
-  "topSpeed": 33.404390695977916,
+  "topSpeed": 30.406881585585037,
   "stuck": 1,
   "hits": 0,
   "respawns": 0,
@@ -1590,368 +2113,553 @@
     "sl": 0.24
    }
   ],
-  "issues": [
-   "Zone 6: Waldkicker bei 2163 m verworfen (keine sichere Landung)",
-   "Zone 6: Waldkicker bei 2163 m verworfen (keine sichere Landung)",
-   "Zone 6: Waldkicker bei 2163 m verworfen (keine sichere Landung)",
-   "Zone 6: Waldkicker bei 2163 m verworfen (keine sichere Landung)",
-   "Zone 9: Kicker bei 3062 m verworfen (keine sichere Landung)",
-   "Zone 9: Waldkicker bei 3063 m verworfen (keine sichere Landung)",
-   "Zone 9: Waldkicker bei 3063 m verworfen (keine sichere Landung)",
-   "Zone 9: Waldkicker bei 3063 m verworfen (keine sichere Landung)",
-   "Zone 9: Waldkicker bei 3063 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 423,
+    "v": 26.1,
+    "vy": -3,
+    "x": 73
+   },
+   {
+    "d": 454,
+    "v": 26.4,
+    "vy": -6.4,
+    "x": 72
+   },
+   {
+    "d": 850,
+    "v": 19.9,
+    "vy": -3.4,
+    "x": 91
+   },
+   {
+    "d": 1065,
+    "v": 26.4,
+    "vy": -4.4,
+    "x": 75
+   },
+   {
+    "d": 1088,
+    "v": 27.3,
+    "vy": -8.4,
+    "x": 76
+   },
+   {
+    "d": 2327,
+    "v": 25.8,
+    "vy": -4.7,
+    "x": 89
+   },
+   {
+    "d": 2366,
+    "v": 26.3,
+    "vy": -5,
+    "x": 90
+   },
+   {
+    "d": 2605,
+    "v": 16.2,
+    "vy": 2.5,
+    "x": 58
+   },
+   {
+    "d": 2882,
+    "v": 25.9,
+    "vy": -1.4,
+    "x": 70
+   }
   ],
-  "features": 53,
-  "skipped": 7,
-  "zones": "S220 C334 C381 S284 B381 C352 G353 S227 C316 G403 C369 P578 B377 C436"
+  "issues": [
+   "Zone 4: Step-down bei 1943 m verworfen (keine sichere Landung)"
+  ],
+  "features": 56,
+  "skipped": 1,
+  "zones": "S220 C417 C364 B439 P691 C448 C232 F104 G332 C395 S208 P476 G315 C276 C392"
  },
  {
   "seed": 29,
   "mode": "Frei +40 Hocke",
   "reached": 3800,
-  "time": 164.3,
+  "time": 168.5,
   "crashes": [],
   "landings": [
    {
-    "d": 805,
-    "impact": 6.7,
-    "air": 1.65,
-    "dist": 31.6,
+    "d": 875,
+    "impact": 5.9,
+    "air": 1.4,
+    "dist": 26.5,
     "feat": "cliff"
    },
    {
-    "d": 1266,
-    "impact": 4.1,
-    "air": 1.22,
-    "dist": 32.2,
+    "d": 1657,
+    "impact": 6.8,
+    "air": 1.12,
+    "dist": 27.8,
+    "feat": "Tischsprung",
+    "lane": 0
+   },
+   {
+    "d": 1821,
+    "impact": 5.7,
+    "air": 0.85,
+    "dist": 19.6,
+    "feat": "Step-up",
+    "lane": 0
+   },
+   {
+    "d": 2699,
+    "impact": 14,
+    "air": 3.04,
+    "dist": 70,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1580,
-    "impact": 3.6,
-    "air": 0.22,
-    "dist": 5.3,
+    "d": 2818,
+    "impact": 18.5,
+    "air": 2.95,
+    "dist": 65.5,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2001,
-    "impact": 1.4,
-    "air": 0.5,
-    "dist": 13.1,
+    "d": 2912,
+    "impact": 2.1,
+    "air": 0.43,
+    "dist": 10,
     "feat": "-",
     "lane": -1
-   },
-   {
-    "d": 2138,
-    "impact": 12.1,
-    "air": 2.46,
-    "dist": 61.5,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2430,
-    "impact": 3,
-    "air": 0.91,
-    "dist": 22.5,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2703,
-    "impact": 2.4,
-    "air": 1.36,
-    "dist": 34.5,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 2845,
-    "impact": 2,
-    "air": 0.49,
-    "dist": 13.3,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3165,
-    "impact": 4,
-    "air": 0.93,
-    "dist": 24.8,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3487,
-    "impact": 6.1,
-    "air": 1.15,
-    "dist": 22.2,
-    "feat": "cliff"
    }
   ],
-  "topSpeed": 33.03040726309705,
+  "topSpeed": 33.38502287406635,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
-  "issues": [
-   "Zone 6: Waldkicker bei 2163 m verworfen (keine sichere Landung)",
-   "Zone 6: Waldkicker bei 2163 m verworfen (keine sichere Landung)",
-   "Zone 6: Waldkicker bei 2163 m verworfen (keine sichere Landung)",
-   "Zone 6: Waldkicker bei 2163 m verworfen (keine sichere Landung)",
-   "Zone 9: Kicker bei 3062 m verworfen (keine sichere Landung)",
-   "Zone 9: Waldkicker bei 3063 m verworfen (keine sichere Landung)",
-   "Zone 9: Waldkicker bei 3063 m verworfen (keine sichere Landung)",
-   "Zone 9: Waldkicker bei 3063 m verworfen (keine sichere Landung)",
-   "Zone 9: Waldkicker bei 3063 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 849,
+    "v": 19.7,
+    "vy": -3.5,
+    "x": 46
+   },
+   {
+    "d": 1630,
+    "v": 25.4,
+    "vy": 0.3,
+    "x": 48
+   },
+   {
+    "d": 1802,
+    "v": 23.5,
+    "vy": -1.1,
+    "x": 26
+   },
+   {
+    "d": 2638,
+    "v": 24.9,
+    "vy": 0.5,
+    "x": 21
+   },
+   {
+    "d": 2753,
+    "v": 24,
+    "vy": -1.3,
+    "x": -23
+   },
+   {
+    "d": 2905,
+    "v": 23.7,
+    "vy": -1.1,
+    "x": 7
+   }
   ],
-  "features": 53,
-  "skipped": 7,
-  "zones": "S220 C334 C381 S284 B381 C352 G353 S227 C316 G403 C369 P578 B377 C436"
+  "issues": [
+   "Zone 4: Step-down bei 1943 m verworfen (keine sichere Landung)"
+  ],
+  "features": 56,
+  "skipped": 1,
+  "zones": "S220 C417 C364 B439 P691 C448 C232 F104 G332 C395 S208 P476 G315 C276 C392"
  },
  {
   "seed": 29,
   "mode": "Quer-Slalom Hocke",
   "reached": 3800,
-  "time": 185.9,
+  "time": 188.3,
   "crashes": [],
   "landings": [
    {
-    "d": 471,
-    "impact": 2.1,
-    "air": 0.46,
+    "d": 391,
+    "impact": 3.8,
+    "air": 0.93,
+    "dist": 23.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 466,
+    "impact": 2.3,
+    "air": 0.47,
     "dist": 11.4,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 877,
+    "impact": 5.9,
+    "air": 1.52,
+    "dist": 31.5,
+    "feat": "cliff"
+   },
+   {
+    "d": 1414,
+    "impact": 3.5,
+    "air": 0.13,
+    "dist": 3.2,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 786,
-    "impact": 6.5,
-    "air": 0.69,
-    "dist": 12.9,
-    "feat": "cliff"
+    "d": 1828,
+    "impact": 9.8,
+    "air": 1.37,
+    "dist": 29.3,
+    "feat": "Step-up",
+    "lane": 0
    },
    {
-    "d": 1264,
+    "d": 2266,
+    "impact": 8,
+    "air": 1.83,
+    "dist": 40,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2338,
+    "impact": 5.4,
+    "air": 0.9,
+    "dist": 20.2,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 2888,
+    "impact": 2.7,
+    "air": 0.38,
+    "dist": 8.1,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3155,
     "impact": 5.6,
-    "air": 0.49,
-    "dist": 12,
+    "air": 1.02,
+    "dist": 25.5,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1286,
-    "impact": 3,
+    "d": 3557,
+    "impact": 4.3,
     "air": 0.91,
-    "dist": 22.2,
+    "dist": 22.7,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 3623,
+    "impact": 1.1,
+    "air": 0.28,
+    "dist": 6.7,
     "feat": "-",
     "lane": -1
-   },
-   {
-    "d": 1903,
-    "impact": 2.1,
-    "air": 0.44,
-    "dist": 9.9,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2149,
-    "impact": 11.5,
-    "air": 2.11,
-    "dist": 49.9,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2301,
-    "impact": 1.6,
-    "air": 0.31,
-    "dist": 7.8,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2706,
-    "impact": 10.8,
-    "air": 2.91,
-    "dist": 67.8,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 2738,
-    "impact": 4.6,
-    "air": 0.57,
-    "dist": 14.3,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 3490,
-    "impact": 3.9,
-    "air": 1.44,
-    "dist": 29.8,
-    "feat": "cliff"
    }
   ],
-  "topSpeed": 31.506167568559707,
+  "topSpeed": 27.25112082076368,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
-  "issues": [
-   "Zone 6: Waldkicker bei 2163 m verworfen (keine sichere Landung)",
-   "Zone 6: Waldkicker bei 2163 m verworfen (keine sichere Landung)",
-   "Zone 6: Waldkicker bei 2163 m verworfen (keine sichere Landung)",
-   "Zone 6: Waldkicker bei 2163 m verworfen (keine sichere Landung)",
-   "Zone 9: Kicker bei 3062 m verworfen (keine sichere Landung)",
-   "Zone 9: Waldkicker bei 3063 m verworfen (keine sichere Landung)",
-   "Zone 9: Waldkicker bei 3063 m verworfen (keine sichere Landung)",
-   "Zone 9: Waldkicker bei 3063 m verworfen (keine sichere Landung)",
-   "Zone 9: Waldkicker bei 3063 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 371,
+    "v": 25.4,
+    "vy": -1.3,
+    "x": 66
+   },
+   {
+    "d": 455,
+    "v": 24.8,
+    "vy": -2.6,
+    "x": 0
+   },
+   {
+    "d": 849,
+    "v": 21.9,
+    "vy": -4.4,
+    "x": -37
+   },
+   {
+    "d": 1411,
+    "v": 26,
+    "vy": -8.8,
+    "x": -58
+   },
+   {
+    "d": 1806,
+    "v": 22.2,
+    "vy": 2.5,
+    "x": 0
+   },
+   {
+    "d": 2232,
+    "v": 22.8,
+    "vy": 3,
+    "x": 1
+   },
+   {
+    "d": 2322,
+    "v": 22.9,
+    "vy": -0.8,
+    "x": -60
+   },
+   {
+    "d": 2882,
+    "v": 21.4,
+    "vy": -0.6,
+    "x": 87
+   },
+   {
+    "d": 3133,
+    "v": 25.5,
+    "vy": 0.6,
+    "x": -20
+   },
+   {
+    "d": 3539,
+    "v": 25.8,
+    "vy": -2.7,
+    "x": -9
+   },
+   {
+    "d": 3618,
+    "v": 25.1,
+    "vy": -4.7,
+    "x": 47
+   }
   ],
-  "features": 53,
-  "skipped": 7,
-  "zones": "S220 C334 C381 S284 B381 C352 G353 S227 C316 G403 C369 P578 B377 C436"
+  "issues": [
+   "Zone 4: Step-down bei 1943 m verworfen (keine sichere Landung)"
+  ],
+  "features": 56,
+  "skipped": 1,
+  "zones": "S220 C417 C364 B439 P691 C448 C232 F104 G332 C395 S208 P476 G315 C276 C392"
  },
  {
   "seed": 29,
   "mode": "Quer-Slalom aufrecht",
   "reached": 3800,
-  "time": 294.9,
+  "time": 292.8,
   "crashes": [],
   "landings": [
    {
-    "d": 552,
-    "impact": 3.6,
-    "air": 0.2,
-    "dist": 3.9,
+    "d": 257,
+    "impact": 3,
+    "air": 0.63,
+    "dist": 12.8,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 786,
-    "impact": 11.3,
-    "air": 1.55,
-    "dist": 14.5,
+    "d": 277,
+    "impact": 3.2,
+    "air": 0.8,
+    "dist": 16.4,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 522,
+    "impact": 1,
+    "air": 1.24,
+    "dist": 18.4,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 2
+   },
+   {
+    "d": 859,
+    "impact": 11.9,
+    "air": 1.36,
+    "dist": 13.9,
     "feat": "cliff"
    },
    {
-    "d": 1746,
-    "impact": 5.1,
-    "air": 1.02,
-    "dist": 17.9,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 1820,
-    "impact": 5.6,
-    "air": 0.93,
-    "dist": 17,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2105,
-    "impact": 6.6,
-    "air": 1.89,
-    "dist": 28.8,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2863,
+    "d": 1208,
     "impact": 2,
-    "air": 0.53,
-    "dist": 11.1,
+    "air": 0.35,
+    "dist": 6.3,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3719,
-    "impact": 4.6,
-    "air": 0.66,
-    "dist": 10.1,
+    "d": 1448,
+    "impact": 3.1,
+    "air": 0.17,
+    "dist": 3.7,
     "feat": "-",
     "lane": -1
+   },
+   {
+    "d": 1784,
+    "impact": 5.6,
+    "air": 0.62,
+    "dist": 8.4,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2004,
+    "impact": 6.1,
+    "air": 1.1,
+    "dist": 14.7,
+    "feat": "Spine (links)",
+    "lane": 0
+   },
+   {
+    "d": 2671,
+    "impact": 7,
+    "air": 1.55,
+    "dist": 31.4,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2796,
+    "impact": 13.1,
+    "air": 2.22,
+    "dist": 41.1,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3504,
+    "impact": 3.1,
+    "air": 1.26,
+    "dist": 21.4,
+    "feat": "Kicker",
+    "lane": 0
    }
   ],
-  "topSpeed": 23.94721941952797,
+  "topSpeed": 28.060813245738387,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
-  "issues": [
-   "Zone 6: Waldkicker bei 2163 m verworfen (keine sichere Landung)",
-   "Zone 6: Waldkicker bei 2163 m verworfen (keine sichere Landung)",
-   "Zone 6: Waldkicker bei 2163 m verworfen (keine sichere Landung)",
-   "Zone 6: Waldkicker bei 2163 m verworfen (keine sichere Landung)",
-   "Zone 9: Kicker bei 3062 m verworfen (keine sichere Landung)",
-   "Zone 9: Waldkicker bei 3063 m verworfen (keine sichere Landung)",
-   "Zone 9: Waldkicker bei 3063 m verworfen (keine sichere Landung)",
-   "Zone 9: Waldkicker bei 3063 m verworfen (keine sichere Landung)",
-   "Zone 9: Waldkicker bei 3063 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 246,
+    "v": 21,
+    "vy": -2.4,
+    "x": 67
+   },
+   {
+    "d": 264,
+    "v": 21,
+    "vy": 0.1,
+    "x": 57
+   },
+   {
+    "d": 509,
+    "v": 15.5,
+    "vy": 2.7,
+    "x": -91
+   },
+   {
+    "d": 851,
+    "v": 10.7,
+    "vy": -1.8,
+    "x": 24
+   },
+   {
+    "d": 1203,
+    "v": 19.1,
+    "vy": -5.6,
+    "x": 62
+   },
+   {
+    "d": 1445,
+    "v": 21.4,
+    "vy": -3.8,
+    "x": -11
+   },
+   {
+    "d": 1778,
+    "v": 13.8,
+    "vy": -0.7,
+    "x": 42
+   },
+   {
+    "d": 1994,
+    "v": 13.9,
+    "vy": 2.3,
+    "x": 15
+   },
+   {
+    "d": 2639,
+    "v": 21.6,
+    "vy": -3.8,
+    "x": -16
+   },
+   {
+    "d": 2755,
+    "v": 20.1,
+    "vy": -2.6,
+    "x": -20
+   },
+   {
+    "d": 3486,
+    "v": 17.7,
+    "vy": 2,
+    "x": 70
+   }
   ],
-  "features": 53,
-  "skipped": 7,
-  "zones": "S220 C334 C381 S284 B381 C352 G353 S227 C316 G403 C369 P578 B377 C436"
+  "issues": [
+   "Zone 4: Step-down bei 1943 m verworfen (keine sichere Landung)"
+  ],
+  "features": 56,
+  "skipped": 1,
+  "zones": "S220 C417 C364 B439 P691 C448 C232 F104 G332 C395 S208 P476 G315 C276 C392"
  },
  {
   "seed": 36,
   "mode": "Frei -85 aufrecht",
   "reached": 3800,
-  "time": 231.6,
+  "time": 237.7,
   "crashes": [],
   "landings": [
    {
-    "d": 854,
-    "impact": 10.9,
-    "air": 1.62,
-    "dist": 19.6,
+    "d": 891,
+    "impact": 10.5,
+    "air": 1.49,
+    "dist": 15.6,
     "feat": "cliff"
    },
    {
-    "d": 1300,
-    "impact": 4.3,
-    "air": 0.27,
-    "dist": 5.9,
+    "d": 1132,
+    "impact": 4.8,
+    "air": 1.12,
+    "dist": 14.5,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1331,
-    "impact": 4.2,
-    "air": 0.67,
-    "dist": 15.5,
+    "d": 3560,
+    "impact": 14.4,
+    "air": 2.52,
+    "dist": 29.1,
     "feat": "-",
     "lane": -1
-   },
-   {
-    "d": 2435,
-    "impact": 1.7,
-    "air": 0.23,
-    "dist": 4.8,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2631,
-    "impact": 6.2,
-    "air": 1.48,
-    "dist": 32.5,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3618,
-    "impact": 8,
-    "air": 1.11,
-    "dist": 13.2,
-    "feat": "cliff"
    }
   ],
-  "topSpeed": 26.685296440733644,
+  "topSpeed": 25.552888117567928,
   "stuck": 1,
   "hits": 0,
   "respawns": 0,
@@ -1964,75 +2672,73 @@
     "sl": 0.24
    }
   ],
-  "issues": [
-   "Zone 1: Waldkicker bei 438 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 438 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 438 m verworfen (keine sichere Landung)",
-   "Zone 4: Kicker bei 1304 m verworfen (keine sichere Landung)",
-   "Zone 4: Kicker (Seitenlinie) bei 1291 m verworfen (keine sichere Landung)",
-   "Zone 5: Big Air bei 1635 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 10: Big Air bei 3060 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 15: Big Air bei 4772 m landet bei Höchsttempo hart (19.9 m/s)"
+  "takeoffs": [
+   {
+    "d": 876,
+    "v": 11,
+    "vy": -2.1,
+    "x": -90
+   },
+   {
+    "d": 1117,
+    "v": 13.8,
+    "vy": 4.1,
+    "x": -81
+   },
+   {
+    "d": 3549,
+    "v": 12.3,
+    "vy": 2.1,
+    "x": -46
+   }
   ],
-  "features": 40,
-  "skipped": 2,
-  "zones": "S220 G375 C413 F135 C294 B474 F159 S290 F118 B302 B480 F126 C370 S295 P499 B463"
+  "issues": [
+   "Zone 10: Big Air bei 3304 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 42,
+  "skipped": 7,
+  "zones": "S220 G426 C400 F109 C355 P650 S232 F167 S179 G262 B527 C222 P515 S267 F134 C243 F157"
  },
  {
   "seed": 36,
   "mode": "Frei +85 Hocke",
   "reached": 3800,
-  "time": 181.2,
+  "time": 187.5,
   "crashes": [],
   "landings": [
    {
-    "d": 374,
-    "impact": 5.1,
-    "air": 1.23,
-    "dist": 31.2,
+    "d": 400,
+    "impact": 3.8,
+    "air": 0.64,
+    "dist": 16,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 868,
-    "impact": 4.4,
-    "air": 1.71,
-    "dist": 35.8,
+    "d": 913,
+    "impact": 7.7,
+    "air": 1.82,
+    "dist": 33.9,
     "feat": "cliff"
    },
    {
-    "d": 2216,
-    "impact": 5,
-    "air": 1.06,
-    "dist": 26.8,
+    "d": 1126,
+    "impact": 2.8,
+    "air": 0.47,
+    "dist": 9.7,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2458,
-    "impact": 3.5,
-    "air": 1.04,
-    "dist": 27.1,
+    "d": 3570,
+    "impact": 17.5,
+    "air": 3.02,
+    "dist": 47.9,
     "feat": "-",
     "lane": -1
-   },
-   {
-    "d": 2585,
-    "impact": 5.1,
-    "air": 1.18,
-    "dist": 30.2,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3621,
-    "impact": 6.3,
-    "air": 1.09,
-    "dist": 20.8,
-    "feat": "cliff"
    }
   ],
-  "topSpeed": 31.786840700015965,
+  "topSpeed": 31.43425386612786,
   "stuck": 1,
   "hits": 0,
   "respawns": 0,
@@ -2045,322 +2751,382 @@
     "sl": 0.24
    }
   ],
-  "issues": [
-   "Zone 1: Waldkicker bei 438 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 438 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 438 m verworfen (keine sichere Landung)",
-   "Zone 4: Kicker bei 1304 m verworfen (keine sichere Landung)",
-   "Zone 4: Kicker (Seitenlinie) bei 1291 m verworfen (keine sichere Landung)",
-   "Zone 5: Big Air bei 1635 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 10: Big Air bei 3060 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 15: Big Air bei 4772 m landet bei Höchsttempo hart (19.9 m/s)"
+  "takeoffs": [
+   {
+    "d": 384,
+    "v": 25.7,
+    "vy": -4.7,
+    "x": 81
+   },
+   {
+    "d": 880,
+    "v": 19.6,
+    "vy": -3.2,
+    "x": 79
+   },
+   {
+    "d": 1117,
+    "v": 21.1,
+    "vy": -2.5,
+    "x": 92
+   },
+   {
+    "d": 3549,
+    "v": 17.1,
+    "vy": 3.8,
+    "x": 48
+   }
   ],
-  "features": 40,
-  "skipped": 2,
-  "zones": "S220 G375 C413 F135 C294 B474 F159 S290 F118 B302 B480 F126 C370 S295 P499 B463"
+  "issues": [
+   "Zone 10: Big Air bei 3304 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 42,
+  "skipped": 7,
+  "zones": "S220 G426 C400 F109 C355 P650 S232 F167 S179 G262 B527 C222 P515 S267 F134 C243 F157"
  },
  {
   "seed": 36,
   "mode": "Frei +40 Hocke",
   "reached": 3800,
-  "time": 164,
+  "time": 164.9,
   "crashes": [],
   "landings": [
    {
-    "d": 378,
-    "impact": 5.5,
-    "air": 1.29,
-    "dist": 33.4,
+    "d": 424,
+    "impact": 5.2,
+    "air": 0.98,
+    "dist": 25.4,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 867,
-    "impact": 4.9,
-    "air": 1.67,
-    "dist": 34.3,
+    "d": 905,
+    "impact": 8.3,
+    "air": 1.68,
+    "dist": 32.4,
     "feat": "cliff"
    },
    {
-    "d": 1596,
-    "impact": 5.6,
-    "air": 0.5,
-    "dist": 12.4,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
+    "d": 1123,
+    "impact": 2.1,
+    "air": 0.31,
+    "dist": 6.4,
+    "feat": "-",
+    "lane": -1
    },
    {
-    "d": 2943,
-    "impact": 8.6,
-    "air": 1.53,
-    "dist": 39.6,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 3624,
-    "impact": 7.1,
-    "air": 1.09,
-    "dist": 20.3,
-    "feat": "cliff"
-   },
-   {
-    "d": 3643,
+    "d": 1224,
     "impact": 6.7,
-    "air": 0.8,
-    "dist": 15.7,
-    "feat": "cliff"
+    "air": 1.37,
+    "dist": 30,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1309,
+    "impact": 8.9,
+    "air": 1.72,
+    "dist": 41.8,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 3160,
+    "impact": 8.2,
+    "air": 1.5,
+    "dist": 36.7,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
    }
   ],
-  "topSpeed": 30.00469507177925,
+  "topSpeed": 29.12008597329418,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
-  "issues": [
-   "Zone 1: Waldkicker bei 438 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 438 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 438 m verworfen (keine sichere Landung)",
-   "Zone 4: Kicker bei 1304 m verworfen (keine sichere Landung)",
-   "Zone 4: Kicker (Seitenlinie) bei 1291 m verworfen (keine sichere Landung)",
-   "Zone 5: Big Air bei 1635 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 10: Big Air bei 3060 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 15: Big Air bei 4772 m landet bei Höchsttempo hart (19.9 m/s)"
+  "takeoffs": [
+   {
+    "d": 399,
+    "v": 26.6,
+    "vy": -3.3,
+    "x": 44
+   },
+   {
+    "d": 874,
+    "v": 20,
+    "vy": -2.8,
+    "x": 34
+   },
+   {
+    "d": 1117,
+    "v": 21.2,
+    "vy": -2.5,
+    "x": 46
+   },
+   {
+    "d": 1194,
+    "v": 22.6,
+    "vy": -0.3,
+    "x": 43
+   },
+   {
+    "d": 1268,
+    "v": 25.3,
+    "vy": -0.3,
+    "x": 51
+   },
+   {
+    "d": 3124,
+    "v": 25.4,
+    "vy": 2.2,
+    "x": 33
+   }
   ],
-  "features": 40,
-  "skipped": 2,
-  "zones": "S220 G375 C413 F135 C294 B474 F159 S290 F118 B302 B480 F126 C370 S295 P499 B463"
+  "issues": [
+   "Zone 10: Big Air bei 3304 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 42,
+  "skipped": 7,
+  "zones": "S220 G426 C400 F109 C355 P650 S232 F167 S179 G262 B527 C222 P515 S267 F134 C243 F157"
  },
  {
   "seed": 36,
   "mode": "Quer-Slalom Hocke",
   "reached": 3800,
-  "time": 199.5,
+  "time": 196.8,
   "crashes": [],
   "landings": [
    {
-    "d": 367,
-    "impact": 5.2,
-    "air": 0.92,
-    "dist": 21.6,
+    "d": 436,
+    "impact": 5,
+    "air": 1.02,
+    "dist": 25.3,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 839,
-    "impact": 1.3,
-    "air": 0.34,
-    "dist": 7.2,
+    "d": 898,
+    "impact": 8.2,
+    "air": 1.46,
+    "dist": 23.8,
     "feat": "cliff"
    },
    {
-    "d": 884,
-    "impact": 6.1,
-    "air": 0.91,
-    "dist": 21.7,
-    "feat": "cliff"
-   },
-   {
-    "d": 1371,
-    "impact": 2.6,
-    "air": 0.59,
-    "dist": 14.6,
+    "d": 1124,
+    "impact": 3.1,
+    "air": 0.44,
+    "dist": 6.9,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2437,
-    "impact": 1.8,
-    "air": 0.3,
-    "dist": 7.1,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2756,
-    "impact": 4,
-    "air": 1.07,
-    "dist": 24.2,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3171,
-    "impact": 14,
-    "air": 3.42,
-    "dist": 77.7,
-    "feat": "Big Air",
+    "d": 1318,
+    "impact": 9.2,
+    "air": 2.16,
+    "dist": 47.8,
+    "feat": "Kicker",
     "lane": 0
    },
    {
-    "d": 3615,
-    "impact": 6.7,
-    "air": 1.04,
-    "dist": 15.6,
-    "feat": "cliff"
+    "d": 1413,
+    "impact": 11.2,
+    "air": 1.83,
+    "dist": 38.6,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 3752,
+    "impact": 19.9,
+    "air": 3.15,
+    "dist": 68.4,
+    "feat": "-",
+    "lane": -1
    }
   ],
-  "topSpeed": 33.78355489982881,
+  "topSpeed": 35.019430495311674,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
-  "issues": [
-   "Zone 1: Waldkicker bei 438 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 438 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 438 m verworfen (keine sichere Landung)",
-   "Zone 4: Kicker bei 1304 m verworfen (keine sichere Landung)",
-   "Zone 4: Kicker (Seitenlinie) bei 1291 m verworfen (keine sichere Landung)",
-   "Zone 5: Big Air bei 1635 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 10: Big Air bei 3060 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 15: Big Air bei 4772 m landet bei Höchsttempo hart (19.9 m/s)"
+  "takeoffs": [
+   {
+    "d": 415,
+    "v": 25.7,
+    "vy": -2.2,
+    "x": 45
+   },
+   {
+    "d": 882,
+    "v": 17,
+    "vy": -2.9,
+    "x": -25
+   },
+   {
+    "d": 1117,
+    "v": 15.8,
+    "vy": -2,
+    "x": 110
+   },
+   {
+    "d": 1278,
+    "v": 23.5,
+    "vy": 4.1,
+    "x": 62
+   },
+   {
+    "d": 1381,
+    "v": 22.1,
+    "vy": 3.3,
+    "x": -21
+   },
+   {
+    "d": 3683,
+    "v": 24.3,
+    "vy": -3.3,
+    "x": 24
+   }
   ],
-  "features": 40,
-  "skipped": 2,
-  "zones": "S220 G375 C413 F135 C294 B474 F159 S290 F118 B302 B480 F126 C370 S295 P499 B463"
+  "issues": [
+   "Zone 10: Big Air bei 3304 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 42,
+  "skipped": 7,
+  "zones": "S220 G426 C400 F109 C355 P650 S232 F167 S179 G262 B527 C222 P515 S267 F134 C243 F157"
  },
  {
   "seed": 36,
   "mode": "Quer-Slalom aufrecht",
   "reached": 3800,
-  "time": 296.4,
+  "time": 277.5,
   "crashes": [],
   "landings": [
    {
-    "d": 360,
-    "impact": 6.4,
-    "air": 1.76,
-    "dist": 35.3,
+    "d": 889,
+    "impact": 6.7,
+    "air": 1,
+    "dist": 9.7,
+    "feat": "cliff"
+   },
+   {
+    "d": 1463,
+    "impact": 4.2,
+    "air": 0.85,
+    "dist": 15.3,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 846,
-    "impact": 10.1,
-    "air": 1.51,
-    "dist": 17.2,
-    "feat": "cliff"
+    "d": 1689,
+    "impact": 2.7,
+    "air": 0.77,
+    "dist": 13.4,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
    },
    {
-    "d": 1442,
-    "impact": 2.2,
-    "air": 0.43,
-    "dist": 7.9,
+    "d": 2855,
+    "impact": 4.8,
+    "air": 1.12,
+    "dist": 21.2,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1747,
-    "impact": 11.1,
-    "air": 2.42,
-    "dist": 49.2,
-    "feat": "Big Air",
-    "lane": 0
+    "d": 3569,
+    "impact": 14,
+    "air": 2.66,
+    "dist": 31.7,
+    "feat": "-",
+    "lane": -1
    },
    {
-    "d": 3179,
-    "impact": 12.7,
-    "air": 2.86,
-    "dist": 56.4,
-    "feat": "Big Air",
-    "lane": 0
-   },
-   {
-    "d": 3608,
-    "impact": 7.2,
-    "air": 0.96,
-    "dist": 8.1,
-    "feat": "cliff"
+    "d": 3728,
+    "impact": 15.9,
+    "air": 2.39,
+    "dist": 43.5,
+    "feat": "-",
+    "lane": -1
    }
   ],
-  "topSpeed": 29.531184129604004,
+  "topSpeed": 32.013002484347815,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
-  "issues": [
-   "Zone 1: Waldkicker bei 438 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 438 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 438 m verworfen (keine sichere Landung)",
-   "Zone 4: Kicker bei 1304 m verworfen (keine sichere Landung)",
-   "Zone 4: Kicker (Seitenlinie) bei 1291 m verworfen (keine sichere Landung)",
-   "Zone 5: Big Air bei 1635 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 10: Big Air bei 3060 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 15: Big Air bei 4772 m landet bei Höchsttempo hart (19.9 m/s)"
+  "takeoffs": [
+   {
+    "d": 884,
+    "v": 10,
+    "vy": -1.3,
+    "x": -21
+   },
+   {
+    "d": 1451,
+    "v": 18.5,
+    "vy": 0.6,
+    "x": -19
+   },
+   {
+    "d": 1677,
+    "v": 17.6,
+    "vy": 1.5,
+    "x": -38
+   },
+   {
+    "d": 2842,
+    "v": 19.6,
+    "vy": -1.7,
+    "x": -16
+   },
+   {
+    "d": 3549,
+    "v": 12.9,
+    "vy": 2.6,
+    "x": 44
+   },
+   {
+    "d": 3685,
+    "v": 21.2,
+    "vy": -7.5,
+    "x": 24
+   }
   ],
-  "features": 40,
-  "skipped": 2,
-  "zones": "S220 G375 C413 F135 C294 B474 F159 S290 F118 B302 B480 F126 C370 S295 P499 B463"
+  "issues": [
+   "Zone 10: Big Air bei 3304 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 42,
+  "skipped": 7,
+  "zones": "S220 G426 C400 F109 C355 P650 S232 F167 S179 G262 B527 C222 P515 S267 F134 C243 F157"
  },
  {
   "seed": 43,
   "mode": "Frei -85 aufrecht",
   "reached": 3800,
-  "time": 226.7,
+  "time": 227.3,
   "crashes": [],
   "landings": [
    {
-    "d": 1485,
-    "impact": 7,
-    "air": 1.53,
-    "dist": 29.5,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 1883,
-    "impact": 8.3,
-    "air": 1.35,
-    "dist": 31.1,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 2277,
-    "impact": 10.2,
-    "air": 1.52,
-    "dist": 18.8,
+    "d": 2282,
+    "impact": 9.4,
+    "air": 1.48,
+    "dist": 18.6,
     "feat": "cliff"
    },
    {
-    "d": 2921,
-    "impact": 4.1,
-    "air": 0.72,
-    "dist": 16.8,
-    "feat": "-",
-    "lane": -1
+    "d": 3226,
+    "impact": 10.3,
+    "air": 1.56,
+    "dist": 22.3,
+    "feat": "cliff"
    },
    {
-    "d": 3050,
-    "impact": 15.3,
-    "air": 2.91,
-    "dist": 38.5,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3145,
-    "impact": 6.8,
-    "air": 1.32,
-    "dist": 28.5,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3185,
-    "impact": 8.9,
-    "air": 0.85,
-    "dist": 20.4,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3265,
-    "impact": 14.7,
-    "air": 2.84,
-    "dist": 50.6,
+    "d": 3706,
+    "impact": 16,
+    "air": 2.66,
+    "dist": 27.7,
     "feat": "-",
     "lane": -1
    }
   ],
-  "topSpeed": 30.992381081977772,
+  "topSpeed": 25.625176191757593,
   "stuck": 1,
   "hits": 0,
   "respawns": 0,
@@ -2373,62 +3139,109 @@
     "sl": 0.24
    }
   ],
-  "issues": [
-   "Zone 5: Kicker bei 1828 m landet bei Höchsttempo hart (17 m/s)",
-   "Zone 5: Kicker (Seitenlinie) bei 1834 m landet bei Höchsttempo hart (19.5 m/s)"
+  "takeoffs": [
+   {
+    "d": 2263,
+    "v": 13.3,
+    "vy": -2.7,
+    "x": -80
+   },
+   {
+    "d": 3204,
+    "v": 15.2,
+    "vy": -3.2,
+    "x": -86
+   },
+   {
+    "d": 3695,
+    "v": 11.1,
+    "vy": 1.3,
+    "x": -49
+   }
   ],
-  "features": 58,
-  "skipped": 7,
-  "zones": "S220 G379 S241 P533 B348 C304 C399 S281 C304 C269 G306 C400 P507 S268 F129 G355"
+  "issues": [],
+  "features": 51,
+  "skipped": 1,
+  "zones": "S220 G427 S260 B347 P414 C333 C453 F161 B393 C335 G331 C240 P601 S243 F161 B389"
  },
  {
   "seed": 43,
   "mode": "Frei +85 Hocke",
   "reached": 3800,
-  "time": 180.6,
+  "time": 177.6,
   "crashes": [],
   "landings": [
    {
-    "d": 2292,
-    "impact": 7.7,
-    "air": 1.95,
-    "dist": 39.1,
+    "d": 522,
+    "impact": 4.8,
+    "air": 1.05,
+    "dist": 27.3,
+    "feat": "Waldkicker",
+    "lane": 2
+   },
+   {
+    "d": 699,
+    "impact": 1.4,
+    "air": 0.41,
+    "dist": 11.1,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1060,
+    "impact": 4.8,
+    "air": 1.11,
+    "dist": 30.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1098,
+    "impact": 6.4,
+    "air": 0.77,
+    "dist": 21.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2299,
+    "impact": 7.3,
+    "air": 1.93,
+    "dist": 39.2,
     "feat": "cliff"
    },
    {
-    "d": 3047,
-    "impact": 17.9,
-    "air": 3.12,
-    "dist": 49.5,
+    "d": 2983,
+    "impact": 2.5,
+    "air": 0.13,
+    "dist": 3.8,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3167,
-    "impact": 11.8,
-    "air": 2.11,
-    "dist": 54.1,
-    "feat": "-",
-    "lane": -1
+    "d": 3234,
+    "impact": 6.7,
+    "air": 1.09,
+    "dist": 27.1,
+    "feat": "cliff"
    },
    {
-    "d": 3205,
-    "impact": 7.1,
-    "air": 1.25,
-    "dist": 32.5,
-    "feat": "-",
-    "lane": -1
+    "d": 3254,
+    "impact": 6.2,
+    "air": 0.66,
+    "dist": 17.3,
+    "feat": "cliff"
    },
    {
-    "d": 3637,
-    "impact": 2.6,
-    "air": 0.48,
-    "dist": 13.6,
+    "d": 3719,
+    "impact": 19.3,
+    "air": 3.34,
+    "dist": 60,
     "feat": "-",
     "lane": -1
    }
   ],
-  "topSpeed": 32.97323946622468,
+  "topSpeed": 31.466879356700375,
   "stuck": 1,
   "hits": 0,
   "respawns": 0,
@@ -2441,364 +3254,614 @@
     "sl": 0.24
    }
   ],
-  "issues": [
-   "Zone 5: Kicker bei 1828 m landet bei Höchsttempo hart (17 m/s)",
-   "Zone 5: Kicker (Seitenlinie) bei 1834 m landet bei Höchsttempo hart (19.5 m/s)"
+  "takeoffs": [
+   {
+    "d": 497,
+    "v": 26.7,
+    "vy": -2.3,
+    "x": 98
+   },
+   {
+    "d": 688,
+    "v": 29.7,
+    "vy": -11.1,
+    "x": 92
+   },
+   {
+    "d": 1030,
+    "v": 30,
+    "vy": -7.6,
+    "x": 92
+   },
+   {
+    "d": 1077,
+    "v": 30.3,
+    "vy": -10.5,
+    "x": 91
+   },
+   {
+    "d": 2260,
+    "v": 21.5,
+    "vy": -3.9,
+    "x": 75
+   },
+   {
+    "d": 2979,
+    "v": 30,
+    "vy": -9.7,
+    "x": 78
+   },
+   {
+    "d": 3207,
+    "v": 26.6,
+    "vy": -7.6,
+    "x": 81
+   },
+   {
+    "d": 3237,
+    "v": 28.7,
+    "vy": -10.4,
+    "x": 77
+   },
+   {
+    "d": 3695,
+    "v": 19.6,
+    "vy": 4.6,
+    "x": 50
+   }
   ],
-  "features": 58,
-  "skipped": 7,
-  "zones": "S220 G379 S241 P533 B348 C304 C399 S281 C304 C269 G306 C400 P507 S268 F129 G355"
+  "issues": [],
+  "features": 51,
+  "skipped": 1,
+  "zones": "S220 G427 S260 B347 P414 C333 C453 F161 B393 C335 G331 C240 P601 S243 F161 B389"
  },
  {
   "seed": 43,
   "mode": "Frei +40 Hocke",
   "reached": 3800,
-  "time": 163.8,
+  "time": 165.1,
   "crashes": [],
   "landings": [
    {
-    "d": 404,
-    "impact": 4.6,
-    "air": 1.47,
-    "dist": 35.1,
-    "feat": "-",
-    "lane": -1
+    "d": 502,
+    "impact": 6.1,
+    "air": 1.24,
+    "dist": 32.3,
+    "feat": "Waldkicker",
+    "lane": 2
    },
    {
-    "d": 1411,
-    "impact": 3.2,
-    "air": 0.95,
-    "dist": 23.3,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 1716,
-    "impact": 2.7,
-    "air": 0.26,
-    "dist": 6.8,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2289,
-    "impact": 1.8,
-    "air": 1.82,
-    "dist": 35.6,
-    "feat": "cliff"
-   },
-   {
-    "d": 3129,
-    "impact": 16.5,
-    "air": 3.42,
-    "dist": 71.5,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3164,
-    "impact": 11.1,
-    "air": 0.89,
-    "dist": 23.7,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3274,
-    "impact": 18,
-    "air": 3.23,
-    "dist": 59.4,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3489,
-    "impact": 4.5,
-    "air": 0.77,
-    "dist": 20.6,
-    "feat": "-",
-    "lane": -1
-   }
-  ],
-  "topSpeed": 34.4351117659709,
-  "stuck": 0,
-  "hits": 0,
-  "respawns": 0,
-  "issues": [
-   "Zone 5: Kicker bei 1828 m landet bei Höchsttempo hart (17 m/s)",
-   "Zone 5: Kicker (Seitenlinie) bei 1834 m landet bei Höchsttempo hart (19.5 m/s)"
-  ],
-  "features": 58,
-  "skipped": 7,
-  "zones": "S220 G379 S241 P533 B348 C304 C399 S281 C304 C269 G306 C400 P507 S268 F129 G355"
- },
- {
-  "seed": 43,
-  "mode": "Quer-Slalom Hocke",
-  "reached": 3800,
-  "time": 196.2,
-  "crashes": [],
-  "landings": [
-   {
-    "d": 753,
-    "impact": 5.3,
-    "air": 1.06,
-    "dist": 24.4,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 909,
-    "impact": 5.3,
-    "air": 0.28,
-    "dist": 7,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 923,
-    "impact": 6.7,
-    "air": 0.57,
+    "d": 930,
+    "impact": 1.7,
+    "air": 0.53,
     "dist": 13.8,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 937,
-    "impact": 5.2,
-    "air": 0.7,
-    "dist": 16.6,
+    "d": 934,
+    "impact": 2.2,
+    "air": 0.14,
+    "dist": 3.7,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1363,
-    "impact": 2.6,
-    "air": 0.47,
-    "dist": 10.8,
+    "d": 1520,
+    "impact": 5.7,
+    "air": 0.75,
+    "dist": 18.7,
+    "feat": "Tischsprung",
+    "lane": 0
+   },
+   {
+    "d": 1696,
+    "impact": 10.2,
+    "air": 2.59,
+    "dist": 28.1,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1485,
-    "impact": 4.7,
-    "air": 0.93,
-    "dist": 18.4,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 1908,
-    "impact": 10.1,
-    "air": 1.53,
-    "dist": 37.6,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 2272,
-    "impact": 10.3,
-    "air": 1.6,
-    "dist": 25,
+    "d": 2293,
+    "impact": 2.1,
+    "air": 1.62,
+    "dist": 30.8,
     "feat": "cliff"
    },
    {
-    "d": 2298,
-    "impact": 4.6,
-    "air": 0.71,
-    "dist": 12.2,
+    "d": 3021,
+    "impact": 4,
+    "air": 0.87,
+    "dist": 23.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3236,
+    "impact": 4.3,
+    "air": 1.56,
+    "dist": 31.5,
     "feat": "cliff"
    },
    {
-    "d": 3123,
-    "impact": 16.2,
-    "air": 3.19,
-    "dist": 63.9,
+    "d": 3794,
+    "impact": 18.7,
+    "air": 3.2,
+    "dist": 70.3,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 33.39857176291322,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 473,
+    "v": 26.8,
+    "vy": -1.6,
+    "x": 56
+   },
+   {
+    "d": 916,
+    "v": 28,
+    "vy": -7.5,
+    "x": 46
+   },
+   {
+    "d": 931,
+    "v": 28.5,
+    "vy": -10.8,
+    "x": 46
+   },
+   {
+    "d": 1502,
+    "v": 25.5,
+    "vy": -3,
+    "x": 28
+   },
+   {
+    "d": 1668,
+    "v": 14.7,
+    "vy": 9.6,
+    "x": 46
+   },
+   {
+    "d": 2263,
+    "v": 20,
+    "vy": -3.7,
+    "x": 34
+   },
+   {
+    "d": 2998,
+    "v": 27.9,
+    "vy": -4.8,
+    "x": 37
+   },
+   {
+    "d": 3204,
+    "v": 21.3,
+    "vy": -4.3,
+    "x": 38
+   },
+   {
+    "d": 3732,
+    "v": 23.8,
+    "vy": 0.8,
+    "x": 20
+   }
+  ],
+  "issues": [],
+  "features": 51,
+  "skipped": 1,
+  "zones": "S220 G427 S260 B347 P414 C333 C453 F161 B393 C335 G331 C240 P601 S243 F161 B389"
+ },
+ {
+  "seed": 43,
+  "mode": "Quer-Slalom Hocke",
+  "reached": 3800,
+  "time": 189.8,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 458,
+    "impact": 4.9,
+    "air": 1.06,
+    "dist": 26,
+    "feat": "Waldkicker",
+    "lane": 2
+   },
+   {
+    "d": 508,
+    "impact": 12.6,
+    "air": 2.05,
+    "dist": 46.5,
+    "feat": "Waldkicker",
+    "lane": 2
+   },
+   {
+    "d": 600,
+    "impact": 0.7,
+    "air": 0.22,
+    "dist": 4.3,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3166,
-    "impact": 10.8,
-    "air": 0.85,
-    "dist": 20.9,
+    "d": 1047,
+    "impact": 5,
+    "air": 0.75,
+    "dist": 17.7,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3267,
-    "impact": 15.2,
-    "air": 2.87,
-    "dist": 51.9,
+    "d": 1065,
+    "impact": 3.5,
+    "air": 0.55,
+    "dist": 13.3,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3539,
-    "impact": 7.6,
-    "air": 0.6,
+    "d": 1351,
+    "impact": 4.4,
+    "air": 0.48,
+    "dist": 11.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1389,
+    "impact": 4.9,
+    "air": 0.5,
+    "dist": 11.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1970,
+    "impact": 2.5,
+    "air": 0.33,
+    "dist": 8.1,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2047,
+    "impact": 0.8,
+    "air": 0.57,
     "dist": 14.2,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3558,
-    "impact": 3.4,
-    "air": 0.89,
-    "dist": 20.2,
+    "d": 2280,
+    "impact": 9.1,
+    "air": 1.51,
+    "dist": 23.9,
+    "feat": "cliff"
+   },
+   {
+    "d": 2612,
+    "impact": 3,
+    "air": 0.21,
+    "dist": 4.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2632,
+    "impact": 2.4,
+    "air": 0.43,
+    "dist": 9.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3033,
+    "impact": 2.1,
+    "air": 0.49,
+    "dist": 12.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3221,
+    "impact": 4.4,
+    "air": 0.91,
+    "dist": 17,
+    "feat": "cliff"
+   },
+   {
+    "d": 3537,
+    "impact": 2.6,
+    "air": 0.53,
+    "dist": 13.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3726,
+    "impact": 15.7,
+    "air": 3.25,
+    "dist": 54.1,
     "feat": "-",
     "lane": -1
    }
   ],
-  "topSpeed": 33.05894869894325,
+  "topSpeed": 29.429898570576395,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
-  "issues": [
-   "Zone 5: Kicker bei 1828 m landet bei Höchsttempo hart (17 m/s)",
-   "Zone 5: Kicker (Seitenlinie) bei 1834 m landet bei Höchsttempo hart (19.5 m/s)"
+  "takeoffs": [
+   {
+    "d": 440,
+    "v": 25.1,
+    "vy": -0.8,
+    "x": 39
+   },
+   {
+    "d": 474,
+    "v": 24.2,
+    "vy": 4.8,
+    "x": 14
+   },
+   {
+    "d": 596,
+    "v": 20.2,
+    "vy": -2.6,
+    "x": -93
+   },
+   {
+    "d": 1030,
+    "v": 24.5,
+    "vy": -5.1,
+    "x": 87
+   },
+   {
+    "d": 1053,
+    "v": 25.7,
+    "vy": -7.3,
+    "x": 98
+   },
+   {
+    "d": 1342,
+    "v": 25.3,
+    "vy": -2,
+    "x": 12
+   },
+   {
+    "d": 1379,
+    "v": 24,
+    "vy": -3.2,
+    "x": -17
+   },
+   {
+    "d": 1962,
+    "v": 26,
+    "vy": -6.4,
+    "x": 97
+   },
+   {
+    "d": 2033,
+    "v": 25.9,
+    "vy": -4.6,
+    "x": 105
+   },
+   {
+    "d": 2260,
+    "v": 16.3,
+    "vy": -1.7,
+    "x": -22
+   },
+   {
+    "d": 2608,
+    "v": 22.8,
+    "vy": -5.5,
+    "x": -49
+   },
+   {
+    "d": 2624,
+    "v": 23.3,
+    "vy": -4.9,
+    "x": -37
+   },
+   {
+    "d": 3022,
+    "v": 25.9,
+    "vy": -5.4,
+    "x": 64
+   },
+   {
+    "d": 3207,
+    "v": 19.3,
+    "vy": -3.2,
+    "x": -70
+   },
+   {
+    "d": 3525,
+    "v": 25.9,
+    "vy": -5,
+    "x": -3
+   },
+   {
+    "d": 3695,
+    "v": 18.2,
+    "vy": 4.7,
+    "x": 47
+   }
   ],
-  "features": 58,
-  "skipped": 7,
-  "zones": "S220 G379 S241 P533 B348 C304 C399 S281 C304 C269 G306 C400 P507 S268 F129 G355"
+  "issues": [],
+  "features": 51,
+  "skipped": 1,
+  "zones": "S220 G427 S260 B347 P414 C333 C453 F161 B393 C335 G331 C240 P601 S243 F161 B389"
  },
  {
   "seed": 43,
   "mode": "Quer-Slalom aufrecht",
   "reached": 3800,
-  "time": 370.4,
+  "time": 278.8,
   "crashes": [],
   "landings": [
    {
-    "d": 1170,
-    "impact": 5.4,
-    "air": 0.77,
-    "dist": 12.5,
+    "d": 881,
+    "impact": 2.5,
+    "air": 0.22,
+    "dist": 4.7,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1180,
-    "impact": 4,
-    "air": 0.56,
-    "dist": 8.6,
-    "feat": "-",
-    "lane": -1
+    "d": 1802,
+    "impact": 9.2,
+    "air": 1.71,
+    "dist": 28,
+    "feat": "Kicker",
+    "lane": 0
    },
    {
-    "d": 1403,
-    "impact": 2.9,
-    "air": 0.77,
-    "dist": 13.1,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2268,
-    "impact": 10.1,
-    "air": 1.63,
-    "dist": 22.2,
+    "d": 2272,
+    "impact": 9.2,
+    "air": 1.52,
+    "dist": 19.3,
     "feat": "cliff"
    },
    {
-    "d": 3040,
-    "impact": 3,
-    "air": 2.34,
-    "dist": 19.1,
+    "d": 2772,
+    "impact": 5.6,
+    "air": 0.53,
+    "dist": 10.2,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3478,
-    "impact": 5.9,
-    "air": 1.34,
-    "dist": 24.8,
+    "d": 2800,
+    "impact": 4.3,
+    "air": 1.07,
+    "dist": 21.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3214,
+    "impact": 6.9,
+    "air": 1.21,
+    "dist": 11.7,
+    "feat": "cliff"
+   },
+   {
+    "d": 3493,
+    "impact": 6.7,
+    "air": 1.7,
+    "dist": 26,
     "feat": "-",
     "lane": -1
    }
   ],
-  "topSpeed": 25.315753664080134,
-  "stuck": 4,
+  "topSpeed": 26.651427528931084,
+  "stuck": 0,
   "hits": 0,
   "respawns": 0,
-  "stuckAt": [
+  "takeoffs": [
    {
-    "d": 3764,
-    "x": -70,
-    "zone": "cliff",
-    "pow": 0.02,
-    "sl": 0.22
+    "d": 878,
+    "v": 22.1,
+    "vy": -7,
+    "x": -4
    },
    {
-    "d": 3776,
-    "x": -79,
-    "zone": "cliff",
-    "pow": 0.02,
-    "sl": 0.22
+    "d": 1780,
+    "v": 17.5,
+    "vy": 3.7,
+    "x": 62
    },
    {
-    "d": 3783,
-    "x": -73,
-    "zone": "cliff",
-    "pow": 0.02,
-    "sl": 0.22
+    "d": 2259,
+    "v": 13.5,
+    "vy": -2.9,
+    "x": -27
    },
    {
-    "d": 3789,
-    "x": -72,
-    "zone": "cliff",
-    "pow": 0.02,
-    "sl": 0.22
+    "d": 2763,
+    "v": 21.7,
+    "vy": -9.4,
+    "x": -86
+   },
+   {
+    "d": 2781,
+    "v": 22.9,
+    "vy": -8.7,
+    "x": -76
+   },
+   {
+    "d": 3205,
+    "v": 9.9,
+    "vy": -0.7,
+    "x": -75
+   },
+   {
+    "d": 3470,
+    "v": 16.6,
+    "vy": 4.6,
+    "x": 46
    }
   ],
-  "issues": [
-   "Zone 5: Kicker bei 1828 m landet bei Höchsttempo hart (17 m/s)",
-   "Zone 5: Kicker (Seitenlinie) bei 1834 m landet bei Höchsttempo hart (19.5 m/s)"
-  ],
-  "features": 58,
-  "skipped": 7,
-  "zones": "S220 G379 S241 P533 B348 C304 C399 S281 C304 C269 G306 C400 P507 S268 F129 G355"
+  "issues": [],
+  "features": 51,
+  "skipped": 1,
+  "zones": "S220 G427 S260 B347 P414 C333 C453 F161 B393 C335 G331 C240 P601 S243 F161 B389"
  },
  {
   "seed": 50,
   "mode": "Frei -85 aufrecht",
   "reached": 3800,
-  "time": 213.3,
+  "time": 234.9,
   "crashes": [],
   "landings": [
    {
-    "d": 1700,
-    "impact": 6.4,
-    "air": 1.36,
-    "dist": 27.9,
+    "d": 1183,
+    "impact": 6,
+    "air": 1.17,
+    "dist": 21.4,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1851,
+    "impact": 13.6,
+    "air": 2.65,
+    "dist": 26,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3021,
-    "impact": 7.4,
-    "air": 1.14,
-    "dist": 15.3,
+    "d": 2045,
+    "impact": 20,
+    "air": 2.37,
+    "dist": 41.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3115,
+    "impact": 8.3,
+    "air": 1.2,
+    "dist": 16.3,
     "feat": "cliff"
    },
    {
-    "d": 3364,
-    "impact": 5.5,
-    "air": 0.5,
-    "dist": 11.4,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3381,
-    "impact": 4.3,
-    "air": 0.68,
-    "dist": 15.8,
-    "feat": "-",
-    "lane": -1
+    "d": 3510,
+    "impact": 3.6,
+    "air": 0.58,
+    "dist": 12.3,
+    "feat": "Waldkicker",
+    "lane": 2
    }
   ],
-  "topSpeed": 27.257788033371046,
+  "topSpeed": 35.68328377944407,
   "stuck": 1,
   "hits": 0,
   "respawns": 0,
@@ -2811,54 +3874,91 @@
     "sl": 0.24
    }
   ],
-  "issues": [
-   "Zone 1: Kicker (Seitenlinie) bei 413 m verworfen (keine sichere Landung)",
-   "Zone 6: Big Air bei 2187 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 7: Kicker bei 2648 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2647 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2647 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2647 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2647 m verworfen (keine sichere Landung)",
-   "Zone 11: Kicker bei 4230 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 4230 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 4230 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 1162,
+    "v": 19,
+    "vy": 0.1,
+    "x": -95
+   },
+   {
+    "d": 1845,
+    "v": 10.4,
+    "vy": 1,
+    "x": -58
+   },
+   {
+    "d": 2005,
+    "v": 23.9,
+    "vy": -13.9,
+    "x": -30
+   },
+   {
+    "d": 3099,
+    "v": 14.2,
+    "vy": -2.9,
+    "x": -86
+   },
+   {
+    "d": 3498,
+    "v": 22.3,
+    "vy": -6,
+    "x": -88
+   }
   ],
-  "features": 50,
-  "skipped": 9,
-  "zones": "S220 C340 S291 G419 C342 B371 B465 G333 C390 B415 C394 G343 C327 S250 B395"
+  "issues": [],
+  "features": 68,
+  "skipped": 6,
+  "zones": "S220 C383 S287 G497 C433 C248 P478 G361 C335 G357 C464 P435 C263 S273"
  },
  {
   "seed": 50,
   "mode": "Frei +85 Hocke",
   "reached": 3800,
-  "time": 174.6,
+  "time": 187.2,
   "crashes": [],
   "landings": [
    {
-    "d": 1319,
-    "impact": 2.1,
-    "air": 0.38,
-    "dist": 9.8,
+    "d": 1432,
+    "impact": 2.4,
+    "air": 0.49,
+    "dist": 13,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1596,
-    "impact": 2.1,
-    "air": 0.58,
-    "dist": 15.8,
+    "d": 1858,
+    "impact": 15.5,
+    "air": 2.73,
+    "dist": 38.3,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3039,
-    "impact": 3.9,
-    "air": 1.62,
-    "dist": 32.8,
+    "d": 2761,
+    "impact": 5,
+    "air": 1.07,
+    "dist": 27.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3129,
+    "impact": 5.6,
+    "air": 1.35,
+    "dist": 27.4,
     "feat": "cliff"
+   },
+   {
+    "d": 3775,
+    "impact": 4.3,
+    "air": 0.41,
+    "dist": 11.5,
+    "feat": "Kicker",
+    "lane": 0
    }
   ],
-  "topSpeed": 30.624774944597128,
+  "topSpeed": 31.208453491022627,
   "stuck": 1,
   "hits": 0,
   "respawns": 0,
@@ -2871,366 +3971,498 @@
     "sl": 0.24
    }
   ],
-  "issues": [
-   "Zone 1: Kicker (Seitenlinie) bei 413 m verworfen (keine sichere Landung)",
-   "Zone 6: Big Air bei 2187 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 7: Kicker bei 2648 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2647 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2647 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2647 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2647 m verworfen (keine sichere Landung)",
-   "Zone 11: Kicker bei 4230 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 4230 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 4230 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 1420,
+    "v": 27,
+    "vy": -4.3,
+    "x": 85
+   },
+   {
+    "d": 1845,
+    "v": 14.9,
+    "vy": 2.9,
+    "x": 54
+   },
+   {
+    "d": 2735,
+    "v": 26.3,
+    "vy": -0.7,
+    "x": 74
+   },
+   {
+    "d": 3102,
+    "v": 21.2,
+    "vy": -3.9,
+    "x": 86
+   },
+   {
+    "d": 3763,
+    "v": 29.2,
+    "vy": -6,
+    "x": 99
+   }
   ],
-  "features": 50,
-  "skipped": 9,
-  "zones": "S220 C340 S291 G419 C342 B371 B465 G333 C390 B415 C394 G343 C327 S250 B395"
+  "issues": [],
+  "features": 68,
+  "skipped": 6,
+  "zones": "S220 C383 S287 G497 C433 C248 P478 G361 C335 G357 C464 P435 C263 S273"
  },
  {
   "seed": 50,
   "mode": "Frei +40 Hocke",
   "reached": 3800,
-  "time": 160.4,
+  "time": 161.9,
   "crashes": [],
   "landings": [
    {
-    "d": 1071,
-    "impact": 6,
-    "air": 1.22,
-    "dist": 32.6,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 1291,
+    "d": 604,
     "impact": 1.3,
-    "air": 0.23,
-    "dist": 6,
+    "air": 0.43,
+    "dist": 11.3,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1616,
-    "impact": 4.4,
-    "air": 0.18,
-    "dist": 4.8,
+    "d": 1102,
+    "impact": 6.4,
+    "air": 1.62,
+    "dist": 41.5,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2623,
-    "impact": 5.5,
-    "air": 1.5,
-    "dist": 38.4,
+    "d": 1409,
+    "impact": 1.9,
+    "air": 0.43,
+    "dist": 11,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3034,
-    "impact": 5.1,
-    "air": 1.41,
-    "dist": 28,
+    "d": 1623,
+    "impact": 4.7,
+    "air": 1.73,
+    "dist": 43.6,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 1699,
+    "impact": 6,
+    "air": 0.7,
+    "dist": 18.9,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1716,
+    "impact": 3.4,
+    "air": 0.5,
+    "dist": 13.3,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 2244,
+    "impact": 6.6,
+    "air": 1.06,
+    "dist": 25.9,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 3131,
+    "impact": 2.9,
+    "air": 1.43,
+    "dist": 29.4,
     "feat": "cliff"
    },
    {
-    "d": 3215,
-    "impact": 2.2,
-    "air": 0.45,
-    "dist": 11,
+    "d": 3411,
+    "impact": 7.3,
+    "air": 1.79,
+    "dist": 46.8,
     "feat": "-",
     "lane": -1
    }
   ],
-  "topSpeed": 30.67754914822254,
+  "topSpeed": 29.756518095434462,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
-  "issues": [
-   "Zone 1: Kicker (Seitenlinie) bei 413 m verworfen (keine sichere Landung)",
-   "Zone 6: Big Air bei 2187 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 7: Kicker bei 2648 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2647 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2647 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2647 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2647 m verworfen (keine sichere Landung)",
-   "Zone 11: Kicker bei 4230 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 4230 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 4230 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 594,
+    "v": 27.9,
+    "vy": -7.1,
+    "x": 31
+   },
+   {
+    "d": 1062,
+    "v": 26.7,
+    "vy": 0.9,
+    "x": 45
+   },
+   {
+    "d": 1399,
+    "v": 26,
+    "vy": -4,
+    "x": 43
+   },
+   {
+    "d": 1580,
+    "v": 26.3,
+    "vy": 2.4,
+    "x": 47
+   },
+   {
+    "d": 1680,
+    "v": 27.7,
+    "vy": -2.7,
+    "x": 46
+   },
+   {
+    "d": 1703,
+    "v": 27.3,
+    "vy": -4.4,
+    "x": 45
+   },
+   {
+    "d": 2219,
+    "v": 25,
+    "vy": 0,
+    "x": 33
+   },
+   {
+    "d": 3102,
+    "v": 21.4,
+    "vy": -3.7,
+    "x": 40
+   },
+   {
+    "d": 3365,
+    "v": 27.5,
+    "vy": -0.7,
+    "x": 47
+   }
   ],
-  "features": 50,
-  "skipped": 9,
-  "zones": "S220 C340 S291 G419 C342 B371 B465 G333 C390 B415 C394 G343 C327 S250 B395"
+  "issues": [],
+  "features": 68,
+  "skipped": 6,
+  "zones": "S220 C383 S287 G497 C433 C248 P478 G361 C335 G357 C464 P435 C263 S273"
  },
  {
   "seed": 50,
   "mode": "Quer-Slalom Hocke",
   "reached": 3800,
-  "time": 193.3,
+  "time": 191.6,
   "crashes": [],
   "landings": [
    {
-    "d": 758,
-    "impact": 4.2,
-    "air": 0.85,
-    "dist": 19.6,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 1292,
-    "impact": 1.2,
-    "air": 0.24,
-    "dist": 5.9,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 1367,
-    "impact": 2.4,
-    "air": 0.55,
-    "dist": 12.7,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 1669,
-    "impact": 4.6,
-    "air": 0.33,
-    "dist": 7.8,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 1706,
-    "impact": 7.1,
-    "air": 1.52,
-    "dist": 37.3,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2288,
-    "impact": 14.9,
-    "air": 3.37,
-    "dist": 73.7,
-    "feat": "Big Air",
-    "lane": 0
-   },
-   {
-    "d": 3026,
-    "impact": 9.1,
-    "air": 1.27,
-    "dist": 23.1,
-    "feat": "cliff"
-   },
-   {
-    "d": 3614,
-    "impact": 5.5,
-    "air": 1.17,
-    "dist": 28.7,
-    "feat": "-",
-    "lane": -1
-   }
-  ],
-  "topSpeed": 33.10039020805872,
-  "stuck": 0,
-  "hits": 0,
-  "respawns": 0,
-  "issues": [
-   "Zone 1: Kicker (Seitenlinie) bei 413 m verworfen (keine sichere Landung)",
-   "Zone 6: Big Air bei 2187 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 7: Kicker bei 2648 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2647 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2647 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2647 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2647 m verworfen (keine sichere Landung)",
-   "Zone 11: Kicker bei 4230 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 4230 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 4230 m verworfen (keine sichere Landung)"
-  ],
-  "features": 50,
-  "skipped": 9,
-  "zones": "S220 C340 S291 G419 C342 B371 B465 G333 C390 B415 C394 G343 C327 S250 B395"
- },
- {
-  "seed": 50,
-  "mode": "Quer-Slalom aufrecht",
-  "reached": 3800,
-  "time": 275,
-  "crashes": [],
-  "landings": [
-   {
-    "d": 428,
-    "impact": 2.6,
-    "air": 0.97,
-    "dist": 19.5,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 448,
-    "impact": 4.9,
-    "air": 0.74,
-    "dist": 16.3,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 1129,
-    "impact": 3.9,
-    "air": 0.53,
-    "dist": 8.7,
+    "d": 427,
+    "impact": 9.3,
+    "air": 2.28,
+    "dist": 52.9,
     "feat": "Kicker",
     "lane": 0
    },
    {
-    "d": 1161,
-    "impact": 7.9,
-    "air": 1.42,
-    "dist": 20.6,
-    "feat": "Kicker",
-    "lane": 0
+    "d": 1377,
+    "impact": 3.5,
+    "air": 0.12,
+    "dist": 2.9,
+    "feat": "-",
+    "lane": -1
    },
    {
-    "d": 1450,
-    "impact": 2.1,
-    "air": 0.42,
+    "d": 1396,
+    "impact": 2.5,
+    "air": 0.36,
     "dist": 8.1,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1669,
-    "impact": 2.8,
-    "air": 0.49,
-    "dist": 9.2,
+    "d": 2065,
+    "impact": 15.6,
+    "air": 2.58,
+    "dist": 58.8,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2234,
-    "impact": 4.6,
-    "air": 0.82,
-    "dist": 15.6,
-    "feat": "Big Air",
-    "lane": 0
-   },
-   {
-    "d": 2583,
-    "impact": 4.1,
-    "air": 0.92,
-    "dist": 16.5,
+    "d": 2787,
+    "impact": 9.8,
+    "air": 2.37,
+    "dist": 50.3,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2817,
-    "impact": 2.2,
-    "air": 0.35,
-    "dist": 7.4,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3018,
-    "impact": 10,
-    "air": 1.3,
-    "dist": 10.6,
+    "d": 3120,
+    "impact": 10.7,
+    "air": 1.38,
+    "dist": 25.6,
     "feat": "cliff"
    },
    {
-    "d": 3365,
-    "impact": 2.2,
-    "air": 0.71,
-    "dist": 15.2,
-    "feat": "-",
-    "lane": -1
+    "d": 3202,
+    "impact": 3.2,
+    "air": 0.7,
+    "dist": 13.7,
+    "feat": "cliff"
    },
    {
-    "d": 3424,
-    "impact": 1.9,
-    "air": 0.44,
-    "dist": 8.9,
-    "feat": "-",
-    "lane": -1
+    "d": 3491,
+    "impact": 7.2,
+    "air": 2.03,
+    "dist": 48.3,
+    "feat": "Waldkicker",
+    "lane": 2
    },
    {
-    "d": 3728,
-    "impact": 6.1,
-    "air": 1.5,
-    "dist": 31.5,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3798,
-    "impact": 1.5,
-    "air": 0.85,
-    "dist": 17.6,
-    "feat": "-",
-    "lane": -1
+    "d": 3517,
+    "impact": 3.8,
+    "air": 0.68,
+    "dist": 16.9,
+    "feat": "Waldkicker",
+    "lane": 2
    }
   ],
-  "topSpeed": 24.84160031188918,
+  "topSpeed": 32.54083300963037,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
-  "issues": [
-   "Zone 1: Kicker (Seitenlinie) bei 413 m verworfen (keine sichere Landung)",
-   "Zone 6: Big Air bei 2187 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 7: Kicker bei 2648 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2647 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2647 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2647 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2647 m verworfen (keine sichere Landung)",
-   "Zone 11: Kicker bei 4230 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 4230 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 4230 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 385,
+    "v": 24.9,
+    "vy": 5,
+    "x": 76
+   },
+   {
+    "d": 1375,
+    "v": 23.2,
+    "vy": -3.7,
+    "x": -10
+   },
+   {
+    "d": 1390,
+    "v": 22.7,
+    "vy": -0.9,
+    "x": -24
+   },
+   {
+    "d": 2006,
+    "v": 24.9,
+    "vy": -3.2,
+    "x": 20
+   },
+   {
+    "d": 2741,
+    "v": 23.3,
+    "vy": 7,
+    "x": 41
+   },
+   {
+    "d": 3100,
+    "v": 19.1,
+    "vy": -2,
+    "x": 7
+   },
+   {
+    "d": 3190,
+    "v": 19.8,
+    "vy": -0.1,
+    "x": -56
+   },
+   {
+    "d": 3455,
+    "v": 25.1,
+    "vy": 3.1,
+    "x": -84
+   },
+   {
+    "d": 3504,
+    "v": 25.6,
+    "vy": -2.9,
+    "x": -43
+   }
   ],
-  "features": 50,
-  "skipped": 9,
-  "zones": "S220 C340 S291 G419 C342 B371 B465 G333 C390 B415 C394 G343 C327 S250 B395"
+  "issues": [],
+  "features": 68,
+  "skipped": 6,
+  "zones": "S220 C383 S287 G497 C433 C248 P478 G361 C335 G357 C464 P435 C263 S273"
+ },
+ {
+  "seed": 50,
+  "mode": "Quer-Slalom aufrecht",
+  "reached": 3800,
+  "time": 299.4,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 1171,
+    "impact": 5.3,
+    "air": 0.93,
+    "dist": 14.3,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1403,
+    "impact": 2.1,
+    "air": 0.22,
+    "dist": 3.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1709,
+    "impact": 4.2,
+    "air": 0.25,
+    "dist": 4.6,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1853,
+    "impact": 10.2,
+    "air": 2.33,
+    "dist": 18.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3110,
+    "impact": 11.6,
+    "air": 1.34,
+    "dist": 14.7,
+    "feat": "cliff"
+   },
+   {
+    "d": 3413,
+    "impact": 6.3,
+    "air": 1.43,
+    "dist": 27.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3451,
+    "impact": 7.6,
+    "air": 1.8,
+    "dist": 29.7,
+    "feat": "Waldkicker",
+    "lane": 2
+   },
+   {
+    "d": 3480,
+    "impact": 6.1,
+    "air": 1.23,
+    "dist": 16.1,
+    "feat": "Waldkicker",
+    "lane": 2
+   }
+  ],
+  "topSpeed": 23.82487537920435,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 1163,
+    "v": 15.7,
+    "vy": 0,
+    "x": -3
+   },
+   {
+    "d": 1400,
+    "v": 17.7,
+    "vy": -2.2,
+    "x": 46
+   },
+   {
+    "d": 1706,
+    "v": 19.5,
+    "vy": -5.3,
+    "x": -17
+   },
+   {
+    "d": 1845,
+    "v": 8.2,
+    "vy": 1.3,
+    "x": 53
+   },
+   {
+    "d": 3100,
+    "v": 11.4,
+    "vy": -1.5,
+    "x": 37
+   },
+   {
+    "d": 3393,
+    "v": 19.9,
+    "vy": 1.9,
+    "x": -36
+   },
+   {
+    "d": 3433,
+    "v": 17.9,
+    "vy": 4.9,
+    "x": -5
+   },
+   {
+    "d": 3471,
+    "v": 13.6,
+    "vy": 2.2,
+    "x": 39
+   },
+   {
+    "d": 3787,
+    "v": 16.1,
+    "vy": 2.5,
+    "x": -75
+   }
+  ],
+  "issues": [],
+  "features": 68,
+  "skipped": 6,
+  "zones": "S220 C383 S287 G497 C433 C248 P478 G361 C335 G357 C464 P435 C263 S273"
  },
  {
   "seed": 57,
   "mode": "Frei -85 aufrecht",
   "reached": 3800,
-  "time": 224.3,
+  "time": 228.3,
   "crashes": [],
   "landings": [
    {
-    "d": 847,
-    "impact": 5.9,
-    "air": 0.88,
-    "dist": 11.6,
-    "feat": "cliff"
-   },
-   {
-    "d": 1105,
-    "impact": 5.8,
-    "air": 1.21,
-    "dist": 26.3,
+    "d": 595,
+    "impact": 2,
+    "air": 0.45,
+    "dist": 8.2,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1357,
-    "impact": 4.8,
-    "air": 1.21,
-    "dist": 27.8,
-    "feat": "-",
-    "lane": -1
+    "d": 2250,
+    "impact": 9.9,
+    "air": 1.43,
+    "dist": 17,
+    "feat": "cliff"
    },
    {
-    "d": 3308,
-    "impact": 7.5,
-    "air": 1.04,
-    "dist": 11.5,
-    "feat": "cliff"
+    "d": 2724,
+    "impact": 5.5,
+    "air": 1.11,
+    "dist": 21.4,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
    }
   ],
-  "topSpeed": 26.46657157625438,
+  "topSpeed": 25.561164198426294,
   "stuck": 1,
   "hits": 0,
   "respawns": 0,
@@ -3243,76 +4475,65 @@
     "sl": 0.24
    }
   ],
-  "issues": [
-   "Zone 4: Kicker (Seitenlinie) bei 1478 m landet bei Höchsttempo hart (18.1 m/s)",
-   "Zone 6: Kicker bei 2245 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2578 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2578 m verworfen (keine sichere Landung)",
-   "Zone 10: Kicker bei 3651 m verworfen (keine sichere Landung)",
-   "Zone 10: Kicker (Seitenlinie) bei 3651 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 4031 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 4031 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 4031 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 587,
+    "v": 19,
+    "vy": -4.5,
+    "x": -90
+   },
+   {
+    "d": 2233,
+    "v": 12.6,
+    "vy": -3.1,
+    "x": -89
+   },
+   {
+    "d": 2704,
+    "v": 20.1,
+    "vy": -1.6,
+    "x": -96
+   }
   ],
-  "features": 54,
-  "skipped": 5,
-  "zones": "S220 G367 C431 B345 C384 S289 C358 G310 B338 C434 C321 G403 B336 P513"
+  "issues": [
+   "Zone 3: Big Air bei 1171 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 56,
+  "skipped": 10,
+  "zones": "S220 G318 B330 B579 C488 C512 C377 G362 P530 S280 C403 G457 B343"
  },
  {
   "seed": 57,
   "mode": "Frei +85 Hocke",
   "reached": 3800,
-  "time": 173.5,
+  "time": 179.7,
   "crashes": [],
   "landings": [
    {
-    "d": 459,
-    "impact": 2.1,
-    "air": 0.42,
-    "dist": 11.2,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 843,
-    "impact": 2.2,
-    "air": 0.35,
-    "dist": 8.6,
-    "feat": "cliff"
-   },
-   {
-    "d": 1637,
-    "impact": 4.5,
-    "air": 0.57,
-    "dist": 15.8,
+    "d": 1732,
+    "impact": 7.5,
+    "air": 1.69,
+    "dist": 43.1,
     "feat": "Kicker (Seitenlinie)",
     "lane": 2
    },
    {
-    "d": 2801,
-    "impact": 3.8,
-    "air": 1.39,
-    "dist": 35.6,
-    "feat": "-",
-    "lane": -1
+    "d": 1762,
+    "impact": 5.5,
+    "air": 0.65,
+    "dist": 16.9,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 2
    },
    {
-    "d": 3064,
-    "impact": 7.6,
-    "air": 2.1,
-    "dist": 58.2,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3321,
-    "impact": 4.7,
-    "air": 1.2,
-    "dist": 24.2,
+    "d": 2271,
+    "impact": 5.6,
+    "air": 1.68,
+    "dist": 38.4,
     "feat": "cliff"
    }
   ],
-  "topSpeed": 31.79002074006144,
+  "topSpeed": 30.660238709244247,
   "stuck": 1,
   "hits": 0,
   "respawns": 0,
@@ -3325,20 +4546,32 @@
     "sl": 0.24
    }
   ],
-  "issues": [
-   "Zone 4: Kicker (Seitenlinie) bei 1478 m landet bei Höchsttempo hart (18.1 m/s)",
-   "Zone 6: Kicker bei 2245 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2578 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2578 m verworfen (keine sichere Landung)",
-   "Zone 10: Kicker bei 3651 m verworfen (keine sichere Landung)",
-   "Zone 10: Kicker (Seitenlinie) bei 3651 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 4031 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 4031 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 4031 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 1690,
+    "v": 26.6,
+    "vy": 2.2,
+    "x": 90
+   },
+   {
+    "d": 1745,
+    "v": 27.4,
+    "vy": -7.3,
+    "x": 84
+   },
+   {
+    "d": 2234,
+    "v": 24,
+    "vy": -3.5,
+    "x": 81
+   }
   ],
-  "features": 54,
-  "skipped": 5,
-  "zones": "S220 G367 C431 B345 C384 S289 C358 G310 B338 C434 C321 G403 B336 P513"
+  "issues": [
+   "Zone 3: Big Air bei 1171 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 56,
+  "skipped": 10,
+  "zones": "S220 G318 B330 B579 C488 C512 C377 G362 P530 S280 C403 G457 B343"
  },
  {
   "seed": 57,
@@ -3348,269 +4581,356 @@
   "crashes": [],
   "landings": [
    {
-    "d": 869,
-    "impact": 6.2,
-    "air": 1.52,
-    "dist": 30.8,
-    "feat": "cliff"
-   },
-   {
-    "d": 1339,
-    "impact": 2.1,
-    "air": 0.26,
-    "dist": 6.8,
+    "d": 548,
+    "impact": 3.8,
+    "air": 1.27,
+    "dist": 33.6,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2693,
+    "d": 1002,
+    "impact": 4,
+    "air": 0.35,
+    "dist": 8.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1040,
+    "impact": 2.6,
+    "air": 0.32,
+    "dist": 7.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2263,
+    "impact": 7.4,
+    "air": 1.67,
+    "dist": 31.9,
+    "feat": "cliff"
+   },
+   {
+    "d": 3498,
+    "impact": 3.7,
+    "air": 0.54,
+    "dist": 13.1,
+    "feat": "Tischsprung",
+    "lane": 0
+   },
+   {
+    "d": 3519,
     "impact": 3.1,
-    "air": 0.18,
-    "dist": 4.7,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3078,
-    "impact": 8.5,
-    "air": 2.25,
-    "dist": 56.5,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3318,
-    "impact": 7,
-    "air": 1.37,
-    "dist": 25.1,
-    "feat": "cliff"
+    "air": 0.33,
+    "dist": 8,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
    }
   ],
-  "topSpeed": 29.35019131720775,
+  "topSpeed": 29.42584662494508,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
-  "issues": [
-   "Zone 4: Kicker (Seitenlinie) bei 1478 m landet bei Höchsttempo hart (18.1 m/s)",
-   "Zone 6: Kicker bei 2245 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2578 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2578 m verworfen (keine sichere Landung)",
-   "Zone 10: Kicker bei 3651 m verworfen (keine sichere Landung)",
-   "Zone 10: Kicker (Seitenlinie) bei 3651 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 4031 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 4031 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 4031 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 515,
+    "v": 27.9,
+    "vy": -4.2,
+    "x": 46
+   },
+   {
+    "d": 993,
+    "v": 25.9,
+    "vy": -3.2,
+    "x": 38
+   },
+   {
+    "d": 1032,
+    "v": 25.5,
+    "vy": -3.6,
+    "x": 41
+   },
+   {
+    "d": 2233,
+    "v": 20.3,
+    "vy": -4.2,
+    "x": 35
+   },
+   {
+    "d": 3486,
+    "v": 24.6,
+    "vy": -2.2,
+    "x": 30
+   },
+   {
+    "d": 3511,
+    "v": 24.5,
+    "vy": -3.6,
+    "x": 31
+   }
   ],
-  "features": 54,
-  "skipped": 5,
-  "zones": "S220 G367 C431 B345 C384 S289 C358 G310 B338 C434 C321 G403 B336 P513"
+  "issues": [
+   "Zone 3: Big Air bei 1171 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 56,
+  "skipped": 10,
+  "zones": "S220 G318 B330 B579 C488 C512 C377 G362 P530 S280 C403 G457 B343"
  },
  {
   "seed": 57,
   "mode": "Quer-Slalom Hocke",
   "reached": 3800,
-  "time": 194.7,
+  "time": 198,
   "crashes": [],
   "landings": [
    {
-    "d": 417,
-    "impact": 4.5,
-    "air": 0.79,
-    "dist": 19.8,
+    "d": 435,
+    "impact": 6.7,
+    "air": 1.41,
+    "dist": 34.8,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 858,
-    "impact": 8.9,
+    "d": 1839,
+    "impact": 7.5,
+    "air": 1.35,
+    "dist": 32.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2254,
+    "impact": 11.9,
     "air": 1.47,
-    "dist": 27.8,
+    "dist": 29.1,
     "feat": "cliff"
    },
    {
-    "d": 1387,
-    "impact": 1.5,
-    "air": 0.16,
-    "dist": 3.9,
-    "feat": "-",
-    "lane": -1
+    "d": 2275,
+    "impact": 6.6,
+    "air": 0.87,
+    "dist": 18.4,
+    "feat": "cliff"
    },
    {
-    "d": 1501,
-    "impact": 5.7,
-    "air": 1.53,
-    "dist": 35.3,
+    "d": 3514,
+    "impact": 1.5,
+    "air": 0.46,
+    "dist": 10.2,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
-   },
-   {
-    "d": 2790,
-    "impact": 7.2,
-    "air": 1.43,
-    "dist": 27.5,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3312,
-    "impact": 7.7,
-    "air": 1.11,
-    "dist": 14.4,
-    "feat": "cliff"
-   },
-   {
-    "d": 3674,
-    "impact": 5.4,
-    "air": 0.9,
-    "dist": 22.3,
-    "feat": "-",
-    "lane": -1
    }
   ],
-  "topSpeed": 27.304261089278963,
+  "topSpeed": 27.141868779900875,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
-  "issues": [
-   "Zone 4: Kicker (Seitenlinie) bei 1478 m landet bei Höchsttempo hart (18.1 m/s)",
-   "Zone 6: Kicker bei 2245 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2578 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2578 m verworfen (keine sichere Landung)",
-   "Zone 10: Kicker bei 3651 m verworfen (keine sichere Landung)",
-   "Zone 10: Kicker (Seitenlinie) bei 3651 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 4031 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 4031 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 4031 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 405,
+    "v": 25.6,
+    "vy": -0.1,
+    "x": 48
+   },
+   {
+    "d": 1814,
+    "v": 24.7,
+    "vy": 1.1,
+    "x": 10
+   },
+   {
+    "d": 2229,
+    "v": 20.8,
+    "vy": -3.7,
+    "x": -4
+   },
+   {
+    "d": 2259,
+    "v": 22.4,
+    "vy": -5.7,
+    "x": -25
+   },
+   {
+    "d": 3507,
+    "v": 22.6,
+    "vy": -2.1,
+    "x": -39
+   }
   ],
-  "features": 54,
-  "skipped": 5,
-  "zones": "S220 G367 C431 B345 C384 S289 C358 G310 B338 C434 C321 G403 B336 P513"
+  "issues": [
+   "Zone 3: Big Air bei 1171 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 56,
+  "skipped": 10,
+  "zones": "S220 G318 B330 B579 C488 C512 C377 G362 P530 S280 C403 G457 B343"
  },
  {
   "seed": 57,
   "mode": "Quer-Slalom aufrecht",
   "reached": 3800,
-  "time": 435.4,
+  "time": 305.5,
   "crashes": [],
   "landings": [
    {
-    "d": 848,
-    "impact": 9.6,
-    "air": 1.26,
-    "dist": 16,
+    "d": 554,
+    "impact": 2.9,
+    "air": 0.2,
+    "dist": 3.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 560,
+    "impact": 4.2,
+    "air": 0.3,
+    "dist": 5.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1170,
+    "impact": 6.4,
+    "air": 0.98,
+    "dist": 13.5,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 1682,
+    "impact": 5.9,
+    "air": 1.2,
+    "dist": 22.2,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1962,
+    "impact": 2.3,
+    "air": 0.31,
+    "dist": 6.1,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2241,
+    "impact": 11.2,
+    "air": 1.44,
+    "dist": 14.2,
     "feat": "cliff"
    },
    {
-    "d": 1524,
-    "impact": 10,
-    "air": 1.99,
-    "dist": 32.4,
+    "d": 2645,
+    "impact": 3.4,
+    "air": 0.45,
+    "dist": 7.8,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
-   },
-   {
-    "d": 2250,
-    "impact": 4.4,
-    "air": 1.11,
-    "dist": 23,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2789,
-    "impact": 4.2,
-    "air": 0.92,
-    "dist": 17.7,
-    "feat": "-",
-    "lane": -1
    }
   ],
-  "topSpeed": 24.25024732785781,
-  "stuck": 6,
+  "topSpeed": 23.51536357857704,
+  "stuck": 0,
   "hits": 0,
   "respawns": 0,
-  "stuckAt": [
+  "takeoffs": [
    {
-    "d": 3251,
-    "x": -99,
-    "zone": "cliff",
-    "pow": 0.52,
-    "sl": 0.22
+    "d": 552,
+    "v": 19.2,
+    "vy": -5.3,
+    "x": -46
    },
    {
-    "d": 3256,
-    "x": -65,
-    "zone": "cliff",
-    "pow": 0.03,
-    "sl": 0.22
+    "d": 556,
+    "v": 19.3,
+    "vy": -4.4,
+    "x": -42
    },
    {
-    "d": 3262,
-    "x": -67,
-    "zone": "cliff",
-    "pow": 0.03,
-    "sl": 0.22
+    "d": 1162,
+    "v": 14,
+    "vy": 0.5,
+    "x": 6
    },
    {
-    "d": 3268,
-    "x": -68,
-    "zone": "cliff",
-    "pow": 0.03,
-    "sl": 0.22
+    "d": 1663,
+    "v": 19.2,
+    "vy": 0.6,
+    "x": -59
    },
    {
-    "d": 3274,
-    "x": -69,
-    "zone": "cliff",
-    "pow": 0.03,
-    "sl": 0.22
+    "d": 1957,
+    "v": 20.8,
+    "vy": -5.4,
+    "x": 51
    },
    {
-    "d": 3281,
-    "x": -69,
-    "zone": "cliff",
-    "pow": 0.02,
-    "sl": 0.22
+    "d": 2233,
+    "v": 10.3,
+    "vy": -2.2,
+    "x": -58
+   },
+   {
+    "d": 2638,
+    "v": 17.9,
+    "vy": -3.8,
+    "x": -76
    }
   ],
   "issues": [
-   "Zone 4: Kicker (Seitenlinie) bei 1478 m landet bei Höchsttempo hart (18.1 m/s)",
-   "Zone 6: Kicker bei 2245 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2578 m verworfen (keine sichere Landung)",
-   "Zone 7: Waldkicker bei 2578 m verworfen (keine sichere Landung)",
-   "Zone 10: Kicker bei 3651 m verworfen (keine sichere Landung)",
-   "Zone 10: Kicker (Seitenlinie) bei 3651 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 4031 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 4031 m verworfen (keine sichere Landung)",
-   "Zone 11: Waldkicker bei 4031 m verworfen (keine sichere Landung)"
+   "Zone 3: Big Air bei 1171 m landet bei Höchsttempo hart (19.9 m/s)"
   ],
-  "features": 54,
-  "skipped": 5,
-  "zones": "S220 G367 C431 B345 C384 S289 C358 G310 B338 C434 C321 G403 B336 P513"
+  "features": 56,
+  "skipped": 10,
+  "zones": "S220 G318 B330 B579 C488 C512 C377 G362 P530 S280 C403 G457 B343"
  },
  {
   "seed": 64,
   "mode": "Frei -85 aufrecht",
   "reached": 3800,
-  "time": 222.8,
+  "time": 225.5,
   "crashes": [],
   "landings": [
    {
-    "d": 1195,
-    "impact": 8.8,
+    "d": 628,
+    "impact": 1.2,
+    "air": 0.3,
+    "dist": 6.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 925,
+    "impact": 2.3,
+    "air": 0.61,
+    "dist": 14,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1287,
+    "impact": 7.9,
     "air": 1.25,
-    "dist": 17.3,
+    "dist": 18.3,
     "feat": "cliff"
    },
    {
-    "d": 3770,
-    "impact": 8.7,
-    "air": 1.3,
-    "dist": 15.9,
+    "d": 2609,
+    "impact": 15.5,
+    "air": 2.5,
+    "dist": 27.1,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3400,
+    "impact": 10.6,
+    "air": 1.56,
+    "dist": 18.9,
     "feat": "cliff"
    }
   ],
-  "topSpeed": 25.504290396227887,
+  "topSpeed": 25.526163930104005,
   "stuck": 1,
   "hits": 0,
   "respawns": 0,
@@ -3623,55 +4943,124 @@
     "sl": 0.24
    }
   ],
-  "issues": [
-   "Zone 1: Kicker bei 353 m verworfen (keine sichere Landung)",
-   "Zone 1: Kicker (Seitenlinie) bei 333 m landet bei Höchsttempo hart (20.1 m/s)",
-   "Zone 7: Big Air bei 2782 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 11: Waldkicker bei 4245 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 621,
+    "v": 24.1,
+    "vy": -7,
+    "x": -81
+   },
+   {
+    "d": 911,
+    "v": 24.3,
+    "vy": -6.3,
+    "x": -81
+   },
+   {
+    "d": 1268,
+    "v": 15.5,
+    "vy": -3.6,
+    "x": -86
+   },
+   {
+    "d": 2598,
+    "v": 11.5,
+    "vy": 1.5,
+    "x": -50
+   },
+   {
+    "d": 3382,
+    "v": 12.8,
+    "vy": -2.5,
+    "x": -89
+   }
   ],
-  "features": 50,
-  "skipped": 3,
-  "zones": "S220 C358 B375 C394 P541 S275 B360 B455 P555 C384 F168 G364 B351 C205"
+  "issues": [
+   "Zone 5: Big Air bei 2260 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 36,
+  "skipped": 1,
+  "zones": "S220 C443 B366 C410 P583 B554 C240 B268 C514 B433 S392 C417 G406"
  },
  {
   "seed": 64,
   "mode": "Frei +85 Hocke",
   "reached": 3800,
-  "time": 175.8,
+  "time": 180.7,
   "crashes": [],
   "landings": [
    {
-    "d": 751,
-    "impact": 9.2,
-    "air": 2.36,
-    "dist": 64.8,
+    "d": 230,
+    "impact": 3.4,
+    "air": 0.42,
+    "dist": 9.9,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 838,
-    "impact": 7.7,
-    "air": 1.12,
-    "dist": 31.7,
+    "d": 716,
+    "impact": 3.2,
+    "air": 0.78,
+    "dist": 22.2,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1211,
-    "impact": 3.6,
-    "air": 1.22,
-    "dist": 26.4,
+    "d": 755,
+    "impact": 3.4,
+    "air": 0.5,
+    "dist": 13.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 777,
+    "impact": 2.6,
+    "air": 0.27,
+    "dist": 7.5,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1298,
+    "impact": 4.8,
+    "air": 1.36,
+    "dist": 30.3,
     "feat": "cliff"
    },
    {
-    "d": 3787,
-    "impact": 6.3,
-    "air": 1.57,
-    "dist": 30.7,
+    "d": 2609,
+    "impact": 17,
+    "air": 2.74,
+    "dist": 39,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2711,
+    "impact": 9.1,
+    "air": 0.72,
+    "dist": 19,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2811,
+    "impact": 13,
+    "air": 2.88,
+    "dist": 62.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3424,
+    "impact": 12.9,
+    "air": 2.17,
+    "dist": 42.7,
     "feat": "cliff"
    }
   ],
-  "topSpeed": 32.94056258358863,
+  "topSpeed": 33.849333886751246,
   "stuck": 1,
   "hits": 0,
   "respawns": 0,
@@ -3684,324 +5073,575 @@
     "sl": 0.24
    }
   ],
-  "issues": [
-   "Zone 1: Kicker bei 353 m verworfen (keine sichere Landung)",
-   "Zone 1: Kicker (Seitenlinie) bei 333 m landet bei Höchsttempo hart (20.1 m/s)",
-   "Zone 7: Big Air bei 2782 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 11: Waldkicker bei 4245 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 220,
+    "v": 25.2,
+    "vy": -7.3,
+    "x": 76
+   },
+   {
+    "d": 694,
+    "v": 29.9,
+    "vy": -6.5,
+    "x": 86
+   },
+   {
+    "d": 742,
+    "v": 30,
+    "vy": -9.3,
+    "x": 75
+   },
+   {
+    "d": 770,
+    "v": 30,
+    "vy": -9.9,
+    "x": 76
+   },
+   {
+    "d": 1268,
+    "v": 23.6,
+    "vy": -5.4,
+    "x": 85
+   },
+   {
+    "d": 2598,
+    "v": 15,
+    "vy": 2.5,
+    "x": 51
+   },
+   {
+    "d": 2692,
+    "v": 27.7,
+    "vy": -6.3,
+    "x": 6
+   },
+   {
+    "d": 2749,
+    "v": 23.5,
+    "vy": -2.6,
+    "x": 20
+   },
+   {
+    "d": 3383,
+    "v": 20.7,
+    "vy": -2.3,
+    "x": 81
+   }
   ],
-  "features": 50,
-  "skipped": 3,
-  "zones": "S220 C358 B375 C394 P541 S275 B360 B455 P555 C384 F168 G364 B351 C205"
+  "issues": [
+   "Zone 5: Big Air bei 2260 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 36,
+  "skipped": 1,
+  "zones": "S220 C443 B366 C410 P583 B554 C240 B268 C514 B433 S392 C417 G406"
  },
  {
   "seed": 64,
   "mode": "Frei +40 Hocke",
   "reached": 3800,
-  "time": 159.8,
+  "time": 158.3,
   "crashes": [],
   "landings": [
    {
-    "d": 545,
-    "impact": 1.5,
-    "air": 0.2,
-    "dist": 5.3,
+    "d": 677,
+    "impact": 4.9,
+    "air": 0.07,
+    "dist": 2,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1205,
-    "impact": 5.4,
-    "air": 1.18,
-    "dist": 23.8,
+    "d": 701,
+    "impact": 1.9,
+    "air": 0.87,
+    "dist": 22.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1301,
+    "impact": 5.3,
+    "air": 1.43,
+    "dist": 29.7,
     "feat": "cliff"
    },
    {
-    "d": 1775,
+    "d": 2259,
+    "impact": 1.4,
+    "air": 0.48,
+    "dist": 11.7,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 3114,
     "impact": 2.3,
-    "air": 0.32,
-    "dist": 8.1,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 2025,
-    "impact": 5.6,
-    "air": 1.29,
-    "dist": 32.2,
+    "air": 0.17,
+    "dist": 4.6,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2740,
-    "impact": 7.2,
-    "air": 1.52,
-    "dist": 36.7,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 3454,
-    "impact": 8.2,
-    "air": 1.64,
-    "dist": 40.8,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 3784,
-    "impact": 6.2,
-    "air": 1.41,
-    "dist": 27.1,
+    "d": 3415,
+    "impact": 2.6,
+    "air": 1.9,
+    "dist": 37.7,
     "feat": "cliff"
+   },
+   {
+    "d": 3576,
+    "impact": 2.4,
+    "air": 0.8,
+    "dist": 20.3,
+    "feat": "-",
+    "lane": -1
    }
   ],
-  "topSpeed": 31.000953720549006,
+  "topSpeed": 29.136008396392945,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
-  "issues": [
-   "Zone 1: Kicker bei 353 m verworfen (keine sichere Landung)",
-   "Zone 1: Kicker (Seitenlinie) bei 333 m landet bei Höchsttempo hart (20.1 m/s)",
-   "Zone 7: Big Air bei 2782 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 11: Waldkicker bei 4245 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 675,
+    "v": 28,
+    "vy": -9.1,
+    "x": 43
+   },
+   {
+    "d": 678,
+    "v": 27.6,
+    "vy": -5.1,
+    "x": 43
+   },
+   {
+    "d": 1271,
+    "v": 22,
+    "vy": -5.3,
+    "x": 39
+   },
+   {
+    "d": 2247,
+    "v": 25.1,
+    "vy": -3.2,
+    "x": 38
+   },
+   {
+    "d": 3110,
+    "v": 27.5,
+    "vy": -6.9,
+    "x": 42
+   },
+   {
+    "d": 3379,
+    "v": 20.9,
+    "vy": -3.3,
+    "x": 35
+   },
+   {
+    "d": 3556,
+    "v": 26.3,
+    "vy": -4.6,
+    "x": 43
+   }
   ],
-  "features": 50,
-  "skipped": 3,
-  "zones": "S220 C358 B375 C394 P541 S275 B360 B455 P555 C384 F168 G364 B351 C205"
+  "issues": [
+   "Zone 5: Big Air bei 2260 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 36,
+  "skipped": 1,
+  "zones": "S220 C443 B366 C410 P583 B554 C240 B268 C514 B433 S392 C417 G406"
  },
  {
   "seed": 64,
   "mode": "Quer-Slalom Hocke",
   "reached": 3800,
-  "time": 183.7,
+  "time": 191.9,
   "crashes": [],
   "landings": [
    {
-    "d": 416,
-    "impact": 3.3,
-    "air": 1.52,
-    "dist": 37.2,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 1050,
-    "impact": 6.1,
-    "air": 1.45,
-    "dist": 32.9,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 1204,
-    "impact": 7.8,
-    "air": 1.25,
-    "dist": 22.4,
-    "feat": "cliff"
-   },
-   {
-    "d": 1717,
-    "impact": 5.2,
-    "air": 0.14,
-    "dist": 3.6,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 1742,
-    "impact": 5.7,
-    "air": 1.1,
-    "dist": 26.8,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2324,
-    "impact": 4.2,
-    "air": 0.93,
-    "dist": 21.1,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3780,
-    "impact": 10.9,
-    "air": 1.49,
-    "dist": 24.4,
-    "feat": "cliff"
-   }
-  ],
-  "topSpeed": 28.026903458896456,
-  "stuck": 0,
-  "hits": 0,
-  "respawns": 0,
-  "issues": [
-   "Zone 1: Kicker bei 353 m verworfen (keine sichere Landung)",
-   "Zone 1: Kicker (Seitenlinie) bei 333 m landet bei Höchsttempo hart (20.1 m/s)",
-   "Zone 7: Big Air bei 2782 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 11: Waldkicker bei 4245 m verworfen (keine sichere Landung)"
-  ],
-  "features": 50,
-  "skipped": 3,
-  "zones": "S220 C358 B375 C394 P541 S275 B360 B455 P555 C384 F168 G364 B351 C205"
- },
- {
-  "seed": 64,
-  "mode": "Quer-Slalom aufrecht",
-  "reached": 3800,
-  "time": 292.8,
-  "crashes": [],
-  "landings": [
-   {
-    "d": 318,
-    "impact": 4.7,
-    "air": 0.53,
+    "d": 229,
+    "impact": 6.5,
+    "air": 0.45,
     "dist": 10.6,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 328,
-    "impact": 3.7,
-    "air": 0.51,
-    "dist": 9.9,
+    "d": 421,
+    "impact": 7.5,
+    "air": 1.9,
+    "dist": 45.8,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 626,
+    "impact": 1.6,
+    "air": 0.43,
+    "dist": 10.4,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 702,
-    "impact": 3.4,
-    "air": 0.97,
-    "dist": 16.8,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 1185,
-    "impact": 7.6,
-    "air": 1.04,
-    "dist": 9.6,
+    "d": 1287,
+    "impact": 5.1,
+    "air": 1.11,
+    "dist": 25.5,
     "feat": "cliff"
    },
    {
-    "d": 1719,
-    "impact": 6.7,
-    "air": 0.74,
-    "dist": 13.1,
+    "d": 2663,
+    "impact": 12.6,
+    "air": 2.47,
+    "dist": 54.4,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1730,
-    "impact": 4.4,
-    "air": 0.59,
-    "dist": 9.8,
+    "d": 2814,
+    "impact": 16,
+    "air": 3.2,
+    "dist": 66,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1759,
-    "impact": 3.1,
-    "air": 0.43,
-    "dist": 6.9,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 1769,
-    "impact": 2.6,
-    "air": 0.35,
-    "dist": 5.4,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 2037,
-    "impact": 5.4,
-    "air": 0.63,
-    "dist": 13.1,
+    "d": 2900,
+    "impact": 2.7,
+    "air": 0.49,
+    "dist": 10.2,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2899,
-    "impact": 14.4,
-    "air": 3.16,
-    "dist": 58.9,
-    "feat": "Big Air",
-    "lane": 0
+    "d": 3047,
+    "impact": 2.9,
+    "air": 0.62,
+    "dist": 15.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3405,
+    "impact": 12.1,
+    "air": 1.64,
+    "dist": 26.5,
+    "feat": "cliff"
    }
   ],
-  "topSpeed": 29.59507585480723,
+  "topSpeed": 35.97442433528877,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
-  "issues": [
-   "Zone 1: Kicker bei 353 m verworfen (keine sichere Landung)",
-   "Zone 1: Kicker (Seitenlinie) bei 333 m landet bei Höchsttempo hart (20.1 m/s)",
-   "Zone 7: Big Air bei 2782 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 11: Waldkicker bei 4245 m verworfen (keine sichere Landung)"
+  "takeoffs": [
+   {
+    "d": 220,
+    "v": 24.6,
+    "vy": -5.7,
+    "x": 87
+   },
+   {
+    "d": 379,
+    "v": 25.3,
+    "vy": 0.6,
+    "x": 63
+   },
+   {
+    "d": 617,
+    "v": 25.1,
+    "vy": -4.6,
+    "x": -87
+   },
+   {
+    "d": 1266,
+    "v": 24,
+    "vy": -4.5,
+    "x": 61
+   },
+   {
+    "d": 2617,
+    "v": 23.6,
+    "vy": -2,
+    "x": -28
+   },
+   {
+    "d": 2748,
+    "v": 23.5,
+    "vy": -5.2,
+    "x": 26
+   },
+   {
+    "d": 2892,
+    "v": 21.5,
+    "vy": -4.6,
+    "x": 88
+   },
+   {
+    "d": 3039,
+    "v": 25.1,
+    "vy": -1.8,
+    "x": 86
+   },
+   {
+    "d": 3382,
+    "v": 17,
+    "vy": -3.6,
+    "x": -103
+   }
   ],
-  "features": 50,
-  "skipped": 3,
-  "zones": "S220 C358 B375 C394 P541 S275 B360 B455 P555 C384 F168 G364 B351 C205"
+  "issues": [
+   "Zone 5: Big Air bei 2260 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 36,
+  "skipped": 1,
+  "zones": "S220 C443 B366 C410 P583 B554 C240 B268 C514 B433 S392 C417 G406"
+ },
+ {
+  "seed": 64,
+  "mode": "Quer-Slalom aufrecht",
+  "reached": 3800,
+  "time": 290.2,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 227,
+    "impact": 3.4,
+    "air": 0.34,
+    "dist": 6.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 278,
+    "impact": 2.9,
+    "air": 0.75,
+    "dist": 16,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 595,
+    "impact": 2.8,
+    "air": 0.33,
+    "dist": 7.1,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 624,
+    "impact": 3.4,
+    "air": 0.19,
+    "dist": 4,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1737,
+    "impact": 7.3,
+    "air": 1.57,
+    "dist": 24.2,
+    "feat": "Tischsprung",
+    "lane": 0
+   },
+   {
+    "d": 1748,
+    "impact": 7.8,
+    "air": 0.66,
+    "dist": 10.3,
+    "feat": "Tischsprung",
+    "lane": 0
+   },
+   {
+    "d": 2314,
+    "impact": 9.6,
+    "air": 2.35,
+    "dist": 34.6,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 2336,
+    "impact": 8.8,
+    "air": 1.05,
+    "dist": 18,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 2675,
+    "impact": 9.2,
+    "air": 2.13,
+    "dist": 41.4,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2955,
+    "impact": 3.6,
+    "air": 0.67,
+    "dist": 13.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3388,
+    "impact": 9.4,
+    "air": 1.31,
+    "dist": 11.8,
+    "feat": "cliff"
+   },
+   {
+    "d": 3767,
+    "impact": 2.3,
+    "air": 0.57,
+    "dist": 9.3,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 27.105859306448803,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 220,
+    "v": 21.5,
+    "vy": -7.2,
+    "x": 76
+   },
+   {
+    "d": 266,
+    "v": 21.9,
+    "vy": -1.7,
+    "x": 48
+   },
+   {
+    "d": 589,
+    "v": 22.3,
+    "vy": -6,
+    "x": 0
+   },
+   {
+    "d": 621,
+    "v": 21.6,
+    "vy": -5,
+    "x": 36
+   },
+   {
+    "d": 1717,
+    "v": 16.9,
+    "vy": 5.4,
+    "x": -5
+   },
+   {
+    "d": 1740,
+    "v": 16.2,
+    "vy": -3.2,
+    "x": 14
+   },
+   {
+    "d": 2282,
+    "v": 16.1,
+    "vy": 4.2,
+    "x": -9
+   },
+   {
+    "d": 2322,
+    "v": 19.6,
+    "vy": -8.4,
+    "x": 10
+   },
+   {
+    "d": 2634,
+    "v": 20.8,
+    "vy": -1.1,
+    "x": -16
+   },
+   {
+    "d": 2943,
+    "v": 22.5,
+    "vy": -9.5,
+    "x": 90
+   },
+   {
+    "d": 3383,
+    "v": 9.4,
+    "vy": -2,
+    "x": -38
+   },
+   {
+    "d": 3760,
+    "v": 16.9,
+    "vy": -2.7,
+    "x": -64
+   }
+  ],
+  "issues": [
+   "Zone 5: Big Air bei 2260 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 36,
+  "skipped": 1,
+  "zones": "S220 C443 B366 C410 P583 B554 C240 B268 C514 B433 S392 C417 G406"
  },
  {
   "seed": 71,
   "mode": "Frei -85 aufrecht",
   "reached": 3800,
-  "time": 231,
+  "time": 231.4,
   "crashes": [],
   "landings": [
    {
-    "d": 836,
-    "impact": 5.6,
-    "air": 0.74,
-    "dist": 13.6,
+    "d": 1687,
+    "impact": 14.8,
+    "air": 2.68,
+    "dist": 34.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2666,
+    "impact": 8.6,
+    "air": 1.26,
+    "dist": 14.6,
     "feat": "cliff"
    },
    {
-    "d": 1523,
-    "impact": 15.6,
-    "air": 2.67,
-    "dist": 33.5,
+    "d": 3144,
+    "impact": 1.2,
+    "air": 0.36,
+    "dist": 8.1,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1636,
-    "impact": 6.6,
-    "air": 1.59,
-    "dist": 34.4,
+    "d": 3341,
+    "impact": 13.9,
+    "air": 2.77,
+    "dist": 40.8,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2439,
-    "impact": 8.8,
-    "air": 1.18,
-    "dist": 13.1,
-    "feat": "cliff"
-   },
-   {
-    "d": 2661,
-    "impact": 0.9,
-    "air": 0.82,
-    "dist": 13.7,
+    "d": 3391,
+    "impact": 5.4,
+    "air": 1.23,
+    "dist": 23,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2665,
-    "impact": 4.7,
-    "air": 0.21,
-    "dist": 3.5,
+    "d": 3493,
+    "impact": 9.1,
+    "air": 1.77,
+    "dist": 36.4,
     "feat": "-",
     "lane": -1
    }
   ],
-  "topSpeed": 27.847402615122004,
+  "topSpeed": 28.09846079379469,
   "stuck": 1,
   "hits": 0,
   "respawns": 0,
@@ -4014,78 +5654,115 @@
     "sl": 0.24
    }
   ],
+  "takeoffs": [
+   {
+    "d": 1675,
+    "v": 13.9,
+    "vy": 2,
+    "x": -57
+   },
+   {
+    "d": 2651,
+    "v": 12.3,
+    "vy": -3,
+    "x": -87
+   },
+   {
+    "d": 3136,
+    "v": 24.2,
+    "vy": -7.5,
+    "x": -82
+   },
+   {
+    "d": 3326,
+    "v": 16.1,
+    "vy": 2.8,
+    "x": -71
+   },
+   {
+    "d": 3369,
+    "v": 20,
+    "vy": -4.7,
+    "x": -12
+   },
+   {
+    "d": 3457,
+    "v": 22.5,
+    "vy": -4.9,
+    "x": -15
+   }
+  ],
   "issues": [
-   "Zone 4: Kicker bei 1316 m verworfen (keine sichere Landung)",
-   "Zone 4: Kicker (Seitenlinie) bei 1284 m landet bei Höchsttempo hart (17.1 m/s)",
-   "Zone 4: Kicker (Seitenlinie) bei 1344 m verworfen (keine sichere Landung)",
-   "Zone 13: Waldkicker bei 4372 m verworfen (keine sichere Landung)"
+   "Zone 4: Kicker (Seitenlinie) bei 1453 m landet bei Höchsttempo hart (17.3 m/s)"
   ],
   "features": 48,
-  "skipped": 3,
-  "zones": "S220 C362 C419 F148 C337 C205 P514 C382 B408 S231 P528 S304 F161 G386 B414"
+  "skipped": 4,
+  "zones": "S220 C447 B383 S269 C332 C205 P607 C319 B524 C209 P542 S233 F148 G302 B394"
  },
  {
   "seed": 71,
   "mode": "Frei +85 Hocke",
   "reached": 3800,
-  "time": 188.3,
+  "time": 188.4,
   "crashes": [],
   "landings": [
    {
-    "d": 847,
-    "impact": 4.5,
-    "air": 1.37,
-    "dist": 26.2,
-    "feat": "cliff"
+    "d": 397,
+    "impact": 6.1,
+    "air": 0.78,
+    "dist": 18.4,
+    "feat": "Kicker",
+    "lane": 0
    },
    {
-    "d": 1520,
-    "impact": 18.1,
-    "air": 2.97,
-    "dist": 46.5,
+    "d": 503,
+    "impact": 4.2,
+    "air": 0.59,
+    "dist": 15.3,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1669,
-    "impact": 16.4,
-    "air": 3.47,
-    "dist": 80,
+    "d": 522,
+    "impact": 3,
+    "air": 0.38,
+    "dist": 9.8,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 2
+   },
+   {
+    "d": 1686,
+    "impact": 19.7,
+    "air": 3.07,
+    "dist": 49.6,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2442,
-    "impact": 7.7,
-    "air": 1.2,
-    "dist": 21.7,
-    "feat": "cliff"
-   },
-   {
-    "d": 2464,
-    "impact": 7.3,
-    "air": 0.73,
-    "dist": 14.1,
-    "feat": "cliff"
-   },
-   {
-    "d": 2790,
-    "impact": 5.2,
-    "air": 0.85,
-    "dist": 23.6,
+    "d": 1773,
+    "impact": 4.9,
+    "air": 0.69,
+    "dist": 16.8,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2959,
-    "impact": 1.6,
-    "air": 0.29,
-    "dist": 8.2,
+    "d": 2670,
+    "impact": 8.7,
+    "air": 1.45,
+    "dist": 25.2,
+    "feat": "cliff"
+   },
+   {
+    "d": 3347,
+    "impact": 14.3,
+    "air": 3.09,
+    "dist": 50.7,
     "feat": "-",
     "lane": -1
    }
   ],
-  "topSpeed": 34.09057435103299,
+  "topSpeed": 30.644625342593375,
   "stuck": 1,
   "hits": 0,
   "respawns": 0,
@@ -4098,405 +5775,575 @@
     "sl": 0.24
    }
   ],
+  "takeoffs": [
+   {
+    "d": 380,
+    "v": 24.2,
+    "vy": -4.1,
+    "x": 87
+   },
+   {
+    "d": 488,
+    "v": 26.6,
+    "vy": -4,
+    "x": 78
+   },
+   {
+    "d": 513,
+    "v": 26.9,
+    "vy": -5.5,
+    "x": 77
+   },
+   {
+    "d": 1675,
+    "v": 17.2,
+    "vy": 2.5,
+    "x": 62
+   },
+   {
+    "d": 1756,
+    "v": 27.6,
+    "vy": -12.1,
+    "x": -5
+   },
+   {
+    "d": 2645,
+    "v": 18.1,
+    "vy": -3.1,
+    "x": 83
+   },
+   {
+    "d": 3326,
+    "v": 18.2,
+    "vy": 5.7,
+    "x": 70
+   }
+  ],
   "issues": [
-   "Zone 4: Kicker bei 1316 m verworfen (keine sichere Landung)",
-   "Zone 4: Kicker (Seitenlinie) bei 1284 m landet bei Höchsttempo hart (17.1 m/s)",
-   "Zone 4: Kicker (Seitenlinie) bei 1344 m verworfen (keine sichere Landung)",
-   "Zone 13: Waldkicker bei 4372 m verworfen (keine sichere Landung)"
+   "Zone 4: Kicker (Seitenlinie) bei 1453 m landet bei Höchsttempo hart (17.3 m/s)"
   ],
   "features": 48,
-  "skipped": 3,
-  "zones": "S220 C362 C419 F148 C337 C205 P514 C382 B408 S231 P528 S304 F161 G386 B414"
+  "skipped": 4,
+  "zones": "S220 C447 B383 S269 C332 C205 P607 C319 B524 C209 P542 S233 F148 G302 B394"
  },
  {
   "seed": 71,
   "mode": "Frei +40 Hocke",
   "reached": 3800,
-  "time": 165.8,
+  "time": 173,
   "crashes": [],
   "landings": [
    {
-    "d": 850,
-    "impact": 7.9,
-    "air": 1.45,
-    "dist": 28.8,
-    "feat": "cliff"
-   },
-   {
-    "d": 1603,
-    "impact": 6.2,
-    "air": 2.97,
-    "dist": 69.3,
+    "d": 247,
+    "impact": 9.3,
+    "air": 2.43,
+    "dist": 26.4,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1951,
-    "impact": 5.4,
-    "air": 0.49,
-    "dist": 12.2,
-    "feat": "Tischsprung",
-    "lane": 0
+    "d": 690,
+    "impact": 3.3,
+    "air": 0.34,
+    "dist": 8.3,
+    "feat": "-",
+    "lane": -1
    },
    {
-    "d": 1980,
-    "impact": 4.5,
-    "air": 0.24,
-    "dist": 6.1,
-    "feat": "Tischsprung",
-    "lane": 0
+    "d": 700,
+    "impact": 1.7,
+    "air": 0.31,
+    "dist": 7.6,
+    "feat": "-",
+    "lane": -1
    },
    {
-    "d": 2000,
-    "impact": 4.3,
-    "air": 0.68,
-    "dist": 16.8,
-    "feat": "Tischsprung",
-    "lane": 0
-   },
-   {
-    "d": 2451,
-    "impact": 7.2,
-    "air": 1.29,
-    "dist": 23.5,
-    "feat": "cliff"
-   },
-   {
-    "d": 2583,
+    "d": 1039,
     "impact": 3.1,
-    "air": 1.03,
-    "dist": 24.3,
+    "air": 1.14,
+    "dist": 29.3,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3413,
-    "impact": 7.1,
-    "air": 1.43,
-    "dist": 36.5,
+    "d": 1774,
+    "impact": 14.4,
+    "air": 3.12,
+    "dist": 72.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2056,
+    "impact": 7.6,
+    "air": 1.48,
+    "dist": 37.4,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
+   },
+   {
+    "d": 2266,
+    "impact": 7.3,
+    "air": 1.6,
+    "dist": 37.9,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2670,
+    "impact": 7.3,
+    "air": 1.18,
+    "dist": 22.1,
+    "feat": "cliff"
+   },
+   {
+    "d": 3404,
+    "impact": 16.6,
+    "air": 2.65,
+    "dist": 59,
+    "feat": "-",
+    "lane": -1
    }
   ],
-  "topSpeed": 32.9114022484589,
+  "topSpeed": 33.91937466215401,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 221,
+    "v": 14.5,
+    "vy": 9.3,
+    "x": 40
+   },
+   {
+    "d": 682,
+    "v": 25.4,
+    "vy": -7.3,
+    "x": 34
+   },
+   {
+    "d": 692,
+    "v": 26,
+    "vy": -7.6,
+    "x": 35
+   },
+   {
+    "d": 1011,
+    "v": 27.9,
+    "vy": -7.7,
+    "x": 52
+   },
+   {
+    "d": 1709,
+    "v": 25.4,
+    "vy": -0.1,
+    "x": 20
+   },
+   {
+    "d": 2018,
+    "v": 26.2,
+    "vy": 1.8,
+    "x": 33
+   },
+   {
+    "d": 2228,
+    "v": 24.6,
+    "vy": 2.5,
+    "x": 33
+   },
+   {
+    "d": 2648,
+    "v": 19.6,
+    "vy": -4.1,
+    "x": 37
+   },
+   {
+    "d": 3358,
+    "v": 23.8,
+    "vy": 2.7,
+    "x": 23
+   }
+  ],
   "issues": [
-   "Zone 4: Kicker bei 1316 m verworfen (keine sichere Landung)",
-   "Zone 4: Kicker (Seitenlinie) bei 1284 m landet bei Höchsttempo hart (17.1 m/s)",
-   "Zone 4: Kicker (Seitenlinie) bei 1344 m verworfen (keine sichere Landung)",
-   "Zone 13: Waldkicker bei 4372 m verworfen (keine sichere Landung)"
+   "Zone 4: Kicker (Seitenlinie) bei 1453 m landet bei Höchsttempo hart (17.3 m/s)"
   ],
   "features": 48,
-  "skipped": 3,
-  "zones": "S220 C362 C419 F148 C337 C205 P514 C382 B408 S231 P528 S304 F161 G386 B414"
+  "skipped": 4,
+  "zones": "S220 C447 B383 S269 C332 C205 P607 C319 B524 C209 P542 S233 F148 G302 B394"
  },
  {
   "seed": 71,
   "mode": "Quer-Slalom Hocke",
   "reached": 3800,
-  "time": 196.7,
+  "time": 203,
   "crashes": [],
   "landings": [
    {
-    "d": 406,
-    "impact": 9.3,
-    "air": 2.26,
-    "dist": 51.4,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
+    "d": 393,
+    "impact": 8.3,
+    "air": 2,
+    "dist": 44.1,
+    "feat": "Kicker",
+    "lane": 0
    },
    {
-    "d": 852,
-    "impact": 9.4,
-    "air": 1.45,
-    "dist": 30.8,
-    "feat": "cliff"
-   },
-   {
-    "d": 1519,
-    "impact": 17.8,
-    "air": 2.8,
-    "dist": 29.6,
+    "d": 1006,
+    "impact": 13.7,
+    "air": 0.8,
+    "dist": 18.7,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1625,
-    "impact": 8.6,
-    "air": 1.56,
-    "dist": 33.9,
+    "d": 1051,
+    "impact": 7.8,
+    "air": 2.18,
+    "dist": 43.6,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1817,
-    "impact": 6.8,
-    "air": 1.4,
-    "dist": 34.3,
+    "d": 1338,
+    "impact": 2.8,
+    "air": 0.14,
+    "dist": 3.4,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2446,
-    "impact": 9.8,
-    "air": 1.34,
-    "dist": 20.2,
-    "feat": "cliff"
-   },
-   {
-    "d": 2609,
-    "impact": 2.9,
+    "d": 1354,
+    "impact": 1.5,
     "air": 0.2,
-    "dist": 4.2,
+    "dist": 4.9,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2780,
-    "impact": 7.3,
-    "air": 0.48,
-    "dist": 11.6,
+    "d": 1690,
+    "impact": 16.2,
+    "air": 2.76,
+    "dist": 47.2,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2806,
-    "impact": 4.5,
-    "air": 1.12,
-    "dist": 26.9,
+    "d": 1833,
+    "impact": 19.2,
+    "air": 2.84,
+    "dist": 46,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3516,
-    "impact": 6.8,
-    "air": 1.31,
-    "dist": 32.2,
+    "d": 2663,
+    "impact": 9.5,
+    "air": 1.39,
+    "dist": 23,
+    "feat": "cliff"
+   },
+   {
+    "d": 3208,
+    "impact": 3.7,
+    "air": 0.87,
+    "dist": 18.3,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3591,
-    "impact": 11.9,
-    "air": 2.27,
-    "dist": 48.1,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
+    "d": 3333,
+    "impact": 17.4,
+    "air": 2.93,
+    "dist": 32.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3404,
+    "impact": 12.4,
+    "air": 2.63,
+    "dist": 38.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3587,
+    "impact": 2.9,
+    "air": 0.34,
+    "dist": 8.6,
+    "feat": "-",
+    "lane": -1
    }
   ],
-  "topSpeed": 29.886595864445823,
+  "topSpeed": 33.35683707515336,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 356,
+    "v": 23.3,
+    "vy": 3.6,
+    "x": 85
+   },
+   {
+    "d": 988,
+    "v": 24.4,
+    "vy": -5,
+    "x": 66
+   },
+   {
+    "d": 1007,
+    "v": 20.9,
+    "vy": 0.7,
+    "x": 78
+   },
+   {
+    "d": 1335,
+    "v": 26,
+    "vy": -9,
+    "x": 8
+   },
+   {
+    "d": 1350,
+    "v": 26,
+    "vy": -7.8,
+    "x": -4
+   },
+   {
+    "d": 1675,
+    "v": 18.1,
+    "vy": 2.1,
+    "x": -57
+   },
+   {
+    "d": 1789,
+    "v": 18.3,
+    "vy": -6,
+    "x": 27
+   },
+   {
+    "d": 2646,
+    "v": 17,
+    "vy": -2,
+    "x": -20
+   },
+   {
+    "d": 3192,
+    "v": 21.3,
+    "vy": 0.2,
+    "x": -61
+   },
+   {
+    "d": 3326,
+    "v": 11.7,
+    "vy": 1.2,
+    "x": -80
+   },
+   {
+    "d": 3367,
+    "v": 15.4,
+    "vy": 0.1,
+    "x": -18
+   },
+   {
+    "d": 3580,
+    "v": 25.6,
+    "vy": -2.9,
+    "x": 12
+   }
+  ],
   "issues": [
-   "Zone 4: Kicker bei 1316 m verworfen (keine sichere Landung)",
-   "Zone 4: Kicker (Seitenlinie) bei 1284 m landet bei Höchsttempo hart (17.1 m/s)",
-   "Zone 4: Kicker (Seitenlinie) bei 1344 m verworfen (keine sichere Landung)",
-   "Zone 13: Waldkicker bei 4372 m verworfen (keine sichere Landung)"
+   "Zone 4: Kicker (Seitenlinie) bei 1453 m landet bei Höchsttempo hart (17.3 m/s)"
   ],
   "features": 48,
-  "skipped": 3,
-  "zones": "S220 C362 C419 F148 C337 C205 P514 C382 B408 S231 P528 S304 F161 G386 B414"
+  "skipped": 4,
+  "zones": "S220 C447 B383 S269 C332 C205 P607 C319 B524 C209 P542 S233 F148 G302 B394"
  },
  {
   "seed": 71,
   "mode": "Quer-Slalom aufrecht",
   "reached": 3800,
-  "time": 457.8,
+  "time": 300.5,
   "crashes": [],
   "landings": [
    {
-    "d": 340,
-    "impact": 6,
-    "air": 0.54,
-    "dist": 8,
+    "d": 543,
+    "impact": 7.8,
+    "air": 1.49,
+    "dist": 22.8,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 2
+   },
+   {
+    "d": 955,
+    "impact": 2.6,
+    "air": 0.59,
+    "dist": 11.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1522,
+    "impact": 9.2,
+    "air": 1.78,
+    "dist": 34,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
    },
    {
-    "d": 383,
-    "impact": 3.8,
-    "air": 0.72,
-    "dist": 10.8,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
+    "d": 1838,
+    "impact": 15.4,
+    "air": 2.7,
+    "dist": 48.7,
+    "feat": "-",
+    "lane": -1
    },
    {
-    "d": 834,
-    "impact": 3.5,
-    "air": 0.95,
-    "dist": 14.1,
+    "d": 2656,
+    "impact": 8.6,
+    "air": 1.05,
+    "dist": 5.6,
     "feat": "cliff"
    },
    {
-    "d": 1579,
-    "impact": 15.6,
-    "air": 2.67,
-    "dist": 36.5,
+    "d": 2817,
+    "impact": 1.7,
+    "air": 0.29,
+    "dist": 4.7,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1644,
-    "impact": 10.7,
-    "air": 2.63,
-    "dist": 50.4,
+    "d": 3335,
+    "impact": 14.2,
+    "air": 2.52,
+    "dist": 30.6,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2661,
-    "impact": 4.8,
-    "air": 1.02,
-    "dist": 16.2,
+    "d": 3398,
+    "impact": 9.8,
+    "air": 2.04,
+    "dist": 31.6,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2667,
-    "impact": 4.4,
-    "air": 0.4,
-    "dist": 6.4,
-    "feat": "-",
-    "lane": -1
+    "d": 3723,
+    "impact": 5.7,
+    "air": 0.72,
+    "dist": 11.1,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
    },
    {
-    "d": 2953,
-    "impact": 1.9,
-    "air": 0.34,
-    "dist": 5.9,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3101,
-    "impact": 2.1,
-    "air": 0.33,
-    "dist": 6.9,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3389,
-    "impact": 6.5,
-    "air": 1.06,
-    "dist": 20.2,
+    "d": 3752,
+    "impact": 4.6,
+    "air": 0.9,
+    "dist": 11.3,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
    }
   ],
-  "topSpeed": 28.668838139084716,
-  "stuck": 8,
+  "topSpeed": 30.22038478470716,
+  "stuck": 0,
   "hits": 0,
   "respawns": 0,
-  "stuckAt": [
+  "takeoffs": [
    {
-    "d": 2370,
-    "x": 84,
-    "zone": "cliff",
-    "pow": 0.52,
-    "sl": 0.23
+    "d": 527,
+    "v": 16.1,
+    "vy": 3.2,
+    "x": -76
    },
    {
-    "d": 2378,
-    "x": 61,
-    "zone": "cliff",
-    "pow": 0.03,
-    "sl": 0.23
+    "d": 947,
+    "v": 20.2,
+    "vy": -2.5,
+    "x": -66
    },
    {
-    "d": 2384,
-    "x": 58,
-    "zone": "cliff",
-    "pow": 0.03,
-    "sl": 0.23
+    "d": 1492,
+    "v": 20.2,
+    "vy": 2.1,
+    "x": -60
    },
    {
-    "d": 2391,
-    "x": 59,
-    "zone": "cliff",
-    "pow": 0.03,
-    "sl": 0.23
+    "d": 1790,
+    "v": 19.8,
+    "vy": -2,
+    "x": 20
    },
    {
-    "d": 2398,
-    "x": 59,
-    "zone": "cliff",
-    "pow": 0.03,
-    "sl": 0.23
+    "d": 2652,
+    "v": 5.9,
+    "vy": -2.4,
+    "x": -87
    },
    {
-    "d": 2404,
-    "x": 58,
-    "zone": "cliff",
-    "pow": 0.03,
-    "sl": 0.23
+    "d": 2814,
+    "v": 16.6,
+    "vy": -3.9,
+    "x": -45
    },
    {
-    "d": 2411,
-    "x": 60,
-    "zone": "cliff",
-    "pow": 0.03,
-    "sl": 0.23
+    "d": 3326,
+    "v": 12.8,
+    "vy": 0.9,
+    "x": -73
    },
    {
-    "d": 2418,
-    "x": 61,
-    "zone": "cliff",
-    "pow": 0.03,
-    "sl": 0.23
+    "d": 3368,
+    "v": 16.4,
+    "vy": -1.1,
+    "x": -15
+   },
+   {
+    "d": 3716,
+    "v": 15.8,
+    "vy": -0.1,
+    "x": -7
+   },
+   {
+    "d": 3745,
+    "v": 12.9,
+    "vy": 1.5,
+    "x": -35
    }
   ],
   "issues": [
-   "Zone 4: Kicker bei 1316 m verworfen (keine sichere Landung)",
-   "Zone 4: Kicker (Seitenlinie) bei 1284 m landet bei Höchsttempo hart (17.1 m/s)",
-   "Zone 4: Kicker (Seitenlinie) bei 1344 m verworfen (keine sichere Landung)",
-   "Zone 13: Waldkicker bei 4372 m verworfen (keine sichere Landung)"
+   "Zone 4: Kicker (Seitenlinie) bei 1453 m landet bei Höchsttempo hart (17.3 m/s)"
   ],
   "features": 48,
-  "skipped": 3,
-  "zones": "S220 C362 C419 F148 C337 C205 P514 C382 B408 S231 P528 S304 F161 G386 B414"
+  "skipped": 4,
+  "zones": "S220 C447 B383 S269 C332 C205 P607 C319 B524 C209 P542 S233 F148 G302 B394"
  },
  {
   "seed": 78,
   "mode": "Frei -85 aufrecht",
   "reached": 3800,
-  "time": 243.4,
+  "time": 228.9,
   "crashes": [],
   "landings": [
    {
-    "d": 772,
-    "impact": 10,
-    "air": 1.32,
-    "dist": 17.3,
+    "d": 1947,
+    "impact": 10.5,
+    "air": 1.7,
+    "dist": 19.6,
     "feat": "cliff"
    },
    {
-    "d": 1925,
-    "impact": 10.8,
-    "air": 1.51,
-    "dist": 18,
-    "feat": "cliff"
-   },
-   {
-    "d": 2391,
-    "impact": 7.1,
-    "air": 1.5,
-    "dist": 34.4,
+    "d": 2263,
+    "impact": 22.3,
+    "air": 3.18,
+    "dist": 57.6,
     "feat": "-",
     "lane": -1
-   },
-   {
-    "d": 3493,
-    "impact": 10.8,
-    "air": 1.62,
-    "dist": 17.5,
-    "feat": "cliff"
    }
   ],
-  "topSpeed": 27.01903011634693,
+  "topSpeed": 37.751493372964056,
   "stuck": 1,
   "hits": 0,
   "respawns": 0,
@@ -4509,65 +6356,91 @@
     "sl": 0.24
    }
   ],
-  "issues": [
-   "Zone 1: Kicker bei 423 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 424 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 424 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 424 m verworfen (keine sichere Landung)",
-   "Zone 5: Kicker bei 1567 m verworfen (keine sichere Landung)",
-   "Zone 5: Kicker (Seitenlinie) bei 1524 m verworfen (keine sichere Landung)",
-   "Zone 14: Big Air bei 4767 m landet bei Höchsttempo hart (19.9 m/s)"
+  "takeoffs": [
+   {
+    "d": 1928,
+    "v": 12.3,
+    "vy": -2.8,
+    "x": -84
+   },
+   {
+    "d": 2205,
+    "v": 23,
+    "vy": -10.2,
+    "x": -33
+   }
   ],
-  "features": 42,
-  "skipped": 3,
-  "zones": "S220 G315 C372 S273 F151 C356 C379 S230 B406 P555 C380 C255 B341 C360 B426"
+  "issues": [
+   "Zone 14: Big Air bei 4755 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 48,
+  "skipped": 2,
+  "zones": "S220 G248 B320 F157 S343 C450 C325 C208 B486 G517 S205 C454 C228 C444 B382"
  },
  {
   "seed": 78,
   "mode": "Frei +85 Hocke",
   "reached": 3800,
-  "time": 184.7,
+  "time": 182.4,
   "crashes": [],
   "landings": [
    {
-    "d": 777,
-    "impact": 7.4,
-    "air": 1.15,
-    "dist": 24.2,
-    "feat": "cliff"
-   },
-   {
-    "d": 1916,
-    "impact": 2.5,
-    "air": 0.41,
-    "dist": 10.3,
-    "feat": "cliff"
-   },
-   {
-    "d": 3507,
-    "impact": 6.7,
-    "air": 1.52,
-    "dist": 27.4,
-    "feat": "cliff"
-   },
-   {
-    "d": 3662,
-    "impact": 14.4,
-    "air": 2.79,
-    "dist": 44.2,
+    "d": 546,
+    "impact": 3.7,
+    "air": 0.58,
+    "dist": 15,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3771,
-    "impact": 9.9,
-    "air": 0.82,
-    "dist": 23,
+    "d": 563,
+    "impact": 2.4,
+    "air": 0.29,
+    "dist": 7.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 798,
+    "impact": 4.7,
+    "air": 1.07,
+    "dist": 30.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1494,
+    "impact": 4.1,
+    "air": 0.33,
+    "dist": 9.5,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 1616,
+    "impact": 9.7,
+    "air": 2.17,
+    "dist": 59.3,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 2
+   },
+   {
+    "d": 1964,
+    "impact": 5.5,
+    "air": 1.82,
+    "dist": 36.9,
+    "feat": "cliff"
+   },
+   {
+    "d": 2171,
+    "impact": 5.6,
+    "air": 3.33,
+    "dist": 45.8,
     "feat": "-",
     "lane": -1
    }
   ],
-  "topSpeed": 30.51399845692124,
+  "topSpeed": 33.315838901967766,
   "stuck": 1,
   "hits": 0,
   "respawns": 0,
@@ -4580,338 +6453,555 @@
     "sl": 0.24
    }
   ],
-  "issues": [
-   "Zone 1: Kicker bei 423 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 424 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 424 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 424 m verworfen (keine sichere Landung)",
-   "Zone 5: Kicker bei 1567 m verworfen (keine sichere Landung)",
-   "Zone 5: Kicker (Seitenlinie) bei 1524 m verworfen (keine sichere Landung)",
-   "Zone 14: Big Air bei 4767 m landet bei Höchsttempo hart (19.9 m/s)"
+  "takeoffs": [
+   {
+    "d": 533,
+    "v": 26.9,
+    "vy": -6.7,
+    "x": 96
+   },
+   {
+    "d": 555,
+    "v": 28.2,
+    "vy": -9.4,
+    "x": 90
+   },
+   {
+    "d": 768,
+    "v": 29.7,
+    "vy": -2.8,
+    "x": 77
+   },
+   {
+    "d": 1485,
+    "v": 29.8,
+    "vy": -4.9,
+    "x": 100
+   },
+   {
+    "d": 1560,
+    "v": 29.1,
+    "vy": 2.4,
+    "x": 97
+   },
+   {
+    "d": 1927,
+    "v": 21.5,
+    "vy": -4.1,
+    "x": 89
+   },
+   {
+    "d": 2128,
+    "v": 14.7,
+    "vy": -1.5,
+    "x": 28
+   }
   ],
-  "features": 42,
-  "skipped": 3,
-  "zones": "S220 G315 C372 S273 F151 C356 C379 S230 B406 P555 C380 C255 B341 C360 B426"
+  "issues": [
+   "Zone 14: Big Air bei 4755 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 48,
+  "skipped": 2,
+  "zones": "S220 G248 B320 F157 S343 C450 C325 C208 B486 G517 S205 C454 C228 C444 B382"
  },
  {
   "seed": 78,
   "mode": "Frei +40 Hocke",
   "reached": 3800,
-  "time": 168.3,
+  "time": 167.1,
   "crashes": [],
   "landings": [
    {
-    "d": 775,
-    "impact": 7.8,
-    "air": 1.46,
-    "dist": 27.2,
-    "feat": "cliff"
-   },
-   {
-    "d": 1024,
-    "impact": 2.2,
-    "air": 0.53,
-    "dist": 12.9,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 1943,
-    "impact": 4.9,
-    "air": 1.78,
-    "dist": 35.1,
-    "feat": "cliff"
-   },
-   {
-    "d": 2694,
-    "impact": 2.5,
-    "air": 0.29,
-    "dist": 7.7,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3082,
-    "impact": 6.7,
-    "air": 1.28,
-    "dist": 29.9,
-    "feat": "Tischsprung",
-    "lane": 0
-   },
-   {
-    "d": 3501,
-    "impact": 9.8,
-    "air": 1.46,
-    "dist": 25.3,
-    "feat": "cliff"
-   },
-   {
-    "d": 3529,
-    "impact": 9.2,
-    "air": 1.18,
-    "dist": 22,
-    "feat": "cliff"
-   },
-   {
-    "d": 3765,
-    "impact": 5.1,
-    "air": 0.61,
-    "dist": 15.7,
-    "feat": "-",
-    "lane": -1
-   }
-  ],
-  "topSpeed": 29.964393661947756,
-  "stuck": 0,
-  "hits": 0,
-  "respawns": 0,
-  "issues": [
-   "Zone 1: Kicker bei 423 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 424 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 424 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 424 m verworfen (keine sichere Landung)",
-   "Zone 5: Kicker bei 1567 m verworfen (keine sichere Landung)",
-   "Zone 5: Kicker (Seitenlinie) bei 1524 m verworfen (keine sichere Landung)",
-   "Zone 14: Big Air bei 4767 m landet bei Höchsttempo hart (19.9 m/s)"
-  ],
-  "features": 42,
-  "skipped": 3,
-  "zones": "S220 G315 C372 S273 F151 C356 C379 S230 B406 P555 C380 C255 B341 C360 B426"
- },
- {
-  "seed": 78,
-  "mode": "Quer-Slalom Hocke",
-  "reached": 3800,
-  "time": 203.5,
-  "crashes": [],
-  "landings": [
-   {
-    "d": 771,
-    "impact": 10.1,
-    "air": 1.32,
-    "dist": 21.5,
-    "feat": "cliff"
-   },
-   {
-    "d": 1916,
-    "impact": 6.9,
-    "air": 0.4,
-    "dist": 7.2,
-    "feat": "cliff"
-   },
-   {
-    "d": 2383,
-    "impact": 6.1,
-    "air": 1.25,
-    "dist": 30.5,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3078,
-    "impact": 6.6,
-    "air": 1.27,
-    "dist": 28.7,
-    "feat": "Tischsprung",
-    "lane": 0
-   },
-   {
-    "d": 3139,
-    "impact": 7.7,
-    "air": 1.54,
-    "dist": 33.1,
-    "feat": "Tischsprung",
-    "lane": 0
-   },
-   {
-    "d": 3497,
-    "impact": 10.6,
-    "air": 1.54,
-    "dist": 23.9,
-    "feat": "cliff"
-   },
-   {
-    "d": 3522,
-    "impact": 10.2,
-    "air": 1.09,
-    "dist": 18.9,
-    "feat": "cliff"
-   }
-  ],
-  "topSpeed": 26.98110648990803,
-  "stuck": 0,
-  "hits": 0,
-  "respawns": 0,
-  "issues": [
-   "Zone 1: Kicker bei 423 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 424 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 424 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 424 m verworfen (keine sichere Landung)",
-   "Zone 5: Kicker bei 1567 m verworfen (keine sichere Landung)",
-   "Zone 5: Kicker (Seitenlinie) bei 1524 m verworfen (keine sichere Landung)",
-   "Zone 14: Big Air bei 4767 m landet bei Höchsttempo hart (19.9 m/s)"
-  ],
-  "features": 42,
-  "skipped": 3,
-  "zones": "S220 G315 C372 S273 F151 C356 C379 S230 B406 P555 C380 C255 B341 C360 B426"
- },
- {
-  "seed": 78,
-  "mode": "Quer-Slalom aufrecht",
-  "reached": 3800,
-  "time": 399.1,
-  "crashes": [],
-  "landings": [
-   {
-    "d": 320,
+    "d": 382,
     "impact": 3.5,
-    "air": 0.36,
+    "air": 0.83,
+    "dist": 20.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 475,
+    "impact": 2.1,
+    "air": 0.17,
+    "dist": 4.5,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 497,
+    "impact": 1.5,
+    "air": 0.26,
     "dist": 6.6,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 371,
-    "impact": 6.3,
-    "air": 1.77,
-    "dist": 30.1,
+    "d": 806,
+    "impact": 4.9,
+    "air": 0.81,
+    "dist": 21.6,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1910,
-    "impact": 5.4,
-    "air": 0.41,
-    "dist": 5,
+    "d": 827,
+    "impact": 3.3,
+    "air": 0.64,
+    "dist": 17.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1957,
+    "impact": 2.6,
+    "air": 1.65,
+    "dist": 32.2,
     "feat": "cliff"
    },
    {
-    "d": 2645,
-    "impact": 3.1,
-    "air": 0.74,
-    "dist": 12.3,
+    "d": 2175,
+    "impact": 13.5,
+    "air": 2.97,
+    "dist": 69.9,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2846,
-    "impact": 3.8,
-    "air": 0.5,
-    "dist": 9.4,
+    "d": 2836,
+    "impact": 3.5,
+    "air": 0.48,
+    "dist": 12.7,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2853,
-    "impact": 3.7,
-    "air": 0.47,
-    "dist": 8.5,
+    "d": 2857,
+    "impact": 2.7,
+    "air": 0.27,
+    "dist": 7.2,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2885,
-    "impact": 6.2,
-    "air": 0.43,
-    "dist": 7.3,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
+    "d": 2938,
+    "impact": 2.6,
+    "air": 0.52,
+    "dist": 13.4,
+    "feat": "-",
+    "lane": -1
    },
    {
-    "d": 2896,
-    "impact": 4.8,
-    "air": 0.82,
-    "dist": 12.5,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 3135,
+    "d": 3035,
     "impact": 5.6,
-    "air": 0.94,
-    "dist": 14.4,
-    "feat": "Tischsprung",
-    "lane": 0
+    "air": 0.7,
+    "dist": 16,
+    "feat": "Waldkicker",
+    "lane": 2
+   },
+   {
+    "d": 3070,
+    "impact": 9,
+    "air": 0.78,
+    "dist": 18.2,
+    "feat": "Waldkicker",
+    "lane": 2
+   },
+   {
+    "d": 3096,
+    "impact": 7.5,
+    "air": 1.27,
+    "dist": 28,
+    "feat": "Waldkicker",
+    "lane": 2
    }
   ],
-  "topSpeed": 23.678330754643152,
-  "stuck": 5,
+  "topSpeed": 32.435410506607234,
+  "stuck": 0,
   "hits": 0,
   "respawns": 0,
-  "stuckAt": [
+  "takeoffs": [
    {
-    "d": 705,
-    "x": 99,
-    "zone": "cliff",
-    "pow": 0.52,
-    "sl": 0.2
+    "d": 361,
+    "v": 28.2,
+    "vy": -11.5,
+    "x": 43
    },
    {
-    "d": 715,
-    "x": 77,
-    "zone": "cliff",
-    "pow": 0.03,
-    "sl": 0.2
+    "d": 471,
+    "v": 26.3,
+    "vy": -5.4,
+    "x": 59
    },
    {
-    "d": 723,
-    "x": 76,
-    "zone": "cliff",
-    "pow": 0.03,
-    "sl": 0.2
+    "d": 491,
+    "v": 26.5,
+    "vy": -5.9,
+    "x": 58
    },
    {
-    "d": 732,
-    "x": 76,
-    "zone": "cliff",
-    "pow": 0.03,
-    "sl": 0.2
+    "d": 785,
+    "v": 27.4,
+    "vy": -3.1,
+    "x": 34
    },
    {
-    "d": 3455,
-    "x": 46,
-    "zone": "cliff",
-    "pow": 0.54,
-    "sl": 0.21
+    "d": 810,
+    "v": 27.4,
+    "vy": -1.4,
+    "x": 41
+   },
+   {
+    "d": 1925,
+    "v": 20.5,
+    "vy": -3.8,
+    "x": 44
+   },
+   {
+    "d": 2117,
+    "v": 25.4,
+    "vy": 1.7,
+    "x": 21
+   },
+   {
+    "d": 2824,
+    "v": 27.5,
+    "vy": -4.9,
+    "x": 23
+   },
+   {
+    "d": 2850,
+    "v": 27.8,
+    "vy": -6.4,
+    "x": 20
+   },
+   {
+    "d": 2924,
+    "v": 26.5,
+    "vy": -3.2,
+    "x": 50
+   },
+   {
+    "d": 3022,
+    "v": 24.2,
+    "vy": -6.8,
+    "x": 82
+   },
+   {
+    "d": 3056,
+    "v": 23.8,
+    "vy": -2.1,
+    "x": 60
+   },
+   {
+    "d": 3073,
+    "v": 22.7,
+    "vy": -0.3,
+    "x": 44
    }
   ],
   "issues": [
-   "Zone 1: Kicker bei 423 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 424 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 424 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 424 m verworfen (keine sichere Landung)",
-   "Zone 5: Kicker bei 1567 m verworfen (keine sichere Landung)",
-   "Zone 5: Kicker (Seitenlinie) bei 1524 m verworfen (keine sichere Landung)",
-   "Zone 14: Big Air bei 4767 m landet bei Höchsttempo hart (19.9 m/s)"
+   "Zone 14: Big Air bei 4755 m landet bei Höchsttempo hart (19.9 m/s)"
   ],
-  "features": 42,
-  "skipped": 3,
-  "zones": "S220 G315 C372 S273 F151 C356 C379 S230 B406 P555 C380 C255 B341 C360 B426"
+  "features": 48,
+  "skipped": 2,
+  "zones": "S220 G248 B320 F157 S343 C450 C325 C208 B486 G517 S205 C454 C228 C444 B382"
+ },
+ {
+  "seed": 78,
+  "mode": "Quer-Slalom Hocke",
+  "reached": 3800,
+  "time": 201.8,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 1947,
+    "impact": 10.4,
+    "air": 1.51,
+    "dist": 22.1,
+    "feat": "cliff"
+   },
+   {
+    "d": 2077,
+    "impact": 1.7,
+    "air": 1.24,
+    "dist": 21.1,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2161,
+    "impact": 3.9,
+    "air": 2.32,
+    "dist": 29.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2355,
+    "impact": 3.8,
+    "air": 0.62,
+    "dist": 15.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2746,
+    "impact": 1.9,
+    "air": 0.29,
+    "dist": 7.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3028,
+    "impact": 7.4,
+    "air": 0.58,
+    "dist": 12.2,
+    "feat": "Waldkicker",
+    "lane": 2
+   },
+   {
+    "d": 3057,
+    "impact": 6.5,
+    "air": 0.96,
+    "dist": 18.7,
+    "feat": "Waldkicker",
+    "lane": 2
+   },
+   {
+    "d": 3065,
+    "impact": 3.3,
+    "air": 0.38,
+    "dist": 7.5,
+    "feat": "Waldkicker",
+    "lane": 2
+   },
+   {
+    "d": 3676,
+    "impact": 9.2,
+    "air": 1.79,
+    "dist": 41.2,
+    "feat": "Kicker",
+    "lane": 0
+   }
+  ],
+  "topSpeed": 27.11773007236036,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 1926,
+    "v": 15.2,
+    "vy": -2.3,
+    "x": 90
+   },
+   {
+    "d": 2065,
+    "v": 17.7,
+    "vy": 3.6,
+    "x": 89
+   },
+   {
+    "d": 2132,
+    "v": 13.5,
+    "vy": -2.4,
+    "x": 23
+   },
+   {
+    "d": 2342,
+    "v": 25.5,
+    "vy": -4.3,
+    "x": -76
+   },
+   {
+    "d": 2740,
+    "v": 26,
+    "vy": -6.1,
+    "x": 52
+   },
+   {
+    "d": 3020,
+    "v": 22,
+    "vy": -6,
+    "x": 81
+   },
+   {
+    "d": 3044,
+    "v": 19.9,
+    "vy": -0.6,
+    "x": 59
+   },
+   {
+    "d": 3060,
+    "v": 20.5,
+    "vy": -3.5,
+    "x": 43
+   },
+   {
+    "d": 3640,
+    "v": 24,
+    "vy": 2.4,
+    "x": 61
+   }
+  ],
+  "issues": [
+   "Zone 14: Big Air bei 4755 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 48,
+  "skipped": 2,
+  "zones": "S220 G248 B320 F157 S343 C450 C325 C208 B486 G517 S205 C454 C228 C444 B382"
+ },
+ {
+  "seed": 78,
+  "mode": "Quer-Slalom aufrecht",
+  "reached": 3800,
+  "time": 287.3,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 531,
+    "impact": 4,
+    "air": 0.8,
+    "dist": 17.1,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1513,
+    "impact": 7.7,
+    "air": 1.44,
+    "dist": 19.6,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 1935,
+    "impact": 10.1,
+    "air": 1.36,
+    "dist": 11.7,
+    "feat": "cliff"
+   },
+   {
+    "d": 2257,
+    "impact": 17.7,
+    "air": 3.02,
+    "dist": 51.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2906,
+    "impact": 3.4,
+    "air": 0.43,
+    "dist": 4.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3494,
+    "impact": 3.7,
+    "air": 0.83,
+    "dist": 17.5,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3666,
+    "impact": 6.8,
+    "air": 1.85,
+    "dist": 36.2,
+    "feat": "Kicker",
+    "lane": 0
+   }
+  ],
+  "topSpeed": 36.63974634816868,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 514,
+    "v": 22.6,
+    "vy": -5.2,
+    "x": -72
+   },
+   {
+    "d": 1500,
+    "v": 14.3,
+    "vy": 3,
+    "x": -53
+   },
+   {
+    "d": 1927,
+    "v": 9,
+    "vy": -2.1,
+    "x": 76
+   },
+   {
+    "d": 2206,
+    "v": 21.7,
+    "vy": -10.1,
+    "x": -32
+   },
+   {
+    "d": 2902,
+    "v": 11.3,
+    "vy": -1.2,
+    "x": 54
+   },
+   {
+    "d": 3479,
+    "v": 21.8,
+    "vy": -2.6,
+    "x": 67
+   },
+   {
+    "d": 3635,
+    "v": 20.9,
+    "vy": 3.1,
+    "x": 73
+   }
+  ],
+  "issues": [
+   "Zone 14: Big Air bei 4755 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 48,
+  "skipped": 2,
+  "zones": "S220 G248 B320 F157 S343 C450 C325 C208 B486 G517 S205 C454 C228 C444 B382"
  },
  {
   "seed": 85,
   "mode": "Frei -85 aufrecht",
   "reached": 3800,
-  "time": 220.5,
+  "time": 218,
   "crashes": [],
   "landings": [
    {
-    "d": 1271,
-    "impact": 9,
-    "air": 1.29,
-    "dist": 15.1,
+    "d": 1277,
+    "impact": 9.6,
+    "air": 1.32,
+    "dist": 17.7,
     "feat": "cliff"
    },
    {
-    "d": 2478,
-    "impact": 8.1,
-    "air": 1.86,
-    "dist": 41.9,
+    "d": 1659,
+    "impact": 5.6,
+    "air": 0.21,
+    "dist": 4.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1679,
+    "impact": 3.5,
+    "air": 0.82,
+    "dist": 19.1,
     "feat": "-",
     "lane": -1
    }
   ],
-  "topSpeed": 28.098980442412493,
+  "topSpeed": 25.788020619564225,
   "stuck": 1,
   "hits": 0,
   "respawns": 0,
@@ -4924,50 +7014,98 @@
     "sl": 0.24
    }
   ],
-  "issues": [
-   "Zone 1: Waldkicker bei 468 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 468 m verworfen (keine sichere Landung)",
-   "Zone 7: Kicker bei 2116 m verworfen (keine sichere Landung)",
-   "Zone 7: Kicker (Seitenlinie) bei 2116 m verworfen (keine sichere Landung)",
-   "Zone 11: Big Air bei 3418 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 15: Big Air bei 4797 m landet bei Höchsttempo hart (19.9 m/s)"
+  "takeoffs": [
+   {
+    "d": 1259,
+    "v": 14.1,
+    "vy": -2.9,
+    "x": -86
+   },
+   {
+    "d": 1655,
+    "v": 24.9,
+    "vy": -9,
+    "x": -80
+   },
+   {
+    "d": 1660,
+    "v": 24.4,
+    "vy": -5.2,
+    "x": -80
+   }
   ],
-  "features": 52,
-  "skipped": 1,
-  "zones": "S220 G396 S274 F148 C377 F124 B398 C379 B332 S278 G314 B436 F145 S267 G428 B482"
+  "issues": [
+   "Zone 11: Big Air bei 3856 m landet bei Höchsttempo hart (19.9 m/s)",
+   "Zone 15: Big Air bei 5202 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 60,
+  "skipped": 5,
+  "zones": "S220 G395 S249 F169 C393 S258 G473 C320 B416 S285 G399 B481 F145 S307 G407 B494"
  },
  {
   "seed": 85,
   "mode": "Frei +85 Hocke",
   "reached": 3800,
-  "time": 178.6,
+  "time": 174.1,
   "crashes": [],
   "landings": [
    {
-    "d": 1286,
-    "impact": 6.4,
-    "air": 1.58,
-    "dist": 29.5,
+    "d": 1294,
+    "impact": 6.1,
+    "air": 1.63,
+    "dist": 33.3,
     "feat": "cliff"
    },
    {
-    "d": 1500,
-    "impact": 2.9,
-    "air": 0.72,
+    "d": 2086,
+    "impact": 4.3,
+    "air": 0.94,
+    "dist": 25.9,
+    "feat": "Waldkicker",
+    "lane": 2
+   },
+   {
+    "d": 2145,
+    "impact": 4.9,
+    "air": 1.09,
+    "dist": 31.5,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2352,
+    "impact": 4.9,
+    "air": 0.37,
+    "dist": 10.4,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2395,
+    "impact": 2.7,
+    "air": 0.53,
     "dist": 15,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1624,
-    "impact": 5.2,
-    "air": 1.08,
-    "dist": 23.3,
+    "d": 2777,
+    "impact": 4.1,
+    "air": 0.72,
+    "dist": 20.1,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3418,
+    "impact": 5,
+    "air": 0.95,
+    "dist": 26.7,
     "feat": "-",
     "lane": -1
    }
   ],
-  "topSpeed": 30.699304315943312,
+  "topSpeed": 30.619944196850927,
   "stuck": 1,
   "hits": 0,
   "respawns": 0,
@@ -4980,261 +7118,468 @@
     "sl": 0.24
    }
   ],
-  "issues": [
-   "Zone 1: Waldkicker bei 468 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 468 m verworfen (keine sichere Landung)",
-   "Zone 7: Kicker bei 2116 m verworfen (keine sichere Landung)",
-   "Zone 7: Kicker (Seitenlinie) bei 2116 m verworfen (keine sichere Landung)",
-   "Zone 11: Big Air bei 3418 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 15: Big Air bei 4797 m landet bei Höchsttempo hart (19.9 m/s)"
+  "takeoffs": [
+   {
+    "d": 1261,
+    "v": 21.5,
+    "vy": -4.5,
+    "x": 84
+   },
+   {
+    "d": 2061,
+    "v": 29.1,
+    "vy": -6.9,
+    "x": 96
+   },
+   {
+    "d": 2114,
+    "v": 29.7,
+    "vy": -0.6,
+    "x": 87
+   },
+   {
+    "d": 2342,
+    "v": 29.6,
+    "vy": -7.1,
+    "x": 86
+   },
+   {
+    "d": 2380,
+    "v": 29.3,
+    "vy": -3.9,
+    "x": 86
+   },
+   {
+    "d": 2757,
+    "v": 29.5,
+    "vy": -7.8,
+    "x": 81
+   },
+   {
+    "d": 3392,
+    "v": 28.9,
+    "vy": -2.7,
+    "x": 81
+   }
   ],
-  "features": 52,
-  "skipped": 1,
-  "zones": "S220 G396 S274 F148 C377 F124 B398 C379 B332 S278 G314 B436 F145 S267 G428 B482"
+  "issues": [
+   "Zone 11: Big Air bei 3856 m landet bei Höchsttempo hart (19.9 m/s)",
+   "Zone 15: Big Air bei 5202 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 60,
+  "skipped": 5,
+  "zones": "S220 G395 S249 F169 C393 S258 G473 C320 B416 S285 G399 B481 F145 S307 G407 B494"
  },
  {
   "seed": 85,
   "mode": "Frei +40 Hocke",
   "reached": 3800,
-  "time": 164.3,
+  "time": 159.7,
   "crashes": [],
   "landings": [
    {
-    "d": 1286,
-    "impact": 8.4,
-    "air": 1.57,
-    "dist": 28.2,
+    "d": 529,
+    "impact": 4,
+    "air": 0.7,
+    "dist": 17.2,
+    "feat": "Waldkicker",
+    "lane": 2
+   },
+   {
+    "d": 1291,
+    "impact": 8.2,
+    "air": 1.6,
+    "dist": 30.4,
     "feat": "cliff"
    },
    {
-    "d": 1534,
-    "impact": 3.3,
-    "air": 0.25,
-    "dist": 4.9,
+    "d": 1737,
+    "impact": 3,
+    "air": 1.14,
+    "dist": 30.6,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1566,
-    "impact": 1.8,
-    "air": 0.31,
-    "dist": 6.3,
+    "d": 2043,
+    "impact": 6.5,
+    "air": 2.02,
+    "dist": 52.6,
+    "feat": "Waldkicker",
+    "lane": 2
+   },
+   {
+    "d": 2888,
+    "impact": 3.1,
+    "air": 0.59,
+    "dist": 15.4,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1950,
-    "impact": 3.3,
-    "air": 0.63,
-    "dist": 16.5,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2326,
-    "impact": 3.8,
-    "air": 0.28,
-    "dist": 7.5,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2366,
-    "impact": 2.5,
-    "air": 0.41,
-    "dist": 10.8,
+    "d": 2906,
+    "impact": 1.3,
+    "air": 0.35,
+    "dist": 9.2,
     "feat": "-",
     "lane": -1
    }
   ],
-  "topSpeed": 28.985216242074493,
+  "topSpeed": 29.67170047252234,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
-  "issues": [
-   "Zone 1: Waldkicker bei 468 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 468 m verworfen (keine sichere Landung)",
-   "Zone 7: Kicker bei 2116 m verworfen (keine sichere Landung)",
-   "Zone 7: Kicker (Seitenlinie) bei 2116 m verworfen (keine sichere Landung)",
-   "Zone 11: Big Air bei 3418 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 15: Big Air bei 4797 m landet bei Höchsttempo hart (19.9 m/s)"
+  "takeoffs": [
+   {
+    "d": 513,
+    "v": 25.2,
+    "vy": -3.4,
+    "x": 31
+   },
+   {
+    "d": 1261,
+    "v": 20,
+    "vy": -4.2,
+    "x": 39
+   },
+   {
+    "d": 1707,
+    "v": 27.8,
+    "vy": -2.5,
+    "x": 46
+   },
+   {
+    "d": 1991,
+    "v": 27.4,
+    "vy": 1.4,
+    "x": 50
+   },
+   {
+    "d": 2872,
+    "v": 27.8,
+    "vy": -8,
+    "x": 42
+   },
+   {
+    "d": 2896,
+    "v": 28.4,
+    "vy": -9.6,
+    "x": 43
+   }
   ],
-  "features": 52,
-  "skipped": 1,
-  "zones": "S220 G396 S274 F148 C377 F124 B398 C379 B332 S278 G314 B436 F145 S267 G428 B482"
+  "issues": [
+   "Zone 11: Big Air bei 3856 m landet bei Höchsttempo hart (19.9 m/s)",
+   "Zone 15: Big Air bei 5202 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 60,
+  "skipped": 5,
+  "zones": "S220 G395 S249 F169 C393 S258 G473 C320 B416 S285 G399 B481 F145 S307 G407 B494"
  },
  {
   "seed": 85,
   "mode": "Quer-Slalom Hocke",
   "reached": 3800,
-  "time": 194.2,
+  "time": 190.3,
   "crashes": [],
   "landings": [
    {
-    "d": 421,
-    "impact": 7.7,
-    "air": 1.37,
-    "dist": 33.7,
+    "d": 365,
+    "impact": 7.5,
+    "air": 0.72,
+    "dist": 16,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1278,
-    "impact": 10.8,
+    "d": 533,
+    "impact": 5,
+    "air": 0.97,
+    "dist": 23.6,
+    "feat": "Waldkicker",
+    "lane": 2
+   },
+   {
+    "d": 1283,
+    "impact": 11.1,
     "air": 1.52,
-    "dist": 25.5,
+    "dist": 27.3,
     "feat": "cliff"
    },
    {
-    "d": 1916,
-    "impact": 3.6,
-    "air": 1.14,
-    "dist": 25.6,
+    "d": 1658,
+    "impact": 3.5,
+    "air": 0.17,
+    "dist": 3.9,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2244,
+    "d": 1677,
+    "impact": 3,
+    "air": 0.65,
+    "dist": 16,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1891,
+    "impact": 3.9,
+    "air": 0.68,
+    "dist": 16.2,
+    "feat": "Waldkicker",
+    "lane": 1
+   },
+   {
+    "d": 2781,
     "impact": 7.1,
-    "air": 1.25,
-    "dist": 30.8,
+    "air": 1.17,
+    "dist": 26,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3136,
-    "impact": 8.2,
-    "air": 1.27,
-    "dist": 31.3,
+    "d": 2902,
+    "impact": 3.3,
+    "air": 1.26,
+    "dist": 27.9,
     "feat": "-",
     "lane": -1
    }
   ],
-  "topSpeed": 27.728834359830117,
+  "topSpeed": 27.55676494826703,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
-  "issues": [
-   "Zone 1: Waldkicker bei 468 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 468 m verworfen (keine sichere Landung)",
-   "Zone 7: Kicker bei 2116 m verworfen (keine sichere Landung)",
-   "Zone 7: Kicker (Seitenlinie) bei 2116 m verworfen (keine sichere Landung)",
-   "Zone 11: Big Air bei 3418 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 15: Big Air bei 4797 m landet bei Höchsttempo hart (19.9 m/s)"
+  "takeoffs": [
+   {
+    "d": 351,
+    "v": 23.6,
+    "vy": -7.3,
+    "x": 87
+   },
+   {
+    "d": 511,
+    "v": 24.8,
+    "vy": -1.8,
+    "x": -37
+   },
+   {
+    "d": 1260,
+    "v": 19,
+    "vy": -4.1,
+    "x": 62
+   },
+   {
+    "d": 1654,
+    "v": 26.4,
+    "vy": -12.2,
+    "x": -81
+   },
+   {
+    "d": 1661,
+    "v": 26.5,
+    "vy": -7.8,
+    "x": -78
+   },
+   {
+    "d": 1878,
+    "v": 24.5,
+    "vy": -2.2,
+    "x": 56
+   },
+   {
+    "d": 2760,
+    "v": 22.7,
+    "vy": 0,
+    "x": 58
+   },
+   {
+    "d": 2874,
+    "v": 23,
+    "vy": -3.7,
+    "x": 108
+   }
   ],
-  "features": 52,
-  "skipped": 1,
-  "zones": "S220 G396 S274 F148 C377 F124 B398 C379 B332 S278 G314 B436 F145 S267 G428 B482"
+  "issues": [
+   "Zone 11: Big Air bei 3856 m landet bei Höchsttempo hart (19.9 m/s)",
+   "Zone 15: Big Air bei 5202 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 60,
+  "skipped": 5,
+  "zones": "S220 G395 S249 F169 C393 S258 G473 C320 B416 S285 G399 B481 F145 S307 G407 B494"
  },
  {
   "seed": 85,
   "mode": "Quer-Slalom aufrecht",
-  "reached": 3800,
-  "time": 284.9,
+  "reached": 1040,
+  "time": 700,
   "crashes": [],
-  "landings": [
-   {
-    "d": 1109,
-    "impact": 4.1,
-    "air": 0.87,
-    "dist": 13.1,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 1262,
-    "impact": 9.3,
-    "air": 1.09,
-    "dist": 6.4,
-    "feat": "cliff"
-   },
-   {
-    "d": 2506,
-    "impact": 3,
-    "air": 0.61,
-    "dist": 12.8,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2520,
-    "impact": 2.3,
-    "air": 0.43,
-    "dist": 9.3,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2545,
-    "impact": 3.2,
-    "air": 1.07,
-    "dist": 23,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2799,
-    "impact": 3.4,
-    "air": 0.24,
-    "dist": 5.1,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3124,
-    "impact": 4.3,
-    "air": 0.88,
-    "dist": 18.6,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3379,
-    "impact": 3.7,
-    "air": 0.77,
-    "dist": 11.3,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 3387,
-    "impact": 4.7,
-    "air": 0.38,
-    "dist": 5.6,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 3430,
-    "impact": 8.9,
-    "air": 1.63,
-    "dist": 14.7,
-    "feat": "Big Air",
-    "lane": 0
-   },
-   {
-    "d": 3439,
-    "impact": 9.2,
-    "air": 0.98,
-    "dist": 9.7,
-    "feat": "Big Air",
-    "lane": 0
-   }
-  ],
-  "topSpeed": 24.636939940720612,
-  "stuck": 0,
+  "landings": [],
+  "topSpeed": 23.10841441877422,
+  "stuck": 22,
   "hits": 0,
   "respawns": 0,
-  "issues": [
-   "Zone 1: Waldkicker bei 468 m verworfen (keine sichere Landung)",
-   "Zone 1: Waldkicker bei 468 m verworfen (keine sichere Landung)",
-   "Zone 7: Kicker bei 2116 m verworfen (keine sichere Landung)",
-   "Zone 7: Kicker (Seitenlinie) bei 2116 m verworfen (keine sichere Landung)",
-   "Zone 11: Big Air bei 3418 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 15: Big Air bei 4797 m landet bei Höchsttempo hart (19.9 m/s)"
+  "stuckAt": [
+   {
+    "d": 903,
+    "x": -13,
+    "zone": "flat",
+    "pow": 0.21,
+    "sl": 0.13
+   },
+   {
+    "d": 916,
+    "x": -17,
+    "zone": "flat",
+    "pow": 0.17,
+    "sl": 0.1
+   },
+   {
+    "d": 927,
+    "x": -15,
+    "zone": "flat",
+    "pow": 0.04,
+    "sl": 0.09
+   },
+   {
+    "d": 938,
+    "x": -16,
+    "zone": "flat",
+    "pow": 0.07,
+    "sl": 0.09
+   },
+   {
+    "d": 949,
+    "x": -16,
+    "zone": "flat",
+    "pow": 0.07,
+    "sl": 0.09
+   },
+   {
+    "d": 959,
+    "x": -15,
+    "zone": "flat",
+    "pow": 0.04,
+    "sl": 0.09
+   },
+   {
+    "d": 969,
+    "x": -11,
+    "zone": "flat",
+    "pow": 0,
+    "sl": 0.09
+   },
+   {
+    "d": 978,
+    "x": -12,
+    "zone": "flat",
+    "pow": 0,
+    "sl": 0.1
+   },
+   {
+    "d": 987,
+    "x": -12,
+    "zone": "flat",
+    "pow": 0,
+    "sl": 0.1
+   },
+   {
+    "d": 996,
+    "x": -12,
+    "zone": "flat",
+    "pow": 0,
+    "sl": 0.11
+   },
+   {
+    "d": 1002,
+    "x": -8,
+    "zone": "flat",
+    "pow": 0,
+    "sl": 0.12
+   },
+   {
+    "d": 1008,
+    "x": -8,
+    "zone": "flat",
+    "pow": 0,
+    "sl": 0.13
+   },
+   {
+    "d": 1013,
+    "x": -7,
+    "zone": "flat",
+    "pow": 0.03,
+    "sl": 0.14
+   },
+   {
+    "d": 1017,
+    "x": -5,
+    "zone": "flat",
+    "pow": 0.3,
+    "sl": 0.14
+   },
+   {
+    "d": 1020,
+    "x": -5,
+    "zone": "flat",
+    "pow": 0.31,
+    "sl": 0.15
+   },
+   {
+    "d": 1022,
+    "x": -6,
+    "zone": "flat",
+    "pow": 0.31,
+    "sl": 0.15
+   },
+   {
+    "d": 1024,
+    "x": -6,
+    "zone": "flat",
+    "pow": 0.32,
+    "sl": 0.15
+   },
+   {
+    "d": 1026,
+    "x": -7,
+    "zone": "flat",
+    "pow": 0.33,
+    "sl": 0.16
+   },
+   {
+    "d": 1027,
+    "x": -7,
+    "zone": "flat",
+    "pow": 0.33,
+    "sl": 0.16
+   },
+   {
+    "d": 1028,
+    "x": -8,
+    "zone": "flat",
+    "pow": 0.34,
+    "sl": 0.16
+   },
+   {
+    "d": 1029,
+    "x": -8,
+    "zone": "flat",
+    "pow": 0.34,
+    "sl": 0.16
+   },
+   {
+    "d": 1030,
+    "x": -8,
+    "zone": "flat",
+    "pow": 0.35,
+    "sl": 0.16
+   }
   ],
-  "features": 52,
-  "skipped": 1,
-  "zones": "S220 G396 S274 F148 C377 F124 B398 C379 B332 S278 G314 B436 F145 S267 G428 B482"
+  "issues": [
+   "Zone 11: Big Air bei 3856 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 45,
+  "skipped": 5,
+  "zones": "S220 G395 S249 F169 C393 S258 G473 C320 B416 S285 G399 B481 F145 S307"
  }
 ]

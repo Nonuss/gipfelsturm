@@ -564,12 +564,13 @@ function updateCamera(dt, time) {
   if (f > 0.002) {
     skier.root.updateMatrixWorld(true);
     fpEye.copy(EYE0).applyMatrix4(skier.bones[2].matrixWorld);
-    skier.pivot.getWorldQuaternion(fpQ);
-    // Blick leicht nach unten (Skispitzen im Bild), in Kurven mitneigen, beim Bremsen nach vorn
-    fpE.set(-0.37 - 0.1 * vis.crouch - 0.08 * vis.plow + vis.dip * 0.25 + (phys.grounded ? 0 : 0.06), 0, -vis.lean * 0.32);
+    // Blickrichtung = Ausrichtung des Kopfknochens: Wippen, Hocke, Kurvenlage, Blick in die Drehrichtung –
+    // alles, was der Kopf der Figur macht, macht auch die Kamera
+    skier.bones[2].matrixWorld.decompose(fpTmp, fpQ, fpScl);
+    fpE.set(-0.16 - 0.06 * vis.plow + vis.dip * 0.2, 0, 0);
     fpQ.multiply(fpQ2.setFromEuler(fpE));
-    // Kopf stabilisiert sich am Boden (weich), in der Luft folgt er den Drehungen direkt
-    fpCam.slerp(fpQ, camSnap || fpFirst ? 1 : 1 - Math.exp(-dt * (phys.grounded ? 12 : 26)));
+    // nur leichte Glättung gegen Zittern; in der Luft direkt
+    fpCam.slerp(fpQ, camSnap || fpFirst ? 1 : 1 - Math.exp(-dt * (phys.grounded ? 22 : 34)));
     fpFirst = false;
     // Zittern: Tempo, Rutschen, Tiefschnee, Aufprall
     const shk = (Math.pow(clamp(sp / 35, 0, 1), 2) * 0.006 + phys.skid * 0.0015 + phys.pow * 0.004 * clamp(sp / 20, 0, 1)) * (phys.grounded ? 1 : 0.3) + vis.shake * 0.02;
@@ -578,7 +579,7 @@ function updateCamera(dt, time) {
     tV.copy(fpEye); tV.y -= vis.dip * 0.12 + vis.compress * 0.05;
     camera.position.lerp(tV, f);
     camera.quaternion.slerp(fpQ2.premultiply(fpCam), f);
-    fov = lerp(fov, 80 + 18 * smoothstep(8, 42, sp) + inp.tuck * 4 + vis.bigAir * 4, f);
+    fov = lerp(fov, 70 + 14 * smoothstep(8, 42, sp) + inp.tuck * 3 + vis.bigAir * 3, f);
   } else fpFirst = true;
   const near = f > 0.5 ? 0.06 : 0.3;
   if (camera.near !== near) { camera.near = near; camera.updateProjectionMatrix(); }
@@ -588,8 +589,8 @@ function updateCamera(dt, time) {
   }
   grade.uniforms.uVig.value = 0.22 + f * (0.08 + 0.12 * smoothstep(15, 40, sp));   // Tunnelblick bei hohem Tempo
 }
-const EYE0 = new THREE.Vector3(0, 1.72, 0.14);   // Augenpunkt (Kopfknochen), etwas hinter dem Gesicht, damit die Skispitzen ins Bild kommen
-const fpEye = new THREE.Vector3(), fpQ = new THREE.Quaternion(), fpQ2 = new THREE.Quaternion(), fpCam = new THREE.Quaternion(), fpE = new THREE.Euler(0, 0, 0, 'YXZ');
+const EYE0 = new THREE.Vector3(0, 1.75, -0.04);   // Augenpunkt (Kopfknochen), etwas hinter dem Gesicht, damit die Skispitzen ins Bild kommen
+const fpTmp = new THREE.Vector3(), fpScl = new THREE.Vector3(), fpEye = new THREE.Vector3(), fpQ = new THREE.Quaternion(), fpQ2 = new THREE.Quaternion(), fpCam = new THREE.Quaternion(), fpE = new THREE.Euler(0, 0, 0, 'YXZ');
 let fpFirst = true;
 
 // ---------------------------------------------------------------- Spuren & Gischt
@@ -857,7 +858,7 @@ function updateZone(dt) {
   if (z && z.idx !== lastZone) {
     lastZone = z.idx;
     const el = $('zone');
-    el.textContent = ZONE_NAMES[z.type] || z.type;
+    el.innerHTML = (ZONE_NAMES[z.type] || z.type) + (z.label ? `<small>${z.label}</small>` : '');
     el.className = '';
     void el.offsetWidth;
     el.className = 'show';

@@ -333,6 +333,9 @@ export function genChunk(i) {
     if (edge < (trailNear ? 1.3 : 2.8)) continue;
     let dens = sf.forest * (0.12 + 0.88 * smoothstep(0.8, 8, edge));
     dens = Math.max(dens, 0.4 * smoothstep(c.valley - 5, c.valley + 45, au));
+    // Zonen „mit Baum-Inseln“: dichte Baumgruppen mitten im offenen Gelände zwischen den Pisten
+    const zm = P.zoneAtD(dd).mods;
+    if (zm && zm.islands) dens = Math.max(dens, zm.islands.amt * smoothstep(0.56, 0.7, fbm(x / 38 + cfg.seed * 0.13, dd / 38)) * smoothstep(7, 16, edge));
     if (dens < 0.02 || pr > dens) continue;
     if (dd < 14 && Math.abs(x + 3) < 16) continue;
     if (P.inFeatureZone(x, dd, 3)) continue;
@@ -359,6 +362,24 @@ export function genChunk(i) {
     const scale = wall ? 1.6 + sc * 3.2 + Math.min(2, steep) : 0.6 + sc * 1.6;
     out.rocks.push({ x, z, y: rockY(x, z, scale), scale, rot, variant: vr });
     addCollider(x, z, 1.3 * scale, 'fels');
+  }
+  // ---- Zonen „mit Felsinseln“: Gruppen aus mehreren Brocken im offenen Gelände (mit Abstand zu den Pisten)
+  {
+    const zr = P.zoneAtD(d0 + CHUNK / 2);
+    if (zr.mods && zr.mods.rocks) {
+      const nG = Math.round(3 + 4 * zr.mods.rocks.amt * cfg.treeMul);
+      for (let g = 0; g < nG; g++) {
+        const dd = d0 + R() * CHUNK, c = P.props(dd), gx = c.hub + (R() * 2 - 1) * Math.min(c.valley + 20, 200);
+        if (P.surf(gx, dd).edge < 9 || P.inFeatureZone(gx, dd, 8)) continue;
+        const n = 2 + Math.floor(R() * 4), big = 1.2 + R() * 1.8;
+        for (let k = 0; k < n; k++) {
+          const x = gx + (R() - 0.5) * 7, z = -(dd + (R() - 0.5) * 7), sc = big * (k ? 0.45 + R() * 0.5 : 1);
+          if (P.surf(x, -z).edge < 4) continue;
+          out.rocks.push({ x, z, y: rockY(x, z, sc), scale: sc, rot: R() * 6.283, variant: Math.floor(R() * 6) });
+          addCollider(x, z, 1.05 * sc, 'fels');
+        }
+      }
+    }
   }
   // ---- Klippenbänder: Felsblöcke und Eis entlang Kante und Fuß
   for (const f of P.featuresIn(d0, d1)) {

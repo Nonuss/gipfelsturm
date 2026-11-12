@@ -106,7 +106,6 @@ export class Skier {
       return o;
     };
     const bootMat = fixedMat.clone(), poleMat = skiMat.clone();
-    this.fpvMats.push(poleMat);
     this.sides = [-1, 1].map((side) => {
       const foot = new THREE.Object3D();
       foot.rotation.order = 'YXZ';

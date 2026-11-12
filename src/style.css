@@ -172,3 +172,4 @@ html.rot body.touch .mode { padding: 10px 14px; }
 html.rot body.touch .modes { margin-bottom: 10px; }
 html.rot body.touch .touchkeys { font-size: 12px; gap: 3px; margin-bottom: 10px; }
 html.rot body.touch .kicker { font-size: 11px; }
+#zone small { display: block; font-size: 0.42em; letter-spacing: 0.18em; opacity: 0.8; margin-top: 4px; }

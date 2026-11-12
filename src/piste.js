@@ -27,6 +27,11 @@ export const report = { seed: 0, zones: [], features: [], issues: [] };
 // ------------------------------------------------------------------ Zustand
 export function pisteInit(seed) {
   S = { seed, Z: [], hub: [0], H: [0], busy: false, types: [], slopes: [] };
+  // Berg-Charakter: jeder Startwert bevorzugt andere Zonen und hat eigene Grundzüge (Waldberg, Pulverberg, Felsberg …)
+  const Rc = mulberry32((Math.imul(seed, 2246822519) ^ 0x5bd1e995) >>> 0);
+  const ch = { w: {}, wide: 0.85 + Rc() * 0.35, steep: 0.92 + Rc() * 0.16, forest: 0.7 + Rc() * 0.6, pow: 0.75 + Rc() * 0.5, curvy: 0.75 + Rc() * 0.6, mods: 0.6 + Rc() * 0.8 };
+  for (const k of Object.keys(W)) ch.w[k] = 0.45 + Rc() * 1.2;
+  S.ch = ch;
   PR.d = NaN;
   report.seed = seed; report.zones = []; report.features = []; report.issues = []; report.skipped = 0;
   ensureZones(PCFG.lookahead);
@@ -40,7 +45,8 @@ function pickType(idx, R) {
   if (idx === 0) return 'start';
   if (idx === 1) return R() < 0.5 ? 'glade' : 'cruise';
   const last = hist[hist.length - 1];
-  const w = { ...W };
+  const w = {};
+  for (const k in W) w[k] = W[k] * (S.ch ? S.ch.w[k] : 1);
   if (idx < 3) { w.park = 0; w.couloir = 0; w.bigair = 0; w.steep = 0.5; }
   if (idx >= 6) { w.couloir = 0.8; w.bigair = 0.75; w.cliff = 1.0; w.steep = 1.3; }
   // nach harten Zonen (Rinne, Klippe, Big Air, Steilhang) kommt eine Verschnaufpause, hier laufen alle Spuren zusammen
@@ -122,7 +128,7 @@ function makeZone(type, idx, d0) {
       break;
     case 'couloir':
       Object.assign(z, { len: rr(200, 280), slope: rr(0.46, 0.6), valley: rr(11, 14), wall: rr(1.8, 2.4), rock: 1, pow: 0.45, forest: 0, rough: 0.7, hill: 2, cap: 70 });
-      z.head = { A: rr(0.34, 0.46), lam: rr(220, 290), ph: ph() };
+      z.head = { A: rr(0.22, 0.32), lam: rr(260, 340), ph: ph() };   // Kurvenradius ≥ ca. 130 m: bei Höchsttempo noch fahrbar
       L[0] = lane(rr(4.2, 5.2), 0, { kind: KIND.chute, groom: 0.55, wob: 1.4, wl: 40, ph: ph() });
       break;
     case 'cliff':
@@ -133,17 +139,101 @@ function makeZone(type, idx, d0) {
       if (R() < 0.55) L[2] = lane(rr(7, 8), -sg * rr(70, 92), { groom: 0.95, wob: 3, wl: 150, ph: ph() });
       break;
     case 'flat':
-      Object.assign(z, { len: rr(110, 170), slope: rr(0.07, 0.1), valley: rr(100, 125), wall: 0.06, rock: 0.2, pow: 0.25, forest: 0.4, rough: 0.6, hill: 4 });
+      Object.assign(z, { len: rr(110, 170), slope: rr(0.09, 0.12), valley: rr(100, 125), wall: 0.06, rock: 0.2, pow: 0.25, forest: 0.4, rough: 0.6, hill: 4 });
       z.head = { A: rr(0.12, 0.2), lam: rr(380, 460), ph: ph() };
       L[0] = lane(rr(13, 15));
       break;
   }
+  varyZone(z, R, rr, ph);
   z.d1 = z.d0 + z.len;
   // Kurvenradius prüfen: R = lam / (2π A) darf nicht unter rmin fallen
   const A = z.head.A, lam = z.head.lam;
   if (A > 0 && lam / (TAU * A) < PCFG.rmin) { z.head.A = lam / (TAU * PCFG.rmin); issue(`Zone ${idx} (${type}): Kurve entschärft`); }
   spreadLanes(z);
   return z;
+}
+
+// ------------------------------------------------------------------ Variation
+// Jede Zone wird zusätzlich abgewandelt, damit sich kein Abschnitt wiederholt: Länge, Kurvenstil, Spuren,
+// Gelände-Formen (lange Wellen, Mulde/natürliche Halfpipe, Rücken in der Mitte, Kuppen), Baum- und Felsinseln.
+// Alle Formen sind glatt (Krümmung begrenzt) und laufen an den Zonengrenzen weich aus.
+const MOD_NAMES = { waves: 'wellig', gully: 'Mulde', ridge: 'mit Rücken', knolls: 'kuppig', islands: 'mit Baum-Inseln', rocks: 'mit Felsinseln', wide: 'weit', narrow: 'eng' };
+function varyZone(z, R, rr, ph) {
+  const ch = S.ch || { wide: 1, steep: 1, forest: 1, pow: 1, curvy: 1, mods: 1 };
+  z.mods = {};
+  z.label = '';
+  if (z.type === 'start' || z.type === 'couloir') return;
+  // Grundwerte leicht verschieben (Berg-Charakter + Zufall)
+  z.len *= rr(0.75, 1.3);
+  z.valley *= ch.wide * rr(0.9, 1.12);
+  z.forest = clamp(z.forest * ch.forest * rr(0.7, 1.35), 0, 1);
+  z.pow = clamp(z.pow * ch.pow * rr(0.8, 1.2), 0, 1);
+  if (z.type !== 'park' && z.type !== 'bigair' && z.type !== 'flat') z.slope = clamp(z.slope * ch.steep * rr(0.94, 1.08), 0.12, 0.6);
+  // Kurvenstil: gerade Schüsse, enge S-Kurven oder weite Bögen
+  if (z.type !== 'bigair') {
+    const st = R();
+    if (st < 0.2) z.head.A *= 0.35;
+    else if (st < 0.45) { z.head.lam *= 0.65; z.head.A *= 1.05 * ch.curvy; }
+    else if (st < 0.65) { z.head.lam *= 1.4; z.head.A *= 1.15 * ch.curvy; }
+    else z.head.A *= ch.curvy;
+  }
+  // Spuren durchmischen: Breiten, Seiten, gelegentlich wird aus einer Piste eine Waldbahn oder umgekehrt
+  for (let i = 1; i < NL; i++) {
+    const l = z.lanes[i];
+    if (l.w <= 0) {
+      if (z.type !== 'park' && z.type !== 'bigair' && z.type !== 'cliff' && R() < 0.22) {   // zusätzliche Spur
+        const trail = R() < 0.6;
+        z.lanes[i] = lane(trail ? rr(3, 3.6) : rr(5.5, 7.5), (R() < 0.5 ? -1 : 1) * rr(40, z.valley - 20), { wob: rr(3, 8), wl: rr(90, 180), ph: ph(), groom: trail ? 0.6 : 0.9, kind: trail ? KIND.trail : 0 });
+      }
+      continue;
+    }
+    if (l.kind === KIND.jump || l.kind === KIND.chute) continue;
+    l.w *= rr(0.85, 1.2);
+    l.off *= rr(0.8, 1.2);
+    l.wob *= rr(0.6, 1.5);
+    if (R() < 0.15) {
+      if (l.kind === KIND.trail) { l.kind = 0; l.w = Math.max(l.w, rr(5, 6.5)); l.groom = 0.9; }
+      else if (z.forest > 0.3) { l.kind = KIND.trail; l.w = rr(3, 3.6); l.groom = 0.6; }
+    }
+    if (R() < 0.12) { l.w = 0; l.groom = 0; }      // Spur fällt weg
+  }
+  // Gelände-Formen (0 bis 2 pro Zone)
+  const flatZone = z.type === 'park' || z.type === 'bigair' || z.type === 'flat';
+  const pool = flatZone || z.type === 'cliff' ? ['islands', 'rocks', 'wide', 'gully'] : ['waves', 'gully', 'ridge', 'knolls', 'islands', 'rocks', 'wide', 'narrow', 'waves'];
+  const nm = Math.min(2, Math.floor(R() * 2.6 * ch.mods));
+  const names = [];
+  for (let k = 0; k < nm; k++) {
+    const m = pool[Math.floor(R() * pool.length)];
+    if (z.mods[m]) continue;
+    switch (m) {
+      case 'waves': { const lam = rr(75, 130); z.mods.waves = { lam, a: Math.min(rr(0.9, 2.0), 0.0065 * (lam / TAU) ** 2), ph: ph(), sk: rr(-0.25, 0.25) }; break; }   // Krümmung ≤ 0,0065/m: bei 100 km/h unter 0,6 g
+      case 'gully': { const w = rr(45, 80); z.mods.gully = { k: rr(0.06, 0.1) / w, w }; break; }   // Querneigung am Rand höchstens 0,2
+      case 'ridge': if (z.lanes.filter((l) => l.w > 0).length >= 2) z.mods.ridge = { h: rr(2.5, 5), w: rr(9, 15) }; else continue; break;
+      case 'knolls': z.mods.knolls = { a: rr(0.5, 0.9), s: rr(40, 60), sd: R() * 100 }; break;
+      case 'islands': z.mods.islands = { amt: rr(0.5, 0.9) }; break;
+      case 'rocks': z.mods.rocks = { amt: rr(0.6, 1.2) }; break;
+      case 'wide': z.valley *= 1.18; break;
+      case 'narrow': z.valley = Math.max(70, z.valley * 0.78); break;
+    }
+    names.push(MOD_NAMES[m]);
+  }
+  // Mittelspur über einem Rücken liegt seitlich daneben
+  if (z.mods.ridge && Math.abs(z.lanes[0].off) < z.mods.ridge.w + z.lanes[0].w + 4) z.lanes[0].off = (z.lanes[0].off >= 0 ? 1 : -1) * (z.mods.ridge.w + z.lanes[0].w + 6);
+  z.label = names.join(', ');
+}
+
+/** Glatte Gelände-Formen einer Zone (Höhe relativ zum Grundgelände). u = Abstand zur Mittellinie. */
+function modHeight(z, x, d, u, run) {
+  const m = z.mods;
+  if (!m) return 0;
+  let y = 0;
+  const fade = smoothstep(z.d0 - 70, z.d0 + 50, d) * (1 - smoothstep(z.d1 - 50, z.d1 + 70, d));
+  if (fade <= 0) return 0;
+  if (m.waves) y += m.waves.a * Math.sin(TAU * d / m.waves.lam + m.waves.ph + m.waves.sk * u / 20) * (1 - run);
+  if (m.gully) { const g = m.gully; const uu = Math.min(Math.abs(u), g.w); y += g.k * uu * uu + g.k * 2 * g.w * Math.max(0, Math.abs(u) - g.w); }
+  if (m.ridge) { const r = m.ridge; y += r.h * Math.exp(-(u * u) / (r.w * r.w)) * (1 - run); }
+  if (m.knolls) { const k = m.knolls; y += k.a * (vnoise(x / k.s + k.sd, d / k.s) - 0.5) * 2 * (1 - run); }
+  return y * fade;
 }
 
 /** Spuren dürfen sich nicht überlappen und müssen ins Tal passen; zu enge werden weggelassen. */
@@ -294,8 +384,10 @@ function runwayAt(z, d, x) {
     const f = feats[k];
     if (f.kind !== 'jump') continue;
     const xx = d - f.d + f.J.Lr;          // 0 = Beginn der Absprungrampe
-    if (xx > 4 || xx < -150) continue;
-    let a = smoothstep(-150, -90, xx) * (1 - smoothstep(0, 4, xx));
+    const xe = f.J.Lr + f.ext1;           // Ende der Landung
+    if (xx > xe + 40 || xx < -150) continue;
+    // Anlauf ganz glatt; über Sprung und Landung keine Zusatzformen (Wellen, Kuppen), damit die berechnete Landung stimmt
+    let a = smoothstep(-150, -90, xx) * (1 - smoothstep(xe + 10, xe + 40, xx));
     if (x !== undefined) a *= 1 - smoothstep(f.wT + 5, f.wT + 14, Math.abs(x - f.x));
     if (a > m) { m = a; RW_U = f.x - hubX(f.d); }
   }
@@ -470,6 +562,11 @@ export function heightP(x, z) {
   if (c.cross !== 0) lat += c.cross * (ue + bestM * ((sumM > 1e-6 ? sumMU / sumM : ue) - ue));
   // seitlicher Anstieg wird weich begrenzt: offene Panoramen statt Schlucht (nur die Rinne darf hoch aufragen)
   y += c.cap * Math.tanh(lat / c.cap);
+  // Zonen-Formen (Wellen, Mulde, Rücken, Kuppen) – im Übergang beide Zonen gewichtet
+  const Za = S.Z[c.zi];
+  y += modHeight(Za, x, dc, ue, runM);
+  if (Za.idx > 0 && dc < Za.d0 + 70) y += modHeight(S.Z[Za.idx - 1], x, dc, ue, runM);
+  else if (dc > Za.d1 - 70 && S.Z[Za.idx + 1]) y += modHeight(S.Z[Za.idx + 1], x, dc, ue, runM);
   // Hügel und Rücken außerhalb des Tals
   if (e > 0) y += c.hill * (fbm(x / 70 + S.seed * 0.9, dc / 85) - 0.45) * 2 * smoothstep(0, 40, e);
   y -= 0.3 * chan;
@@ -536,6 +633,9 @@ function laneKind(i, z) { return z.lanes[i].kind; }
 function addJump(z, R, o) {
   const d = o.exactD !== undefined ? o.exactD : snapStraight(z, o.d, 40);
   const x = laneX(z, o.lane, d) + (o.dx || 0);
+  // Keine Steilstufe im Anlauf, über dem Sprung oder in der Landung: sonst stimmt weder der gerade Anlauf noch die Landung
+  const w0 = d - (o.Lr || 14) - 165, w1 = d + 140;
+  z.pitches = z.pitches.filter((p) => p.own || p.d + p.len + p.e < w0 || p.d - p.e > w1);
   const sRun = zoneSlopeAt(z, d - 70) * 0.5 + zoneSlopeAt(z, d - 20) * 0.5;
   const sHere = zoneSlopeAt(z, d);
   const vu = terminalSpeed(sRun, 0), vt = terminalSpeed(sRun, 1);
@@ -550,7 +650,7 @@ function addJump(z, R, o) {
   if (d + des.ext1 > z.d1 - PCFG.transition - 8) { report.skipped = (report.skipped || 0) + 1; return null; }
   const wT = o.wT, wL = wT * 1.7;
   z.feats.push({ kind: 'jump', d, x, J: des.J, wT, wL: o.wL || wT * 1.7, ext0: des.ext0, ext1: des.ext1, s0: d - des.J.Lr - 10, s1: d + des.ext1 + 10, lane: o.lane, name: o.name || o.kind });
-  if (steep) z.pitches.push({ d: d + 4, amt: o.steep - sHere, len: des.ext1 + 40, e: 14 });
+  if (steep) z.pitches.push({ d: d + 4, amt: o.steep - sHere, len: des.ext1 + 40, e: 14, own: true });
   Object.assign(rec, {
     flight: +des.flight.toFixed(1), airT: +des.airT.toFixed(2), height: +des.J.h.toFixed(1), vn: +des.vn.toFixed(1),
     vnLow: +des.vnLow.toFixed(1), vnHigh: +des.vnHigh.toFixed(1), speed: `${vu.toFixed(0)}-${vt.toFixed(0)}`,

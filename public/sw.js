@@ -3,7 +3,7 @@
 // landet beim ersten Laden automatisch im Speicher. Ab dann startet das Spiel auch ohne Internet.
 // Neue Versionen: Die Startseite wird bei Verbindung immer frisch geholt (und gespeichert); die Dateien darin haben
 // eindeutige Namen (Vite-Hash), alte Versionen werden beim nächsten Wechsel aufgeräumt.
-const CACHE = 'gipfelsturm-v2';
+const CACHE = 'gipfelsturm-v3';
 const CORE = ['./', './index.html', './manifest.webmanifest', './models/models.glb', './icons/icon-192.png', './icons/icon-512.png', './icons/icon.svg'];
 
 // Beim Installieren auch die gehashten Skripte und Stile aus index.html holen: Beim allerersten Besuch lädt die Seite

@@ -12,7 +12,7 @@ import { Spray, DiamondDust } from './particles.js';
 import { GameAudio } from './audio.js';
 import { Q, setTier, ORDER } from './quality.js';
 import { PowderPatch } from './powder.js';
-import { setupTouch, updateTouch, touch, isTouch } from './touch.js';
+import { setupTouch, updateTouch, touch, isTouch, viewSize } from './touch.js';
 
 const { clamp, lerp, smoothstep, G } = C;
 const $ = (id) => document.getElementById(id);
@@ -39,7 +39,7 @@ const phys = new SkiPhysics();
 const audio = new GameAudio();
 
 function resize() {
-  const w = window.innerWidth, h = window.innerHeight;
+  const { w, h } = viewSize();   // Handy hochkant: Spiel wird gedreht, Breite und Höhe tauschen
   const pr = Math.min(window.devicePixelRatio || 1, Q.pr);
   renderer.setPixelRatio(pr);
   renderer.setSize(w, h, false);
@@ -304,9 +304,17 @@ function teleport(x, z, heading) {
   resetVisuals();
 }
 function toCheckpoint() {
-  if (game.mode !== 'run' || !game.cp) return;
-  teleport(game.cp.x, game.cp.z, game.cp.h);
-  showMsg('Zurück am Respawn-Punkt', 'good');
+  if (game.mode !== 'run' || phys.crashed > 0) return;
+  if (game.cp) {
+    teleport(game.cp.x, game.cp.z, game.cp.h);
+    showMsg('Zurück am Respawn-Punkt', 'good');
+    return;
+  }
+  // Kein Punkt gesetzt (oder festgefahren): auf die Mitte der nächsten Piste, etwas weiter hinten
+  const d = clamp(-phys.pos.z - 8, 2, C.MESH_D1 - 40);
+  const x = C.cfg.endless ? C.surfaceAt(phys.pos.x, -d).lx : C.centerX(d);
+  teleport(x, -d);
+  showMsg('Zurück auf die Piste', 'good');
 }
 
 // ---------------------------------------------------------------- Eingabe
@@ -337,7 +345,7 @@ window.addEventListener('keyup', (e) => {
 });
 window.addEventListener('blur', () => { for (const k in keys) { keys[k] = false; airKey[k] = false; } });
 // Handy: Knöpfe, Neigungssteuerung (Erlaubnis wird beim Start-Tipp eingeholt)
-const touchCtl = setupTouch({ isAir: () => game.mode === 'run' && !phys.grounded && phys.crashed <= 0, isRunning: () => game.mode === 'run' });
+const touchCtl = setupTouch({ isAir: () => game.mode === 'run' && !phys.grounded && phys.crashed <= 0, isRunning: () => game.mode === 'run', onResize: () => resize() });
 $('startBtn').addEventListener('click', () => { if (touchCtl) touchCtl.onStart(); if (game.mode === 'menu') startRun(); });
 $('againBtn').addEventListener('click', () => { if (touchCtl) touchCtl.onStart(); startRun(); });
 $('menuBtn').addEventListener('click', () => toMenu());
@@ -857,11 +865,12 @@ function tick(dt, render) {
   time += dt;
 
   const airNow = game.mode === 'run' && !phys.grounded && phys.crashed <= 0;
-  updateTouch(airNow);
+  updateTouch(airNow, dt);
   if (touchCtl) touchCtl.setRunning(game.mode === 'run' || game.mode === 'countdown');
   // Handy: analoger Lenkwert aus Neigung/Daumen (am Boden); sonst Tasten
   const st = touch.steer !== null && !airNow ? touch.steer : (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
-  const rate = st === 0 ? 9 : Math.sign(st) !== Math.sign(inp.steer) && inp.steer !== 0 ? 12 : 6;
+  // Analog (Neigen/Daumen): direkt folgen; Tasten: weich einblenden
+  const rate = touch.steer !== null && !airNow ? 14 : st === 0 ? 9 : Math.sign(st) !== Math.sign(inp.steer) && inp.steer !== 0 ? 12 : 6;
   inp.steer += clamp(st - inp.steer, -rate * dt, rate * dt);
   inp.tuck += clamp((keys.up ? 1 : 0) - inp.tuck, -5 * dt, 5 * dt);
   inp.brake += clamp((keys.down ? 1 : 0) - inp.brake, -8 * dt, 8 * dt);

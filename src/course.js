@@ -170,6 +170,21 @@ function addCollider(x, z, r, type, lx = 0, lz = 0) {
   if (!colliders.has(key)) colliders.set(key, []);
   colliders.get(key).push({ x, z, r, type, lx, lz });   // lx/lz: Richtung der Zaunlinie (Einheitsvektor)
 }
+/** Rails und Boxen in der Nähe (Endlos-Welten): Geometrie wird beim ersten Abruf aus dem Gelände berechnet.
+ *  g: Anfangspunkt (ax, ay, az) = Oberkante, Richtung (dx, dy, dz), Länge L, halbe Breite w. */
+export function nearRails(z, cb) {
+  if (!cfg.endless) return;
+  const d = -z;
+  for (const r of P.railsIn(d - 30, d + 30)) {
+    if (!r.g) {
+      const ya = P.heightP(r.x0, -(r.d0 + 0.6)) + r.h, yb = P.heightP(r.x1, -(r.d0 + r.len)) + r.h;
+      const ax = r.x0, az = -r.d0, bx = r.x1, bz = -(r.d0 + r.len);
+      const L = Math.hypot(bx - ax, yb - ya, bz - az);
+      r.g = { ax, ay: ya, az, dx: (bx - ax) / L, dy: (yb - ya) / L, dz: (bz - az) / L, L, w: r.w, h: r.h, kind: r.kind, name: r.name };
+    }
+    cb(r.g);
+  }
+}
 export function nearColliders(z, cb) {
   const k = Math.floor(-z / 20);
   for (let i = k - 1; i <= k + 1; i++) {
@@ -419,6 +434,24 @@ export function genChunk(i) {
       }
     }
   }
+  // ---- Rails und Boxen (Freestyle): Modell auf Länge und Höhe skaliert, folgt dem Hang
+  for (const r of P.railsIn(d0, d1)) {
+    if (r.d0 < d0 || r.d0 >= d1) continue;
+    const isBox = r.kind === 'box', Lm = isBox ? 4.6 : 7, Hm = isBox ? 0.5 : 0.66;
+    const ax = r.x0, az = -(r.d0 + 0.6), bx = r.x1, bz = -(r.d0 + r.len);
+    const ga = P.heightP(ax, az), gb = P.heightP(bx, bz);
+    const len = Math.hypot(bx - ax, bz - az), sy = r.h / Hm;
+    decor.push({ m: isBox ? 'ParkBox' : 'Rail', x: (ax + bx) / 2, z: (az + bz) / 2, y: (ga + gb) / 2, rot: Math.atan2(-(bz - az), bx - ax), scale: 1, sx: len / Lm, sy, sl: (gb - ga) / (Lm * sy), col: isBox ? null : [1, 1, 1] });
+    for (const sg of [-1, 1]) out.markers.push({ x: ax + sg * 3.2, z: az + 6, y: P.heightP(ax + sg * 3.2, az + 6), kicker: true });
+  }
+  // Gaps: rote Stangen an beiden Grabenkanten
+  for (const f of P.featuresIn(d0, d1)) {
+    if (f.kind !== 'jump' || !f.gap) continue;
+    for (const dd of [f.d + f.gap.a, f.d + f.gap.b]) for (const sg of [-1, 1]) {
+      const x = f.x + sg * (f.wT + 1.2);
+      out.markers.push({ x, z: -dd, y: P.heightP(x, -dd), cliff: true });
+    }
+  }
   // ---- Markierungsstangen entlang der Spuren, Farbe nach Schwierigkeit
   for (let dm = Math.ceil(d0 / 22) * 22; dm < d1; dm += 22) {
     if (dm < 30) continue;
@@ -519,8 +552,6 @@ export function genChunk(i) {
     const side = (k & 1) ? 1 : -1;
     if (ZONE_DECOR_CANNON[type] && h < 0.34 * ZONE_DECOR_CANNON[type] && c.lw[0] > 5) addD('SnowCannon', c.lx[0] + side * (c.lw[0] + 3.2), dm, { rot: R() * 6.28, r: 0.6, type: 'haus' });
     if (type === 'park') {
-      if (h < 0.28) addD('Rail', c.lx[0] + side * (c.lw[0] + 7 + h * 20), dm, { rot: laneYaw(0, dm) });
-      else if (h < 0.5) addD('ParkBox', c.lx[0] + side * (c.lw[0] + 7 + h * 18), dm, { rot: laneYaw(0, dm) });
       if (dm - z.d0 < 36) addD('Banner', c.lx[0], dm + 10);
     }
     if (type === 'bigair' && dm - z.d0 < 36) addD('Banner', c.lx[0], dm + 12);

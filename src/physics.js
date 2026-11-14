@@ -1,7 +1,7 @@
 // Fahrphysik: Schwerkraft am Hang, Gleitreibung, Luftwiderstand, Kantengriff (Carven) und Rutschen (Driften).
 // Kurvenradius ergibt sich aus der maximalen Querbeschleunigung, die die Kante hält – wer zu hart einlenkt, rutscht.
 import * as THREE from 'three';
-import { G, height, terrainNormal, surfaceAt, centerX, bounds, cfg, nearColliders, clamp, lerp, smoothstep, MESH_D1 } from './course.js';
+import { G, height, terrainNormal, surfaceAt, centerX, bounds, cfg, nearColliders, nearRails, clamp, lerp, smoothstep, MESH_D1 } from './course.js';
 
 const N = new THREE.Vector3(), N2 = new THREE.Vector3();
 const F = new THREE.Vector3(), Rv = new THREE.Vector3(), FH = new THREE.Vector3();
@@ -36,10 +36,14 @@ export class SkiPhysics {
     this.gap = 0;
     this.yawRate = 0;
     this.pressure = 1;
+    this.grind = null;   // auf Rail/Box: { g, s (gefahrene Meter), bal (Balance −1..1) }
+    this.grindCool = 0;
     terrainNormal(x, z, this.normal);
   }
 
   step(dt, inp) {
+    if (this.grind) { this.stepGrind(dt, inp); return; }
+    this.grindCool = Math.max(0, this.grindCool - dt);
     const p = this.pos, v = this.vel;
     terrainNormal(p.x, p.z, N);
     // Tiefschnee: im Rennen bremst das Gelände neben der Piste, im Freeride-Berg gibt es echten Pulverschnee mit Tiefe
@@ -129,6 +133,34 @@ export class SkiPhysics {
     if (d > MESH_D1 - 20) { p.z = -(MESH_D1 - 20); v.z = 0; }
     if (d < -40) { p.z = 40; v.z = Math.min(v.z, 0); }
 
+    // Rails und Boxen: aufspringen oder über die Rampe auffahren; seitlich dagegen = abprallen
+    if (cfg.endless && this.crashed <= 0 && this.grindCool <= 0) {
+      nearRails(p.z, (g) => {
+        if (this.grind) return;
+        const rx = p.x - g.ax, ry = p.y - g.ay, rz = p.z - g.az;
+        const sAl = rx * g.dx + ry * g.dy + rz * g.dz;
+        if (sAl < -0.4 || sAl > g.L - 0.6) return;
+        const qx = g.ax + g.dx * sAl, qy = g.ay + g.dy * sAl, qz = g.az + g.dz * sAl;
+        const hn = Math.hypot(g.dx, g.dz) || 1, lx = g.dz / hn, lz = -g.dx / hn;
+        const lat = (p.x - qx) * lx + (p.z - qz) * lz, dyTop = p.y - qy;
+        const va = v.x * g.dx + v.y * g.dy + v.z * g.dz;
+        if (Math.abs(lat) < g.w + 0.34 && dyTop > -0.32 && dyTop < 0.6 && va > 2 && v.y - g.dy * va < 1.5 + 0.35 * va) {   // von der Auffahrrampe kommt man leicht steigend an
+          this.grind = { g, s: Math.max(0, sAl), bal: clamp(lat / (g.w + 0.34), -1, 1) * 0.35, ph: Math.random() * 6.28, t: 0 };
+          p.set(qx, qy, qz);
+          v.set(g.dx * va, g.dy * va, g.dz * va);
+          this.grounded = false;
+          this.events.push({ type: 'grindStart', kind: g.kind, name: g.name });
+        } else if (Math.abs(lat) < g.w + 0.28 && dyTop <= -0.32 && dyTop > -g.h - 0.3) {
+          // gegen die Seite gefahren: wegdrücken, kein Sturz
+          const out = (g.w + 0.28 - Math.abs(lat)) * Math.sign(lat || 1);
+          p.x += lx * out; p.z += lz * out;
+          const vl = v.x * lx + v.z * lz;
+          if (vl * Math.sign(lat || 1) < 0) { v.x -= lx * vl * 1.2; v.z -= lz * vl * 1.2; }
+        }
+      });
+      if (this.grind) { this.normal.set(0, 1, 0); this.speed = v.length(); return; }
+    }
+
     const hgt = height(p.x, p.z);
     terrainNormal(p.x, p.z, N2);
     const gap = p.y - hgt;
@@ -196,6 +228,45 @@ export class SkiPhysics {
 
     FH.set(Math.sin(this.heading), 0, -Math.cos(this.heading));
     this.fwd.copy(FH).addScaledVector(this.normal, -FH.dot(this.normal)).normalize();
+    this.right.crossVectors(this.fwd, this.normal).normalize();
+  }
+
+  /** Rutschen auf Rail oder Box: Tempo entlang des Elements, Balance halten (Lenken gleicht aus), abspringen mit Sprung. */
+  stepGrind(dt, inp) {
+    const gr = this.grind, g = gr.g, p = this.pos, v = this.vel;
+    let va = v.x * g.dx + v.y * g.dy + v.z * g.dz;
+    const mu = g.kind === 'box' ? 0.07 : 0.045;
+    va += (-G * g.dy - mu * G * Math.sqrt(Math.max(0, 1 - g.dy * g.dy)) - 0.0025 * va * va) * dt;
+    gr.t += dt;
+    // Balance ist instabil (kippt von selbst weg), Gegenlenken hält sie; auf Boxen deutlich gutmütiger
+    const k = g.kind === 'box' ? 0.55 : 1;
+    gr.bal += (gr.bal * 1.5 + Math.sin(gr.t * 2.1 + gr.ph) * 0.5 + Math.sin(gr.t * 5.3 + gr.ph * 2) * 0.25) * k * dt - inp.steer * 2.6 * dt;
+    gr.s += va * dt;
+    this.heading = Math.atan2(g.dx, -g.dz);
+    this.speed = Math.abs(va);
+    this.skid = 0; this.aLat = 0; this.slip = 0; this.airTime = 0; this.gap = 0;
+    const hn = Math.hypot(g.dx, g.dz) || 1, lx = g.dz / hn, lz = -g.dx / hn;
+    let leave = null;
+    if (inp.jump) leave = { clean: true, pop: 4.6 };
+    else if (gr.s >= g.L) leave = { clean: true, pop: 0.6 };
+    else if (Math.abs(gr.bal) > 1) leave = { clean: false, side: Math.sign(gr.bal) };
+    else if (va < 0.8) leave = { clean: gr.s > 2, pop: 0 };
+    if (leave) {
+      v.set(g.dx * va, g.dy * va + (leave.pop || 0), g.dz * va);
+      if (leave.side) { v.x += lx * leave.side * 2.4; v.z += lz * leave.side * 2.4; p.x += lx * leave.side * (g.w + 0.4); p.z += lz * leave.side * (g.w + 0.4); }
+      this.grind = null;
+      this.grindCool = 0.35;
+      this.grounded = false;
+      this.airStart.copy(p);
+      if (leave.pop > 1) this.events.push({ type: 'jump' });
+      this.events.push({ type: 'grindEnd', dist: gr.s, kind: g.kind, name: g.name, clean: leave.clean, time: gr.t });
+    } else {
+      p.set(g.ax + g.dx * gr.s, g.ay + g.dy * gr.s, g.az + g.dz * gr.s);
+      v.set(g.dx * va, g.dy * va, g.dz * va);
+    }
+    this.normal.set(0, 1, 0);
+    FH.set(Math.sin(this.heading), 0, -Math.cos(this.heading));
+    this.fwd.copy(FH);
     this.right.crossVectors(this.fwd, this.normal).normalize();
   }
 

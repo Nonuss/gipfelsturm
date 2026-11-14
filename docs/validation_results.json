@@ -2,8 +2,8 @@
  {
   "seed": 8,
   "mode": "Spur A aufrecht",
-  "reached": 3000,
-  "time": 157,
+  "reached": 3800,
+  "time": 196.5,
   "crashes": [],
   "landings": [
    {
@@ -54,7 +54,7 @@
     "lane": 1
    }
   ],
-  "topSpeed": 25.731758454699552,
+  "topSpeed": 25.996753285006502,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -97,15 +97,15 @@
    }
   ],
   "issues": [],
-  "features": 48,
-  "skipped": 2,
-  "zones": "S220 C267 G355 C333 B387 G381 S269 P540 C242 G508 C434 B374"
+  "features": 66,
+  "skipped": 5,
+  "zones": "S220 C267 G355 C333 B387 G381 S269 P540 C242 G508 S269 C369 G420 C267 P632"
  },
  {
   "seed": 8,
   "mode": "Spur A Hocke",
-  "reached": 3000,
-  "time": 125.8,
+  "reached": 3800,
+  "time": 157.7,
   "crashes": [],
   "landings": [
    {
@@ -178,9 +178,33 @@
     "dist": 54.1,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
+   },
+   {
+    "d": 3242,
+    "impact": 2.5,
+    "air": 0.46,
+    "dist": 12.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3355,
+    "impact": 11.8,
+    "air": 1.58,
+    "dist": 39.4,
+    "feat": "Waldkicker",
+    "lane": 2
+   },
+   {
+    "d": 3379,
+    "impact": 4.4,
+    "air": 0.7,
+    "dist": 15.1,
+    "feat": "Waldkicker",
+    "lane": 2
    }
   ],
-  "topSpeed": 30.817554781565445,
+  "topSpeed": 30.87851045561006,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -238,18 +262,36 @@
     "v": 26.6,
     "vy": 4.8,
     "x": -18
+   },
+   {
+    "d": 3229,
+    "v": 27.3,
+    "vy": -5,
+    "x": 21
+   },
+   {
+    "d": 3322,
+    "v": 25.8,
+    "vy": 1,
+    "x": 42
+   },
+   {
+    "d": 3366,
+    "v": 22.1,
+    "vy": -3.5,
+    "x": 35
    }
   ],
   "issues": [],
-  "features": 48,
-  "skipped": 2,
-  "zones": "S220 C267 G355 C333 B387 G381 S269 P540 C242 G508 C434 B374"
+  "features": 66,
+  "skipped": 5,
+  "zones": "S220 C267 G355 C333 B387 G381 S269 P540 C242 G508 S269 C369 G420 C267 P632"
  },
  {
   "seed": 8,
   "mode": "Spur B Hocke",
-  "reached": 3000,
-  "time": 133.1,
+  "reached": 3800,
+  "time": 169.5,
   "crashes": [],
   "landings": [
    {
@@ -298,9 +340,25 @@
     "dist": 34.6,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
+   },
+   {
+    "d": 3353,
+    "impact": 12.1,
+    "air": 1.43,
+    "dist": 35.8,
+    "feat": "Waldkicker",
+    "lane": 2
+   },
+   {
+    "d": 3378,
+    "impact": 5.4,
+    "air": 1.05,
+    "dist": 24.4,
+    "feat": "Waldkicker",
+    "lane": 2
    }
   ],
-  "topSpeed": 28.93587248926742,
+  "topSpeed": 29.29731621556241,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -340,18 +398,30 @@
     "v": 24.1,
     "vy": 1.5,
     "x": 28
+   },
+   {
+    "d": 3322,
+    "v": 25.9,
+    "vy": 1.4,
+    "x": 10
+   },
+   {
+    "d": 3356,
+    "v": 23.8,
+    "vy": -1.8,
+    "x": 5
    }
   ],
   "issues": [],
-  "features": 48,
-  "skipped": 2,
-  "zones": "S220 C267 G355 C333 B387 G381 S269 P540 C242 G508 C434 B374"
+  "features": 66,
+  "skipped": 5,
+  "zones": "S220 C267 G355 C333 B387 G381 S269 P540 C242 G508 S269 C369 G420 C267 P632"
  },
  {
   "seed": 15,
   "mode": "Spur A aufrecht",
-  "reached": 3000,
-  "time": 154.8,
+  "reached": 3800,
+  "time": 191.2,
   "crashes": [],
   "landings": [
    {
@@ -400,9 +470,33 @@
     "air": 0.48,
     "dist": 9.3,
     "feat": "cliff"
+   },
+   {
+    "d": 3509,
+    "impact": 5.6,
+    "air": 1.23,
+    "dist": 26,
+    "feat": "Waldkicker",
+    "lane": 1
+   },
+   {
+    "d": 3540,
+    "impact": 3.5,
+    "air": 0.46,
+    "dist": 9.6,
+    "feat": "Waldkicker",
+    "lane": 1
+   },
+   {
+    "d": 3771,
+    "impact": 2.8,
+    "air": 0.77,
+    "dist": 17.4,
+    "feat": "-",
+    "lane": -1
    }
   ],
-  "topSpeed": 26.623768976371608,
+  "topSpeed": 26.94829079313726,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -442,18 +536,36 @@
     "v": 21,
     "vy": -7.5,
     "x": 63
+   },
+   {
+    "d": 3483,
+    "v": 22,
+    "vy": 1.2,
+    "x": 9
+   },
+   {
+    "d": 3530,
+    "v": 22.3,
+    "vy": -6.3,
+    "x": 8
+   },
+   {
+    "d": 3754,
+    "v": 24.8,
+    "vy": -9.1,
+    "x": -37
    }
   ],
   "issues": [],
-  "features": 42,
+  "features": 45,
   "skipped": 4,
-  "zones": "S220 G328 C362 C563 C234 G324 S247 B420 C489 G464 S199 C338"
+  "zones": "S220 G328 C362 C563 C234 G324 S247 B420 C489 G464 S199 C338 C385 S242 F134"
  },
  {
   "seed": 15,
   "mode": "Spur A Hocke",
-  "reached": 3000,
-  "time": 127.2,
+  "reached": 3800,
+  "time": 155.8,
   "crashes": [],
   "landings": [
    {
@@ -526,6 +638,21 @@
     "dist": 14,
     "feat": "-",
     "lane": -1
+   },
+   {
+    "d": 3003,
+    "impact": 6.2,
+    "air": 0.82,
+    "dist": 20.2,
+    "feat": "cliff"
+   },
+   {
+    "d": 3545,
+    "impact": 5.7,
+    "air": 0.55,
+    "dist": 15.4,
+    "feat": "Waldkicker",
+    "lane": 1
    }
   ],
   "topSpeed": 31.780957981720036,
@@ -592,18 +719,24 @@
     "v": 26.4,
     "vy": -8.3,
     "x": 66
+   },
+   {
+    "d": 3529,
+    "v": 29.4,
+    "vy": -7.4,
+    "x": 9
    }
   ],
   "issues": [],
-  "features": 42,
+  "features": 45,
   "skipped": 4,
-  "zones": "S220 G328 C362 C563 C234 G324 S247 B420 C489 G464 S199 C338"
+  "zones": "S220 G328 C362 C563 C234 G324 S247 B420 C489 G464 S199 C338 C385 S242 F134"
  },
  {
   "seed": 15,
   "mode": "Spur B Hocke",
-  "reached": 3000,
-  "time": 130.6,
+  "reached": 3800,
+  "time": 164.8,
   "crashes": [],
   "landings": [
    {
@@ -668,9 +801,24 @@
     "dist": 3.8,
     "feat": "-",
     "lane": -1
+   },
+   {
+    "d": 3026,
+    "impact": 15.6,
+    "air": 2.27,
+    "dist": 46.5,
+    "feat": "cliff"
+   },
+   {
+    "d": 3540,
+    "impact": 3.8,
+    "air": 0.43,
+    "dist": 10.7,
+    "feat": "Waldkicker",
+    "lane": 1
    }
   ],
-  "topSpeed": 29.356853723085734,
+  "topSpeed": 29.752629097449354,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -728,18 +876,24 @@
     "v": 21.6,
     "vy": -2.2,
     "x": -8
+   },
+   {
+    "d": 3529,
+    "v": 26.4,
+    "vy": -7.2,
+    "x": -32
    }
   ],
   "issues": [],
-  "features": 42,
+  "features": 45,
   "skipped": 4,
-  "zones": "S220 G328 C362 C563 C234 G324 S247 B420 C489 G464 S199 C338"
+  "zones": "S220 G328 C362 C563 C234 G324 S247 B420 C489 G464 S199 C338 C385 S242 F134"
  },
  {
   "seed": 22,
   "mode": "Spur A aufrecht",
-  "reached": 3000,
-  "time": 156.2,
+  "reached": 3800,
+  "time": 198.9,
   "crashes": [],
   "landings": [
    {
@@ -772,6 +926,30 @@
     "air": 0.32,
     "dist": 5.2,
     "feat": "cliff"
+   },
+   {
+    "d": 3139,
+    "impact": 5.1,
+    "air": 1.05,
+    "dist": 17.8,
+    "feat": "Tischsprung",
+    "lane": 0
+   },
+   {
+    "d": 3325,
+    "impact": 8.8,
+    "air": 1.05,
+    "dist": 17.3,
+    "feat": "Step-up",
+    "lane": 0
+   },
+   {
+    "d": 3348,
+    "impact": 5.7,
+    "air": 1.32,
+    "dist": 18.6,
+    "feat": "Step-up",
+    "lane": 0
    }
   ],
   "topSpeed": 26.333933745259344,
@@ -802,18 +980,36 @@
     "v": 17.9,
     "vy": -6.8,
     "x": 75
+   },
+   {
+    "d": 3122,
+    "v": 17.6,
+    "vy": 2.2,
+    "x": -2
+   },
+   {
+    "d": 3308,
+    "v": 17.1,
+    "vy": 2.5,
+    "x": 2
+   },
+   {
+    "d": 3329,
+    "v": 14.6,
+    "vy": 1.6,
+    "x": 1
    }
   ],
   "issues": [],
-  "features": 52,
-  "skipped": 6,
-  "zones": "S220 G483 S353 F104 P699 C337 B377 G261 P613 C260 B391 G336"
+  "features": 62,
+  "skipped": 7,
+  "zones": "S220 G483 S353 F104 P699 C337 B377 G261 P613 C260 B391 G336 C325 P573"
  },
  {
   "seed": 22,
   "mode": "Spur A Hocke",
-  "reached": 3000,
-  "time": 123.9,
+  "reached": 3800,
+  "time": 155.7,
   "crashes": [],
   "landings": [
    {
@@ -894,6 +1090,22 @@
     "dist": 12,
     "feat": "-",
     "lane": -1
+   },
+   {
+    "d": 3167,
+    "impact": 10.3,
+    "air": 1.88,
+    "dist": 45.7,
+    "feat": "Tischsprung",
+    "lane": 0
+   },
+   {
+    "d": 3349,
+    "impact": 5.1,
+    "air": 1.8,
+    "dist": 41.4,
+    "feat": "Step-up",
+    "lane": 0
    }
   ],
   "topSpeed": 31.37700422941168,
@@ -960,18 +1172,30 @@
     "v": 27.7,
     "vy": -2.9,
     "x": 5
+   },
+   {
+    "d": 3122,
+    "v": 25.6,
+    "vy": 3.6,
+    "x": -3
+   },
+   {
+    "d": 3308,
+    "v": 24.2,
+    "vy": 3.8,
+    "x": 3
    }
   ],
   "issues": [],
-  "features": 52,
-  "skipped": 6,
-  "zones": "S220 G483 S353 F104 P699 C337 B377 G261 P613 C260 B391 G336"
+  "features": 62,
+  "skipped": 7,
+  "zones": "S220 G483 S353 F104 P699 C337 B377 G261 P613 C260 B391 G336 C325 P573"
  },
  {
   "seed": 22,
   "mode": "Spur B Hocke",
-  "reached": 3000,
-  "time": 134.6,
+  "reached": 3800,
+  "time": 168.3,
   "crashes": [],
   "landings": [
    {
@@ -1028,6 +1252,22 @@
     "dist": 15.5,
     "feat": "-",
     "lane": -1
+   },
+   {
+    "d": 3014,
+    "impact": 5.7,
+    "air": 0.58,
+    "dist": 13.4,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 3283,
+    "impact": 6.2,
+    "air": 1.56,
+    "dist": 35.8,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
    }
   ],
   "topSpeed": 30.412190987817034,
@@ -1076,18 +1316,30 @@
     "v": 27.3,
     "vy": -4,
     "x": -39
+   },
+   {
+    "d": 3001,
+    "v": 23.6,
+    "vy": -4,
+    "x": 48
+   },
+   {
+    "d": 3247,
+    "v": 23.9,
+    "vy": 2.5,
+    "x": 43
    }
   ],
   "issues": [],
-  "features": 52,
-  "skipped": 6,
-  "zones": "S220 G483 S353 F104 P699 C337 B377 G261 P613 C260 B391 G336"
+  "features": 62,
+  "skipped": 7,
+  "zones": "S220 G483 S353 F104 P699 C337 B377 G261 P613 C260 B391 G336 C325 P573"
  },
  {
   "seed": 29,
   "mode": "Spur A aufrecht",
-  "reached": 3000,
-  "time": 164,
+  "reached": 3800,
+  "time": 201.1,
   "crashes": [],
   "landings": [
    {
@@ -1160,9 +1412,33 @@
     "dist": 9,
     "feat": "Kicker",
     "lane": 0
+   },
+   {
+    "d": 3502,
+    "impact": 7.8,
+    "air": 1.71,
+    "dist": 37.3,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 3546,
+    "impact": 4.5,
+    "air": 0.59,
+    "dist": 13.2,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 3643,
+    "impact": 2.5,
+    "air": 0.18,
+    "dist": 4,
+    "feat": "-",
+    "lane": -1
    }
   ],
-  "topSpeed": 25.475329734637754,
+  "topSpeed": 25.823259134642672,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -1220,20 +1496,38 @@
     "v": 21.1,
     "vy": -6.1,
     "x": 29
+   },
+   {
+    "d": 3465,
+    "v": 23.3,
+    "vy": 1.9,
+    "x": -1
+   },
+   {
+    "d": 3533,
+    "v": 24,
+    "vy": -7.4,
+    "x": -5
+   },
+   {
+    "d": 3639,
+    "v": 24.1,
+    "vy": -9.7,
+    "x": -5
    }
   ],
   "issues": [
    "Zone 4: Step-down bei 1943 m verworfen (keine sichere Landung)"
   ],
-  "features": 45,
+  "features": 56,
   "skipped": 1,
-  "zones": "S220 C417 C364 B439 P691 C448 C232 F104 G332 C395 S208 P476"
+  "zones": "S220 C417 C364 B439 P691 C448 C232 F104 G332 C395 S208 P476 G315 C276 C392"
  },
  {
   "seed": 29,
   "mode": "Spur A Hocke",
-  "reached": 3000,
-  "time": 130,
+  "reached": 3800,
+  "time": 159.8,
   "crashes": [],
   "landings": [
    {
@@ -1338,9 +1632,41 @@
     "dist": 13.5,
     "feat": "-",
     "lane": -1
+   },
+   {
+    "d": 3416,
+    "impact": 1.9,
+    "air": 0.55,
+    "dist": 15.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3522,
+    "impact": 9.3,
+    "air": 2.08,
+    "dist": 57.9,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 3550,
+    "impact": 6.3,
+    "air": 0.65,
+    "dist": 18.1,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 3646,
+    "impact": 2.4,
+    "air": 0.18,
+    "dist": 5,
+    "feat": "-",
+    "lane": -1
    }
   ],
-  "topSpeed": 30.815614349175192,
+  "topSpeed": 31.00331208279997,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -1422,20 +1748,44 @@
     "v": 28,
     "vy": -2.7,
     "x": -6
+   },
+   {
+    "d": 3400,
+    "v": 29.8,
+    "vy": -5.5,
+    "x": 5
+   },
+   {
+    "d": 3465,
+    "v": 29.5,
+    "vy": 2.2,
+    "x": 0
+   },
+   {
+    "d": 3533,
+    "v": 29.8,
+    "vy": -8.8,
+    "x": -4
+   },
+   {
+    "d": 3641,
+    "v": 30,
+    "vy": -12.4,
+    "x": -9
    }
   ],
   "issues": [
    "Zone 4: Step-down bei 1943 m verworfen (keine sichere Landung)"
   ],
-  "features": 45,
+  "features": 56,
   "skipped": 1,
-  "zones": "S220 C417 C364 B439 P691 C448 C232 F104 G332 C395 S208 P476"
+  "zones": "S220 C417 C364 B439 P691 C448 C232 F104 G332 C395 S208 P476 G315 C276 C392"
  },
  {
   "seed": 29,
   "mode": "Spur B Hocke",
-  "reached": 3000,
-  "time": 138.3,
+  "reached": 3800,
+  "time": 175.3,
   "crashes": [],
   "landings": [
    {
@@ -1492,9 +1842,33 @@
     "dist": 11.7,
     "feat": "-",
     "lane": -1
+   },
+   {
+    "d": 3493,
+    "impact": 7.6,
+    "air": 2.03,
+    "dist": 52.1,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 3599,
+    "impact": 2,
+    "air": 0.27,
+    "dist": 7.2,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 3773,
+    "impact": 6,
+    "air": 1.49,
+    "dist": 34.2,
+    "feat": "-",
+    "lane": -1
    }
   ],
-  "topSpeed": 28.915917875357113,
+  "topSpeed": 29.20213112496573,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -1540,20 +1914,38 @@
     "v": 26.5,
     "vy": -2.6,
     "x": -7
+   },
+   {
+    "d": 3442,
+    "v": 27,
+    "vy": 2.3,
+    "x": 74
+   },
+   {
+    "d": 3592,
+    "v": 28,
+    "vy": -5.5,
+    "x": 77
+   },
+   {
+    "d": 3745,
+    "v": 24.1,
+    "vy": -4.4,
+    "x": -79
    }
   ],
   "issues": [
    "Zone 4: Step-down bei 1943 m verworfen (keine sichere Landung)"
   ],
-  "features": 45,
+  "features": 56,
   "skipped": 1,
-  "zones": "S220 C417 C364 B439 P691 C448 C232 F104 G332 C395 S208 P476"
+  "zones": "S220 C417 C364 B439 P691 C448 C232 F104 G332 C395 S208 P476 G315 C276 C392"
  },
  {
   "seed": 36,
   "mode": "Spur A aufrecht",
-  "reached": 3000,
-  "time": 161.5,
+  "reached": 3800,
+  "time": 205.2,
   "crashes": [],
   "landings": [
    {
@@ -1586,9 +1978,41 @@
     "dist": 12.2,
     "feat": "Kicker",
     "lane": 0
+   },
+   {
+    "d": 1740,
+    "impact": 8.1,
+    "air": 2.12,
+    "dist": 32.3,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 1795,
+    "impact": 9.5,
+    "air": 1.09,
+    "dist": 22.4,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 3394,
+    "impact": 7.4,
+    "air": 1.96,
+    "dist": 28.3,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 3452,
+    "impact": 9.4,
+    "air": 1.08,
+    "dist": 22,
+    "feat": "Big Air",
+    "lane": 0
    }
   ],
-  "topSpeed": 25.424232738837837,
+  "topSpeed": 29.11153125128703,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -1616,20 +2040,46 @@
     "v": 22.9,
     "vy": -7.4,
     "x": -32
+   },
+   {
+    "d": 1708,
+    "v": 16.3,
+    "vy": 2.7,
+    "x": 0
+   },
+   {
+    "d": 1773,
+    "v": 24.7,
+    "vy": -12.4,
+    "x": -1
+   },
+   {
+    "d": 3366,
+    "v": 15.3,
+    "vy": 2.5,
+    "x": -2
+   },
+   {
+    "d": 3430,
+    "v": 24.5,
+    "vy": -12.3,
+    "x": -2
    }
   ],
   "issues": [
-   "Zone 10: Big Air bei 3304 m landet bei Höchsttempo hart (19.9 m/s)"
+   "Zone 5: Big Air bei 1708 m landet bei Höchsttempo hart (19.9 m/s)",
+   "Zone 10: Big Air bei 3365 m landet bei Höchsttempo hart (19.9 m/s)",
+   "Zone 15: Big Air bei 5113 m landet bei Höchsttempo hart (19.9 m/s)"
   ],
-  "features": 39,
-  "skipped": 7,
-  "zones": "S220 G426 C400 F109 C355 P650 S232 F167 S179 G262 B527 C222 P515"
+  "features": 36,
+  "skipped": 6,
+  "zones": "S220 G426 C400 F109 C355 B475 F196 S347 F149 B384 B527 F161 C340 S267 P497 B598"
  },
  {
   "seed": 36,
   "mode": "Spur A Hocke",
-  "reached": 3000,
-  "time": 131.9,
+  "reached": 3800,
+  "time": 163,
   "crashes": [],
   "landings": [
    {
@@ -1672,55 +2122,31 @@
     "lane": 0
    },
    {
-    "d": 1646,
-    "impact": 4.6,
-    "air": 0.41,
-    "dist": 10.1,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 1683,
-    "impact": 2.9,
-    "air": 0.35,
-    "dist": 8.5,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 1905,
-    "impact": 9.1,
-    "air": 1.58,
-    "dist": 35.7,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 1957,
-    "impact": 3.1,
-    "air": 0.3,
-    "dist": 6.9,
-    "feat": "Tischsprung",
+    "d": 1781,
+    "impact": 5.5,
+    "air": 3.45,
+    "dist": 73,
+    "feat": "Big Air",
     "lane": 0
    },
    {
-    "d": 2843,
-    "impact": 4.4,
-    "air": 0.74,
-    "dist": 19.5,
+    "d": 2781,
+    "impact": 2.4,
+    "air": 0.42,
+    "dist": 8.9,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2881,
-    "impact": 5.5,
-    "air": 1.36,
-    "dist": 35.3,
-    "feat": "-",
-    "lane": -1
+    "d": 3444,
+    "impact": 10.2,
+    "air": 3.63,
+    "dist": 78.3,
+    "feat": "Big Air",
+    "lane": 0
    }
   ],
-  "topSpeed": 31.406905918248327,
+  "topSpeed": 33.93657762086208,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -1756,54 +2182,38 @@
     "x": -21
    },
    {
-    "d": 1636,
-    "v": 25,
-    "vy": -2.7,
-    "x": 9
+    "d": 1708,
+    "v": 23.2,
+    "vy": 4.2,
+    "x": 0
    },
    {
-    "d": 1675,
-    "v": 24.6,
-    "vy": -3.2,
-    "x": 12
+    "d": 2774,
+    "v": 21.8,
+    "vy": -2.6,
+    "x": 60
    },
    {
-    "d": 1870,
-    "v": 23.5,
-    "vy": 2.6,
-    "x": -11
-   },
-   {
-    "d": 1950,
-    "v": 23.3,
-    "vy": -3.7,
-    "x": -1
-   },
-   {
-    "d": 2825,
-    "v": 27.3,
-    "vy": -5.5,
-    "x": 1
-   },
-   {
-    "d": 2850,
-    "v": 28.1,
-    "vy": -7.5,
-    "x": 12
+    "d": 3366,
+    "v": 23.8,
+    "vy": 4.2,
+    "x": -2
    }
   ],
   "issues": [
-   "Zone 10: Big Air bei 3304 m landet bei Höchsttempo hart (19.9 m/s)"
+   "Zone 5: Big Air bei 1708 m landet bei Höchsttempo hart (19.9 m/s)",
+   "Zone 10: Big Air bei 3365 m landet bei Höchsttempo hart (19.9 m/s)",
+   "Zone 15: Big Air bei 5113 m landet bei Höchsttempo hart (19.9 m/s)"
   ],
-  "features": 39,
-  "skipped": 7,
-  "zones": "S220 G426 C400 F109 C355 P650 S232 F167 S179 G262 B527 C222 P515"
+  "features": 36,
+  "skipped": 6,
+  "zones": "S220 G426 C400 F109 C355 B475 F196 S347 F149 B384 B527 F161 C340 S267 P497 B598"
  },
  {
   "seed": 36,
   "mode": "Spur B Hocke",
-  "reached": 3000,
-  "time": 141,
+  "reached": 3800,
+  "time": 175.1,
   "crashes": [],
   "landings": [
    {
@@ -1862,31 +2272,47 @@
     "lane": 1
    },
    {
-    "d": 1711,
-    "impact": 5.2,
-    "air": 0.47,
-    "dist": 11.2,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 1783,
-    "impact": 2.8,
-    "air": 0.33,
-    "dist": 8,
+    "d": 1519,
+    "impact": 3.1,
+    "air": 0.34,
+    "dist": 9.1,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1900,
-    "impact": 6.3,
-    "air": 0.91,
-    "dist": 20.6,
+    "d": 1670,
+    "impact": 8.2,
+    "air": 1.5,
+    "dist": 36.4,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2421,
+    "impact": 7.6,
+    "air": 1.41,
+    "dist": 35.5,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2893,
+    "impact": 3.9,
+    "air": 0.57,
+    "dist": 14.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3214,
+    "impact": 7.5,
+    "air": 1.34,
+    "dist": 31.3,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
    }
   ],
-  "topSpeed": 29.00817959705009,
+  "topSpeed": 31.093411939028094,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -1934,36 +2360,50 @@
     "x": 59
    },
    {
-    "d": 1700,
-    "v": 24.8,
-    "vy": -4.9,
-    "x": -28
+    "d": 1511,
+    "v": 27.2,
+    "vy": -4.6,
+    "x": 36
    },
    {
-    "d": 1775,
-    "v": 24.5,
-    "vy": -3.1,
-    "x": -37
+    "d": 1633,
+    "v": 25.2,
+    "vy": 2.3,
+    "x": 33
    },
    {
-    "d": 1880,
-    "v": 23.1,
-    "vy": -1.3,
-    "x": -48
+    "d": 2385,
+    "v": 28,
+    "vy": -8.2,
+    "x": -69
+   },
+   {
+    "d": 2878,
+    "v": 28,
+    "vy": -8.9,
+    "x": -90
+   },
+   {
+    "d": 3185,
+    "v": 24.1,
+    "vy": 1.8,
+    "x": 29
    }
   ],
   "issues": [
-   "Zone 10: Big Air bei 3304 m landet bei Höchsttempo hart (19.9 m/s)"
+   "Zone 5: Big Air bei 1708 m landet bei Höchsttempo hart (19.9 m/s)",
+   "Zone 10: Big Air bei 3365 m landet bei Höchsttempo hart (19.9 m/s)",
+   "Zone 15: Big Air bei 5113 m landet bei Höchsttempo hart (19.9 m/s)"
   ],
-  "features": 39,
-  "skipped": 7,
-  "zones": "S220 G426 C400 F109 C355 P650 S232 F167 S179 G262 B527 C222 P515"
+  "features": 36,
+  "skipped": 6,
+  "zones": "S220 G426 C400 F109 C355 B475 F196 S347 F149 B384 B527 F161 C340 S267 P497 B598"
  },
  {
   "seed": 43,
   "mode": "Spur A aufrecht",
-  "reached": 3000,
-  "time": 149.7,
+  "reached": 3800,
+  "time": 192.8,
   "crashes": [],
   "landings": [
    {
@@ -2023,23 +2463,45 @@
     "lane": 0
    },
    {
-    "d": 2604,
-    "impact": 4.3,
-    "air": 0.62,
-    "dist": 13.8,
+    "d": 2272,
+    "impact": 3.7,
+    "air": 0.44,
+    "dist": 7.9,
+    "feat": "cliff"
+   },
+   {
+    "d": 2799,
+    "impact": 5.5,
+    "air": 0.78,
+    "dist": 16.7,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2622,
-    "impact": 3.2,
-    "air": 0.39,
-    "dist": 8.8,
+    "d": 3084,
+    "impact": 3.7,
+    "air": 0.46,
+    "dist": 10.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3214,
+    "impact": 2.9,
+    "air": 0.37,
+    "dist": 7.1,
+    "feat": "cliff"
+   },
+   {
+    "d": 3452,
+    "impact": 2.8,
+    "air": 0.29,
+    "dist": 6,
     "feat": "-",
     "lane": -1
    }
   ],
-  "topSpeed": 26.023236886936484,
+  "topSpeed": 26.974787296454473,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -2087,28 +2549,46 @@
     "x": -21
    },
    {
-    "d": 2591,
-    "v": 23.3,
-    "vy": -4.5,
-    "x": -1
+    "d": 2264,
+    "v": 19.4,
+    "vy": -6.7,
+    "x": -62
    },
    {
-    "d": 2613,
-    "v": 23.7,
-    "vy": -6.1,
-    "x": -2
+    "d": 2783,
+    "v": 24.4,
+    "vy": -10.5,
+    "x": -80
+   },
+   {
+    "d": 3073,
+    "v": 24.2,
+    "vy": -5.6,
+    "x": -68
+   },
+   {
+    "d": 3207,
+    "v": 21.1,
+    "vy": -7.6,
+    "x": -68
+   },
+   {
+    "d": 3447,
+    "v": 21.9,
+    "vy": -6.5,
+    "x": 0
    }
   ],
   "issues": [],
-  "features": 50,
-  "skipped": 3,
-  "zones": "S220 G427 S260 B347 P414 C333 S305 F161 C317 C269 G331 C240 P601"
+  "features": 52,
+  "skipped": 1,
+  "zones": "S220 G427 S260 B347 P414 C333 C453 F161 B393 C335 G331 C240 P601 S243 F161 B389"
  },
  {
   "seed": 43,
   "mode": "Spur A Hocke",
-  "reached": 3000,
-  "time": 121.8,
+  "reached": 3800,
+  "time": 155.1,
   "crashes": [],
   "landings": [
    {
@@ -2168,31 +2648,77 @@
     "lane": 0
    },
    {
-    "d": 2121,
-    "impact": 3.3,
-    "air": 0.59,
-    "dist": 15.6,
+    "d": 2102,
+    "impact": 2.3,
+    "air": 0.31,
+    "dist": 8.1,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2611,
-    "impact": 4.9,
+    "d": 2278,
+    "impact": 4.1,
+    "air": 0.58,
+    "dist": 14,
+    "feat": "cliff"
+   },
+   {
+    "d": 2752,
+    "impact": 3.2,
+    "air": 0.58,
+    "dist": 14.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2788,
+    "impact": 5,
+    "air": 1.02,
+    "dist": 26.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3088,
+    "impact": 5.6,
+    "air": 0.56,
+    "dist": 16,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3105,
+    "impact": 3.7,
+    "air": 0.27,
+    "dist": 7.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3220,
+    "impact": 3.6,
+    "air": 0.53,
+    "dist": 13.6,
+    "feat": "cliff"
+   },
+   {
+    "d": 3464,
+    "impact": 7.3,
     "air": 0.74,
-    "dist": 21.3,
+    "dist": 20.7,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2624,
-    "impact": 3.3,
-    "air": 0.41,
-    "dist": 11.6,
+    "d": 3503,
+    "impact": 7.3,
+    "air": 1.32,
+    "dist": 35.7,
     "feat": "-",
     "lane": -1
    }
   ],
-  "topSpeed": 31.7883015612863,
+  "topSpeed": 30.992915683917445,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -2240,34 +2766,70 @@
     "x": -26
    },
    {
-    "d": 2106,
-    "v": 30.5,
-    "vy": -13.9,
-    "x": -35
+    "d": 2095,
+    "v": 26.9,
+    "vy": -4.7,
+    "x": -53
    },
    {
-    "d": 2590,
+    "d": 2264,
+    "v": 26.2,
+    "vy": -8.5,
+    "x": -63
+   },
+   {
+    "d": 2738,
+    "v": 26.6,
+    "vy": -8.2,
+    "x": -82
+   },
+   {
+    "d": 2763,
+    "v": 28.3,
+    "vy": -8.9,
+    "x": -85
+   },
+   {
+    "d": 3072,
     "v": 29.9,
-    "vy": -5,
+    "vy": -6.2,
+    "x": -68
+   },
+   {
+    "d": 3097,
+    "v": 29.4,
+    "vy": -4.4,
+    "x": -64
+   },
+   {
+    "d": 3207,
+    "v": 27.7,
+    "vy": -9.1,
+    "x": -69
+   },
+   {
+    "d": 3446,
+    "v": 28.8,
+    "vy": -4.4,
     "x": -1
    },
    {
-    "d": 2613,
-    "v": 29.9,
-    "vy": -7.6,
-    "x": -2
+    "d": 3471,
+    "v": 28.1,
+    "vy": -1.2,
+    "x": 12
    }
   ],
   "issues": [],
-  "features": 50,
-  "skipped": 3,
-  "zones": "S220 G427 S260 B347 P414 C333 S305 F161 C317 C269 G331 C240 P601"
+  "features": 52,
+  "skipped": 1,
+  "zones": "S220 G427 S260 B347 P414 C333 C453 F161 B393 C335 G331 C240 P601 S243 F161 B389"
  },
  {
   "seed": 43,
   "mode": "Spur B Hocke",
-  "reached": 3000,
-  "time": 135.9,
+  "reached": 3800,
+  "time": 171.2,
   "crashes": [],
   "landings": [
    {
@@ -2335,31 +2897,29 @@
     "lane": 0
    },
    {
-    "d": 2128,
-    "impact": 6.9,
-    "air": 1.17,
-    "dist": 29.3,
-    "feat": "-",
-    "lane": -1
+    "d": 2308,
+    "impact": 15.6,
+    "air": 2.22,
+    "dist": 46.2,
+    "feat": "cliff"
    },
    {
-    "d": 2660,
-    "impact": 3,
-    "air": 0.44,
-    "dist": 11.8,
-    "feat": "-",
-    "lane": -1
+    "d": 3244,
+    "impact": 13.2,
+    "air": 2.14,
+    "dist": 43.5,
+    "feat": "cliff"
    },
    {
-    "d": 2681,
-    "impact": 2.5,
-    "air": 0.25,
-    "dist": 6.7,
+    "d": 3391,
+    "impact": 2.2,
+    "air": 0.42,
+    "dist": 10.9,
     "feat": "-",
     "lane": -1
    }
   ],
-  "topSpeed": 31.239768234097795,
+  "topSpeed": 29.743640318838402,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -2413,27 +2973,7183 @@
     "x": 66
    },
    {
-    "d": 2100,
-    "v": 28.3,
-    "vy": -10.5,
-    "x": -37
+    "d": 2262,
+    "v": 21.9,
+    "vy": -2.3,
+    "x": 22
    },
    {
-    "d": 2649,
-    "v": 28,
-    "vy": -6.5,
-    "x": 50
+    "d": 3201,
+    "v": 21.4,
+    "vy": -2.4,
+    "x": 14
    },
    {
-    "d": 2675,
-    "v": 28,
-    "vy": -7.7,
-    "x": 50
+    "d": 3381,
+    "v": 27.4,
+    "vy": -7.2,
+    "x": -9
    }
   ],
   "issues": [],
-  "features": 50,
+  "features": 52,
+  "skipped": 1,
+  "zones": "S220 G427 S260 B347 P414 C333 C453 F161 B393 C335 G331 C240 P601 S243 F161 B389"
+ },
+ {
+  "seed": 50,
+  "mode": "Spur A aufrecht",
+  "reached": 3800,
+  "time": 190.3,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 354,
+    "impact": 2.8,
+    "air": 0.41,
+    "dist": 9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 459,
+    "impact": 3.5,
+    "air": 0.48,
+    "dist": 10.2,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 613,
+    "impact": 4,
+    "air": 0.76,
+    "dist": 16.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1379,
+    "impact": 3.8,
+    "air": 0.11,
+    "dist": 2.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1677,
+    "impact": 5.3,
+    "air": 1.11,
+    "dist": 21.7,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1700,
+    "impact": 3.1,
+    "air": 0.42,
+    "dist": 8.1,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 2343,
+    "impact": 2.5,
+    "air": 0.72,
+    "dist": 12.3,
+    "feat": "Tischsprung",
+    "lane": 0
+   },
+   {
+    "d": 3100,
+    "impact": 2.3,
+    "air": 0.2,
+    "dist": 3.3,
+    "feat": "cliff"
+   },
+   {
+    "d": 3509,
+    "impact": 3.4,
+    "air": 0.47,
+    "dist": 10.2,
+    "feat": "Waldkicker",
+    "lane": 2
+   },
+   {
+    "d": 3735,
+    "impact": 4,
+    "air": 0.59,
+    "dist": 13.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3797,
+    "impact": 3.1,
+    "air": 0.65,
+    "dist": 14.4,
+    "feat": "Kicker",
+    "lane": 0
+   }
+  ],
+  "topSpeed": 25.92003789353421,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 345,
+    "v": 22.8,
+    "vy": -4.5,
+    "x": 13
+   },
+   {
+    "d": 449,
+    "v": 22.4,
+    "vy": -6.6,
+    "x": 7
+   },
+   {
+    "d": 597,
+    "v": 23.3,
+    "vy": -4.5,
+    "x": -1
+   },
+   {
+    "d": 1377,
+    "v": 20.7,
+    "vy": -5.4,
+    "x": -7
+   },
+   {
+    "d": 1655,
+    "v": 20.3,
+    "vy": 1.2,
+    "x": -3
+   },
+   {
+    "d": 1692,
+    "v": 20.6,
+    "vy": -5.6,
+    "x": -3
+   },
+   {
+    "d": 2331,
+    "v": 17.6,
+    "vy": 1.9,
+    "x": 7
+   },
+   {
+    "d": 3096,
+    "v": 17.4,
+    "vy": -5.5,
+    "x": -71
+   },
+   {
+    "d": 3499,
+    "v": 23.6,
+    "vy": -7.7,
+    "x": -3
+   },
+   {
+    "d": 3722,
+    "v": 23.8,
+    "vy": -4.1,
+    "x": 9
+   },
+   {
+    "d": 3784,
+    "v": 22.7,
+    "vy": -2.6,
+    "x": 9
+   }
+  ],
+  "issues": [],
+  "features": 68,
+  "skipped": 6,
+  "zones": "S220 C383 S287 G497 C433 C248 P478 G361 C335 G357 C464 P435 C263 S273"
+ },
+ {
+  "seed": 50,
+  "mode": "Spur A Hocke",
+  "reached": 3800,
+  "time": 151,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 447,
+    "impact": 4.6,
+    "air": 1.1,
+    "dist": 30.1,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 463,
+    "impact": 5.3,
+    "air": 0.57,
+    "dist": 15.4,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 630,
+    "impact": 4.4,
+    "air": 1.17,
+    "dist": 32.5,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1224,
+    "impact": 7.4,
+    "air": 1.27,
+    "dist": 32.5,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1381,
+    "impact": 3.7,
+    "air": 0.13,
+    "dist": 3.5,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1398,
+    "impact": 3.2,
+    "air": 0.67,
+    "dist": 17.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1529,
+    "impact": 4.5,
+    "air": 0.61,
+    "dist": 16.4,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1550,
+    "impact": 3.3,
+    "air": 0.42,
+    "dist": 11.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1703,
+    "impact": 8.2,
+    "air": 1.83,
+    "dist": 48.4,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1928,
+    "impact": 4.8,
+    "air": 1.7,
+    "dist": 45.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2385,
+    "impact": 9.4,
+    "air": 1.67,
+    "dist": 40.4,
+    "feat": "Tischsprung",
+    "lane": 0
+   },
+   {
+    "d": 3103,
+    "impact": 2.5,
+    "air": 0.34,
+    "dist": 7.7,
+    "feat": "cliff"
+   },
+   {
+    "d": 3287,
+    "impact": 1.5,
+    "air": 0.28,
+    "dist": 8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3485,
+    "impact": 8.5,
+    "air": 1.99,
+    "dist": 55.5,
+    "feat": "Waldkicker",
+    "lane": 2
+   },
+   {
+    "d": 3733,
+    "impact": 1.9,
+    "air": 0.36,
+    "dist": 10.4,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 32.196297546592604,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 418,
+    "v": 28.1,
+    "vy": -1.2,
+    "x": 15
+   },
+   {
+    "d": 448,
+    "v": 28.6,
+    "vy": -7.6,
+    "x": 7
+   },
+   {
+    "d": 600,
+    "v": 29.4,
+    "vy": -5.1,
+    "x": -5
+   },
+   {
+    "d": 1194,
+    "v": 26.5,
+    "vy": -1,
+    "x": -22
+   },
+   {
+    "d": 1378,
+    "v": 26.7,
+    "vy": -4.9,
+    "x": -3
+   },
+   {
+    "d": 1382,
+    "v": 26.5,
+    "vy": -2.4,
+    "x": -5
+   },
+   {
+    "d": 1512,
+    "v": 27.7,
+    "vy": -3.6,
+    "x": -7
+   },
+   {
+    "d": 1539,
+    "v": 27.8,
+    "vy": -5,
+    "x": -4
+   },
+   {
+    "d": 1655,
+    "v": 27.7,
+    "vy": 2.2,
+    "x": -3
+   },
+   {
+    "d": 1888,
+    "v": 28.9,
+    "vy": -5.5,
+    "x": -14
+   },
+   {
+    "d": 2345,
+    "v": 25.2,
+    "vy": 3.2,
+    "x": 12
+   },
+   {
+    "d": 3096,
+    "v": 23.8,
+    "vy": -6.8,
+    "x": -72
+   },
+   {
+    "d": 3280,
+    "v": 29.2,
+    "vy": -5.9,
+    "x": -32
+   },
+   {
+    "d": 3430,
+    "v": 29.5,
+    "vy": 0.1,
+    "x": -4
+   },
+   {
+    "d": 3722,
+    "v": 29.9,
+    "vy": -5.9,
+    "x": 11
+   },
+   {
+    "d": 3800,
+    "v": 29.1,
+    "vy": -1.4,
+    "x": 14
+   }
+  ],
+  "issues": [],
+  "features": 68,
+  "skipped": 6,
+  "zones": "S220 C383 S287 G497 C433 C248 P478 G361 C335 G357 C464 P435 C263 S273"
+ },
+ {
+  "seed": 50,
+  "mode": "Spur B Hocke",
+  "reached": 3800,
+  "time": 165.9,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 440,
+    "impact": 8.2,
+    "air": 1.44,
+    "dist": 35.8,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 712,
+    "impact": 3.8,
+    "air": 0.67,
+    "dist": 16.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1278,
+    "impact": 5.4,
+    "air": 1.12,
+    "dist": 27.1,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1409,
+    "impact": 1.8,
+    "air": 0.33,
+    "dist": 8.4,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1631,
+    "impact": 4.4,
+    "air": 0.49,
+    "dist": 12.1,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 1698,
+    "impact": 5.7,
+    "air": 0.68,
+    "dist": 17.6,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1715,
+    "impact": 3.4,
+    "air": 0.48,
+    "dist": 12.2,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1939,
+    "impact": 7.8,
+    "air": 2.08,
+    "dist": 52.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2248,
+    "impact": 6.7,
+    "air": 1.1,
+    "dist": 26.7,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2773,
+    "impact": 4.2,
+    "air": 0.93,
+    "dist": 24,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3143,
+    "impact": 14.6,
+    "air": 2.04,
+    "dist": 44.4,
+    "feat": "cliff"
+   },
+   {
+    "d": 3397,
+    "impact": 5.3,
+    "air": 1.11,
+    "dist": 27.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3534,
+    "impact": 7.4,
+    "air": 1.63,
+    "dist": 42.7,
+    "feat": "Waldkicker",
+    "lane": 2
+   }
+  ],
+  "topSpeed": 31.630658970314883,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 407,
+    "v": 25.7,
+    "vy": -0.5,
+    "x": 81
+   },
+   {
+    "d": 697,
+    "v": 27.9,
+    "vy": -10.5,
+    "x": -53
+   },
+   {
+    "d": 1252,
+    "v": 24.9,
+    "vy": -1,
+    "x": 51
+   },
+   {
+    "d": 1401,
+    "v": 25.8,
+    "vy": -5.1,
+    "x": 48
+   },
+   {
+    "d": 1619,
+    "v": 25.7,
+    "vy": -6.3,
+    "x": 54
+   },
+   {
+    "d": 1680,
+    "v": 26.4,
+    "vy": -2.7,
+    "x": 49
+   },
+   {
+    "d": 1703,
+    "v": 26.3,
+    "vy": -4.3,
+    "x": 48
+   },
+   {
+    "d": 1890,
+    "v": 27.3,
+    "vy": -3.3,
+    "x": -14
+   },
+   {
+    "d": 2223,
+    "v": 24.8,
+    "vy": 0.3,
+    "x": 31
+   },
+   {
+    "d": 2749,
+    "v": 26.3,
+    "vy": -2.2,
+    "x": 40
+   },
+   {
+    "d": 3099,
+    "v": 22.8,
+    "vy": -1.8,
+    "x": 24
+   },
+   {
+    "d": 3370,
+    "v": 26,
+    "vy": -2.7,
+    "x": -36
+   },
+   {
+    "d": 3497,
+    "v": 27.2,
+    "vy": 0.3,
+    "x": -44
+   },
+   {
+    "d": 3755,
+    "v": 26.1,
+    "vy": 2.9,
+    "x": -84
+   }
+  ],
+  "issues": [],
+  "features": 68,
+  "skipped": 6,
+  "zones": "S220 C383 S287 G497 C433 C248 P478 G361 C335 G357 C464 P435 C263 S273"
+ },
+ {
+  "seed": 57,
+  "mode": "Spur A aufrecht",
+  "reached": 3800,
+  "time": 189.6,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 1034,
+    "impact": 2,
+    "air": 0.38,
+    "dist": 8.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1297,
+    "impact": 2.1,
+    "air": 0.17,
+    "dist": 3.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1537,
+    "impact": 2.4,
+    "air": 0.51,
+    "dist": 10.2,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1575,
+    "impact": 3.1,
+    "air": 0.46,
+    "dist": 9.3,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 2
+   }
+  ],
+  "topSpeed": 26.24734465934021,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 1025,
+    "v": 24.7,
+    "vy": -8.4,
+    "x": -89
+   },
+   {
+    "d": 1293,
+    "v": 24.8,
+    "vy": -10.2,
+    "x": -70
+   },
+   {
+    "d": 1528,
+    "v": 20.6,
+    "vy": -2.5,
+    "x": 25
+   },
+   {
+    "d": 1566,
+    "v": 21.5,
+    "vy": -6.5,
+    "x": 21
+   }
+  ],
+  "issues": [],
+  "features": 58,
+  "skipped": 10,
+  "zones": "S220 G318 C449 B334 C488 S319 C377 G362 P530 S280 C403 G457 B343 P484"
+ },
+ {
+  "seed": 57,
+  "mode": "Spur A Hocke",
+  "reached": 3800,
+  "time": 152.9,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 351,
+    "impact": 3.7,
+    "air": 0.53,
+    "dist": 14.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 367,
+    "impact": 2.3,
+    "air": 0.28,
+    "dist": 7.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 637,
+    "impact": 3.9,
+    "air": 0.64,
+    "dist": 14.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 802,
+    "impact": 1.7,
+    "air": 0.2,
+    "dist": 4.3,
+    "feat": "cliff"
+   },
+   {
+    "d": 1039,
+    "impact": 2.5,
+    "air": 0.5,
+    "dist": 13.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1298,
+    "impact": 1.9,
+    "air": 0.23,
+    "dist": 6.4,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1352,
+    "impact": 2.5,
+    "air": 0.43,
+    "dist": 12.4,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1595,
+    "impact": 10.3,
+    "air": 2.01,
+    "dist": 51.5,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 2
+   },
+   {
+    "d": 2268,
+    "impact": 4.2,
+    "air": 0.53,
+    "dist": 15.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2286,
+    "impact": 2.5,
+    "air": 0.39,
+    "dist": 11.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2585,
+    "impact": 4,
+    "air": 0.52,
+    "dist": 14.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2603,
+    "impact": 2.7,
+    "air": 0.35,
+    "dist": 10,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2665,
+    "impact": 4.3,
+    "air": 0.73,
+    "dist": 20.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3005,
+    "impact": 4.7,
+    "air": 0.48,
+    "dist": 12.5,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3214,
+    "impact": 9.4,
+    "air": 1.66,
+    "dist": 39.5,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   }
+  ],
+  "topSpeed": 31.280850017046806,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 336,
+    "v": 30,
+    "vy": -10.9,
+    "x": -1
+   },
+   {
+    "d": 359,
+    "v": 30.4,
+    "vy": -12.3,
+    "x": 1
+   },
+   {
+    "d": 625,
+    "v": 22.4,
+    "vy": 0.4,
+    "x": -64
+   },
+   {
+    "d": 798,
+    "v": 22.9,
+    "vy": -7.1,
+    "x": -73
+   },
+   {
+    "d": 1025,
+    "v": 30,
+    "vy": -9.8,
+    "x": -89
+   },
+   {
+    "d": 1292,
+    "v": 30,
+    "vy": -11.6,
+    "x": -71
+   },
+   {
+    "d": 1342,
+    "v": 30,
+    "vy": -6.8,
+    "x": -38
+   },
+   {
+    "d": 1550,
+    "v": 27.1,
+    "vy": 2.8,
+    "x": 32
+   },
+   {
+    "d": 2253,
+    "v": 29.9,
+    "vy": -6,
+    "x": 3
+   },
+   {
+    "d": 2275,
+    "v": 29.8,
+    "vy": -7,
+    "x": -2
+   },
+   {
+    "d": 2570,
+    "v": 29.9,
+    "vy": -5.7,
+    "x": 0
+   },
+   {
+    "d": 2593,
+    "v": 29.8,
+    "vy": -6.9,
+    "x": 1
+   },
+   {
+    "d": 2644,
+    "v": 29.4,
+    "vy": -6.1,
+    "x": 9
+   },
+   {
+    "d": 2993,
+    "v": 26.8,
+    "vy": -2.4,
+    "x": 6
+   },
+   {
+    "d": 3175,
+    "v": 24.8,
+    "vy": 2.7,
+    "x": -12
+   }
+  ],
+  "issues": [],
+  "features": 58,
+  "skipped": 10,
+  "zones": "S220 G318 C449 B334 C488 S319 C377 G362 P530 S280 C403 G457 B343 P484"
+ },
+ {
+  "seed": 57,
+  "mode": "Spur B Hocke",
+  "reached": 3800,
+  "time": 162.9,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 837,
+    "impact": 12.8,
+    "air": 1.91,
+    "dist": 40.1,
+    "feat": "cliff"
+   },
+   {
+    "d": 968,
+    "impact": 2.6,
+    "air": 0.12,
+    "dist": 3.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 987,
+    "impact": 1.7,
+    "air": 0.6,
+    "dist": 15.4,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1127,
+    "impact": 3.4,
+    "air": 0.63,
+    "dist": 15.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1146,
+    "impact": 2.2,
+    "air": 0.24,
+    "dist": 6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1375,
+    "impact": 2,
+    "air": 0.22,
+    "dist": 5.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1510,
+    "impact": 5.4,
+    "air": 1.32,
+    "dist": 30.9,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 1549,
+    "impact": 5.6,
+    "air": 0.58,
+    "dist": 13.8,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1601,
+    "impact": 3.1,
+    "air": 0.43,
+    "dist": 11.5,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 2
+   },
+   {
+    "d": 1625,
+    "impact": 2.9,
+    "air": 0.33,
+    "dist": 8.9,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 2
+   },
+   {
+    "d": 2361,
+    "impact": 3.7,
+    "air": 0.81,
+    "dist": 21.5,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2396,
+    "impact": 3.4,
+    "air": 0.42,
+    "dist": 10.8,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 3047,
+    "impact": 5.5,
+    "air": 0.5,
+    "dist": 12.1,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 3236,
+    "impact": 7.1,
+    "air": 1.12,
+    "dist": 26.3,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   }
+  ],
+  "topSpeed": 29.629486214829498,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 797,
+    "v": 22,
+    "vy": -2.7,
+    "x": 14
+   },
+   {
+    "d": 965,
+    "v": 26.4,
+    "vy": -7.5,
+    "x": 15
+   },
+   {
+    "d": 972,
+    "v": 26.4,
+    "vy": -5,
+    "x": 16
+   },
+   {
+    "d": 1112,
+    "v": 28.2,
+    "vy": -10.9,
+    "x": 67
+   },
+   {
+    "d": 1140,
+    "v": 29,
+    "vy": -14.3,
+    "x": 71
+   },
+   {
+    "d": 1373,
+    "v": 26.3,
+    "vy": -3.7,
+    "x": 8
+   },
+   {
+    "d": 1480,
+    "v": 24,
+    "vy": 1.2,
+    "x": -64
+   },
+   {
+    "d": 1535,
+    "v": 25.5,
+    "vy": -7.3,
+    "x": -61
+   },
+   {
+    "d": 1590,
+    "v": 27.3,
+    "vy": -5.5,
+    "x": -62
+   },
+   {
+    "d": 1616,
+    "v": 27.7,
+    "vy": -6.3,
+    "x": -66
+   },
+   {
+    "d": 2340,
+    "v": 27.4,
+    "vy": -3.2,
+    "x": -74
+   },
+   {
+    "d": 2385,
+    "v": 28,
+    "vy": -9.3,
+    "x": -76
+   },
+   {
+    "d": 3035,
+    "v": 24.9,
+    "vy": -4.9,
+    "x": -36
+   },
+   {
+    "d": 3210,
+    "v": 23.9,
+    "vy": -0.1,
+    "x": -49
+   }
+  ],
+  "issues": [],
+  "features": 58,
+  "skipped": 10,
+  "zones": "S220 G318 C449 B334 C488 S319 C377 G362 P530 S280 C403 G457 B343 P484"
+ },
+ {
+  "seed": 64,
+  "mode": "Spur A aufrecht",
+  "reached": 3800,
+  "time": 196.8,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 410,
+    "impact": 8.2,
+    "air": 1.78,
+    "dist": 39.1,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 462,
+    "impact": 4.7,
+    "air": 0.61,
+    "dist": 13.6,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 651,
+    "impact": 3,
+    "air": 0.22,
+    "dist": 4.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 668,
+    "impact": 1.1,
+    "air": 0.3,
+    "dist": 6.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1110,
+    "impact": 2.6,
+    "air": 0.38,
+    "dist": 8.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1129,
+    "impact": 2.3,
+    "air": 0.22,
+    "dist": 5,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1270,
+    "impact": 1.8,
+    "air": 0.19,
+    "dist": 3.7,
+    "feat": "cliff"
+   },
+   {
+    "d": 1728,
+    "impact": 6.2,
+    "air": 1.3,
+    "dist": 23.6,
+    "feat": "Tischsprung",
+    "lane": 0
+   },
+   {
+    "d": 2287,
+    "impact": 7.2,
+    "air": 1.92,
+    "dist": 27.3,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 2347,
+    "impact": 9.5,
+    "air": 1.09,
+    "dist": 22.1,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 3081,
+    "impact": 5.3,
+    "air": 1.47,
+    "dist": 33.5,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3391,
+    "impact": 4.7,
+    "air": 0.55,
+    "dist": 9.4,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 28.89442647548981,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 371,
+    "v": 23.4,
+    "vy": 1.7,
+    "x": -17
+   },
+   {
+    "d": 448,
+    "v": 24.3,
+    "vy": -8.1,
+    "x": -12
+   },
+   {
+    "d": 647,
+    "v": 24.1,
+    "vy": -8.1,
+    "x": 4
+   },
+   {
+    "d": 661,
+    "v": 23.9,
+    "vy": -5.6,
+    "x": 11
+   },
+   {
+    "d": 1101,
+    "v": 24,
+    "vy": -5.7,
+    "x": 75
+   },
+   {
+    "d": 1124,
+    "v": 24.1,
+    "vy": -6.9,
+    "x": 73
+   },
+   {
+    "d": 1266,
+    "v": 20.8,
+    "vy": -6.7,
+    "x": 69
+   },
+   {
+    "d": 1705,
+    "v": 19.1,
+    "vy": 2.8,
+    "x": 5
+   },
+   {
+    "d": 2260,
+    "v": 15.1,
+    "vy": 2.5,
+    "x": -1
+   },
+   {
+    "d": 2324,
+    "v": 24.4,
+    "vy": -12.2,
+    "x": 0
+   },
+   {
+    "d": 3048,
+    "v": 24.4,
+    "vy": -3.6,
+    "x": -64
+   },
+   {
+    "d": 3382,
+    "v": 18.6,
+    "vy": -6.9,
+    "x": 57
+   }
+  ],
+  "issues": [
+   "Zone 5: Big Air bei 2260 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 36,
+  "skipped": 1,
+  "zones": "S220 C443 B366 C410 P583 B554 C240 B268 C514 B433 S392 C417 G406"
+ },
+ {
+  "seed": 64,
+  "mode": "Spur A Hocke",
+  "reached": 3800,
+  "time": 153.7,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 426,
+    "impact": 8.7,
+    "air": 1.99,
+    "dist": 55.7,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 467,
+    "impact": 6.5,
+    "air": 0.68,
+    "dist": 18.9,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 654,
+    "impact": 2.9,
+    "air": 0.25,
+    "dist": 7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 681,
+    "impact": 2.8,
+    "air": 0.76,
+    "dist": 21.5,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1116,
+    "impact": 4.7,
+    "air": 0.58,
+    "dist": 16.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1134,
+    "impact": 2.8,
+    "air": 0.41,
+    "dist": 11.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1274,
+    "impact": 1.6,
+    "air": 0.32,
+    "dist": 8.4,
+    "feat": "cliff"
+   },
+   {
+    "d": 1575,
+    "impact": 2.7,
+    "air": 0.32,
+    "dist": 8.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1736,
+    "impact": 2.8,
+    "air": 0.6,
+    "dist": 15.9,
+    "feat": "Tischsprung",
+    "lane": 0
+   },
+   {
+    "d": 1759,
+    "impact": 6.7,
+    "air": 0.7,
+    "dist": 18.3,
+    "feat": "Tischsprung",
+    "lane": 0
+   },
+   {
+    "d": 1848,
+    "impact": 4,
+    "air": 0.56,
+    "dist": 15,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 1868,
+    "impact": 2.9,
+    "air": 0.35,
+    "dist": 9.4,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2337,
+    "impact": 9.3,
+    "air": 3.61,
+    "dist": 77.3,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 2928,
+    "impact": 4,
+    "air": 1.29,
+    "dist": 35.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2956,
+    "impact": 3.9,
+    "air": 0.56,
+    "dist": 15.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3083,
+    "impact": 5.5,
+    "air": 1.47,
+    "dist": 40.4,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3400,
+    "impact": 6,
+    "air": 0.76,
+    "dist": 17.5,
+    "feat": "cliff"
+   },
+   {
+    "d": 3718,
+    "impact": 4.9,
+    "air": 1,
+    "dist": 24.3,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 33.759023667209036,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 371,
+    "v": 29.6,
+    "vy": 1.2,
+    "x": -19
+   },
+   {
+    "d": 448,
+    "v": 30,
+    "vy": -9.5,
+    "x": -11
+   },
+   {
+    "d": 647,
+    "v": 29.9,
+    "vy": -9.8,
+    "x": 3
+   },
+   {
+    "d": 660,
+    "v": 29.9,
+    "vy": -6.4,
+    "x": 5
+   },
+   {
+    "d": 1100,
+    "v": 29.9,
+    "vy": -5.9,
+    "x": 76
+   },
+   {
+    "d": 1122,
+    "v": 29.8,
+    "vy": -7.3,
+    "x": 74
+   },
+   {
+    "d": 1266,
+    "v": 28,
+    "vy": -8.4,
+    "x": 68
+   },
+   {
+    "d": 1566,
+    "v": 28.6,
+    "vy": -4.7,
+    "x": -9
+   },
+   {
+    "d": 1721,
+    "v": 27,
+    "vy": -2.2,
+    "x": 10
+   },
+   {
+    "d": 1741,
+    "v": 27.2,
+    "vy": -5.9,
+    "x": 10
+   },
+   {
+    "d": 1833,
+    "v": 27.5,
+    "vy": -3.4,
+    "x": -8
+   },
+   {
+    "d": 1859,
+    "v": 27.5,
+    "vy": -4.8,
+    "x": -10
+   },
+   {
+    "d": 2260,
+    "v": 23.6,
+    "vy": 4.3,
+    "x": -1
+   },
+   {
+    "d": 2896,
+    "v": 29.2,
+    "vy": -4.5,
+    "x": -58
+   },
+   {
+    "d": 2942,
+    "v": 30.2,
+    "vy": -11.6,
+    "x": -75
+   },
+   {
+    "d": 3043,
+    "v": 29.8,
+    "vy": -6.1,
+    "x": -68
+   },
+   {
+    "d": 3382,
+    "v": 25.2,
+    "vy": -8.9,
+    "x": 55
+   },
+   {
+    "d": 3700,
+    "v": 24.8,
+    "vy": -0.3,
+    "x": -62
+   }
+  ],
+  "issues": [
+   "Zone 5: Big Air bei 2260 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 36,
+  "skipped": 1,
+  "zones": "S220 C443 B366 C410 P583 B554 C240 B268 C514 B433 S392 C417 G406"
+ },
+ {
+  "seed": 64,
+  "mode": "Spur B Hocke",
+  "reached": 3800,
+  "time": 163,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 388,
+    "impact": 10,
+    "air": 2.27,
+    "dist": 57.6,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 554,
+    "impact": 4.7,
+    "air": 0.65,
+    "dist": 17.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 568,
+    "impact": 2.4,
+    "air": 0.29,
+    "dist": 7.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 674,
+    "impact": 8.3,
+    "air": 0.07,
+    "dist": 1.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 701,
+    "impact": 5.3,
+    "air": 1.48,
+    "dist": 37.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1308,
+    "impact": 12.8,
+    "air": 1.87,
+    "dist": 42,
+    "feat": "cliff"
+   },
+   {
+    "d": 1629,
+    "impact": 5.9,
+    "air": 0.55,
+    "dist": 14.1,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 1874,
+    "impact": 6.1,
+    "air": 0.6,
+    "dist": 15.3,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2238,
+    "impact": 8.2,
+    "air": 1.5,
+    "dist": 36.3,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2961,
+    "impact": 5.4,
+    "air": 0.72,
+    "dist": 18,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3121,
+    "impact": 3.2,
+    "air": 0.27,
+    "dist": 6.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3425,
+    "impact": 15,
+    "air": 2.31,
+    "dist": 44.2,
+    "feat": "cliff"
+   },
+   {
+    "d": 3711,
+    "impact": 5.7,
+    "air": 1.1,
+    "dist": 28.8,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 30.225323791035045,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 333,
+    "v": 26.9,
+    "vy": 2.2,
+    "x": 60
+   },
+   {
+    "d": 537,
+    "v": 28,
+    "vy": -6.1,
+    "x": 66
+   },
+   {
+    "d": 561,
+    "v": 28,
+    "vy": -8.6,
+    "x": 65
+   },
+   {
+    "d": 673,
+    "v": 28,
+    "vy": -7.1,
+    "x": 38
+   },
+   {
+    "d": 676,
+    "v": 26.5,
+    "vy": 0.1,
+    "x": 35
+   },
+   {
+    "d": 1266,
+    "v": 23.6,
+    "vy": -2.9,
+    "x": -23
+   },
+   {
+    "d": 1616,
+    "v": 26.6,
+    "vy": -5.8,
+    "x": -44
+   },
+   {
+    "d": 1859,
+    "v": 26.4,
+    "vy": -5.7,
+    "x": -47
+   },
+   {
+    "d": 2202,
+    "v": 25.2,
+    "vy": 2.2,
+    "x": -42
+   },
+   {
+    "d": 2943,
+    "v": 28.4,
+    "vy": -12.3,
+    "x": 87
+   },
+   {
+    "d": 3117,
+    "v": 26.2,
+    "vy": -5.7,
+    "x": 51
+   },
+   {
+    "d": 3381,
+    "v": 20.2,
+    "vy": -2,
+    "x": -22
+   },
+   {
+    "d": 3686,
+    "v": 27.1,
+    "vy": -2.6,
+    "x": -62
+   }
+  ],
+  "issues": [
+   "Zone 5: Big Air bei 2260 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 36,
+  "skipped": 1,
+  "zones": "S220 C443 B366 C410 P583 B554 C240 B268 C514 B433 S392 C417 G406"
+ },
+ {
+  "seed": 71,
+  "mode": "Spur A aufrecht",
+  "reached": 3800,
+  "time": 200.7,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 371,
+    "impact": 5.8,
+    "air": 1.24,
+    "dist": 24.7,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 400,
+    "impact": 3.4,
+    "air": 0.46,
+    "dist": 9.2,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1369,
+    "impact": 7.5,
+    "air": 1.68,
+    "dist": 36.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1475,
+    "impact": 2.8,
+    "air": 0.28,
+    "dist": 6.2,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 1830,
+    "impact": 9.1,
+    "air": 2.32,
+    "dist": 38,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 1880,
+    "impact": 9.5,
+    "air": 1.09,
+    "dist": 22.6,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 2300,
+    "impact": 5.3,
+    "air": 1.11,
+    "dist": 18.6,
+    "feat": "Tischsprung",
+    "lane": 0
+   },
+   {
+    "d": 3306,
+    "impact": 1.5,
+    "air": 0.48,
+    "dist": 11.1,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3747,
+    "impact": 4.1,
+    "air": 0.38,
+    "dist": 8.4,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3784,
+    "impact": 2.7,
+    "air": 0.28,
+    "dist": 5.8,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 29.29954474487862,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 346,
+    "v": 20.7,
+    "vy": 1.4,
+    "x": -16
+   },
+   {
+    "d": 390,
+    "v": 21.2,
+    "vy": -6.1,
+    "x": -19
+   },
+   {
+    "d": 1338,
+    "v": 23.3,
+    "vy": 0.5,
+    "x": -24
+   },
+   {
+    "d": 1469,
+    "v": 23.8,
+    "vy": -7.4,
+    "x": 7
+   },
+   {
+    "d": 1792,
+    "v": 17.7,
+    "vy": 3,
+    "x": 3
+   },
+   {
+    "d": 1857,
+    "v": 25,
+    "vy": -12.5,
+    "x": 1
+   },
+   {
+    "d": 2282,
+    "v": 17.5,
+    "vy": 2.6,
+    "x": 5
+   },
+   {
+    "d": 3295,
+    "v": 24.1,
+    "vy": -6.1,
+    "x": -69
+   },
+   {
+    "d": 3739,
+    "v": 23,
+    "vy": -2.9,
+    "x": -3
+   },
+   {
+    "d": 3778,
+    "v": 21.7,
+    "vy": -3.5,
+    "x": 1
+   }
+  ],
+  "issues": [
+   "Zone 4: Kicker (Seitenlinie) bei 1453 m landet bei Höchsttempo hart (17.3 m/s)",
+   "Zone 5: Big Air bei 1792 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 48,
+  "skipped": 4,
+  "zones": "S220 C447 B383 S269 C332 B364 P607 C319 B524 C209 P542 S233 F148 G302 B394"
+ },
+ {
+  "seed": 71,
+  "mode": "Spur A Hocke",
+  "reached": 3800,
+  "time": 161.8,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 383,
+    "impact": 7.2,
+    "air": 1.52,
+    "dist": 38,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 404,
+    "impact": 5.4,
+    "air": 0.57,
+    "dist": 14.3,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 752,
+    "impact": 2.1,
+    "air": 0.35,
+    "dist": 8.4,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1389,
+    "impact": 8.4,
+    "air": 1.91,
+    "dist": 53.4,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1478,
+    "impact": 3.1,
+    "air": 0.42,
+    "dist": 11.8,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 1881,
+    "impact": 16.5,
+    "air": 3.91,
+    "dist": 89.5,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 2092,
+    "impact": 4.5,
+    "air": 0.41,
+    "dist": 11.1,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2131,
+    "impact": 2.9,
+    "air": 0.39,
+    "dist": 10.4,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2289,
+    "impact": 1.8,
+    "air": 0.24,
+    "dist": 6.2,
+    "feat": "Tischsprung",
+    "lane": 0
+   },
+   {
+    "d": 2309,
+    "impact": 1.7,
+    "air": 0.54,
+    "dist": 13.5,
+    "feat": "Tischsprung",
+    "lane": 0
+   },
+   {
+    "d": 2324,
+    "impact": 5.1,
+    "air": 0.58,
+    "dist": 14.1,
+    "feat": "Tischsprung",
+    "lane": 0
+   },
+   {
+    "d": 2404,
+    "impact": 2.5,
+    "air": 0.35,
+    "dist": 8.9,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2809,
+    "impact": 2.2,
+    "air": 0.28,
+    "dist": 5.9,
+    "feat": "cliff"
+   },
+   {
+    "d": 3313,
+    "impact": 5.9,
+    "air": 0.67,
+    "dist": 18.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3551,
+    "impact": 8.8,
+    "air": 1.59,
+    "dist": 41.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3678,
+    "impact": 20.2,
+    "air": 3.14,
+    "dist": 73.7,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 36.10537285168626,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 346,
+    "v": 25.9,
+    "vy": 1.7,
+    "x": -17
+   },
+   {
+    "d": 390,
+    "v": 26.4,
+    "vy": -6.7,
+    "x": -24
+   },
+   {
+    "d": 746,
+    "v": 24.6,
+    "vy": -4.7,
+    "x": 62
+   },
+   {
+    "d": 1342,
+    "v": 29.6,
+    "vy": -0.3,
+    "x": -29
+   },
+   {
+    "d": 1467,
+    "v": 29.7,
+    "vy": -7.9,
+    "x": 7
+   },
+   {
+    "d": 1792,
+    "v": 25.7,
+    "vy": 4.6,
+    "x": 2
+   },
+   {
+    "d": 2081,
+    "v": 27.7,
+    "vy": -3.2,
+    "x": 8
+   },
+   {
+    "d": 2120,
+    "v": 27.1,
+    "vy": -3.6,
+    "x": 8
+   },
+   {
+    "d": 2282,
+    "v": 26,
+    "vy": -0.3,
+    "x": 8
+   },
+   {
+    "d": 2295,
+    "v": 25.3,
+    "vy": -1.6,
+    "x": 10
+   },
+   {
+    "d": 2310,
+    "v": 25.6,
+    "vy": -5.7,
+    "x": 11
+   },
+   {
+    "d": 2395,
+    "v": 25.8,
+    "vy": -3.6,
+    "x": -8
+   },
+   {
+    "d": 2803,
+    "v": 22,
+    "vy": -6.2,
+    "x": 53
+   },
+   {
+    "d": 3295,
+    "v": 29.9,
+    "vy": -6.8,
+    "x": -69
+   },
+   {
+    "d": 3518,
+    "v": 28.3,
+    "vy": -6.1,
+    "x": -18
+   },
+   {
+    "d": 3610,
+    "v": 26,
+    "vy": -3.6,
+    "x": 22
+   },
+   {
+    "d": 3800,
+    "v": 26.9,
+    "vy": -2.8,
+    "x": 15
+   }
+  ],
+  "issues": [
+   "Zone 4: Kicker (Seitenlinie) bei 1453 m landet bei Höchsttempo hart (17.3 m/s)",
+   "Zone 5: Big Air bei 1792 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 48,
+  "skipped": 4,
+  "zones": "S220 C447 B383 S269 C332 B364 P607 C319 B524 C209 P542 S233 F148 G302 B394"
+ },
+ {
+  "seed": 71,
+  "mode": "Spur B Hocke",
+  "reached": 3800,
+  "time": 167,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 391,
+    "impact": 4.2,
+    "air": 0.52,
+    "dist": 11.8,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1362,
+    "impact": 2,
+    "air": 0.28,
+    "dist": 7.4,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1578,
+    "impact": 10.8,
+    "air": 2.1,
+    "dist": 53.5,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 1838,
+    "impact": 8.9,
+    "air": 2.72,
+    "dist": 65,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 2211,
+    "impact": 5.8,
+    "air": 1.47,
+    "dist": 34.3,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2426,
+    "impact": 5,
+    "air": 0.5,
+    "dist": 11.7,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2837,
+    "impact": 5.9,
+    "air": 1.69,
+    "dist": 32.2,
+    "feat": "cliff"
+   },
+   {
+    "d": 2950,
+    "impact": 2.4,
+    "air": 0.57,
+    "dist": 14.6,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 31.149974437417004,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 379,
+    "v": 23.9,
+    "vy": -6.4,
+    "x": 83
+   },
+   {
+    "d": 1358,
+    "v": 28,
+    "vy": -6.2,
+    "x": 1
+   },
+   {
+    "d": 1530,
+    "v": 26.9,
+    "vy": 1.2,
+    "x": -77
+   },
+   {
+    "d": 1773,
+    "v": 25.7,
+    "vy": 2.3,
+    "x": -46
+   },
+   {
+    "d": 2177,
+    "v": 24.2,
+    "vy": 2,
+    "x": 33
+   },
+   {
+    "d": 2414,
+    "v": 24.2,
+    "vy": -5.2,
+    "x": 25
+   },
+   {
+    "d": 2805,
+    "v": 19.8,
+    "vy": -2.3,
+    "x": -28
+   },
+   {
+    "d": 2937,
+    "v": 26.4,
+    "vy": -4.1,
+    "x": -16
+   }
+  ],
+  "issues": [
+   "Zone 4: Kicker (Seitenlinie) bei 1453 m landet bei Höchsttempo hart (17.3 m/s)",
+   "Zone 5: Big Air bei 1792 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 48,
+  "skipped": 4,
+  "zones": "S220 C447 B383 S269 C332 B364 P607 C319 B524 C209 P542 S233 F148 G302 B394"
+ },
+ {
+  "seed": 78,
+  "mode": "Spur A aufrecht",
+  "reached": 3800,
+  "time": 194.7,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 725,
+    "impact": 3.9,
+    "air": 0.43,
+    "dist": 7.4,
+    "feat": "cliff"
+   },
+   {
+    "d": 1530,
+    "impact": 3.1,
+    "air": 0.49,
+    "dist": 11.1,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1547,
+    "impact": 2.3,
+    "air": 0.25,
+    "dist": 5.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2037,
+    "impact": 3.1,
+    "air": 0.38,
+    "dist": 6.7,
+    "feat": "cliff"
+   },
+   {
+    "d": 3738,
+    "impact": 6.8,
+    "air": 1.45,
+    "dist": 30.4,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 3773,
+    "impact": 3.7,
+    "air": 0.51,
+    "dist": 10.8,
+    "feat": "Kicker",
+    "lane": 0
+   }
+  ],
+  "topSpeed": 26.110437371203446,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 717,
+    "v": 18.8,
+    "vy": -6.5,
+    "x": 69
+   },
+   {
+    "d": 1519,
+    "v": 23.3,
+    "vy": -3.1,
+    "x": 7
+   },
+   {
+    "d": 1542,
+    "v": 23.1,
+    "vy": -5.7,
+    "x": 9
+   },
+   {
+    "d": 2031,
+    "v": 19.2,
+    "vy": -6.5,
+    "x": -56
+   },
+   {
+    "d": 3708,
+    "v": 22,
+    "vy": 1.5,
+    "x": -22
+   },
+   {
+    "d": 3763,
+    "v": 22.7,
+    "vy": -6.8,
+    "x": -24
+   }
+  ],
+  "issues": [
+   "Zone 14: Big Air bei 4860 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 48,
+  "skipped": 2,
+  "zones": "S220 G248 C426 F157 S343 C450 C325 C208 B486 G517 S205 C454 C228 C444 B382"
+ },
+ {
+  "seed": 78,
+  "mode": "Spur A Hocke",
+  "reached": 3800,
+  "time": 162.7,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 566,
+    "impact": 3,
+    "air": 0.48,
+    "dist": 12.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 733,
+    "impact": 5.2,
+    "air": 0.63,
+    "dist": 14.8,
+    "feat": "cliff"
+   },
+   {
+    "d": 1538,
+    "impact": 3.2,
+    "air": 0.7,
+    "dist": 20.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1702,
+    "impact": 5.7,
+    "air": 1.47,
+    "dist": 38.5,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 2
+   },
+   {
+    "d": 1921,
+    "impact": 4.8,
+    "air": 0.51,
+    "dist": 13.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1938,
+    "impact": 3,
+    "air": 0.27,
+    "dist": 7.1,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2040,
+    "impact": 2.3,
+    "air": 0.41,
+    "dist": 9.6,
+    "feat": "cliff"
+   },
+   {
+    "d": 2246,
+    "impact": 4.5,
+    "air": 1.06,
+    "dist": 28.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2282,
+    "impact": 2.8,
+    "air": 0.43,
+    "dist": 11.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2359,
+    "impact": 11.6,
+    "air": 2.09,
+    "dist": 51.5,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2511,
+    "impact": 4.4,
+    "air": 0.96,
+    "dist": 24.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2849,
+    "impact": 5.2,
+    "air": 0.97,
+    "dist": 26.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3006,
+    "impact": 7.9,
+    "air": 1.7,
+    "dist": 39.5,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3013,
+    "impact": 3.7,
+    "air": 0.38,
+    "dist": 9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3042,
+    "impact": 3,
+    "air": 0.54,
+    "dist": 12.4,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3147,
+    "impact": 7.3,
+    "air": 0.8,
+    "dist": 16.8,
+    "feat": "Waldkicker",
+    "lane": 2
+   },
+   {
+    "d": 3170,
+    "impact": 7.1,
+    "air": 1.17,
+    "dist": 24,
+    "feat": "Waldkicker",
+    "lane": 2
+   },
+   {
+    "d": 3499,
+    "impact": 2.2,
+    "air": 0.47,
+    "dist": 12.5,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3754,
+    "impact": 6.3,
+    "air": 1.66,
+    "dist": 46.1,
+    "feat": "Kicker",
+    "lane": 0
+   }
+  ],
+  "topSpeed": 33.74819505701651,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 554,
+    "v": 25.9,
+    "vy": -3.1,
+    "x": 65
+   },
+   {
+    "d": 718,
+    "v": 25.6,
+    "vy": -8.6,
+    "x": 66
+   },
+   {
+    "d": 1518,
+    "v": 29.7,
+    "vy": -2.9,
+    "x": 8
+   },
+   {
+    "d": 1666,
+    "v": 27.2,
+    "vy": -0.4,
+    "x": 12
+   },
+   {
+    "d": 1908,
+    "v": 27.7,
+    "vy": -2.9,
+    "x": -50
+   },
+   {
+    "d": 1931,
+    "v": 27,
+    "vy": -2.1,
+    "x": -61
+   },
+   {
+    "d": 2031,
+    "v": 25.1,
+    "vy": -8.5,
+    "x": -57
+   },
+   {
+    "d": 2222,
+    "v": 28.8,
+    "vy": -8.2,
+    "x": -18
+   },
+   {
+    "d": 2270,
+    "v": 30,
+    "vy": -9.7,
+    "x": 11
+   },
+   {
+    "d": 2309,
+    "v": 27.3,
+    "vy": -7.5,
+    "x": 16
+   },
+   {
+    "d": 2492,
+    "v": 26.7,
+    "vy": -2,
+    "x": -75
+   },
+   {
+    "d": 2823,
+    "v": 30,
+    "vy": -8.8,
+    "x": -77
+   },
+   {
+    "d": 2976,
+    "v": 24.4,
+    "vy": 4,
+    "x": 0
+   },
+   {
+    "d": 3006,
+    "v": 24,
+    "vy": -4.3,
+    "x": 28
+   },
+   {
+    "d": 3031,
+    "v": 23.2,
+    "vy": -1.1,
+    "x": 53
+   },
+   {
+    "d": 3138,
+    "v": 22.1,
+    "vy": -5.5,
+    "x": 90
+   },
+   {
+    "d": 3157,
+    "v": 20.9,
+    "vy": 0,
+    "x": 63
+   },
+   {
+    "d": 3487,
+    "v": 30.3,
+    "vy": -12.9,
+    "x": 49
+   },
+   {
+    "d": 3708,
+    "v": 29.1,
+    "vy": 0.4,
+    "x": -26
+   }
+  ],
+  "issues": [
+   "Zone 14: Big Air bei 4860 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 48,
+  "skipped": 2,
+  "zones": "S220 G248 C426 F157 S343 C450 C325 C208 B486 G517 S205 C454 C228 C444 B382"
+ },
+ {
+  "seed": 78,
+  "mode": "Spur B Hocke",
+  "reached": 3800,
+  "time": 165.1,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 754,
+    "impact": 10.9,
+    "air": 2.01,
+    "dist": 40.7,
+    "feat": "cliff"
+   },
+   {
+    "d": 1719,
+    "impact": 2.8,
+    "air": 0.23,
+    "dist": 6.1,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 2
+   },
+   {
+    "d": 1891,
+    "impact": 2.5,
+    "air": 0.38,
+    "dist": 9.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2070,
+    "impact": 7,
+    "air": 2.05,
+    "dist": 39.6,
+    "feat": "cliff"
+   },
+   {
+    "d": 2518,
+    "impact": 4.9,
+    "air": 0.66,
+    "dist": 17.1,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2536,
+    "impact": 2.8,
+    "air": 0.43,
+    "dist": 11.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2922,
+    "impact": 2.3,
+    "air": 0.37,
+    "dist": 9.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3047,
+    "impact": 4.6,
+    "air": 0.34,
+    "dist": 8.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3080,
+    "impact": 8.2,
+    "air": 1.16,
+    "dist": 29.1,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3103,
+    "impact": 2.9,
+    "air": 0.68,
+    "dist": 16.7,
+    "feat": "Waldkicker",
+    "lane": 2
+   },
+   {
+    "d": 3157,
+    "impact": 4.3,
+    "air": 0.98,
+    "dist": 23.9,
+    "feat": "Waldkicker",
+    "lane": 2
+   },
+   {
+    "d": 3200,
+    "impact": 3.7,
+    "air": 0.22,
+    "dist": 5.3,
+    "feat": "Waldkicker",
+    "lane": 2
+   },
+   {
+    "d": 3747,
+    "impact": 8.8,
+    "air": 1.92,
+    "dist": 49.9,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 3771,
+    "impact": 6.1,
+    "air": 0.63,
+    "dist": 16.5,
+    "feat": "Kicker",
+    "lane": 0
+   }
+  ],
+  "topSpeed": 29.435395202040695,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 714,
+    "v": 21.2,
+    "vy": -2.1,
+    "x": -15
+   },
+   {
+    "d": 1713,
+    "v": 27.2,
+    "vy": -6.4,
+    "x": -60
+   },
+   {
+    "d": 1885,
+    "v": 26.3,
+    "vy": -5.1,
+    "x": -40
+   },
+   {
+    "d": 2031,
+    "v": 20.3,
+    "vy": -2.5,
+    "x": 20
+   },
+   {
+    "d": 2501,
+    "v": 28.2,
+    "vy": -9.3,
+    "x": 80
+   },
+   {
+    "d": 2525,
+    "v": 28.7,
+    "vy": -10.7,
+    "x": 77
+   },
+   {
+    "d": 2914,
+    "v": 27.5,
+    "vy": -5.3,
+    "x": 8
+   },
+   {
+    "d": 3039,
+    "v": 26.2,
+    "vy": -6.5,
+    "x": -19
+   },
+   {
+    "d": 3052,
+    "v": 25.8,
+    "vy": 0,
+    "x": -8
+   },
+   {
+    "d": 3086,
+    "v": 25.4,
+    "vy": -3.8,
+    "x": 23
+   },
+   {
+    "d": 3134,
+    "v": 25.1,
+    "vy": -3.6,
+    "x": 47
+   },
+   {
+    "d": 3196,
+    "v": 25.6,
+    "vy": -7,
+    "x": 21
+   },
+   {
+    "d": 3697,
+    "v": 27.3,
+    "vy": 2.5,
+    "x": 65
+   },
+   {
+    "d": 3755,
+    "v": 27.7,
+    "vy": -7.7,
+    "x": 65
+   }
+  ],
+  "issues": [
+   "Zone 14: Big Air bei 4860 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 48,
+  "skipped": 2,
+  "zones": "S220 G248 C426 F157 S343 C450 C325 C208 B486 G517 S205 C454 C228 C444 B382"
+ },
+ {
+  "seed": 85,
+  "mode": "Spur A aufrecht",
+  "reached": 3800,
+  "time": 189.3,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 520,
+    "impact": 2.7,
+    "air": 0.38,
+    "dist": 7.6,
+    "feat": "Waldkicker",
+    "lane": 2
+   },
+   {
+    "d": 1717,
+    "impact": 2.6,
+    "air": 0.69,
+    "dist": 15.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1820,
+    "impact": 3.4,
+    "air": 0.56,
+    "dist": 12.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2293,
+    "impact": 2.7,
+    "air": 0.49,
+    "dist": 11,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2914,
+    "impact": 2.8,
+    "air": 1.07,
+    "dist": 24.8,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 26.50412920190119,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 513,
+    "v": 21,
+    "vy": -6.1,
+    "x": -4
+   },
+   {
+    "d": 1703,
+    "v": 23.7,
+    "vy": -2.5,
+    "x": 37
+   },
+   {
+    "d": 1808,
+    "v": 23.6,
+    "vy": -3.2,
+    "x": 1
+   },
+   {
+    "d": 2282,
+    "v": 23,
+    "vy": -4.1,
+    "x": -6
+   },
+   {
+    "d": 2890,
+    "v": 24.5,
+    "vy": -4.9,
+    "x": 58
+   }
+  ],
+  "issues": [
+   "Zone 11: Big Air bei 3856 m landet bei Höchsttempo hart (19.9 m/s)",
+   "Zone 15: Big Air bei 5202 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 60,
+  "skipped": 5,
+  "zones": "S220 G395 S249 F169 C393 S258 G473 C320 B416 S285 G399 B481 F145 S307 G407 B494"
+ },
+ {
+  "seed": 85,
+  "mode": "Spur A Hocke",
+  "reached": 3800,
+  "time": 152,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 1266,
+    "impact": 2.3,
+    "air": 0.32,
+    "dist": 6.9,
+    "feat": "cliff"
+   },
+   {
+    "d": 1736,
+    "impact": 3.1,
+    "air": 1.22,
+    "dist": 35,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2303,
+    "impact": 4.5,
+    "air": 0.78,
+    "dist": 22.5,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2318,
+    "impact": 3,
+    "air": 0.43,
+    "dist": 12,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2561,
+    "impact": 4,
+    "air": 0.8,
+    "dist": 20.4,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2929,
+    "impact": 3,
+    "air": 1.5,
+    "dist": 41.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3458,
+    "impact": 4.6,
+    "air": 0.73,
+    "dist": 20.3,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 31.974264382813605,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 1259,
+    "v": 23,
+    "vy": -7.1,
+    "x": -66
+   },
+   {
+    "d": 1704,
+    "v": 29.7,
+    "vy": -2.3,
+    "x": 40
+   },
+   {
+    "d": 2281,
+    "v": 29.6,
+    "vy": -4,
+    "x": -7
+   },
+   {
+    "d": 2306,
+    "v": 29.8,
+    "vy": -7.9,
+    "x": -7
+   },
+   {
+    "d": 2543,
+    "v": 26,
+    "vy": -1.6,
+    "x": 65
+   },
+   {
+    "d": 2888,
+    "v": 29.8,
+    "vy": -6.1,
+    "x": 63
+   },
+   {
+    "d": 3438,
+    "v": 28.7,
+    "vy": -5.8,
+    "x": 15
+   }
+  ],
+  "issues": [
+   "Zone 11: Big Air bei 3856 m landet bei Höchsttempo hart (19.9 m/s)",
+   "Zone 15: Big Air bei 5202 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 60,
+  "skipped": 5,
+  "zones": "S220 G395 S249 F169 C393 S258 G473 C320 B416 S285 G399 B481 F145 S307 G407 B494"
+ },
+ {
+  "seed": 85,
+  "mode": "Spur B Hocke",
+  "reached": 3800,
+  "time": 160.2,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 1299,
+    "impact": 11.8,
+    "air": 1.97,
+    "dist": 40.5,
+    "feat": "cliff"
+   },
+   {
+    "d": 1471,
+    "impact": 4.4,
+    "air": 1.33,
+    "dist": 34.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1541,
+    "impact": 5.1,
+    "air": 0.99,
+    "dist": 25.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1981,
+    "impact": 4.4,
+    "air": 1.02,
+    "dist": 26.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2176,
+    "impact": 0.8,
+    "air": 0.16,
+    "dist": 4.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2355,
+    "impact": 4,
+    "air": 0.51,
+    "dist": 13.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2379,
+    "impact": 2.9,
+    "air": 0.56,
+    "dist": 15,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2493,
+    "impact": 2.4,
+    "air": 0.87,
+    "dist": 22.4,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2652,
+    "impact": 2.9,
+    "air": 0.97,
+    "dist": 24.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3457,
+    "impact": 4.3,
+    "air": 0.72,
+    "dist": 18.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3733,
+    "impact": 5.3,
+    "air": 0.48,
+    "dist": 11.2,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   }
+  ],
+  "topSpeed": 29.701035820923014,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 1259,
+    "v": 21.5,
+    "vy": -2.5,
+    "x": 13
+   },
+   {
+    "d": 1440,
+    "v": 27.3,
+    "vy": -2.6,
+    "x": -8
+   },
+   {
+    "d": 1519,
+    "v": 27.5,
+    "vy": -6.6,
+    "x": -72
+   },
+   {
+    "d": 1954,
+    "v": 27.8,
+    "vy": -5.8,
+    "x": -26
+   },
+   {
+    "d": 2172,
+    "v": 26.9,
+    "vy": -4.4,
+    "x": -46
+   },
+   {
+    "d": 2341,
+    "v": 27.9,
+    "vy": -4.2,
+    "x": -65
+   },
+   {
+    "d": 2364,
+    "v": 27.5,
+    "vy": -4.1,
+    "x": -64
+   },
+   {
+    "d": 2471,
+    "v": 28,
+    "vy": -8.2,
+    "x": -65
+   },
+   {
+    "d": 2628,
+    "v": 28,
+    "vy": -8.2,
+    "x": -100
+   },
+   {
+    "d": 3438,
+    "v": 27.4,
+    "vy": -5.1,
+    "x": 48
+   },
+   {
+    "d": 3722,
+    "v": 23.9,
+    "vy": -4.7,
+    "x": -47
+   }
+  ],
+  "issues": [
+   "Zone 11: Big Air bei 3856 m landet bei Höchsttempo hart (19.9 m/s)",
+   "Zone 15: Big Air bei 5202 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 60,
+  "skipped": 5,
+  "zones": "S220 G395 S249 F169 C393 S258 G473 C320 B416 S285 G399 B481 F145 S307 G407 B494"
+ },
+ {
+  "seed": 92,
+  "mode": "Spur A aufrecht",
+  "reached": 3800,
+  "time": 192.4,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 544,
+    "impact": 2.8,
+    "air": 0.39,
+    "dist": 7.8,
+    "feat": "Waldkicker",
+    "lane": 2
+   },
+   {
+    "d": 811,
+    "impact": 4.9,
+    "air": 0.8,
+    "dist": 17.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1175,
+    "impact": 5.3,
+    "air": 1.22,
+    "dist": 25.2,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1214,
+    "impact": 3.5,
+    "air": 0.48,
+    "dist": 10.1,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1483,
+    "impact": 3.5,
+    "air": 0.5,
+    "dist": 11.5,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1502,
+    "impact": 2.9,
+    "air": 0.36,
+    "dist": 8.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2391,
+    "impact": 3.5,
+    "air": 0.53,
+    "dist": 11.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2517,
+    "impact": 4.8,
+    "air": 0.61,
+    "dist": 13.6,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 2925,
+    "impact": 2.8,
+    "air": 0.38,
+    "dist": 6.9,
+    "feat": "cliff"
+   },
+   {
+    "d": 3527,
+    "impact": 5.3,
+    "air": 1.12,
+    "dist": 18.7,
+    "feat": "Tischsprung",
+    "lane": 0
+   }
+  ],
+  "topSpeed": 28.20156643082395,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 536,
+    "v": 21.1,
+    "vy": -6.2,
+    "x": 1
+   },
+   {
+    "d": 794,
+    "v": 25.3,
+    "vy": -12.2,
+    "x": -29
+   },
+   {
+    "d": 1150,
+    "v": 21.6,
+    "vy": 1.1,
+    "x": -20
+   },
+   {
+    "d": 1204,
+    "v": 22.3,
+    "vy": -6.7,
+    "x": -16
+   },
+   {
+    "d": 1471,
+    "v": 24,
+    "vy": -5.2,
+    "x": -6
+   },
+   {
+    "d": 1494,
+    "v": 24.1,
+    "vy": -6.1,
+    "x": -6
+   },
+   {
+    "d": 2379,
+    "v": 23.3,
+    "vy": -5.2,
+    "x": 2
+   },
+   {
+    "d": 2503,
+    "v": 24.2,
+    "vy": -7.9,
+    "x": -4
+   },
+   {
+    "d": 2919,
+    "v": 20,
+    "vy": -7.1,
+    "x": 73
+   },
+   {
+    "d": 3508,
+    "v": 17.4,
+    "vy": 2.4,
+    "x": -2
+   }
+  ],
+  "issues": [],
+  "features": 61,
+  "skipped": 5,
+  "zones": "S220 G477 S195 F111 C343 G386 B414 F108 C394 C467 F151 P513 G385 C253 P529"
+ },
+ {
+  "seed": 92,
+  "mode": "Spur A Hocke",
+  "reached": 3800,
+  "time": 153.1,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 817,
+    "impact": 5.5,
+    "air": 0.98,
+    "dist": 25.5,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1201,
+    "impact": 4.9,
+    "air": 1.07,
+    "dist": 29.1,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1218,
+    "impact": 5.6,
+    "air": 0.6,
+    "dist": 16.3,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1766,
+    "impact": 2.8,
+    "air": 0.12,
+    "dist": 3.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1841,
+    "impact": 5,
+    "air": 1.05,
+    "dist": 26.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2394,
+    "impact": 4,
+    "air": 0.54,
+    "dist": 15.5,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2464,
+    "impact": 4,
+    "air": 0.87,
+    "dist": 24.9,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 2521,
+    "impact": 6.2,
+    "air": 0.65,
+    "dist": 18,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 2929,
+    "impact": 2.2,
+    "air": 0.38,
+    "dist": 9.3,
+    "feat": "cliff"
+   },
+   {
+    "d": 3517,
+    "impact": 1.8,
+    "air": 0.34,
+    "dist": 8.6,
+    "feat": "Tischsprung",
+    "lane": 0
+   },
+   {
+    "d": 3557,
+    "impact": 5.6,
+    "air": 0.66,
+    "dist": 15.8,
+    "feat": "Tischsprung",
+    "lane": 0
+   },
+   {
+    "d": 3624,
+    "impact": 2.8,
+    "air": 0.4,
+    "dist": 10.1,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 3645,
+    "impact": 2.5,
+    "air": 0.22,
+    "dist": 5.7,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   }
+  ],
+  "topSpeed": 32.435970125823026,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 793,
+    "v": 30.1,
+    "vy": -12.9,
+    "x": -26
+   },
+   {
+    "d": 1173,
+    "v": 28.1,
+    "vy": -1.5,
+    "x": -23
+   },
+   {
+    "d": 1203,
+    "v": 28.6,
+    "vy": -7.5,
+    "x": -16
+   },
+   {
+    "d": 1764,
+    "v": 28.8,
+    "vy": -6.1,
+    "x": -15
+   },
+   {
+    "d": 1821,
+    "v": 25.7,
+    "vy": -1.1,
+    "x": -76
+   },
+   {
+    "d": 2379,
+    "v": 30,
+    "vy": -6.6,
+    "x": 4
+   },
+   {
+    "d": 2440,
+    "v": 29.5,
+    "vy": -4.2,
+    "x": 1
+   },
+   {
+    "d": 2503,
+    "v": 30,
+    "vy": -9.4,
+    "x": -5
+   },
+   {
+    "d": 2920,
+    "v": 26.7,
+    "vy": -9.4,
+    "x": 71
+   },
+   {
+    "d": 3509,
+    "v": 25.4,
+    "vy": 0,
+    "x": -5
+   },
+   {
+    "d": 3541,
+    "v": 25,
+    "vy": -5.3,
+    "x": -6
+   },
+   {
+    "d": 3614,
+    "v": 25.7,
+    "vy": -3.6,
+    "x": 11
+   },
+   {
+    "d": 3640,
+    "v": 25.8,
+    "vy": -4.9,
+    "x": 12
+   }
+  ],
+  "issues": [],
+  "features": 61,
+  "skipped": 5,
+  "zones": "S220 G477 S195 F111 C343 G386 B414 F108 C394 C467 F151 P513 G385 C253 P529"
+ },
+ {
+  "seed": 92,
+  "mode": "Spur B Hocke",
+  "reached": 3800,
+  "time": 164.8,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 549,
+    "impact": 4.3,
+    "air": 0.66,
+    "dist": 16.4,
+    "feat": "Waldkicker",
+    "lane": 2
+   },
+   {
+    "d": 1155,
+    "impact": 5.4,
+    "air": 1.43,
+    "dist": 34.2,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1481,
+    "impact": 6.6,
+    "air": 1.32,
+    "dist": 34.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1509,
+    "impact": 3.8,
+    "air": 0.65,
+    "dist": 17.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1616,
+    "impact": 8.8,
+    "air": 1.49,
+    "dist": 39,
+    "feat": "Waldkicker",
+    "lane": 2
+   },
+   {
+    "d": 1791,
+    "impact": 2.1,
+    "air": 0.44,
+    "dist": 10.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1836,
+    "impact": 4.7,
+    "air": 0.96,
+    "dist": 20.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2461,
+    "impact": 4.4,
+    "air": 0.98,
+    "dist": 26.1,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 2508,
+    "impact": 5,
+    "air": 0.58,
+    "dist": 14.9,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 2970,
+    "impact": 16.4,
+    "air": 2.36,
+    "dist": 52.1,
+    "feat": "cliff"
+   },
+   {
+    "d": 3450,
+    "impact": 4.7,
+    "air": 0.5,
+    "dist": 11.5,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 3649,
+    "impact": 5.2,
+    "air": 0.55,
+    "dist": 13.1,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   }
+  ],
+  "topSpeed": 30.964569560348046,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 534,
+    "v": 25.8,
+    "vy": -4.8,
+    "x": 41
+   },
+   {
+    "d": 1124,
+    "v": 24.6,
+    "vy": -0.2,
+    "x": 47
+   },
+   {
+    "d": 1447,
+    "v": 27.6,
+    "vy": -2.1,
+    "x": 24
+   },
+   {
+    "d": 1492,
+    "v": 27.7,
+    "vy": -5.3,
+    "x": 7
+   },
+   {
+    "d": 1582,
+    "v": 27.2,
+    "vy": -0.9,
+    "x": 16
+   },
+   {
+    "d": 1786,
+    "v": 24.4,
+    "vy": -1.2,
+    "x": -31
+   },
+   {
+    "d": 1820,
+    "v": 22.3,
+    "vy": -0.8,
+    "x": -77
+   },
+   {
+    "d": 2436,
+    "v": 27.4,
+    "vy": -3,
+    "x": 61
+   },
+   {
+    "d": 2493,
+    "v": 28,
+    "vy": -8.9,
+    "x": 57
+   },
+   {
+    "d": 2918,
+    "v": 23.5,
+    "vy": -2.3,
+    "x": -23
+   },
+   {
+    "d": 3438,
+    "v": 23.8,
+    "vy": -5.2,
+    "x": -26
+   },
+   {
+    "d": 3637,
+    "v": 24.6,
+    "vy": -5.3,
+    "x": -26
+   }
+  ],
+  "issues": [],
+  "features": 61,
+  "skipped": 5,
+  "zones": "S220 G477 S195 F111 C343 G386 B414 F108 C394 C467 F151 P513 G385 C253 P529"
+ },
+ {
+  "seed": 99,
+  "mode": "Spur A aufrecht",
+  "reached": 3800,
+  "time": 192.1,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 427,
+    "impact": 3.7,
+    "air": 0.99,
+    "dist": 21.8,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 470,
+    "impact": 3.9,
+    "air": 0.52,
+    "dist": 11.2,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 827,
+    "impact": 2.9,
+    "air": 0.33,
+    "dist": 6,
+    "feat": "cliff"
+   },
+   {
+    "d": 1445,
+    "impact": 7,
+    "air": 1.86,
+    "dist": 25.8,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 1505,
+    "impact": 9.5,
+    "air": 1.08,
+    "dist": 21.9,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 2156,
+    "impact": 3.6,
+    "air": 0.51,
+    "dist": 10.7,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 2621,
+    "impact": 3.9,
+    "air": 0.9,
+    "dist": 15,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   }
+  ],
+  "topSpeed": 28.807838147443782,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 406,
+    "v": 22.7,
+    "vy": 0.2,
+    "x": 13
+   },
+   {
+    "d": 459,
+    "v": 23.1,
+    "vy": -6.8,
+    "x": 9
+   },
+   {
+    "d": 821,
+    "v": 19.7,
+    "vy": -7.3,
+    "x": 67
+   },
+   {
+    "d": 1419,
+    "v": 14.7,
+    "vy": 2.4,
+    "x": -1
+   },
+   {
+    "d": 1484,
+    "v": 24.4,
+    "vy": -12.3,
+    "x": -1
+   },
+   {
+    "d": 2145,
+    "v": 22.6,
+    "vy": -7,
+    "x": 15
+   },
+   {
+    "d": 2606,
+    "v": 17.1,
+    "vy": 2.2,
+    "x": 6
+   }
+  ],
+  "issues": [
+   "Zone 4: Big Air bei 1419 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 57,
+  "skipped": 1,
+  "zones": "S220 C338 C444 F86 B581 C245 C359 P588 S397 G277 C245 G375 P455 C321 S214"
+ },
+ {
+  "seed": 99,
+  "mode": "Spur A Hocke",
+  "reached": 3800,
+  "time": 152.5,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 448,
+    "impact": 4.7,
+    "air": 1.02,
+    "dist": 28.1,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 474,
+    "impact": 6,
+    "air": 0.61,
+    "dist": 16.8,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 560,
+    "impact": 1.7,
+    "air": 0.22,
+    "dist": 6.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 598,
+    "impact": 5.2,
+    "air": 1.37,
+    "dist": 38.5,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 831,
+    "impact": 3.2,
+    "air": 0.43,
+    "dist": 10.3,
+    "feat": "cliff"
+   },
+   {
+    "d": 1487,
+    "impact": 4,
+    "air": 3.27,
+    "dist": 68.8,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 2134,
+    "impact": 5.4,
+    "air": 1.18,
+    "dist": 32.8,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 2158,
+    "impact": 5.6,
+    "air": 0.52,
+    "dist": 14.2,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 2407,
+    "impact": 3.7,
+    "air": 0.31,
+    "dist": 8.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2445,
+    "impact": 2.4,
+    "air": 0.29,
+    "dist": 7.7,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2647,
+    "impact": 6.1,
+    "air": 1.15,
+    "dist": 27.7,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   }
+  ],
+  "topSpeed": 32.04229648766365,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 421,
+    "v": 28.5,
+    "vy": -1.9,
+    "x": 14
+   },
+   {
+    "d": 458,
+    "v": 29.1,
+    "vy": -7.7,
+    "x": 6
+   },
+   {
+    "d": 554,
+    "v": 29.4,
+    "vy": -6.7,
+    "x": -3
+   },
+   {
+    "d": 563,
+    "v": 29.2,
+    "vy": -0.5,
+    "x": -1
+   },
+   {
+    "d": 821,
+    "v": 26.2,
+    "vy": -9.4,
+    "x": 68
+   },
+   {
+    "d": 1419,
+    "v": 22.9,
+    "vy": 4.1,
+    "x": -2
+   },
+   {
+    "d": 2103,
+    "v": 28.6,
+    "vy": -1.3,
+    "x": 7
+   },
+   {
+    "d": 2144,
+    "v": 29.3,
+    "vy": -8.7,
+    "x": 21
+   },
+   {
+    "d": 2399,
+    "v": 27.2,
+    "vy": -3.7,
+    "x": -1
+   },
+   {
+    "d": 2438,
+    "v": 26.7,
+    "vy": -3.9,
+    "x": 11
+   },
+   {
+    "d": 2620,
+    "v": 24.7,
+    "vy": -0.6,
+    "x": 11
+   }
+  ],
+  "issues": [
+   "Zone 4: Big Air bei 1419 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 57,
+  "skipped": 1,
+  "zones": "S220 C338 C444 F86 B581 C245 C359 P588 S397 G277 C245 G375 P455 C321 S214"
+ },
+ {
+  "seed": 99,
+  "mode": "Spur B Hocke",
+  "reached": 3800,
+  "time": 169.1,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 412,
+    "impact": 7.1,
+    "air": 1.64,
+    "dist": 42.9,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 442,
+    "impact": 6,
+    "air": 0.63,
+    "dist": 16.4,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 597,
+    "impact": 3,
+    "air": 0.71,
+    "dist": 19.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 863,
+    "impact": 15.6,
+    "air": 2.22,
+    "dist": 48.5,
+    "feat": "cliff"
+   },
+   {
+    "d": 1108,
+    "impact": 11.3,
+    "air": 2.43,
+    "dist": 35,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1226,
+    "impact": 4.1,
+    "air": 0.84,
+    "dist": 14.6,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2126,
+    "impact": 7.3,
+    "air": 1.87,
+    "dist": 48.1,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 2655,
+    "impact": 6.1,
+    "air": 0.86,
+    "dist": 19.7,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   }
+  ],
+  "topSpeed": 30.26897439822995,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 369,
+    "v": 27.2,
+    "vy": 1.5,
+    "x": -46
+   },
+   {
+    "d": 426,
+    "v": 27.8,
+    "vy": -7.5,
+    "x": -42
+   },
+   {
+    "d": 581,
+    "v": 27.9,
+    "vy": -3.5,
+    "x": -52
+   },
+   {
+    "d": 815,
+    "v": 23,
+    "vy": -2.5,
+    "x": -8
+   },
+   {
+    "d": 1073,
+    "v": 18.3,
+    "vy": 10.7,
+    "x": -40
+   },
+   {
+    "d": 1211,
+    "v": 17.7,
+    "vy": 1.3,
+    "x": -42
+   },
+   {
+    "d": 2082,
+    "v": 26.9,
+    "vy": 0.7,
+    "x": -64
+   },
+   {
+    "d": 2635,
+    "v": 23.5,
+    "vy": -1.7,
+    "x": 48
+   }
+  ],
+  "issues": [
+   "Zone 4: Big Air bei 1419 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 57,
+  "skipped": 1,
+  "zones": "S220 C338 C444 F86 B581 C245 C359 P588 S397 G277 C245 G375 P455 C321 S214"
+ },
+ {
+  "seed": 106,
+  "mode": "Spur A aufrecht",
+  "reached": 3800,
+  "time": 201.5,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 1459,
+    "impact": 6.5,
+    "air": 1.39,
+    "dist": 28.6,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1495,
+    "impact": 3.6,
+    "air": 0.5,
+    "dist": 10.5,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 3096,
+    "impact": 3.6,
+    "air": 0.43,
+    "dist": 7,
+    "feat": "cliff"
+   },
+   {
+    "d": 3735,
+    "impact": 1.4,
+    "air": 0.35,
+    "dist": 7.4,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 26.13500060215223,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 1431,
+    "v": 21.5,
+    "vy": 1.4,
+    "x": 16
+   },
+   {
+    "d": 1485,
+    "v": 22.4,
+    "vy": -6.7,
+    "x": 13
+   },
+   {
+    "d": 3089,
+    "v": 17.9,
+    "vy": -6.7,
+    "x": -75
+   },
+   {
+    "d": 3729,
+    "v": 21.6,
+    "vy": -2.7,
+    "x": -12
+   }
+  ],
+  "issues": [],
+  "features": 40,
   "skipped": 3,
-  "zones": "S220 G427 S260 B347 P414 C333 S305 F161 C317 C269 G331 C240 P601"
+  "zones": "S220 G274 B449 G370 C278 S178 F193 B397 P512 C373 S212 G280 B412 C541 P497"
+ },
+ {
+  "seed": 106,
+  "mode": "Spur A Hocke",
+  "reached": 3800,
+  "time": 157.8,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 461,
+    "impact": 2.8,
+    "air": 0.31,
+    "dist": 8.1,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 481,
+    "impact": 2.4,
+    "air": 0.34,
+    "dist": 9.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 658,
+    "impact": 3.7,
+    "air": 0.9,
+    "dist": 22.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1231,
+    "impact": 8.5,
+    "air": 1.56,
+    "dist": 42.4,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1500,
+    "impact": 5.8,
+    "air": 0.61,
+    "dist": 16.7,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 3101,
+    "impact": 4.1,
+    "air": 0.55,
+    "dist": 11.7,
+    "feat": "cliff"
+   },
+   {
+    "d": 3749,
+    "impact": 0.9,
+    "air": 0.22,
+    "dist": 6.3,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 31.181732725395324,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 453,
+    "v": 27.7,
+    "vy": -8.2,
+    "x": 19
+   },
+   {
+    "d": 472,
+    "v": 28.6,
+    "vy": -9.1,
+    "x": 14
+   },
+   {
+    "d": 641,
+    "v": 25.2,
+    "vy": -2,
+    "x": 61
+   },
+   {
+    "d": 1192,
+    "v": 28.3,
+    "vy": -0.9,
+    "x": 16
+   },
+   {
+    "d": 1484,
+    "v": 28.9,
+    "vy": -7.9,
+    "x": 16
+   },
+   {
+    "d": 3089,
+    "v": 23.1,
+    "vy": -8.1,
+    "x": -76
+   },
+   {
+    "d": 3743,
+    "v": 28.7,
+    "vy": -6.3,
+    "x": 12
+   }
+  ],
+  "issues": [],
+  "features": 40,
+  "skipped": 3,
+  "zones": "S220 G274 B449 G370 C278 S178 F193 B397 P512 C373 S212 G280 B412 C541 P497"
+ },
+ {
+  "seed": 106,
+  "mode": "Spur B Hocke",
+  "reached": 3800,
+  "time": 168.3,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 689,
+    "impact": 3.4,
+    "air": 0.76,
+    "dist": 15.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 978,
+    "impact": 2.6,
+    "air": 0.49,
+    "dist": 13.5,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1004,
+    "impact": 3.8,
+    "air": 0.24,
+    "dist": 6.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1191,
+    "impact": 7.8,
+    "air": 1.78,
+    "dist": 44.1,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1474,
+    "impact": 8.7,
+    "air": 1.87,
+    "dist": 48.7,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1499,
+    "impact": 6.1,
+    "air": 0.63,
+    "dist": 16.5,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 2432,
+    "impact": 2.1,
+    "air": 0.5,
+    "dist": 12.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3131,
+    "impact": 16.2,
+    "air": 2.28,
+    "dist": 45.1,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 29.661962019263054,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 677,
+    "v": 21.4,
+    "vy": -2.5,
+    "x": 67
+   },
+   {
+    "d": 971,
+    "v": 27.9,
+    "vy": -2.5,
+    "x": 18
+   },
+   {
+    "d": 999,
+    "v": 26.6,
+    "vy": -5.1,
+    "x": -33
+   },
+   {
+    "d": 1149,
+    "v": 25.8,
+    "vy": 1.2,
+    "x": -33
+   },
+   {
+    "d": 1426,
+    "v": 27.3,
+    "vy": 2.4,
+    "x": -68
+   },
+   {
+    "d": 1482,
+    "v": 27.7,
+    "vy": -7.5,
+    "x": -73
+   },
+   {
+    "d": 2424,
+    "v": 25.7,
+    "vy": 0.5,
+    "x": 5
+   },
+   {
+    "d": 3086,
+    "v": 20.8,
+    "vy": -2.5,
+    "x": 20
+   }
+  ],
+  "issues": [],
+  "features": 40,
+  "skipped": 3,
+  "zones": "S220 G274 B449 G370 C278 S178 F193 B397 P512 C373 S212 G280 B412 C541 P497"
+ },
+ {
+  "seed": 113,
+  "mode": "Spur A aufrecht",
+  "reached": 3800,
+  "time": 190.6,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 1317,
+    "impact": 3.5,
+    "air": 0.5,
+    "dist": 10.8,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 2
+   },
+   {
+    "d": 2696,
+    "impact": 2.9,
+    "air": 0.31,
+    "dist": 5.4,
+    "feat": "cliff"
+   },
+   {
+    "d": 3302,
+    "impact": 1.3,
+    "air": 0.56,
+    "dist": 12.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3711,
+    "impact": 7.2,
+    "air": 1.91,
+    "dist": 27,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 3770,
+    "impact": 9.5,
+    "air": 1.09,
+    "dist": 22.1,
+    "feat": "Big Air",
+    "lane": 0
+   }
+  ],
+  "topSpeed": 28.879085887582377,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 1307,
+    "v": 22.9,
+    "vy": -6.6,
+    "x": 6
+   },
+   {
+    "d": 2691,
+    "v": 19.1,
+    "vy": -6.8,
+    "x": -63
+   },
+   {
+    "d": 3290,
+    "v": 25.6,
+    "vy": -12.2,
+    "x": 35
+   },
+   {
+    "d": 3684,
+    "v": 15,
+    "vy": 2.4,
+    "x": -1
+   },
+   {
+    "d": 3748,
+    "v": 24.4,
+    "vy": -12.2,
+    "x": 0
+   }
+  ],
+  "issues": [
+   "Zone 12: Big Air bei 3683 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 51,
+  "skipped": 7,
+  "zones": "S220 C251 G358 C218 C471 B519 F123 G276 C434 F184 S362 F130 B344 G354 C397 F132 S265"
+ },
+ {
+  "seed": 113,
+  "mode": "Spur A Hocke",
+  "reached": 3800,
+  "time": 152.3,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 358,
+    "impact": 2.9,
+    "air": 0.42,
+    "dist": 11.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 377,
+    "impact": 2.3,
+    "air": 0.22,
+    "dist": 6.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1124,
+    "impact": 2.9,
+    "air": 0.42,
+    "dist": 12,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1297,
+    "impact": 4,
+    "air": 0.87,
+    "dist": 24.8,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1323,
+    "impact": 6,
+    "air": 0.61,
+    "dist": 17.1,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 2
+   },
+   {
+    "d": 1612,
+    "impact": 2,
+    "air": 1.05,
+    "dist": 25,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1954,
+    "impact": 2.9,
+    "air": 0.92,
+    "dist": 24.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2514,
+    "impact": 3.6,
+    "air": 0.55,
+    "dist": 14.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2529,
+    "impact": 2.3,
+    "air": 0.16,
+    "dist": 4,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2697,
+    "impact": 2.3,
+    "air": 0.27,
+    "dist": 6.2,
+    "feat": "cliff"
+   },
+   {
+    "d": 3311,
+    "impact": 5.4,
+    "air": 0.82,
+    "dist": 21.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3759,
+    "impact": 7.6,
+    "air": 3.54,
+    "dist": 75.4,
+    "feat": "Big Air",
+    "lane": 0
+   }
+  ],
+  "topSpeed": 33.40654022609476,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 346,
+    "v": 30,
+    "vy": -8.5,
+    "x": 3
+   },
+   {
+    "d": 371,
+    "v": 30,
+    "vy": -9.6,
+    "x": 2
+   },
+   {
+    "d": 1112,
+    "v": 29.9,
+    "vy": -6.1,
+    "x": 15
+   },
+   {
+    "d": 1273,
+    "v": 29.4,
+    "vy": -2.9,
+    "x": 3
+   },
+   {
+    "d": 1306,
+    "v": 29.8,
+    "vy": -7.8,
+    "x": 4
+   },
+   {
+    "d": 1589,
+    "v": 24.4,
+    "vy": 1.2,
+    "x": 89
+   },
+   {
+    "d": 1932,
+    "v": 28.9,
+    "vy": -7.7,
+    "x": 110
+   },
+   {
+    "d": 2502,
+    "v": 26.4,
+    "vy": -1.6,
+    "x": -56
+   },
+   {
+    "d": 2526,
+    "v": 26,
+    "vy": -4.5,
+    "x": -70
+   },
+   {
+    "d": 2691,
+    "v": 24.9,
+    "vy": -8.7,
+    "x": -61
+   },
+   {
+    "d": 3289,
+    "v": 30.7,
+    "vy": -13.9,
+    "x": 35
+   },
+   {
+    "d": 3684,
+    "v": 23.4,
+    "vy": 4.2,
+    "x": 0
+   }
+  ],
+  "issues": [
+   "Zone 12: Big Air bei 3683 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 51,
+  "skipped": 7,
+  "zones": "S220 C251 G358 C218 C471 B519 F123 G276 C434 F184 S362 F130 B344 G354 C397 F132 S265"
+ },
+ {
+  "seed": 113,
+  "mode": "Spur B Hocke",
+  "reached": 3800,
+  "time": 165.1,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 696,
+    "impact": 6.2,
+    "air": 1.52,
+    "dist": 40.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1294,
+    "impact": 2.9,
+    "air": 1.06,
+    "dist": 28,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1379,
+    "impact": 2.4,
+    "air": 0.23,
+    "dist": 6.3,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 2
+   },
+   {
+    "d": 2325,
+    "impact": 7.2,
+    "air": 1.74,
+    "dist": 45.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2731,
+    "impact": 14.8,
+    "air": 2.05,
+    "dist": 45.5,
+    "feat": "cliff"
+   },
+   {
+    "d": 3744,
+    "impact": 12,
+    "air": 2.91,
+    "dist": 61.2,
+    "feat": "Big Air",
+    "lane": 0
+   }
+  ],
+  "topSpeed": 30.9127477607984,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 657,
+    "v": 27.6,
+    "vy": -0.2,
+    "x": -39
+   },
+   {
+    "d": 1267,
+    "v": 27.1,
+    "vy": -1.3,
+    "x": -77
+   },
+   {
+    "d": 1373,
+    "v": 28,
+    "vy": -7.1,
+    "x": -69
+   },
+   {
+    "d": 2281,
+    "v": 27.5,
+    "vy": -0.3,
+    "x": 38
+   },
+   {
+    "d": 2686,
+    "v": 23.4,
+    "vy": -2.7,
+    "x": 22
+   },
+   {
+    "d": 3682,
+    "v": 22.5,
+    "vy": 2.2,
+    "x": -46
+   }
+  ],
+  "issues": [
+   "Zone 12: Big Air bei 3683 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 51,
+  "skipped": 7,
+  "zones": "S220 C251 G358 C218 C471 B519 F123 G276 C434 F184 S362 F130 B344 G354 C397 F132 S265"
+ },
+ {
+  "seed": 120,
+  "mode": "Spur A aufrecht",
+  "reached": 3800,
+  "time": 191.4,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 879,
+    "impact": 9.1,
+    "air": 1.92,
+    "dist": 40.4,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 981,
+    "impact": 5.9,
+    "air": 1.24,
+    "dist": 25.1,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1006,
+    "impact": 3.4,
+    "air": 0.45,
+    "dist": 9.1,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1151,
+    "impact": 2.6,
+    "air": 0.13,
+    "dist": 2.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2735,
+    "impact": 6.9,
+    "air": 1.84,
+    "dist": 25.5,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 2797,
+    "impact": 9.4,
+    "air": 1.08,
+    "dist": 21.9,
+    "feat": "Big Air",
+    "lane": 0
+   }
+  ],
+  "topSpeed": 28.784847126077945,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 841,
+    "v": 22.7,
+    "vy": 3.9,
+    "x": -16
+   },
+   {
+    "d": 956,
+    "v": 21,
+    "vy": 1.5,
+    "x": 26
+   },
+   {
+    "d": 997,
+    "v": 21.3,
+    "vy": -5.9,
+    "x": 23
+   },
+   {
+    "d": 1149,
+    "v": 22.2,
+    "vy": -4.6,
+    "x": 13
+   },
+   {
+    "d": 2710,
+    "v": 14.6,
+    "vy": 2.3,
+    "x": 1
+   },
+   {
+    "d": 2775,
+    "v": 24.3,
+    "vy": -12.2,
+    "x": 1
+   }
+  ],
+  "issues": [
+   "Zone 8: Big Air bei 2710 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 37,
+  "skipped": 2,
+  "zones": "S220 G335 S262 C357 B400 G247 C259 P391 B556 B386 S349 F178 S352 F129 C231 P389"
+ },
+ {
+  "seed": 120,
+  "mode": "Spur A Hocke",
+  "reached": 3800,
+  "time": 157.2,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 914,
+    "impact": 12.1,
+    "air": 2.44,
+    "dist": 64.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1011,
+    "impact": 5.9,
+    "air": 0.57,
+    "dist": 15.1,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1154,
+    "impact": 3.6,
+    "air": 0.17,
+    "dist": 4.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1189,
+    "impact": 3.6,
+    "air": 1.2,
+    "dist": 32.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1652,
+    "impact": 3.8,
+    "air": 0.23,
+    "dist": 6.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1925,
+    "impact": 15.1,
+    "air": 2.16,
+    "dist": 57.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2064,
+    "impact": 21.2,
+    "air": 2.85,
+    "dist": 50.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2215,
+    "impact": 3.2,
+    "air": 0.28,
+    "dist": 7.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2774,
+    "impact": 11.8,
+    "air": 3.08,
+    "dist": 63.9,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 2800,
+    "impact": 9.5,
+    "air": 1.07,
+    "dist": 25.6,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 3127,
+    "impact": 4.4,
+    "air": 0.97,
+    "dist": 22.3,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 33.200297677840304,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 851,
+    "v": 28.7,
+    "vy": 5.4,
+    "x": -15
+   },
+   {
+    "d": 996,
+    "v": 27.9,
+    "vy": -6.7,
+    "x": 27
+   },
+   {
+    "d": 1150,
+    "v": 28.6,
+    "vy": -6.3,
+    "x": 11
+   },
+   {
+    "d": 1156,
+    "v": 28.4,
+    "vy": -3.6,
+    "x": 10
+   },
+   {
+    "d": 1646,
+    "v": 29.7,
+    "vy": -7.4,
+    "x": -17
+   },
+   {
+    "d": 1875,
+    "v": 28.3,
+    "vy": -0.8,
+    "x": -16
+   },
+   {
+    "d": 2014,
+    "v": 19.3,
+    "vy": -4.1,
+    "x": 22
+   },
+   {
+    "d": 2208,
+    "v": 26.6,
+    "vy": -4,
+    "x": 5
+   },
+   {
+    "d": 2710,
+    "v": 22.4,
+    "vy": 3.9,
+    "x": 2
+   },
+   {
+    "d": 2775,
+    "v": 28.9,
+    "vy": -14.6,
+    "x": 0
+   },
+   {
+    "d": 3109,
+    "v": 23.4,
+    "vy": -0.1,
+    "x": 79
+   }
+  ],
+  "issues": [
+   "Zone 8: Big Air bei 2710 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 37,
+  "skipped": 2,
+  "zones": "S220 G335 S262 C357 B400 G247 C259 P391 B556 B386 S349 F178 S352 F129 C231 P389"
+ },
+ {
+  "seed": 120,
+  "mode": "Spur B Hocke",
+  "reached": 3800,
+  "time": 159.4,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 716,
+    "impact": 2.3,
+    "air": 0.62,
+    "dist": 15.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1000,
+    "impact": 8,
+    "air": 1.78,
+    "dist": 46.4,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1151,
+    "impact": 2,
+    "air": 0.15,
+    "dist": 4,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1170,
+    "impact": 2.4,
+    "air": 0.73,
+    "dist": 19.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1474,
+    "impact": 3.5,
+    "air": 0.53,
+    "dist": 13.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2266,
+    "impact": 5.9,
+    "air": 0.73,
+    "dist": 18.5,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2332,
+    "impact": 2.2,
+    "air": 0.22,
+    "dist": 5.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2709,
+    "impact": 5.6,
+    "air": 1.46,
+    "dist": 33.8,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 3026,
+    "impact": 2.3,
+    "air": 0.4,
+    "dist": 10.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3246,
+    "impact": 3,
+    "air": 0.32,
+    "dist": 8.3,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 29.267168977983296,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 700,
+    "v": 28.2,
+    "vy": -9.6,
+    "x": 79
+   },
+   {
+    "d": 956,
+    "v": 27.3,
+    "vy": 1.8,
+    "x": 24
+   },
+   {
+    "d": 1147,
+    "v": 27.7,
+    "vy": -6,
+    "x": 15
+   },
+   {
+    "d": 1153,
+    "v": 27.6,
+    "vy": -3.2,
+    "x": 17
+   },
+   {
+    "d": 1460,
+    "v": 28,
+    "vy": -6.8,
+    "x": 93
+   },
+   {
+    "d": 2247,
+    "v": 25.9,
+    "vy": -3.1,
+    "x": 43
+   },
+   {
+    "d": 2326,
+    "v": 25.6,
+    "vy": -4.1,
+    "x": 33
+   },
+   {
+    "d": 2675,
+    "v": 24,
+    "vy": 2,
+    "x": 33
+   },
+   {
+    "d": 3017,
+    "v": 26.3,
+    "vy": -4.4,
+    "x": 23
+   },
+   {
+    "d": 3238,
+    "v": 28,
+    "vy": -8.6,
+    "x": -75
+   }
+  ],
+  "issues": [
+   "Zone 8: Big Air bei 2710 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 37,
+  "skipped": 2,
+  "zones": "S220 G335 S262 C357 B400 G247 C259 P391 B556 B386 S349 F178 S352 F129 C231 P389"
+ },
+ {
+  "seed": 127,
+  "mode": "Spur A aufrecht",
+  "reached": 3800,
+  "time": 203.4,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 710,
+    "impact": 2.6,
+    "air": 0.65,
+    "dist": 14.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1020,
+    "impact": 3.5,
+    "air": 0.63,
+    "dist": 12.5,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1521,
+    "impact": 2.6,
+    "air": 0.77,
+    "dist": 15.9,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1559,
+    "impact": 2.9,
+    "air": 0.42,
+    "dist": 8.4,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1991,
+    "impact": 1.8,
+    "air": 0.66,
+    "dist": 11.7,
+    "feat": "Tischsprung",
+    "lane": 0
+   },
+   {
+    "d": 2206,
+    "impact": 4,
+    "air": 0.58,
+    "dist": 10,
+    "feat": "Step-up",
+    "lane": 0
+   },
+   {
+    "d": 2233,
+    "impact": 7,
+    "air": 1.48,
+    "dist": 23.4,
+    "feat": "Step-up",
+    "lane": 0
+   },
+   {
+    "d": 3081,
+    "impact": 2.2,
+    "air": 0.39,
+    "dist": 8.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3524,
+    "impact": 4.9,
+    "air": 0.49,
+    "dist": 8.8,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 26.579636388790224,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 695,
+    "v": 24.8,
+    "vy": -9.4,
+    "x": -44
+   },
+   {
+    "d": 1008,
+    "v": 21.9,
+    "vy": -8.6,
+    "x": 114
+   },
+   {
+    "d": 1506,
+    "v": 21,
+    "vy": 0.1,
+    "x": -15
+   },
+   {
+    "d": 1551,
+    "v": 21.4,
+    "vy": -6.1,
+    "x": -18
+   },
+   {
+    "d": 1979,
+    "v": 18.2,
+    "vy": 1.6,
+    "x": -7
+   },
+   {
+    "d": 2196,
+    "v": 17.3,
+    "vy": 0,
+    "x": -9
+   },
+   {
+    "d": 2210,
+    "v": 16.5,
+    "vy": 1.9,
+    "x": -9
+   },
+   {
+    "d": 3072,
+    "v": 24.5,
+    "vy": -8.2,
+    "x": -88
+   },
+   {
+    "d": 3516,
+    "v": 19,
+    "vy": -5.8,
+    "x": -65
+   }
+  ],
+  "issues": [],
+  "features": 49,
+  "skipped": 8,
+  "zones": "S220 G355 S247 B479 C404 P714 S378 B474 C417 G388 P438 C259 C337"
+ },
+ {
+  "seed": 127,
+  "mode": "Spur A Hocke",
+  "reached": 3800,
+  "time": 162.4,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 926,
+    "impact": 2.6,
+    "air": 0.58,
+    "dist": 9.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1023,
+    "impact": 3.4,
+    "air": 0.65,
+    "dist": 14.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1303,
+    "impact": 4.9,
+    "air": 1.82,
+    "dist": 49.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1570,
+    "impact": 7.3,
+    "air": 1.46,
+    "dist": 35.7,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1789,
+    "impact": 5,
+    "air": 0.48,
+    "dist": 12.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1828,
+    "impact": 3.4,
+    "air": 0.5,
+    "dist": 13.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2035,
+    "impact": 8.7,
+    "air": 1.44,
+    "dist": 35.2,
+    "feat": "Tischsprung",
+    "lane": 0
+   },
+   {
+    "d": 2261,
+    "impact": 12.6,
+    "air": 2.32,
+    "dist": 51.2,
+    "feat": "Step-up",
+    "lane": 0
+   },
+   {
+    "d": 2907,
+    "impact": 6,
+    "air": 1.17,
+    "dist": 28.1,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3081,
+    "impact": 3.6,
+    "air": 0.38,
+    "dist": 10.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3373,
+    "impact": 3.1,
+    "air": 0.33,
+    "dist": 9.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3532,
+    "impact": 5.5,
+    "air": 0.68,
+    "dist": 17,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 32.95252228565333,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 918,
+    "v": 16.6,
+    "vy": 0.3,
+    "x": 105
+   },
+   {
+    "d": 1008,
+    "v": 25.5,
+    "vy": -10.3,
+    "x": 115
+   },
+   {
+    "d": 1254,
+    "v": 29.8,
+    "vy": -6.2,
+    "x": 111
+   },
+   {
+    "d": 1537,
+    "v": 25.3,
+    "vy": 0.3,
+    "x": -25
+   },
+   {
+    "d": 1776,
+    "v": 27.7,
+    "vy": -2.7,
+    "x": -8
+   },
+   {
+    "d": 1815,
+    "v": 27.1,
+    "vy": -3.2,
+    "x": -8
+   },
+   {
+    "d": 2000,
+    "v": 25.3,
+    "vy": 0.9,
+    "x": -14
+   },
+   {
+    "d": 2210,
+    "v": 23.9,
+    "vy": 5.7,
+    "x": -15
+   },
+   {
+    "d": 2884,
+    "v": 24.8,
+    "vy": 2.6,
+    "x": -75
+   },
+   {
+    "d": 3071,
+    "v": 29.6,
+    "vy": -10.5,
+    "x": -87
+   },
+   {
+    "d": 3364,
+    "v": 29.5,
+    "vy": -6.1,
+    "x": -59
+   },
+   {
+    "d": 3515,
+    "v": 26.4,
+    "vy": -7.2,
+    "x": -68
+   }
+  ],
+  "issues": [],
+  "features": 49,
+  "skipped": 8,
+  "zones": "S220 G355 S247 B479 C404 P714 S378 B474 C417 G388 P438 C259 C337"
+ },
+ {
+  "seed": 127,
+  "mode": "Spur B Hocke",
+  "reached": 3800,
+  "time": 159.4,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 841,
+    "impact": 2.5,
+    "air": 0.15,
+    "dist": 4,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 861,
+    "impact": 1.8,
+    "air": 0.31,
+    "dist": 8.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 955,
+    "impact": 2.9,
+    "air": 0.82,
+    "dist": 20.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 979,
+    "impact": 2.6,
+    "air": 0.33,
+    "dist": 8.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1295,
+    "impact": 4,
+    "air": 1.6,
+    "dist": 40.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1555,
+    "impact": 4.4,
+    "air": 0.52,
+    "dist": 13.4,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1922,
+    "impact": 5.4,
+    "air": 0.89,
+    "dist": 22.4,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2135,
+    "impact": 5.8,
+    "air": 0.97,
+    "dist": 23.7,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2983,
+    "impact": 3.5,
+    "air": 0.53,
+    "dist": 13.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3144,
+    "impact": 3.5,
+    "air": 0.62,
+    "dist": 16.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3548,
+    "impact": 9.8,
+    "air": 1.86,
+    "dist": 37.6,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 31.013291030947354,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 837,
+    "v": 28,
+    "vy": -7.5,
+    "x": 76
+   },
+   {
+    "d": 853,
+    "v": 28,
+    "vy": -6.4,
+    "x": 76
+   },
+   {
+    "d": 936,
+    "v": 25.2,
+    "vy": -1.3,
+    "x": 104
+   },
+   {
+    "d": 971,
+    "v": 25.8,
+    "vy": -6.4,
+    "x": 118
+   },
+   {
+    "d": 1254,
+    "v": 27.9,
+    "vy": -6.1,
+    "x": 111
+   },
+   {
+    "d": 1542,
+    "v": 27.3,
+    "vy": -7.3,
+    "x": 63
+   },
+   {
+    "d": 1901,
+    "v": 25.7,
+    "vy": -1.2,
+    "x": 52
+   },
+   {
+    "d": 2113,
+    "v": 24.8,
+    "vy": -0.6,
+    "x": 54
+   },
+   {
+    "d": 2969,
+    "v": 28.1,
+    "vy": -9.5,
+    "x": 70
+   },
+   {
+    "d": 3127,
+    "v": 27.8,
+    "vy": -3.7,
+    "x": 82
+   },
+   {
+    "d": 3511,
+    "v": 21,
+    "vy": -1.5,
+    "x": 4
+   }
+  ],
+  "issues": [],
+  "features": 49,
+  "skipped": 8,
+  "zones": "S220 G355 S247 B479 C404 P714 S378 B474 C417 G388 P438 C259 C337"
+ },
+ {
+  "seed": 134,
+  "mode": "Spur A aufrecht",
+  "reached": 3800,
+  "time": 188.1,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 437,
+    "impact": 5.8,
+    "air": 1.29,
+    "dist": 27.4,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 659,
+    "impact": 1.9,
+    "air": 0.63,
+    "dist": 14,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1836,
+    "impact": 2.1,
+    "air": 0.39,
+    "dist": 8.4,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2578,
+    "impact": 8.1,
+    "air": 2.11,
+    "dist": 31.9,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 2633,
+    "impact": 9.4,
+    "air": 1.08,
+    "dist": 22.2,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 2925,
+    "impact": 4.6,
+    "air": 0.57,
+    "dist": 11.9,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 3286,
+    "impact": 2.9,
+    "air": 0.28,
+    "dist": 4.8,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 29.057270124811765,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 410,
+    "v": 22.2,
+    "vy": 1.3,
+    "x": 2
+   },
+   {
+    "d": 645,
+    "v": 23.3,
+    "vy": -4.2,
+    "x": 2
+   },
+   {
+    "d": 1829,
+    "v": 22.7,
+    "vy": -6.2,
+    "x": 7
+   },
+   {
+    "d": 2546,
+    "v": 16.2,
+    "vy": 2.7,
+    "x": 0
+   },
+   {
+    "d": 2611,
+    "v": 24.7,
+    "vy": -12.4,
+    "x": 0
+   },
+   {
+    "d": 2913,
+    "v": 22.5,
+    "vy": -7,
+    "x": -15
+   },
+   {
+    "d": 3281,
+    "v": 18,
+    "vy": -5.2,
+    "x": -74
+   }
+  ],
+  "issues": [
+   "Zone 8: Big Air bei 2546 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 37,
+  "skipped": 6,
+  "zones": "S220 C431 S183 G350 B338 G307 S210 B252 B430 C292 C460 B393 C245 F166 C374 C443"
+ },
+ {
+  "seed": 134,
+  "mode": "Spur A Hocke",
+  "reached": 3800,
+  "time": 149.5,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 472,
+    "impact": 4.8,
+    "air": 0.53,
+    "dist": 14.7,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 658,
+    "impact": 1.6,
+    "air": 0.53,
+    "dist": 14.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1845,
+    "impact": 2.3,
+    "air": 0.58,
+    "dist": 16.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2132,
+    "impact": 3.2,
+    "air": 0.62,
+    "dist": 16.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2146,
+    "impact": 4.4,
+    "air": 0.17,
+    "dist": 4.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2190,
+    "impact": 4.8,
+    "air": 1.17,
+    "dist": 31.5,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2631,
+    "impact": 16.1,
+    "air": 3.81,
+    "dist": 84.5,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 2736,
+    "impact": 3,
+    "air": 0.64,
+    "dist": 18.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2902,
+    "impact": 4.5,
+    "air": 1.62,
+    "dist": 43.2,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 3146,
+    "impact": 2.4,
+    "air": 0.34,
+    "dist": 8.4,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3289,
+    "impact": 3,
+    "air": 0.37,
+    "dist": 8.6,
+    "feat": "cliff"
+   },
+   {
+    "d": 3578,
+    "impact": 3.8,
+    "air": 0.56,
+    "dist": 15.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3598,
+    "impact": 2.6,
+    "air": 0.34,
+    "dist": 9.6,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 34.8534458295617,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 458,
+    "v": 29,
+    "vy": -7.7,
+    "x": -5
+   },
+   {
+    "d": 643,
+    "v": 29.6,
+    "vy": -7,
+    "x": 6
+   },
+   {
+    "d": 1831,
+    "v": 29.3,
+    "vy": -7.4,
+    "x": 22
+   },
+   {
+    "d": 2116,
+    "v": 28.6,
+    "vy": -6.4,
+    "x": -72
+   },
+   {
+    "d": 2141,
+    "v": 29.7,
+    "vy": -10.2,
+    "x": -82
+   },
+   {
+    "d": 2159,
+    "v": 28.9,
+    "vy": -7.3,
+    "x": -87
+   },
+   {
+    "d": 2546,
+    "v": 24.7,
+    "vy": 4.5,
+    "x": -2
+   },
+   {
+    "d": 2718,
+    "v": 29.9,
+    "vy": -4.3,
+    "x": 5
+   },
+   {
+    "d": 2862,
+    "v": 27.8,
+    "vy": -0.3,
+    "x": -8
+   },
+   {
+    "d": 3138,
+    "v": 24.9,
+    "vy": -3.8,
+    "x": -80
+   },
+   {
+    "d": 3281,
+    "v": 24.6,
+    "vy": -6.5,
+    "x": -75
+   },
+   {
+    "d": 3562,
+    "v": 30,
+    "vy": -8.2,
+    "x": -80
+   },
+   {
+    "d": 3588,
+    "v": 30,
+    "vy": -9.7,
+    "x": -80
+   }
+  ],
+  "issues": [
+   "Zone 8: Big Air bei 2546 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 37,
+  "skipped": 6,
+  "zones": "S220 C431 S183 G350 B338 G307 S210 B252 B430 C292 C460 B393 C245 F166 C374 C443"
+ },
+ {
+  "seed": 134,
+  "mode": "Spur B Hocke",
+  "reached": 3800,
+  "time": 167.9,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 432,
+    "impact": 2.4,
+    "air": 0.81,
+    "dist": 22,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 471,
+    "impact": 4.3,
+    "air": 0.51,
+    "dist": 13.4,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 648,
+    "impact": 1,
+    "air": 0.38,
+    "dist": 10.1,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 959,
+    "impact": 3.5,
+    "air": 0.46,
+    "dist": 11.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 984,
+    "impact": 2.4,
+    "air": 0.58,
+    "dist": 14.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1424,
+    "impact": 8.2,
+    "air": 1.5,
+    "dist": 36.5,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 1676,
+    "impact": 8.1,
+    "air": 2.24,
+    "dist": 53.5,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2522,
+    "impact": 2.4,
+    "air": 1.25,
+    "dist": 27.1,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2751,
+    "impact": 3,
+    "air": 0.43,
+    "dist": 11.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2818,
+    "impact": 2.4,
+    "air": 0.45,
+    "dist": 11.5,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3317,
+    "impact": 12.7,
+    "air": 1.72,
+    "dist": 38,
+    "feat": "cliff"
+   },
+   {
+    "d": 3613,
+    "impact": 2.5,
+    "air": 0.48,
+    "dist": 12.1,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3636,
+    "impact": 2.3,
+    "air": 0.33,
+    "dist": 8.2,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 29.451912616486418,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 410,
+    "v": 27.8,
+    "vy": -1.2,
+    "x": 1
+   },
+   {
+    "d": 458,
+    "v": 28,
+    "vy": -7.6,
+    "x": -5
+   },
+   {
+    "d": 640,
+    "v": 27.5,
+    "vy": -5,
+    "x": 13
+   },
+   {
+    "d": 947,
+    "v": 26.4,
+    "vy": -3.8,
+    "x": -4
+   },
+   {
+    "d": 970,
+    "v": 26.5,
+    "vy": -4.6,
+    "x": 2
+   },
+   {
+    "d": 1387,
+    "v": 25.2,
+    "vy": 2.2,
+    "x": 34
+   },
+   {
+    "d": 1625,
+    "v": 25.2,
+    "vy": 1.5,
+    "x": -45
+   },
+   {
+    "d": 2494,
+    "v": 22.3,
+    "vy": 1.9,
+    "x": -47
+   },
+   {
+    "d": 2742,
+    "v": 27.7,
+    "vy": -4.3,
+    "x": 2
+   },
+   {
+    "d": 2808,
+    "v": 26.2,
+    "vy": -4.5,
+    "x": 89
+   },
+   {
+    "d": 3279,
+    "v": 23,
+    "vy": -2.5,
+    "x": 15
+   },
+   {
+    "d": 3601,
+    "v": 27.1,
+    "vy": -8.3,
+    "x": 99
+   },
+   {
+    "d": 3627,
+    "v": 28.2,
+    "vy": -11.9,
+    "x": 101
+   }
+  ],
+  "issues": [
+   "Zone 8: Big Air bei 2546 m landet bei Höchsttempo hart (19.9 m/s)"
+  ],
+  "features": 37,
+  "skipped": 6,
+  "zones": "S220 C431 S183 G350 B338 G307 S210 B252 B430 C292 C460 B393 C245 F166 C374 C443"
+ },
+ {
+  "seed": 141,
+  "mode": "Spur A aufrecht",
+  "reached": 3800,
+  "time": 197.9,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 596,
+    "impact": 1.6,
+    "air": 0.28,
+    "dist": 6.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 720,
+    "impact": 1.2,
+    "air": 0.46,
+    "dist": 10.1,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1138,
+    "impact": 6,
+    "air": 1.27,
+    "dist": 25.2,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1171,
+    "impact": 3.4,
+    "air": 0.47,
+    "dist": 9.4,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1806,
+    "impact": 4.7,
+    "air": 1.01,
+    "dist": 16.4,
+    "feat": "Tischsprung",
+    "lane": 0
+   },
+   {
+    "d": 2770,
+    "impact": 2.8,
+    "air": 0.39,
+    "dist": 9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2849,
+    "impact": 7.3,
+    "air": 1.59,
+    "dist": 34.9,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 2888,
+    "impact": 4.6,
+    "air": 0.58,
+    "dist": 12.9,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 3281,
+    "impact": 3.4,
+    "air": 0.37,
+    "dist": 6.4,
+    "feat": "cliff"
+   },
+   {
+    "d": 3453,
+    "impact": 3.8,
+    "air": 0.63,
+    "dist": 12.9,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 26.79545738593419,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 590,
+    "v": 23.9,
+    "vy": -7.4,
+    "x": -6
+   },
+   {
+    "d": 710,
+    "v": 25.4,
+    "vy": -11.9,
+    "x": 20
+   },
+   {
+    "d": 1113,
+    "v": 20.8,
+    "vy": 1.3,
+    "x": 4
+   },
+   {
+    "d": 1161,
+    "v": 21.5,
+    "vy": -6.3,
+    "x": 10
+   },
+   {
+    "d": 1790,
+    "v": 16.9,
+    "vy": 2.6,
+    "x": 6
+   },
+   {
+    "d": 2762,
+    "v": 23.8,
+    "vy": -5.4,
+    "x": -1
+   },
+   {
+    "d": 2814,
+    "v": 23.2,
+    "vy": 1.8,
+    "x": -3
+   },
+   {
+    "d": 2875,
+    "v": 23.7,
+    "vy": -7.1,
+    "x": -6
+   },
+   {
+    "d": 3274,
+    "v": 18.7,
+    "vy": -6.1,
+    "x": -60
+   },
+   {
+    "d": 3444,
+    "v": 20.9,
+    "vy": -1.5,
+    "x": -33
+   }
+  ],
+  "issues": [],
+  "features": 43,
+  "skipped": 7,
+  "zones": "S220 G375 S225 F135 C307 S219 P592 B357 C235 C373 C405 B375 F98 C255 C364 S200 F135 C381"
+ },
+ {
+  "seed": 141,
+  "mode": "Spur A Hocke",
+  "reached": 3800,
+  "time": 156.3,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 606,
+    "impact": 1.7,
+    "air": 0.31,
+    "dist": 8.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 728,
+    "impact": 4.9,
+    "air": 0.7,
+    "dist": 18.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1066,
+    "impact": 3.7,
+    "air": 0.68,
+    "dist": 18.1,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1160,
+    "impact": 6.5,
+    "air": 1.75,
+    "dist": 47,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1173,
+    "impact": 4.1,
+    "air": 0.42,
+    "dist": 11.3,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1620,
+    "impact": 4.9,
+    "air": 0.47,
+    "dist": 13,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1654,
+    "impact": 2.3,
+    "air": 0.24,
+    "dist": 6.5,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 1838,
+    "impact": 9.1,
+    "air": 1.58,
+    "dist": 37.7,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 1886,
+    "impact": 2.9,
+    "air": 0.31,
+    "dist": 7.3,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2776,
+    "impact": 3.7,
+    "air": 0.54,
+    "dist": 15.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2872,
+    "impact": 9.8,
+    "air": 2.15,
+    "dist": 59.4,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 2892,
+    "impact": 6.3,
+    "air": 0.63,
+    "dist": 17.5,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 3143,
+    "impact": 2.6,
+    "air": 0.45,
+    "dist": 11.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3287,
+    "impact": 3.9,
+    "air": 0.51,
+    "dist": 12.2,
+    "feat": "cliff"
+   },
+   {
+    "d": 3436,
+    "impact": 4,
+    "air": 1.24,
+    "dist": 34.1,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3491,
+    "impact": 2.8,
+    "air": 0.63,
+    "dist": 17.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3576,
+    "impact": 6.4,
+    "air": 0.66,
+    "dist": 15.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3623,
+    "impact": 2.4,
+    "air": 0.49,
+    "dist": 10,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 32.05382831835155,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 598,
+    "v": 30,
+    "vy": -9.5,
+    "x": -15
+   },
+   {
+    "d": 710,
+    "v": 30.4,
+    "vy": -13.9,
+    "x": 20
+   },
+   {
+    "d": 1048,
+    "v": 27.6,
+    "vy": -4.4,
+    "x": -2
+   },
+   {
+    "d": 1114,
+    "v": 28.1,
+    "vy": 2,
+    "x": 6
+   },
+   {
+    "d": 1162,
+    "v": 28.9,
+    "vy": -8.9,
+    "x": 14
+   },
+   {
+    "d": 1607,
+    "v": 28.2,
+    "vy": -2.2,
+    "x": -10
+   },
+   {
+    "d": 1648,
+    "v": 27.3,
+    "vy": -4,
+    "x": -11
+   },
+   {
+    "d": 1801,
+    "v": 24.8,
+    "vy": 2.6,
+    "x": 10
+   },
+   {
+    "d": 1878,
+    "v": 24.2,
+    "vy": -3.7,
+    "x": 1
+   },
+   {
+    "d": 2761,
+    "v": 29.9,
+    "vy": -5.8,
+    "x": 0
+   },
+   {
+    "d": 2814,
+    "v": 29.4,
+    "vy": 2.9,
+    "x": -4
+   },
+   {
+    "d": 2875,
+    "v": 29.4,
+    "vy": -8.3,
+    "x": -9
+   },
+   {
+    "d": 3132,
+    "v": 26.3,
+    "vy": -2,
+    "x": -52
+   },
+   {
+    "d": 3275,
+    "v": 25.6,
+    "vy": -8,
+    "x": -59
+   },
+   {
+    "d": 3402,
+    "v": 28.4,
+    "vy": -2,
+    "x": -61
+   },
+   {
+    "d": 3474,
+    "v": 29.9,
+    "vy": -9.5,
+    "x": -57
+   },
+   {
+    "d": 3569,
+    "v": 23.7,
+    "vy": -3.3,
+    "x": 6
+   },
+   {
+    "d": 3615,
+    "v": 20.9,
+    "vy": -4,
+    "x": 72
+   }
+  ],
+  "issues": [],
+  "features": 43,
+  "skipped": 7,
+  "zones": "S220 G375 S225 F135 C307 S219 P592 B357 C235 C373 C405 B375 F98 C255 C364 S200 F135 C381"
+ },
+ {
+  "seed": 141,
+  "mode": "Spur B Hocke",
+  "reached": 3800,
+  "time": 171.3,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 435,
+    "impact": 5.4,
+    "air": 1.16,
+    "dist": 31,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1157,
+    "impact": 8,
+    "air": 1.71,
+    "dist": 44.4,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1176,
+    "impact": 5.5,
+    "air": 0.58,
+    "dist": 15.2,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 1392,
+    "impact": 5.3,
+    "air": 0.8,
+    "dist": 19.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1657,
+    "impact": 7.5,
+    "air": 1.37,
+    "dist": 31.7,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 1846,
+    "impact": 4.9,
+    "air": 0.51,
+    "dist": 11.2,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2271,
+    "impact": 4,
+    "air": 0.44,
+    "dist": 11.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2399,
+    "impact": 2.5,
+    "air": 0.44,
+    "dist": 11.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2463,
+    "impact": 17,
+    "air": 2.72,
+    "dist": 40.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2594,
+    "impact": 2.6,
+    "air": 0.58,
+    "dist": 13,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2660,
+    "impact": 19.2,
+    "air": 2.99,
+    "dist": 59.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2837,
+    "impact": 4.3,
+    "air": 0.93,
+    "dist": 24.7,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 2860,
+    "impact": 6.3,
+    "air": 0.64,
+    "dist": 16.8,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 2916,
+    "impact": 4.9,
+    "air": 0.61,
+    "dist": 16.3,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 2934,
+    "impact": 3.1,
+    "air": 0.45,
+    "dist": 12,
+    "feat": "Kicker",
+    "lane": 0
+   },
+   {
+    "d": 3319,
+    "impact": 15.4,
+    "air": 2.07,
+    "dist": 44.2,
+    "feat": "cliff"
+   },
+   {
+    "d": 3453,
+    "impact": 1,
+    "air": 0.38,
+    "dist": 8.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3548,
+    "impact": 3.1,
+    "air": 0.45,
+    "dist": 11.5,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 36.47250349604026,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 404,
+    "v": 27.6,
+    "vy": -1.4,
+    "x": 33
+   },
+   {
+    "d": 1114,
+    "v": 27.2,
+    "vy": 2,
+    "x": 4
+   },
+   {
+    "d": 1161,
+    "v": 27.4,
+    "vy": -7.1,
+    "x": 13
+   },
+   {
+    "d": 1374,
+    "v": 28,
+    "vy": -11.1,
+    "x": -103
+   },
+   {
+    "d": 1625,
+    "v": 23.9,
+    "vy": 2,
+    "x": 32
+   },
+   {
+    "d": 1835,
+    "v": 22.7,
+    "vy": -4.4,
+    "x": 37
+   },
+   {
+    "d": 2259,
+    "v": 28.4,
+    "vy": -9,
+    "x": 83
+   },
+   {
+    "d": 2387,
+    "v": 28,
+    "vy": -7.5,
+    "x": 94
+   },
+   {
+    "d": 2453,
+    "v": 15.7,
+    "vy": 1,
+    "x": 69
+   },
+   {
+    "d": 2581,
+    "v": 23,
+    "vy": -4.9,
+    "x": -25
+   },
+   {
+    "d": 2601,
+    "v": 23.3,
+    "vy": -8,
+    "x": -27
+   },
+   {
+    "d": 2813,
+    "v": 27.2,
+    "vy": -2.5,
+    "x": 52
+   },
+   {
+    "d": 2844,
+    "v": 28,
+    "vy": -7.9,
+    "x": 47
+   },
+   {
+    "d": 2899,
+    "v": 27.9,
+    "vy": -5.2,
+    "x": 40
+   },
+   {
+    "d": 2922,
+    "v": 27.9,
+    "vy": -6.5,
+    "x": 39
+   },
+   {
+    "d": 3274,
+    "v": 22.5,
+    "vy": -2.3,
+    "x": 15
+   },
+   {
+    "d": 3446,
+    "v": 23.5,
+    "vy": -4.2,
+    "x": 0
+   },
+   {
+    "d": 3537,
+    "v": 26.8,
+    "vy": -6.9,
+    "x": -73
+   }
+  ],
+  "issues": [],
+  "features": 43,
+  "skipped": 7,
+  "zones": "S220 G375 S225 F135 C307 S219 P592 B357 C235 C373 C405 B375 F98 C255 C364 S200 F135 C381"
  }
 ]

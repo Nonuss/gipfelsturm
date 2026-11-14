@@ -44,6 +44,7 @@ function runBot(seed, o) {
     inp.brake = sp > o.vMax ? clamp((sp - o.vMax) / 4, 0, 1) : 0;
     inp.tuck = o.tuck && sp < o.vMax ? 1 : 0;
     void steepAhead;
+    if (phys.grind) { inp.steer = clamp(phys.grind.bal * 1.6, -1, 1); inp.brake = 0; }
     const wasG = phys.grounded;
     phys.step(dt, inp);
     if (wasG && !phys.grounded) (res.takeoffs = res.takeoffs || []).push({ d: Math.round(-phys.pos.z), v: +phys.speed.toFixed(1), vy: +phys.vel.y.toFixed(1), x: Math.round(phys.pos.x - P.props(-phys.pos.z).hub) });
@@ -61,7 +62,8 @@ function runBot(seed, o) {
         res.landings.push({ d: Math.round(-phys.pos.z), impact: +ev.impact.toFixed(1), air: +ev.airTime.toFixed(2), dist: +ev.dist.toFixed(1), feat: near ? near.name || near.kind : '-', lane: near ? near.lane : -1 });
       } else if (ev.type === 'crash') {
         res.crashes.push({ d: Math.round(-phys.pos.z), speed: +phys.speed.toFixed(1), air: !phys.grounded, lastLand: res.landings.length ? res.landings[res.landings.length - 1] : null });
-      } else if (ev.type === 'hit') res.hits++;
+      } else if (ev.type === 'grindEnd') { (res.grinds = res.grinds || []).push({ d: Math.round(-phys.pos.z), dist: +ev.dist.toFixed(1), kind: ev.kind, clean: ev.clean }); }
+      else if (ev.type === 'hit') res.hits++;
       else if (ev.type === 'respawn') {
         res.respawns++;
         const dd = -phys.pos.z;

@@ -35,6 +35,7 @@
     <div id="progress"><div id="progfill"></div><div id="progdot"></div><div class="flag">ZIEL</div></div>
     <div id="msg"></div>
     <div id="zone"></div>
+    <div id="balance" aria-label="Balance auf der Rail"><i></i><span>Balance · gegenlenken</span></div>
     <canvas id="minimap" width="150" height="230"></canvas>
     <div id="hint">A/D lenken · W Hocke · S bremsen · Leertaste springen &nbsp;|&nbsp; Luft: S Backflip · W Frontflip · A/D Spin · Leertaste/←/→ Grabs &nbsp;|&nbsp; F Respawn-Punkt · T zurück · Minikarte: blau/rot/schwarz = Piste, gelb = Waldbahn</div>
   </div>
@@ -49,12 +50,12 @@
       <div class="modes">
         <button class="mode sel" data-mode="race"><b>Rennen</b><span>2,4 km auf Zeit, 39 Tore</span></button>
         <button class="mode" data-mode="endless"><b>Freeride-Berg</b><span>Endloser Zufallsberg mit Tricks und Punkten. Punkte zählen erst nach sauberer Landung – ein Sturz kostet alle.</span></button>
-        <button class="mode" data-mode="freestyle"><b>Freestyle-Berg</b><span>Endlos, riesige Sprünge mit langen Anläufen. Grabs: Pfeil links/rechts, Leertaste.</span></button>
+        <button class="mode" data-mode="freestyle"><b>Freestyle-Berg</b><span>Endlos: riesige Sprünge, Gaps, Rails und Boxen. Grabs mit Pfeil links/rechts.</span></button>
       </div>
 
       <div class="keys">
         <div><kbd>A</kbd><kbd>D</kbd><span>Lenken</span><kbd>W</kbd><span>Hocke</span><kbd>S</kbd><span>Bremsen</span><kbd class="wide">Leertaste</kbd><span>Springen</span></div>
-        <div class="air"><em>In der Luft</em><kbd>S</kbd><span>Backflip</span><kbd>W</kbd><span>Frontflip</span><kbd>A</kbd><kbd>D</kbd><span>Spin</span><kbd class="wide">Leertaste</kbd><span>Safety Grab</span><kbd>←</kbd><span>Mute Grab</span><kbd>→</kbd><span>Tail Grab</span></div>
+        <div class="air"><em>In der Luft</em><kbd>S</kbd><span>Backflip</span><kbd>W</kbd><span>Frontflip</span><kbd>A</kbd><kbd>D</kbd><span>Spin</span><kbd class="wide">Leertaste</kbd><span>Safety Grab</span><kbd>←</kbd><span>Mute Grab</span><kbd>→</kbd><span>Tail Grab</span><em>Rail/Box</em><span>über die Rampe auffahren, mit A/D Balance halten, Leertaste = abspringen</span></div>
         <div class="air"><em>Respawn</em><kbd>F</kbd><span>Punkt setzen</span><kbd>T</kbd><span>dorthin zurück</span><em>Kamera</em><kbd>C</kbd><span>Ego-Sicht</span></div>
       </div>
 

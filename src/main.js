@@ -170,7 +170,7 @@ const zeroInp = { steer: 0, tuck: 0, brake: 0, jump: false };
 const vis = {
   lean: 0, crouch: 0, compress: 0, plow: 0, air: 0, up: new THREE.Vector3(0, 1, 0), crashAngle: 0, crashSpin: 0,
   tuck: 0, spin: 0, extend: 0, zoom: 0, shake: 0, crashCam: 0,
-  camSide: 1, flipCam: 0, bigAir: 0, dip: 0, fpv: 0,
+  camSide: 1, flipCam: 0, bigAir: 0, dip: 0, fpv: 0, slide: 0, grindSide: 1,
 };
 // Kameraperspektive: false = Verfolger, true = Ego-Sicht (Helmkamera). Wird gemerkt.
 let firstPerson = localStorage.getItem('gipfelsturm_fpv') === '1';
@@ -404,7 +404,7 @@ window.addEventListener('keydown', (e) => {
   }
   if (k === 'Space' || k === 'Enter') {
     if (game.mode === 'menu' || (game.mode === 'finished' && game.finishT > 1.2)) startRun();
-    else if (game.mode === 'run' && phys.grounded) jumpQueued = true;
+    else if (game.mode === 'run' && (phys.grounded || phys.grind)) jumpQueued = true;   // auch von der Rail abspringen
   } else if (k === 'KeyR') { if (game.mode !== 'loading') startRun(); }
   else if (k === 'KeyF') setCheckpoint();
   else if (k === 'KeyT' || k === 'Backspace') toCheckpoint();
@@ -769,6 +769,23 @@ function handleEvents() {
         if (e.airTime > 0.55) game.bestJump = Math.max(game.bestJump, e.dist);
         scoreLanding(e);
       }
+    } else if (e.type === 'grindStart') {
+      // Rail: quer (Boardslide), Box: gerade (50-50). Seite abwechselnd, damit es lebendig aussieht
+      vis.grindSide = -vis.grindSide;
+      audio.land(3);
+      burst(10, 1.5);
+    } else if (e.type === 'grindEnd') {
+      if (game.mode === 'run') {
+        if (e.clean && e.dist > 1.5) {
+          const rail = e.kind === 'rail';
+          const name = rail ? 'Boardslide' : '50-50 Box';
+          let pts = Math.round((rail ? 120 : 70) + e.dist * (rail ? 34 : 22));
+          pts = addPending(pts, true);
+          game.tricks++;
+          showMsg(`${name} ${e.dist.toFixed(1)} m  +${num(pts)}`, 'gold');
+          audio.gate();
+        } else if (!e.clean) showMsg('Abgerutscht', 'bad');
+      }
     } else if (e.type === 'crash') {
       vis.crashSpin = 8 + phys.speed * 0.35;
       vis.shake = 1;
@@ -839,7 +856,7 @@ function updateSkier(dt) {
   const crashed = phys.crashed > 0;
   const leanT = clamp(Math.atan(phys.aLat / G) * 0.9, -0.88, 0.88);
   vis.lean += (leanT - vis.lean) * k(9);
-  const crouchT = clamp(inp.tuck + inp.brake * 0.2 + 0.14 * clamp(phys.speed / 18, 0, 1), 0, 1);
+  const crouchT = phys.grind ? 0.45 : clamp(inp.tuck + inp.brake * 0.2 + 0.14 * clamp(phys.speed / 18, 0, 1), 0, 1);
   vis.crouch += (crouchT - vis.crouch) * k(7);
   vis.compress *= Math.exp(-dt * 4.5);
   vis.shake *= Math.exp(-dt * 3.2);
@@ -868,7 +885,11 @@ function updateSkier(dt) {
     pv.position.y = 0.42 + Math.abs(Math.sin(vis.crashAngle * 0.5)) * (0.1 + 0.42 * sp);
     if (Math.abs(Math.sin(vis.crashAngle * 0.5)) < 0.12 && sp > 0.2) vis.shake = Math.max(vis.shake, 0.45 * sp);
   } else {
-    pv.rotation.set(trick.pitch, -trick.yaw, vis.spin * 0.18);
+    const railSlide = phys.grind && phys.grind.g.kind === 'rail' ? 1 : 0;
+    vis.slide += (railSlide * vis.grindSide - vis.slide) * k(14);
+    // auf der Rail: Körper quer zur Rail, Balance als leichte Neigung sichtbar
+    const balTilt = phys.grind ? -phys.grind.bal * 0.35 : 0;
+    pv.rotation.set(trick.pitch, -trick.yaw + vis.slide * 1.45, vis.spin * 0.18 + balTilt);
     pv.position.y = 0.85;
   }
   skier.update({
@@ -963,6 +984,9 @@ function updateHud(dt) {
   if (hudAcc < 0.033) return;
   hudAcc = 0;
   $('speed').textContent = Math.round(phys.speed * 3.6);
+  const bal = $('balance');
+  if (phys.grind) { bal.classList.add('on'); bal.firstElementChild.style.left = `${50 + clamp(phys.grind.bal, -1, 1) * 46}%`; bal.classList.toggle('warn', Math.abs(phys.grind.bal) > 0.65); }
+  else bal.classList.remove('on');
   $('speedfill').style.width = `${clamp(phys.speed / 42, 0, 1) * 100}%`;
   if (game.kind === 'endless') {
     $('time').innerHTML = num(totalScore()) + (game.pend > 0 ? `<span class="pend"> +${num(game.pend)}</span>` : '');
@@ -1054,7 +1078,8 @@ function tick(dt, render) {
     spray.update(dt);
     if (Q.dust) dust.update(time, camera);
     world.update(dt, time, camera.position, phys.pos, game.kind === 'race' && (game.mode === 'run' || game.mode === 'countdown') ? C.gates[game.gateIdx] : null);
-    audio.update(phys.speed, phys.skid + inp.brake * phys.speed * 0.15, clamp(Math.abs(phys.aLat) / 14, 0, 1), phys.grounded, phys.off, phys.pow);
+    // auf der Rail: metallisches Kratzen über das Rutsch-Geräusch
+    audio.update(phys.speed, phys.grind ? 2.5 + phys.speed * 0.12 : phys.skid + inp.brake * phys.speed * 0.15, clamp(Math.abs(phys.aLat) / 14, 0, 1), phys.grounded || !!phys.grind, phys.grind ? 0 : phys.off, phys.grind ? 0 : phys.pow);
     updateHud(dt);
     updateZone(dt);
     drawMinimap(dt);

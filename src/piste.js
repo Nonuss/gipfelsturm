@@ -7,7 +7,7 @@
 //  4. Höhenprofil      – Gefälle je Zone, Steilstufen, Auslaufflächen; Features (Sprünge, Rollen, Steilkurven, Klippen) additiv.
 //  5. Validierung      – Landungen werden mit der echten Flugbahn berechnet, Radien und Gefälle geprüft.
 import { clamp, lerp, smoothstep, mulberry32, vnoise, fbm, snoise } from './mathutil.js';
-import { designJump, designCliff, terminalSpeed, ramp01, jumpRel, cliffDrop, slopeTan } from './jumps.js';
+import { designJump, designCliff, terminalSpeed, ramp01, jumpRel, cliffDrop, slopeTan, GR } from './jumps.js';
 
 export const PCFG = {
   transition: 70,        // halbe Länge der Übergänge zwischen Zonen (m): hier wachsen Abzweigungen aus der Spur
@@ -41,7 +41,7 @@ const issue = (msg) => { if (report.issues.length < 400) report.issues.push(msg)
 // ------------------------------------------------------------------ Zonen
 const W = { cruise: 0.85, glade: 1.25, bowl: 1.0, park: 0.8, bigair: 0.6, couloir: 0.55, cliff: 0.85, steep: 1.15, flat: 0.25 };
 // Freestyle-Berg: fast nur Sprungzonen, dazwischen gelegentlich Klippen und kurze Ausläufe
-const WF = { jumpline: 2.6, megaair: 1.1, slopestyle: 1.7, bigair: 0.9, cliff: 0.5, flat: 0.15 };
+const WF = { jumpline: 2.4, megaair: 1.0, slopestyle: 1.6, railpark: 1.8, bigair: 0.8, cliff: 0.45, flat: 0.15 };
 function pickFreestyle(idx, R) {
   if (idx === 0) return 'start';
   if (idx === 1) return 'jumpline';
@@ -91,7 +91,7 @@ function makeZone(type, idx, d0) {
   const ph = () => rr(0, TAU);
   const z = {
     type, idx, d0, len: 300, d1: 0, slope: 0.25, valley: 90, wall: 0.1, rock: 0.2, pow: 0.3, forest: 0.3, rough: 0.8, cross: 0, hill: 6, cap: 22,
-    head: { A: 0, lam: 600, ph: ph() }, lanes: Array.from({ length: NL }, noLane), feats: [], pitches: [], cliff: null, sign: sg,
+    head: { A: 0, lam: 600, ph: ph() }, lanes: Array.from({ length: NL }, noLane), feats: [], pitches: [], rails: [], cliff: null, sign: sg,
   };
   const L = z.lanes;
   switch (type) {
@@ -169,6 +169,13 @@ function makeZone(type, idx, d0) {
       L[0] = lane(rr(14, 16));
       L[1] = lane(rr(6.5, 8), sg * rr(48, 60), { groom: 0.95 });
       break;
+    case 'railpark':
+      Object.assign(z, { len: rr(560, 720), slope: rr(0.18, 0.22), valley: rr(95, 120), wall: rr(0.06, 0.12), rock: 0.2, pow: 0.15, forest: 0.2, rough: 0.3, hill: rr(4, 7) });
+      z.head = { A: rr(0.06, 0.12), lam: rr(700, 900), ph: ph() };
+      L[0] = lane(rr(13, 15));
+      L[1] = lane(rr(6.5, 7.5), -sg * rr(40, 50), { groom: 0.95, wob: 1.5, wl: 200, ph: ph() });
+      L[2] = lane(rr(6.5, 7.5), sg * rr(42, 52), { groom: 0.95, wob: 1.5, wl: 200, ph: ph() });
+      break;
     case 'slopestyle':
       Object.assign(z, { len: rr(640, 800), slope: rr(0.22, 0.26), valley: rr(95, 120), wall: rr(0.06, 0.12), rock: 0.2, pow: 0.15, forest: 0.2, rough: 0.35, hill: rr(4, 7) });
       z.head = { A: rr(0.12, 0.2), lam: rr(600, 800), ph: ph() };
@@ -201,7 +208,7 @@ function varyZone(z, R, rr, ph) {
   z.mods = {};
   z.label = '';
   if (z.type === 'start' || z.type === 'couloir') return;
-  const fsZone = z.type === 'jumpline' || z.type === 'megaair' || z.type === 'slopestyle';
+  const fsZone = z.type === 'jumpline' || z.type === 'megaair' || z.type === 'slopestyle' || z.type === 'railpark';
   // Grundwerte leicht verschieben (Berg-Charakter + Zufall)
   z.len *= fsZone ? rr(0.95, 1.15) : rr(0.75, 1.3);
   z.valley *= ch.wide * rr(0.9, 1.12);
@@ -488,7 +495,17 @@ function featRel(f, d, x, c) {
       const J = f.J;
       const w = f.wT + (f.wL - f.wT) * smoothstep(0, J.xk, xx);
       const lat = 1 - smoothstep(w, w + PCFG.edge, Math.abs(kinkOf(f, x)));
-      return lat > 0 ? jumpRel(xx, J) * lat : 0;
+      if (lat <= 0) return 0;
+      let r = jumpRel(xx, J);
+      if (f.gap) { const g = f.gap, m = smoothstep(g.a, g.a + 1.2, xx) * (1 - smoothstep(g.b - 1.2, g.b, xx)); r = r + (-g.dep - r) * m; }
+      return r * lat;
+    }
+    case 'onramp': {
+      // Auffahrt auf Box/Rail: steigt gleichmäßig bis zur Oberkante, endet genau am Anfang des Elements
+      const xx = d - (f.d - f.len);
+      if (xx < 0 || xx > f.len + 0.05) return 0;
+      const lat = 1 - smoothstep(f.w, f.w + 0.9, Math.abs(x - f.x));
+      return lat > 0 ? f.h * (xx / f.len) * lat : 0;
     }
     case 'roller': {
       const xx = d - f.d;
@@ -670,6 +687,14 @@ const hubXq = (d) => hubX(d);
 function laneKind(i, z) { return z.lanes[i].kind; }
 
 /** Sprung auf Spur i bei etwa d einfügen. Gibt das Ende des Features (Meter) zurück oder null. */
+/** Tempo nach `dist` Metern Anlauf auf einem Hang (gleiche Konstanten wie physics.js: Reibung 0,04, Luftwiderstand). */
+export function speedAfter(v0, slopeT, dist, tuck = 1) {
+  const th = Math.atan(slopeT), a0 = GR * (Math.sin(th) - 0.04 * Math.cos(th)), k = tuck ? 0.0019 : 0.0036;
+  let v2 = v0 * v0;
+  for (let s = 0; s < dist; s += 2) v2 = Math.max(9, v2 + 2 * (a0 - k * v2) * Math.min(2, dist - s));
+  return Math.sqrt(v2);
+}
+
 function addJump(z, R, o) {
   const d = o.exactD !== undefined ? o.exactD : snapStraight(z, o.d, 40);
   const x = laneX(z, o.lane, d) + (o.dx || 0);
@@ -679,17 +704,28 @@ function addJump(z, R, o) {
   const sRun = zoneSlopeAt(z, d - 70) * 0.5 + zoneSlopeAt(z, d - 20) * 0.5;
   const sHere = zoneSlopeAt(z, d);
   const vu = terminalSpeed(sRun, 0), vt = terminalSpeed(sRun, 1);
-  const v = o.vBias !== undefined ? Math.pow(vu, 1 - o.vBias) * Math.pow(vt, o.vBias) : Math.sqrt(vu * vt);   // vBias > 0.5: für Hocke ausgelegt (Freestyle)
+  let v = o.vBias !== undefined ? Math.pow(vu, 1 - o.vBias) * Math.pow(vt, o.vBias) : Math.sqrt(vu * vt);   // vBias > 0.5: für Hocke ausgelegt (Freestyle)
+  let vRange = [vu * 0.95, vt * 1.03];
+  // Freestyle: Sprung genau auf das Tempo auslegen, das man nach dem tatsächlichen Anlauf hat (nicht auf Endgeschwindigkeit)
+  if (o.vDes) { v = o.vDes; vRange = [o.vDes * (o.gap ? 0.9 : 0.84), o.vDes * 1.05]; }
   const steep = o.steep ? { t2: o.steep, xb: 4, len: 160 } : null;
   const des = designJump({
-    kind: o.kind === 'stepup' ? 'stepup' : 'table', theta: Math.atan(sHere), steep, vDes: v, vRange: [vu * 0.95, vt * 1.03],
+    kind: o.kind === 'stepup' ? 'stepup' : 'table', theta: Math.atan(sHere), steep, vDes: v, vRange,
     phiDeg: o.phi, Lr: o.Lr, hMax: o.hMax, su: o.su || 0, sd: o.sd || 0,
   });
   const rec = { zone: z.idx, kind: o.name || o.kind, d: Math.round(d), lane: o.lane };
   if (!des || !des.ok) { issue(`Zone ${z.idx}: ${o.name || o.kind} bei ${Math.round(d)} m verworfen (keine sichere Landung)`); return null; }
   if (d + des.ext1 > z.d1 - PCFG.transition - 8) { report.skipped = (report.skipped || 0) + 1; return null; }
+  // Gap: statt Tisch ein Graben zwischen Absprung und Landung. Nur, wenn auch das langsame Ende des Tempobereichs
+  // sicher hinter dem Knick landet – wer zu langsam ist, fällt hinein.
+  let gap = null;
+  if (o.gap) {
+    const gb = des.J.xk - 2.4;                       // Graben endet 2,4 m vor dem Knick (fester Rand zum Aufsetzen)
+    if (des.xLow < gb + 0.6 || gb < 6) return addJump(z, R, { ...o, gap: false, name: (o.name || '').replace('Gap', 'Tisch') });
+    gap = { a: 2.2, b: gb, dep: 2.2 + R() * 0.8 };
+  }
   const wT = o.wT, wL = wT * 1.7;
-  z.feats.push({ kind: 'jump', d, x, J: des.J, wT, wL: o.wL || wT * 1.7, ext0: des.ext0, ext1: des.ext1, s0: d - des.J.Lr - 10, s1: d + des.ext1 + 10, lane: o.lane, name: o.name || o.kind });
+  z.feats.push({ kind: 'jump', d, x, J: des.J, wT, wL: o.wL || wT * 1.7, ext0: des.ext0, ext1: des.ext1, s0: d - des.J.Lr - 10, s1: d + des.ext1 + 10, lane: o.lane, name: o.name || o.kind, gap, vDes: v });
   if (steep) z.pitches.push({ d: d + 4, amt: o.steep - sHere, len: des.ext1 + 40, e: 14, own: true });
   Object.assign(rec, {
     flight: +des.flight.toFixed(1), airT: +des.airT.toFixed(2), height: +des.J.h.toFixed(1), vn: +des.vn.toFixed(1),
@@ -697,7 +733,30 @@ function addJump(z, R, o) {
   });
   report.features.push(rec);
   if (des.vnHigh > 17) issue(`Zone ${z.idx}: ${rec.kind} bei ${rec.d} m landet bei Höchsttempo hart (${rec.vnHigh} m/s)`);
-  return { end: d + Math.max(des.ext1, des.xHigh + 10) + 14, d, des };
+  return { end: d + Math.max(des.ext1, des.xHigh + 10) + 14, d, des, v };
+}
+
+/** Rail oder Box auf Spur `lane` ab Position d. kind: 'rail' (rund, schmal) | 'box' (breit). Mit Auffahrrampe. */
+function addRail(z, R, o) {
+  const d = snapStraight(z, o.d, 20), len = o.len;
+  if (d + len > z.d1 - PCFG.transition - 8 || d - 6 < z.d0 + PCFG.transition) return null;
+  const x0 = laneX(z, o.lane, d) + (o.dx || 0), x1 = laneX(z, o.lane, d + len) + (o.dx || 0);
+  const h = o.h, w = o.kind === 'box' ? 0.42 : 0.08;
+  const rail = { kind: o.kind, d0: d, len, x0, x1, h, w, lane: o.lane, name: o.name };
+  z.rails.push(rail);
+  z.feats.push({ kind: 'onramp', d, len: o.kind === 'box' ? 3.2 : 4, x: x0, w: Math.max(w, 0.5) + 0.3, h, s0: d - 6, s1: d + 1, lane: o.lane });
+  report.features.push({ zone: z.idx, kind: o.name, d: Math.round(d), lane: o.lane, len });
+  return d + len + 8;
+}
+/** Rails und Boxen im Bereich [d0, d1). */
+export function railsIn(d0, d1) {
+  ensureZones(d1 + PCFG.lookahead);
+  const out = [];
+  for (const z of S.Z) {
+    if (z.d1 < d0 - 300 || z.d0 > d1 + 300) continue;
+    for (const r of z.rails) if (r.d0 + r.len >= d0 && r.d0 < d1) out.push(r);
+  }
+  return out;
 }
 
 function addRoller(z, o) {
@@ -763,6 +822,8 @@ function genFeatures(z, R) {
       } else if (it.t === 'jump') {
         const j = addJump(z, R, { d: cur + 25, lane: it.lane || 0, ...it });
         end = j ? j.end : null;
+      } else if (it.t === 'rail') {
+        end = addRail(z, R, { d: cur + 10, lane: it.lane || 0, ...it });
       }
       cur = (end === null ? cur + 20 : end) + (it.big !== undefined ? it.big : it.gap === undefined ? (it.t === 'jump' ? rr(8, 18) : rr(26, 44)) : Math.min(it.gap, it.t === 'jump' ? 18 : 99));
     }
@@ -827,22 +888,51 @@ function genFeatures(z, R) {
         { t: 'jump', kind: 'table', name: 'Großer Tisch', phi: 14, Lr: 20, hMax: 9, wT: 5.6 },
       ]);
       sideLine(1, 70, [{ t: 'jump', kind: 'table', name: 'Kicker (Seitenlinie)', phi: 6, Lr: 11, hMax: 3.4, wT: 3, gap: 40 }, { t: 'roller', n: 3, w: 5, sp: 9 }, { t: 'jump', kind: 'table', name: 'Kicker (Seitenlinie)', phi: 7, Lr: 12, hMax: 3.8, wT: 3, gap: 30 }]);
-      sideLine(2, 90, [{ t: 'roller', n: 3, w: 4.5, sp: 10, gap: 36 }, { t: 'berm', h: 1.4, len: 40 }, { t: 'roller', n: 2, w: 4.5, sp: 11 }]);
+      sideLine(2, 60, [{ t: 'rail', kind: 'box', len: rr(7, 10), h: 0.5, name: 'Box', big: rr(45, 60) }, { t: 'rail', kind: 'rail', len: rr(9, 13), h: rr(0.65, 0.85), name: 'Rail', big: rr(45, 60) }, { t: 'rail', kind: 'box', len: rr(7, 10), h: 0.5, name: 'Box', big: 50 }]);
       break;
     }
     case 'jumpline': {
-      // Sprunglinie: große Tische und Step-ups, dazwischen jeweils 110–160 m freier Hang zum Tempo-Aufbauen
+      // Sprunglinie: große Tische, Gaps und Step-downs. Jeder Sprung wird auf das Tempo ausgelegt, das man nach dem
+      // tatsächlichen Anlauf seit der letzten Landung hat (Tempo-Modell) – kurzer Anlauf = kürzerer Sprung.
       const big = [
         { name: 'Großer Tisch', phi: 12, Lr: 20, hMax: 8, wT: 6 },
         { name: 'Riesen-Tisch', phi: 14, Lr: 24, hMax: 10, wT: 6.5 },
         { name: 'Kicker XL', phi: 15, Lr: 18, hMax: 7, wT: 5.5 },
         { sd: 3, name: 'Step-down XL', phi: 12, Lr: 20, hMax: 8, wT: 6 },
       ];
-      cur = a + rr(60, 90);
-      const list = [];
-      for (let k = 0; k < 6; k++) list.push({ t: 'jump', kind: 'table', ...big[Math.floor(R() * big.length)], big: rr(110, 160), vBias: 0.62 });
-      chain(list);
-      for (const li of [1, 2]) sideLine(li, rr(50, 90), [0, 1, 2, 3, 4].map(() => ({ t: 'jump', kind: 'table', name: 'Kicker (Seitenlinie)', phi: rr(7, 10), Lr: 12, hMax: rr(3.4, 4.6), wT: 3.4, big: rr(70, 95) })));
+      const vMax = terminalSpeed(z.slope, 1) * 0.97;
+      let v = Math.min(vMax, 17), dPrev = z.d0 - 40, dd = a + rr(60, 100);
+      for (let k = 0; k < 8 && dd < b - 60; k++) {
+        const vTake = Math.min(vMax, speedAfter(v, z.slope, dd - dPrev));
+        const spec = big[Math.floor(R() * big.length)];
+        const isGap = !spec.sd && R() < 0.38;
+        const j = addJump(z, R, { d: dd, lane: 0, kind: 'table', ...spec, name: isGap ? 'Gap ' + (spec.hMax >= 9 ? 'XL' : '') : spec.name, gap: isGap, vDes: vTake * 0.97 });
+        if (!j) { dd += 35; continue; }
+        v = j.v * 0.85;                                   // Tempo nach der Landung
+        dPrev = j.d + j.des.flight;
+        dd = j.end + rr(95, 150);
+      }
+      for (const li of [1, 2]) sideLine(li, rr(40, 70), [
+        { t: 'rail', kind: 'box', len: rr(7, 11), h: 0.5, name: 'Box', big: rr(55, 75) },
+        { t: 'jump', kind: 'table', name: 'Kicker (Seitenlinie)', phi: rr(7, 10), Lr: 12, hMax: rr(3.4, 4.4), wT: 3.4, big: rr(60, 80) },
+        { t: 'rail', kind: 'rail', len: rr(9, 14), h: rr(0.65, 0.9), name: 'Rail', big: rr(55, 75) },
+        { t: 'jump', kind: 'table', name: 'Kicker (Seitenlinie)', phi: rr(7, 10), Lr: 12, hMax: rr(3.4, 4.4), wT: 3.4, big: rr(60, 80) },
+        { t: 'rail', kind: R() < 0.5 ? 'box' : 'rail', len: rr(8, 13), h: rr(0.5, 0.8), name: 'Rail', big: 60 },
+      ].map((it) => (it.kind === 'box' ? { ...it, name: 'Box', h: 0.5 } : it)));
+      break;
+    }
+    case 'railpark': {
+      // Rail-Park: Boxen, Rails und kleine Gaps im Wechsel, mit ruhigem Gefälle dazwischen
+      cur = a + 30;
+      const items = [];
+      for (let k = 0; k < 9; k++) {
+        const r = R();
+        if (r < 0.32) items.push({ t: 'rail', kind: 'box', len: rr(7, 12), h: 0.5, name: 'Box', big: rr(38, 55) });
+        else if (r < 0.68) items.push({ t: 'rail', kind: 'rail', len: rr(9, 16), h: rr(0.65, 1.0), name: 'Rail', big: rr(38, 55) });
+        else items.push({ t: 'jump', kind: 'table', name: 'Gap', gap: true, phi: 10, Lr: 13, hMax: 4.2, wT: 4.5, vDes: speedAfter(14, z.slope, 45) * 0.95, big: rr(45, 60) });
+      }
+      chain(items);
+      for (const li of [1, 2]) sideLine(li, rr(30, 60), [0, 1, 2, 3, 4, 5].map((k) => (k % 2 ? { t: 'rail', kind: 'rail', len: rr(8, 12), h: rr(0.6, 0.8), name: 'Rail', big: rr(45, 60) } : { t: 'rail', kind: 'box', len: rr(6, 10), h: 0.5, name: 'Box', big: rr(45, 60) })));
       break;
     }
     case 'megaair': {
@@ -858,9 +948,11 @@ function genFeatures(z, R) {
     }
     case 'slopestyle': {
       // Slopestyle-Linie: Tisch, Spine, Step-up, großer Tisch, Step-down – mit Platz zum Anfahren dazwischen
-      cur = a + 50;
+      cur = a + 20;
       chain([
-        { t: 'jump', kind: 'table', name: 'Tisch', phi: 10, Lr: 16, hMax: 6, wT: 5.5, big: rr(80, 110) },
+        { t: 'rail', kind: 'box', len: rr(8, 11), h: 0.5, name: 'Box', big: rr(45, 60) },
+        { t: 'rail', kind: 'rail', len: rr(10, 15), h: rr(0.7, 0.95), name: 'Rail', big: rr(60, 80) },
+        { t: 'jump', kind: 'table', name: 'Gap', gap: true, phi: 10, Lr: 16, hMax: 6, wT: 5.5, big: rr(80, 110) },
         { t: 'spine', gap: 60 },
         { t: 'jump', kind: 'stepup', su: 2, name: 'Step-up', phi: 12, Lr: 18, hMax: 7, wT: 5.5, big: rr(90, 120) },
         { t: 'jump', kind: 'table', name: 'Großer Tisch', phi: 14, Lr: 22, hMax: 10, wT: 6, big: rr(100, 130) },
@@ -972,6 +1064,7 @@ export function featuresIn(d0, d1) {
 /** Steht an (x, d) ein Feature (Sprung, Landung, Rollen, Mogulfeld, Kissen), das frei von Bäumen und Felsen bleiben muss? */
 export function inFeatureZone(x, d, m = 3) {
   const z = zoneAtD(d);
+  for (const r of z.rails) if (d > r.d0 - 8 - m && d < r.d0 + r.len + 4 + m && Math.abs(x - (r.x0 + r.x1) / 2) < 3 + m) return true;
   for (const f of z.feats) {
     if (f.kind === 'jump') {
       const xx = d - f.d;

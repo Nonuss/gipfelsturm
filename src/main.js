@@ -150,6 +150,7 @@ function watchPerformance(rawDt) {
 }
 
 // ---------------------------------------------------------------- Zustand
+const STYLE_SFX = { freestyle: '_fs', heli: '_heli' };
 const BEST_KEY = 'gipfelsturm_best', BEST_E_KEY = 'gipfelsturm_best_points', BEST_D_KEY = 'gipfelsturm_best_dist', OUTFIT_KEY = 'gipfelsturm_outfit2';
 const game = {
   mode: 'loading', kind: 'race', time: 0, penalty: 0, passed: 0, gateIdx: 0, topSpeed: 0, bestJump: 0, countdown: 0, lastCount: 0, finishT: 0,
@@ -170,8 +171,11 @@ const zeroInp = { steer: 0, tuck: 0, brake: 0, jump: false };
 const vis = {
   lean: 0, crouch: 0, compress: 0, plow: 0, air: 0, up: new THREE.Vector3(0, 1, 0), crashAngle: 0, crashSpin: 0,
   tuck: 0, spin: 0, extend: 0, zoom: 0, shake: 0, crashCam: 0,
-  camSide: 1, flipCam: 0, bigAir: 0, dip: 0, fpv: 0, slide: 0, grindSide: 1,
+  camSide: 1, flipCam: 0, bigAir: 0, dip: 0, fpv: 0, slide: 0, grindSide: 1, look: 0,
 };
+// Switch: Körper ist um 180° gedreht (fährt rückwärts). swYaw ist 0 oder pi.
+let swYaw = 0;
+const isSwitch = () => Math.abs(Math.sin(swYaw / 2)) > 0.7;
 // Kameraperspektive: false = Verfolger, true = Ego-Sicht (Helmkamera). Wird gemerkt.
 let firstPerson = localStorage.getItem('gipfelsturm_fpv') === '1';
 function toggleView() {
@@ -233,7 +237,7 @@ function buildMenuControls() {
   for (const b of $('quality').children) {
     b.addEventListener('click', () => {
       chooseQuality(b.dataset.q);
-      if (game.mode === 'menu' && game.kind === 'endless') setKind(game.style === 'freestyle' ? 'freestyle' : 'endless');
+      if (game.mode === 'menu' && game.kind === 'endless') setKind(game.style !== 'freeride' && game.style ? game.style : 'endless');
       b.blur();
     });
   }
@@ -244,6 +248,7 @@ function resetVisuals() {
   hasPrevSki = false;
   Object.assign(vis, { lean: 0, crouch: 0, compress: 0, plow: 0, air: 0, crashAngle: 0, crashSpin: 0, tuck: 0, spin: 0, extend: 0, zoom: 0, shake: 0, crashCam: 0, camSide: 1, flipCam: 0, bigAir: 0, dip: 0 });
   Object.assign(trick, { pitch: 0, yaw: 0, pv: 0, yv: 0, grab: 0, grabT: 0, wasAir: false });
+  swYaw = 0; vis.look = 0;
   skier.attachSkis();
   skier.pivot.rotation.set(0, 0, 0);
   skier.pivot.position.y = 0.85;
@@ -261,19 +266,20 @@ function resetRunState() {
 
 function setKind(kind, seed) {
   // 'freestyle' ist eine Endlos-Welt mit eigenem Generator-Stil (fast nur Sprünge)
-  const style = kind === 'freestyle' ? 'freestyle' : 'freeride';
-  if (kind === 'freestyle') kind = 'endless';
+  const style = kind === 'freestyle' || kind === 'heli' ? kind : 'freeride';
+  if (kind === 'freestyle' || kind === 'heli') kind = 'endless';
   game.kind = kind;
   game.style = style;
-  game.bestEndless = parseInt(localStorage.getItem(BEST_E_KEY + (style === 'freestyle' ? '_fs' : '')) || '0', 10) || 0;
-  game.bestDist = parseInt(localStorage.getItem(BEST_D_KEY + (style === 'freestyle' ? '_fs' : '')) || '0', 10) || 0;
+  const sfx = STYLE_SFX[style] || '';
+  game.bestEndless = parseInt(localStorage.getItem(BEST_E_KEY + sfx) || '0', 10) || 0;
+  game.bestDist = parseInt(localStorage.getItem(BEST_D_KEY + sfx) || '0', 10) || 0;
   C.cfg.treeMul = Q.trees;
   C.setMode(kind === 'endless', seed || 1 + Math.floor(Math.random() * 1e6), style);
   world.setMode();
   resetRunState();
-  const sel = kind === 'endless' && style === 'freestyle' ? 'freestyle' : kind;
+  const sel = kind === 'endless' && style !== 'freeride' ? style : kind;
   for (const b of document.querySelectorAll('.mode')) b.classList.toggle('sel', b.dataset.mode === sel);
-  $('menuKicker').textContent = sel === 'freestyle' ? 'Freestyle · riesige Sprünge, jedes Mal neu' : kind === 'endless' ? 'Freeride · jedes Mal ein neuer Berg' : 'Abfahrt · 2,4 km · 650 Höhenmeter';
+  $('menuKicker').textContent = sel === 'heli' ? 'Heli-Skiing · Absprung am Gipfel, Gletscher und Tiefschnee' : sel === 'freestyle' ? 'Freestyle · riesige Sprünge, jedes Mal neu' : kind === 'endless' ? 'Freeride · jedes Mal ein neuer Berg' : 'Abfahrt · 2,4 km · 650 Höhenmeter';
   $('lblMain').textContent = kind === 'endless' ? 'Punkte' : 'Zeit';
   $('lblSide').textContent = kind === 'endless' ? 'Respawn' : 'Tore';
   $('progress').classList.toggle('off', kind === 'endless');
@@ -282,7 +288,7 @@ function setKind(kind, seed) {
 function startRun() {
   audio.start();
   saveEndlessBest();
-  if (game.kind === 'endless') setKind(game.style === 'freestyle' ? 'freestyle' : 'endless', game.forceSeed);   // jedes Mal ein neuer Berg (forceSeed nur für Tests)
+  if (game.kind === 'endless') setKind(game.style !== 'freeride' && game.style ? game.style : 'endless', game.forceSeed);   // jedes Mal ein neuer Berg (forceSeed nur für Tests)
   else { world.resetGates(); resetRunState(); }
   $('menu').classList.add('hidden');
   $('finish').classList.add('hidden');
@@ -294,6 +300,58 @@ function startRun() {
     score: 0, maxD: 0, bestTrick: '', bestTrickPts: 0, tricks: 0, pend: 0, pendT: 0, combo: 1, comboT: 0,
   });
   $('penalty').textContent = '';
+  heliStart();
+}
+
+// ---------------------------------------------------------------- Heli-Skiing: Absprung aus dem Helikopter
+// Während des Countdowns schwebt der Helikopter über dem Gipfel, der Fahrer steht in der offenen Tür.
+// Bei „Spring!“ fällt er gut 4 m in den Tiefschnee, der Helikopter dreht ab und fliegt davon.
+const heli = { on: false, t: 0, pos: new THREE.Vector3(), drop: new THREE.Vector3(), group: null, rotor: null, tail: null, vel: new THREE.Vector3() };
+function heliStart() {
+  heli.on = game.kind === 'endless' && game.style === 'heli';
+  if (!heli.group) {
+    heli.group = new THREE.Group();
+    const m = (name) => { const o = new THREE.Mesh(world.models[name], world.propMat); o.castShadow = true; o.receiveShadow = true; return o; };
+    heli.group.add(m('Heli'));
+    heli.rotor = m('HeliRotor'); heli.rotor.position.set(-0.2, 0.35, 0); heli.group.add(heli.rotor);
+    heli.tail = m('HeliTail'); heli.tail.position.set(-6.3, -0.75, -0.25); heli.group.add(heli.tail);
+    scene.add(heli.group);
+  }
+  heli.group.visible = heli.on;
+  if (!heli.on) { audio.setHeli(0); return; }
+  heli.t = 0;
+  // Absprungpunkt: 4,5 m über dem Schnee am Gipfel, Helikopter quer zum Hang, Tür zum Fahrer
+  const d = 18, x = C.centerX(d), z = -d, gy = C.height(x, z);
+  heli.drop.set(x, gy + 4.5, z);
+  heli.pos.set(x + 0.3, gy + 4.5 + 2.7, z - 1.75);   // Fahrer steht außen auf der Kufe vor der offenen Tür
+  heli.group.position.copy(heli.pos);
+  heli.group.rotation.set(0, 0, 0);
+  heli.vel.set(0, 0, 0);
+  phys.reset(d, x);
+  phys.pos.copy(heli.drop);
+  phys.grounded = false;
+}
+function heliUpdate(dt) {
+  if (!heli.group || !heli.group.visible) return;
+  heli.t += dt;
+  heli.rotor.rotation.y += dt * 38;
+  heli.tail.rotation.z += dt * 60;
+  if (game.mode === 'countdown') {
+    // Schweben mit leichtem Wackeln; Fahrer bleibt in der Tür
+    heli.group.position.set(heli.pos.x, heli.pos.y + Math.sin(heli.t * 1.7) * 0.12, heli.pos.z);
+    heli.group.rotation.set(Math.sin(heli.t * 1.3) * 0.02, 0, Math.sin(heli.t * 0.9) * 0.025);
+    phys.pos.copy(heli.drop); phys.pos.y += Math.sin(heli.t * 1.7) * 0.12;
+    phys.vel.set(0, 0, 0); phys.grounded = false;
+  } else {
+    // Abdrehen: Nase runter, beschleunigen, steigen, Kurve weg vom Hang
+    const k = Math.min(1, heli.t * 0.3);
+    heli.vel.x += dt * 7; heli.vel.y += dt * 3.2; heli.vel.z += dt * -1.5;
+    heli.group.position.addScaledVector(heli.vel, dt);
+    heli.group.rotation.set(0.08 * k, 0.35 * k, -0.22 * k);
+    if (heli.t > 16) heli.group.visible = false;
+  }
+  const dist = heli.group.position.distanceTo(camera.position);
+  audio.setHeli(heli.group.visible ? clamp(1 - dist / 260, 0, 1) : 0);
 }
 
 function toMenu() {
@@ -301,6 +359,7 @@ function toMenu() {
   saveEndlessBest();
   game.mode = 'menu';
   resetRunState();
+  heli.on = false; if (heli.group) heli.group.visible = false; audio.setHeli(0);
   $('menu').classList.remove('hidden');
   $('finish').classList.add('hidden');
   $('hud').classList.add('hidden');
@@ -311,7 +370,7 @@ const totalScore = () => Math.round(game.score);
 function saveEndlessBest() {
   if (game.kind !== 'endless' || game.mode === 'menu' || game.mode === 'loading') return;
   const t = totalScore();
-  const sfx = game.style === 'freestyle' ? '_fs' : '';
+  const sfx = STYLE_SFX[game.style] || '';
   if (t > game.bestEndless) { game.bestEndless = t; localStorage.setItem(BEST_E_KEY + sfx, String(t)); }
   const m = Math.round(game.maxD);
   if (m > game.bestDist) { game.bestDist = m; localStorage.setItem(BEST_D_KEY + sfx, String(m)); }
@@ -426,7 +485,7 @@ $('startBtn').addEventListener('click', () => { if (touchCtl) touchCtl.onStart()
 $('againBtn').addEventListener('click', () => { if (touchCtl) touchCtl.onStart(); startRun(); });
 $('menuBtn').addEventListener('click', () => toMenu());
 for (const b of document.querySelectorAll('.mode')) {
-  b.addEventListener('click', () => { const cur = game.kind === 'endless' && game.style === 'freestyle' ? 'freestyle' : game.kind; if (game.mode === 'menu' && cur !== b.dataset.mode) setKind(b.dataset.mode); b.blur(); });
+  b.addEventListener('click', () => { const cur = game.kind === 'endless' && game.style && game.style !== 'freeride' ? game.style : game.kind; if (game.mode === 'menu' && cur !== b.dataset.mode) setKind(b.dataset.mode); b.blur(); });
 }
 
 // ---------------------------------------------------------------- Tricks
@@ -439,7 +498,7 @@ function updateTricks(dt) {
     const spinIn = (airKey.right ? 1 : 0) - (airKey.left ? 1 : 0);
     // Ohne Taste dreht die Figur zur nächsten vollen Umdrehung weiter und richtet sich aus
     const pT = flipIn !== 0 ? flipIn * 8.4 : clamp((Math.round(trick.pitch / TAU) * TAU - trick.pitch) * 9, -8.4, 8.4);
-    const yT = spinIn !== 0 ? spinIn * 8.8 : clamp((Math.round(trick.yaw / TAU) * TAU - trick.yaw) * 9, -8.8, 8.8);
+    const yT = spinIn !== 0 ? spinIn * 8.8 : clamp((Math.round(trick.yaw / Math.PI) * Math.PI - trick.yaw) * 9, -8.8, 8.8);   // auf halbe Drehungen: 180 = rückwärts landen
     // weiches An- und Ausdrehen wirkt natürlicher als ein starres Tempo
     trick.pv += clamp(pT - trick.pv, -38 * dt, 38 * dt);
     trick.yv += clamp(yT - trick.yv, -44 * dt, 44 * dt);
@@ -477,8 +536,9 @@ function updateTricks(dt) {
 
 /** Wird bei der Landung aufgerufen: wertet Drehungen aus oder lässt den Fahrer stürzen. */
 function scoreLanding(e) {
-  const flips = Math.round(trick.pitch / TAU), spins = Math.round(trick.yaw / TAU);
-  const pOff = trick.pitch - flips * TAU, yOff = trick.yaw - spins * TAU;
+  const flips = Math.round(trick.pitch / TAU), halves = Math.round(trick.yaw / Math.PI);
+  const pOff = trick.pitch - flips * TAU, yOff = trick.yaw - halves * Math.PI;
+  const wasSwitch = isSwitch();
   const grabT = trick.grabT, gTs = { ...trick.gT };
   trick.pitch = pOff; trick.yaw = yOff; trick.grabT = 0;
   if (phys.crashed > 0) return;
@@ -487,6 +547,11 @@ function scoreLanding(e) {
   const vh = Math.hypot(phys.vel.x, phys.vel.z);
   const yawTol = vh < 3 ? Infinity : vh < 8 ? lerp(2.6, 1.1, (vh - 3) / 5) : 1.1;
   if (Math.abs(yOff) > 1.1 && Math.abs(yOff) <= yawTol) { phys.heading += yOff; trick.yaw = 0; }
+  if (Math.abs(pOff) <= 0.85 && Math.abs(yOff) <= yawTol && halves !== 0) {
+    // ungerade halbe Drehung: man landet rückwärts (Switch) bzw. wieder vorwärts
+    swYaw = ((swYaw + halves * Math.PI) % TAU + TAU) % TAU;
+    trick.yaw = yOff;
+  }
   if (Math.abs(pOff) > 0.85 || Math.abs(yOff) > yawTol) {
     showMsg('Nicht ausgedreht!', 'bad');
     quietCrash = true;
@@ -501,10 +566,10 @@ function scoreLanding(e) {
     pts += [0, 500, 1300, 2600][Math.min(3, n)];
     cats++;
   }
-  if (spins !== 0) {
-    const n = Math.abs(spins);
-    parts.push(String(n * 360));
-    pts += Math.round(250 * Math.pow(n, 1.5));
+  if (halves !== 0) {
+    const n = Math.abs(halves);
+    parts.push((wasSwitch ? 'Switch ' : '') + String(n * 180) + (n % 2 ? (isSwitch() ? ' (rückwärts)' : ' (vorwärts)') : ''));
+    pts += Math.round(150 * Math.pow(n, 1.45) * (wasSwitch ? 1.25 : 1));
     cats++;
   }
   for (const [k, nm] of [['safety', 'Safety Grab'], ['mute', 'Mute Grab'], ['tail', 'Tail Grab']]) {
@@ -552,6 +617,16 @@ function updateCamera(dt, time) {
     camSnap = false;
     return;
   }
+  if (heli.on && game.mode === 'countdown' && heli.group) {
+    tV.set(phys.pos.x + 7.5, phys.pos.y + 0.6, phys.pos.z + 9);
+    camPos.lerp(tV, camSnap ? 1 : 1 - Math.exp(-dt * 3));
+    camera.position.copy(camPos);
+    lookSm.set((phys.pos.x + heli.group.position.x) / 2, phys.pos.y + 0.8, (phys.pos.z + heli.group.position.z) / 2);
+    camera.lookAt(lookSm);
+    if (camera.fov !== 58) { camera.fov = 58; camera.updateProjectionMatrix(); }
+    camSnap = false;
+    return;
+  }
   const z = vis.zoom, cc = vis.crashCam;
   if (sp > 2) tV.set(phys.vel.x, 0, phys.vel.z).normalize();
   else tV.set(Math.sin(phys.heading), 0, -Math.cos(phys.heading));
@@ -593,6 +668,7 @@ function updateCamera(dt, time) {
     // Kamera ein Stück hinter dem Kopf – so liegen die Skier unten im Bild und der Horizont bleibt sichtbar.
     fpEye.copy(EYE0).applyMatrix4(skier.bones[2].matrixWorld);
     skier.pivot.getWorldQuaternion(fpQ);                                   // Körperausrichtung inkl. Flips und Spins
+    if (isSwitch()) fpQ.multiply(fpQ2.setFromAxisAngle(tV.set(0, 1, 0), Math.PI));   // rückwärts: Blick über die Schulter hangabwärts
     fpTmp.set(0, 0.12, FP_BACK).applyQuaternion(fpQ);                      // hinter den Kopf (Körper-Rückseite = +Z)
     fpEye.add(fpTmp);
     fpE.set(-0.34 - 0.06 * vis.crouch - 0.05 * vis.plow + vis.dip * 0.22 + (phys.grounded ? 0 : 0.08), 0, -vis.lean * 0.22);
@@ -664,7 +740,7 @@ function emitPowder(dt) {
   if (!phys.grounded || phys.crashed > 0 || phys.pow < 0.12 || phys.speed < 3) return;
   const p = phys.pos, v = phys.vel, f = phys.fwd, r = phys.right, n = phys.normal;
   const carvePlume = clamp(Math.abs(phys.aLat) / 9, 0, 1.4);
-  powAcc += dt * phys.pow * (10 + phys.speed * 2.4 + carvePlume * (30 + phys.speed * 5)) * Q.trees;
+  powAcc += dt * phys.pow * (10 + phys.speed * 2.4 + carvePlume * (30 + phys.speed * 5)) * Math.max(0.8, Q.trees);   // Pulverfahne auch auf Niedrig kräftig
   let count = Math.min(26, Math.floor(powAcc));
   powAcc -= count;
   if (powAcc > 40) powAcc = 0;
@@ -787,6 +863,7 @@ function handleEvents() {
         } else if (!e.clean) showMsg('Abgerutscht', 'bad');
       }
     } else if (e.type === 'crash') {
+      swYaw = 0;
       vis.crashSpin = 8 + phys.speed * 0.35;
       vis.shake = 1;
       audio.crash();
@@ -889,12 +966,13 @@ function updateSkier(dt) {
     vis.slide += (railSlide * vis.grindSide - vis.slide) * k(14);
     // auf der Rail: Körper quer zur Rail, Balance als leichte Neigung sichtbar
     const balTilt = phys.grind ? -phys.grind.bal * 0.35 : 0;
-    pv.rotation.set(trick.pitch, -trick.yaw + vis.slide * 1.45, vis.spin * 0.18 + balTilt);
+    pv.rotation.set(trick.pitch, -(trick.yaw + swYaw) + vis.slide * 1.45, vis.spin * 0.18 + balTilt);
+    vis.look += ((isSwitch() && !phys.grind ? 1 : 0) - vis.look) * k(6);
     pv.position.y = 0.85;
   }
   skier.update({
     lean: vis.lean, crouch: vis.crouch, steer: phys.grounded ? inp.steer : 0, plow: vis.plow, air: vis.air, compress: vis.compress,
-    speed: phys.speed, grab: trick.grab, grabSide: trick.gs, tuck: vis.tuck, spin: vis.spin, extend: vis.extend, crash: crashed ? 1 : 0, crashA: vis.crashAngle,
+    speed: phys.speed, grab: trick.grab, grabSide: trick.gs, look: vis.look, tuck: vis.tuck, spin: vis.spin, extend: vis.extend, crash: crashed ? 1 : 0, crashA: vis.crashAngle,
   }, dt);
   skier.updateLoose(dt, C.height);
   if (blob) {
@@ -912,7 +990,7 @@ function updateSkier(dt) {
 }
 
 // ---------------------------------------------------------------- Minikarte & Zonen
-const ZONE_NAMES = { start: 'Start', cruise: 'Panorama-Piste', glade: 'Waldbahn', bowl: 'Pulverhang', park: 'Ski-Cross-Park', bigair: 'Big Air', couloir: 'Rinne', cliff: 'Klippenband', flat: 'Auslauf', jumpline: 'Sprunglinie', megaair: 'Mega Air', slopestyle: 'Slopestyle' };
+const ZONE_NAMES = { start: 'Start', cruise: 'Panorama-Piste', glade: 'Waldbahn', bowl: 'Pulverhang', park: 'Ski-Cross-Park', bigair: 'Big Air', couloir: 'Rinne', cliff: 'Klippenband', flat: 'Auslauf', summit: 'Gipfel', glacier: 'Gletscher', face: 'Pulverflanke', rockgarden: 'Felsgarten', jumpline: 'Sprunglinie', megaair: 'Mega Air', slopestyle: 'Slopestyle' };
 let lastZone = -1, zoneTimer = 0;
 function updateZone(dt) {
   if (game.kind !== 'endless' || game.mode !== 'run') return;
@@ -959,7 +1037,7 @@ function drawMinimap(dt) {
       const a = rows[i].lanes[li], b = rows[i + 1].lanes[li];
       if (a.w < 1 || b.w < 1) continue;
       const k = a.k;
-      mm.strokeStyle = k === 3 ? '#ff8a2e' : k === 1 ? '#ffd84a' : rows[i].slope < 0.27 ? '#58a7ff' : rows[i].slope < 0.37 ? '#ff5b4d' : '#2b2f3a';
+      mm.strokeStyle = C.cfg.style === 'heli' ? 'rgba(255,255,255,0.45)' : k === 3 ? '#ff8a2e' : k === 1 ? '#ffd84a' : rows[i].slope < 0.27 ? '#58a7ff' : rows[i].slope < 0.37 ? '#ff5b4d' : '#2b2f3a';   // Heli: nur Linien, keine Pisten
       mm.lineWidth = Math.max(2, Math.min(7, a.w * 2 * sx * 0.9));
       mm.lineCap = 'round';
       mm.beginPath(); mm.moveTo(X(a.x), Y(rows[i].d)); mm.lineTo(X(b.x), Y(rows[i + 1].d)); mm.stroke();
@@ -984,9 +1062,6 @@ function updateHud(dt) {
   if (hudAcc < 0.033) return;
   hudAcc = 0;
   $('speed').textContent = Math.round(phys.speed * 3.6);
-  const bal = $('balance');
-  if (phys.grind) { bal.classList.add('on'); bal.firstElementChild.style.left = `${50 + clamp(phys.grind.bal, -1, 1) * 46}%`; bal.classList.toggle('warn', Math.abs(phys.grind.bal) > 0.65); }
-  else bal.classList.remove('on');
   $('speedfill').style.width = `${clamp(phys.speed / 42, 0, 1) * 100}%`;
   if (game.kind === 'endless') {
     $('time').innerHTML = num(totalScore()) + (game.pend > 0 ? `<span class="pend"> +${num(game.pend)}</span>` : '');
@@ -1043,10 +1118,11 @@ function tick(dt, render) {
       game.lastCount = n;
       if (n > 0) { $('count').innerHTML = `<span>${n}</span>`; audio.beep(false); }
       else {
-        $('count').innerHTML = '<span>LOS!</span>';
+        $('count').innerHTML = heli.on ? '<span>SPRING!</span>' : '<span>LOS!</span>';
         audio.beep(true);
         game.mode = 'run';
-        phys.vel.copy(phys.fwd).multiplyScalar(4.5);
+        if (heli.on) { heli.t = 0; phys.vel.set(0, 1.2, 0).addScaledVector(phys.fwd, 3); phys.grounded = false; phys.airStart.copy(phys.pos); }
+        else phys.vel.copy(phys.fwd).multiplyScalar(4.5);
         setTimeout(() => { $('count').innerHTML = ''; }, 900);
       }
     }
@@ -1057,7 +1133,8 @@ function tick(dt, render) {
     while (acc >= H) {
       inp.jump = jumpQueued && game.mode === 'run';
       jumpQueued = false;
-      if (game.mode === 'menu' || game.mode === 'countdown') { phys.vel.set(0, 0, 0); phys.step(H, zeroInp); phys.vel.set(0, 0, 0); }
+      if (heli.on && game.mode === 'countdown') { /* hängt in der Heli-Tür */ }
+      else if (game.mode === 'menu' || game.mode === 'countdown') { phys.vel.set(0, 0, 0); phys.step(H, zeroInp); phys.vel.set(0, 0, 0); }
       else phys.step(H, stepInp);
       if (game.mode === 'run') { game.time += H; game.topSpeed = Math.max(game.topSpeed, phys.speed); }
       acc -= H;
@@ -1070,6 +1147,7 @@ function tick(dt, render) {
     if (game.mode === 'finished' && game.finishT > 1.6) { $('finish').classList.remove('hidden'); $('hud').classList.add('hidden'); }
 
     updateSkier(dt);
+    heliUpdate(dt);
     updateCamera(dt, time);
     stampTracks();
     emitSpray(dt);

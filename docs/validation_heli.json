@@ -1,0 +1,2253 @@
+[
+ {
+  "seed": 8,
+  "mode": "Spur A aufrecht",
+  "reached": 4000,
+  "time": 206.9,
+  "crashes": [],
+  "landings": [],
+  "topSpeed": 25.53794753835962,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "issues": [],
+  "features": 10,
+  "skipped": 0,
+  "zones": "S200 G554 F283 B328 G405 F388 B307 F494 C242 F335 B362 G544 F373 C267 F493"
+ },
+ {
+  "seed": 8,
+  "mode": "Spur A Hocke",
+  "reached": 4000,
+  "time": 169.2,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 2032,
+    "impact": 3.5,
+    "air": 0.78,
+    "dist": 20.8,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 31.57226676460051,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 2011,
+    "v": 30,
+    "vy": -11.9,
+    "x": -23
+   }
+  ],
+  "issues": [],
+  "features": 10,
+  "skipped": 0,
+  "zones": "S200 G554 F283 B328 G405 F388 B307 F494 C242 F335 B362 G544 F373 C267 F493"
+ },
+ {
+  "seed": 8,
+  "mode": "Spur B Hocke",
+  "reached": 4000,
+  "time": 177.2,
+  "crashes": [],
+  "landings": [],
+  "topSpeed": 28.85553565640518,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "issues": [],
+  "features": 10,
+  "skipped": 0,
+  "zones": "S200 G554 F283 B328 G405 F388 B307 F494 C242 F335 B362 G544 F373 C267 F493"
+ },
+ {
+  "seed": 15,
+  "mode": "Spur A aufrecht",
+  "reached": 4000,
+  "time": 206.6,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 1453,
+    "impact": 2.4,
+    "air": 0.3,
+    "dist": 4,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 25.263809055382588,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 1449,
+    "v": 15,
+    "vy": -6.7,
+    "x": -58
+   }
+  ],
+  "issues": [],
+  "features": 12,
+  "skipped": 0,
+  "zones": "S200 G523 F399 C563 F412 G447 C206 R314 B421 F368 C217 G748 B365"
+ },
+ {
+  "seed": 15,
+  "mode": "Spur A Hocke",
+  "reached": 4000,
+  "time": 165.6,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 924,
+    "impact": 3.9,
+    "air": 1,
+    "dist": 26.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1460,
+    "impact": 3.1,
+    "air": 0.6,
+    "dist": 11.2,
+    "feat": "cliff"
+   },
+   {
+    "d": 2904,
+    "impact": 3.6,
+    "air": 0.94,
+    "dist": 25.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2969,
+    "impact": 3.9,
+    "air": 1.07,
+    "dist": 28.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3363,
+    "impact": 2.9,
+    "air": 0.72,
+    "dist": 20.2,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 31.96208260835912,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 898,
+    "v": 30,
+    "vy": -11,
+    "x": -26
+   },
+   {
+    "d": 1449,
+    "v": 20.5,
+    "vy": -8,
+    "x": -57
+   },
+   {
+    "d": 2879,
+    "v": 29.8,
+    "vy": -9.4,
+    "x": 20
+   },
+   {
+    "d": 2941,
+    "v": 29.4,
+    "vy": -8.7,
+    "x": 28
+   },
+   {
+    "d": 3344,
+    "v": 29.3,
+    "vy": -6.7,
+    "x": 75
+   }
+  ],
+  "issues": [],
+  "features": 12,
+  "skipped": 0,
+  "zones": "S200 G523 F399 C563 F412 G447 C206 R314 B421 F368 C217 G748 B365"
+ },
+ {
+  "seed": 15,
+  "mode": "Spur B Hocke",
+  "reached": 4000,
+  "time": 172.5,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 920,
+    "impact": 3.8,
+    "air": 0.93,
+    "dist": 23.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1459,
+    "impact": 3,
+    "air": 0.57,
+    "dist": 10.3,
+    "feat": "cliff"
+   },
+   {
+    "d": 2901,
+    "impact": 3.6,
+    "air": 0.87,
+    "dist": 22.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2966,
+    "impact": 3.9,
+    "air": 1.02,
+    "dist": 26,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3359,
+    "impact": 3.6,
+    "air": 0.61,
+    "dist": 15.9,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 30.19966105017141,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 897,
+    "v": 28,
+    "vy": -10.5,
+    "x": -25
+   },
+   {
+    "d": 1449,
+    "v": 19.9,
+    "vy": -7.9,
+    "x": -57
+   },
+   {
+    "d": 2879,
+    "v": 28,
+    "vy": -9.2,
+    "x": 20
+   },
+   {
+    "d": 2941,
+    "v": 27.5,
+    "vy": -8,
+    "x": 27
+   },
+   {
+    "d": 3344,
+    "v": 27.4,
+    "vy": -6.9,
+    "x": 74
+   }
+  ],
+  "issues": [],
+  "features": 12,
+  "skipped": 0,
+  "zones": "S200 G523 F399 C563 F412 G447 C206 R314 B421 F368 C217 G748 B365"
+ },
+ {
+  "seed": 22,
+  "mode": "Spur A aufrecht",
+  "reached": 4000,
+  "time": 219.6,
+  "crashes": [],
+  "landings": [],
+  "topSpeed": 25.388662464798955,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "issues": [],
+  "features": 10,
+  "skipped": 0,
+  "zones": "S200 G538 C342 B333 F451 C240 F296 G462 F358 G760 R332 F399 C272 F406"
+ },
+ {
+  "seed": 22,
+  "mode": "Spur A Hocke",
+  "reached": 4000,
+  "time": 175.8,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 947,
+    "impact": 2.5,
+    "air": 0.53,
+    "dist": 9.7,
+    "feat": "cliff"
+   },
+   {
+    "d": 2306,
+    "impact": 3.6,
+    "air": 0.75,
+    "dist": 19.5,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 31.764150273989603,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 937,
+    "v": 19.9,
+    "vy": -7.7,
+    "x": -69
+   },
+   {
+    "d": 2286,
+    "v": 30,
+    "vy": -13.3,
+    "x": 40
+   }
+  ],
+  "issues": [],
+  "features": 10,
+  "skipped": 0,
+  "zones": "S200 G538 C342 B333 F451 C240 F296 G462 F358 G760 R332 F399 C272 F406"
+ },
+ {
+  "seed": 22,
+  "mode": "Spur B Hocke",
+  "reached": 4000,
+  "time": 181.2,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 947,
+    "impact": 2.5,
+    "air": 0.53,
+    "dist": 9.7,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 28.737234376231047,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 937,
+    "v": 19.9,
+    "vy": -7.7,
+    "x": -69
+   }
+  ],
+  "issues": [],
+  "features": 10,
+  "skipped": 0,
+  "zones": "S200 G538 C342 B333 F451 C240 F296 G462 F358 G760 R332 F399 C272 F406"
+ },
+ {
+  "seed": 29,
+  "mode": "Spur A aufrecht",
+  "reached": 4000,
+  "time": 204.1,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 890,
+    "impact": 4,
+    "air": 0.89,
+    "dist": 18.9,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 25.89831753012511,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 872,
+    "v": 23.3,
+    "vy": -7.9,
+    "x": -38
+   }
+  ],
+  "issues": [],
+  "features": 6,
+  "skipped": 0,
+  "zones": "S200 G549 R355 F436 R496 G649 F396 C205 G515 F502 C209 F403 G761"
+ },
+ {
+  "seed": 29,
+  "mode": "Spur A Hocke",
+  "reached": 4000,
+  "time": 165.4,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 903,
+    "impact": 4.6,
+    "air": 1.2,
+    "dist": 31.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2893,
+    "impact": 3.5,
+    "air": 0.97,
+    "dist": 25.5,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 32.251425086176454,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 872,
+    "v": 28.8,
+    "vy": -8.6,
+    "x": -40
+   },
+   {
+    "d": 2867,
+    "v": 30,
+    "vy": -12.4,
+    "x": 17
+   }
+  ],
+  "issues": [],
+  "features": 6,
+  "skipped": 0,
+  "zones": "S200 G549 R355 F436 R496 G649 F396 C205 G515 F502 C209 F403 G761"
+ },
+ {
+  "seed": 29,
+  "mode": "Spur B Hocke",
+  "reached": 4000,
+  "time": 171.6,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 900,
+    "impact": 4.4,
+    "air": 1.13,
+    "dist": 28.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2889,
+    "impact": 3.4,
+    "air": 0.89,
+    "dist": 21.8,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 30.4124717653693,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 872,
+    "v": 27.8,
+    "vy": -8.5,
+    "x": -39
+   },
+   {
+    "d": 2867,
+    "v": 28,
+    "vy": -11.9,
+    "x": 17
+   }
+  ],
+  "issues": [],
+  "features": 6,
+  "skipped": 0,
+  "zones": "S200 G549 R355 F436 R496 G649 F396 C205 G515 F502 C209 F403 G761"
+ },
+ {
+  "seed": 36,
+  "mode": "Spur A aufrecht",
+  "reached": 4000,
+  "time": 218.1,
+  "crashes": [],
+  "landings": [],
+  "topSpeed": 25.27743712684786,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "issues": [],
+  "features": 16,
+  "skipped": 0,
+  "zones": "S200 G671 C253 R435 G513 C538 B385 C256 B407 F262 C326 R284 F370 C260"
+ },
+ {
+  "seed": 36,
+  "mode": "Spur A Hocke",
+  "reached": 4000,
+  "time": 173.8,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 2390,
+    "impact": 2.7,
+    "air": 0.45,
+    "dist": 7.9,
+    "feat": "cliff"
+   },
+   {
+    "d": 3094,
+    "impact": 9,
+    "air": 2.36,
+    "dist": 55.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3246,
+    "impact": 15.8,
+    "air": 3.2,
+    "dist": 64.8,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 36.0036122665704,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 2382,
+    "v": 19.4,
+    "vy": -7.6,
+    "x": 73
+   },
+   {
+    "d": 3047,
+    "v": 25.2,
+    "vy": -2.2,
+    "x": 21
+   },
+   {
+    "d": 3181,
+    "v": 22.5,
+    "vy": -4.6,
+    "x": -27
+   }
+  ],
+  "issues": [],
+  "features": 16,
+  "skipped": 0,
+  "zones": "S200 G671 C253 R435 G513 C538 B385 C256 B407 F262 C326 R284 F370 C260"
+ },
+ {
+  "seed": 36,
+  "mode": "Spur B Hocke",
+  "reached": 4000,
+  "time": 179.3,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 2390,
+    "impact": 2.6,
+    "air": 0.43,
+    "dist": 7.5,
+    "feat": "cliff"
+   },
+   {
+    "d": 3094,
+    "impact": 8.9,
+    "air": 2.36,
+    "dist": 55.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3246,
+    "impact": 15.5,
+    "air": 3,
+    "dist": 60.2,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 35.35016467471494,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 2382,
+    "v": 19.1,
+    "vy": -7.6,
+    "x": 73
+   },
+   {
+    "d": 3047,
+    "v": 25.2,
+    "vy": -2.3,
+    "x": 21
+   },
+   {
+    "d": 3186,
+    "v": 22.6,
+    "vy": -5.8,
+    "x": -28
+   }
+  ],
+  "issues": [],
+  "features": 16,
+  "skipped": 0,
+  "zones": "S200 G671 C253 R435 G513 C538 B385 C256 B407 F262 C326 R284 F370 C260"
+ },
+ {
+  "seed": 43,
+  "mode": "Spur A aufrecht",
+  "reached": 4000,
+  "time": 202.2,
+  "crashes": [],
+  "landings": [],
+  "topSpeed": 25.690027367943117,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "issues": [],
+  "features": 11,
+  "skipped": 0,
+  "zones": "S200 G755 B258 R347 F416 G422 C239 R454 G554 C269 G409 C323 R464 B410"
+ },
+ {
+  "seed": 43,
+  "mode": "Spur A Hocke",
+  "reached": 4000,
+  "time": 165.2,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 1330,
+    "impact": 4.5,
+    "air": 0.38,
+    "dist": 10.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1365,
+    "impact": 5.8,
+    "air": 0.87,
+    "dist": 23.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2629,
+    "impact": 12.1,
+    "air": 2.47,
+    "dist": 58.8,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 35.375868294609994,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 1320,
+    "v": 29.7,
+    "vy": -11.3,
+    "x": 26
+   },
+   {
+    "d": 1342,
+    "v": 29.6,
+    "vy": -11,
+    "x": 34
+   },
+   {
+    "d": 2571,
+    "v": 27.1,
+    "vy": -8,
+    "x": 18
+   }
+  ],
+  "issues": [],
+  "features": 11,
+  "skipped": 0,
+  "zones": "S200 G755 B258 R347 F416 G422 C239 R454 G554 C269 G409 C323 R464 B410"
+ },
+ {
+  "seed": 43,
+  "mode": "Spur B Hocke",
+  "reached": 4000,
+  "time": 171.3,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 1365,
+    "impact": 2.8,
+    "air": 0.64,
+    "dist": 15.6,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2621,
+    "impact": 10.3,
+    "air": 2.05,
+    "dist": 48.4,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 33.745702849083976,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 1349,
+    "v": 28,
+    "vy": -12.6,
+    "x": 27
+   },
+   {
+    "d": 2573,
+    "v": 27.1,
+    "vy": -9.3,
+    "x": 17
+   }
+  ],
+  "issues": [],
+  "features": 11,
+  "skipped": 0,
+  "zones": "S200 G755 B258 R347 F416 G422 C239 R454 G554 C269 G409 C323 R464 B410"
+ },
+ {
+  "seed": 50,
+  "mode": "Spur A aufrecht",
+  "reached": 4000,
+  "time": 204.1,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 3001,
+    "impact": 4.5,
+    "air": 1.12,
+    "dist": 23.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3842,
+    "impact": 2.3,
+    "air": 0.33,
+    "dist": 4.5,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 27.492153007936246,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 2978,
+    "v": 23.9,
+    "vy": -8.7,
+    "x": -51
+   },
+   {
+    "d": 3837,
+    "v": 15.2,
+    "vy": -6.4,
+    "x": -72
+   }
+  ],
+  "issues": [],
+  "features": 5,
+  "skipped": 0,
+  "zones": "S200 G665 C256 F547 G634 R508 F358 G475 C335 F493 G757"
+ },
+ {
+  "seed": 50,
+  "mode": "Spur A Hocke",
+  "reached": 4000,
+  "time": 163.6,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 3847,
+    "impact": 2.8,
+    "air": 0.53,
+    "dist": 10.1,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 30.305790544334684,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 3836,
+    "v": 21,
+    "vy": -8,
+    "x": -73
+   }
+  ],
+  "issues": [],
+  "features": 5,
+  "skipped": 0,
+  "zones": "S200 G665 C256 F547 G634 R508 F358 G475 C335 F493 G757"
+ },
+ {
+  "seed": 50,
+  "mode": "Spur B Hocke",
+  "reached": 4000,
+  "time": 169.8,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 3006,
+    "impact": 4.5,
+    "air": 1.19,
+    "dist": 29.7,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3846,
+    "impact": 2.6,
+    "air": 0.49,
+    "dist": 9.2,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 30.88647978203314,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 2978,
+    "v": 28,
+    "vy": -9.8,
+    "x": -53
+   },
+   {
+    "d": 3837,
+    "v": 20.5,
+    "vy": -7.8,
+    "x": -73
+   }
+  ],
+  "issues": [],
+  "features": 5,
+  "skipped": 0,
+  "zones": "S200 G665 C256 F547 G634 R508 F358 G475 C335 F493 G757"
+ },
+ {
+  "seed": 57,
+  "mode": "Spur A aufrecht",
+  "reached": 4000,
+  "time": 208.4,
+  "crashes": [],
+  "landings": [],
+  "topSpeed": 25.345406245688398,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "issues": [],
+  "features": 7,
+  "skipped": 0,
+  "zones": "S200 G588 C449 F451 G544 C255 G600 F320 G626 C339 G588 F488"
+ },
+ {
+  "seed": 57,
+  "mode": "Spur A Hocke",
+  "reached": 4000,
+  "time": 166.2,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 1056,
+    "impact": 2.1,
+    "air": 0.46,
+    "dist": 7.9,
+    "feat": "cliff"
+   },
+   {
+    "d": 1846,
+    "impact": 4.7,
+    "air": 0.71,
+    "dist": 18.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2452,
+    "impact": 7.9,
+    "air": 1.36,
+    "dist": 33.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3264,
+    "impact": 4,
+    "air": 0.97,
+    "dist": 25.5,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 33.73075882303513,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 1048,
+    "v": 18.7,
+    "vy": -6.7,
+    "x": -73
+   },
+   {
+    "d": 1827,
+    "v": 27.9,
+    "vy": -6.5,
+    "x": 32
+   },
+   {
+    "d": 2419,
+    "v": 29.7,
+    "vy": -13.5,
+    "x": -18
+   },
+   {
+    "d": 3238,
+    "v": 30,
+    "vy": -11.7,
+    "x": 29
+   }
+  ],
+  "issues": [],
+  "features": 7,
+  "skipped": 0,
+  "zones": "S200 G588 C449 F451 G544 C255 G600 F320 G626 C339 G588 F488"
+ },
+ {
+  "seed": 57,
+  "mode": "Spur B Hocke",
+  "reached": 4000,
+  "time": 172.3,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 1055,
+    "impact": 2.2,
+    "air": 0.45,
+    "dist": 7.6,
+    "feat": "cliff"
+   },
+   {
+    "d": 1844,
+    "impact": 3.5,
+    "air": 0.68,
+    "dist": 17.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3259,
+    "impact": 3.5,
+    "air": 0.85,
+    "dist": 21,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 30.15860316093835,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 1048,
+    "v": 18.4,
+    "vy": -6.6,
+    "x": -73
+   },
+   {
+    "d": 1827,
+    "v": 26.9,
+    "vy": -6.5,
+    "x": 31
+   },
+   {
+    "d": 3238,
+    "v": 28,
+    "vy": -11.4,
+    "x": 29
+   }
+  ],
+  "issues": [],
+  "features": 7,
+  "skipped": 0,
+  "zones": "S200 G588 C449 F451 G544 C255 G600 F320 G626 C339 G588 F488"
+ },
+ {
+  "seed": 64,
+  "mode": "Spur A aufrecht",
+  "reached": 4000,
+  "time": 213.7,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 3068,
+    "impact": 2.5,
+    "air": 0.43,
+    "dist": 6.6,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 25.403357802435355,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 3061,
+    "v": 17.3,
+    "vy": -7.8,
+    "x": -67
+   }
+  ],
+  "issues": [],
+  "features": 9,
+  "skipped": 0,
+  "zones": "S200 G739 R343 C234 F442 C505 F346 C436 R527 F312 B486 F463 G486"
+ },
+ {
+  "seed": 64,
+  "mode": "Spur A Hocke",
+  "reached": 4000,
+  "time": 173,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 3073,
+    "impact": 2.5,
+    "air": 0.58,
+    "dist": 12,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 30.407074004445526,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 3061,
+    "v": 23.2,
+    "vy": -9.8,
+    "x": -67
+   }
+  ],
+  "issues": [],
+  "features": 9,
+  "skipped": 0,
+  "zones": "S200 G739 R343 C234 F442 C505 F346 C436 R527 F312 B486 F463 G486"
+ },
+ {
+  "seed": 64,
+  "mode": "Spur B Hocke",
+  "reached": 4000,
+  "time": 181.2,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 3073,
+    "impact": 2.6,
+    "air": 0.59,
+    "dist": 11.9,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 28.745137634277068,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 3061,
+    "v": 22.5,
+    "vy": -9.4,
+    "x": -67
+   }
+  ],
+  "issues": [],
+  "features": 9,
+  "skipped": 0,
+  "zones": "S200 G739 R343 C234 F442 C505 F346 C436 R527 F312 B486 F463 G486"
+ },
+ {
+  "seed": 71,
+  "mode": "Spur A aufrecht",
+  "reached": 4000,
+  "time": 208.4,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 3376,
+    "impact": 2.2,
+    "air": 0.27,
+    "dist": 3.8,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 25.321665237142497,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 3372,
+    "v": 15.9,
+    "vy": -6.8,
+    "x": 57
+   }
+  ],
+  "issues": [],
+  "features": 14,
+  "skipped": 0,
+  "zones": "S200 G745 R517 B464 G559 C205 R497 C319 F553 C209 R406 B303 C528"
+ },
+ {
+  "seed": 71,
+  "mode": "Spur A Hocke",
+  "reached": 4000,
+  "time": 169.5,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 3378,
+    "impact": 1.6,
+    "air": 0.29,
+    "dist": 6,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 30.35543628900676,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 3372,
+    "v": 22.4,
+    "vy": -8.9,
+    "x": 59
+   }
+  ],
+  "issues": [],
+  "features": 14,
+  "skipped": 0,
+  "zones": "S200 G745 R517 B464 G559 C205 R497 C319 F553 C209 R406 B303 C528"
+ },
+ {
+  "seed": 71,
+  "mode": "Spur B Hocke",
+  "reached": 4000,
+  "time": 175.9,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 3379,
+    "impact": 2,
+    "air": 0.38,
+    "dist": 7.5,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 28.691792789192423,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 3372,
+    "v": 21.4,
+    "vy": -8.3,
+    "x": 58
+   }
+  ],
+  "issues": [],
+  "features": 14,
+  "skipped": 0,
+  "zones": "S200 G745 R517 B464 G559 C205 R497 C319 F553 C209 R406 B303 C528"
+ },
+ {
+  "seed": 78,
+  "mode": "Spur A aufrecht",
+  "reached": 4000,
+  "time": 208.6,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 1680,
+    "impact": 4.5,
+    "air": 0.74,
+    "dist": 10.8,
+    "feat": "cliff"
+   },
+   {
+    "d": 2725,
+    "impact": 3,
+    "air": 0.58,
+    "dist": 8.2,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 25.434212773689893,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 1669,
+    "v": 16.5,
+    "vy": -7.1,
+    "x": 66
+   },
+   {
+    "d": 2717,
+    "v": 16.3,
+    "vy": -7.6,
+    "x": -48
+   }
+  ],
+  "issues": [],
+  "features": 8,
+  "skipped": 0,
+  "zones": "S200 G383 R410 B443 C404 G688 C325 R397 F356 R496 C317 F434 R410"
+ },
+ {
+  "seed": 78,
+  "mode": "Spur A Hocke",
+  "reached": 4000,
+  "time": 168.4,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 1689,
+    "impact": 5.7,
+    "air": 0.99,
+    "dist": 20.5,
+    "feat": "cliff"
+   },
+   {
+    "d": 2736,
+    "impact": 4.4,
+    "air": 0.98,
+    "dist": 19.7,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 30.422497032946843,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 1669,
+    "v": 23,
+    "vy": -9,
+    "x": 64
+   },
+   {
+    "d": 2717,
+    "v": 22.2,
+    "vy": -8.7,
+    "x": -47
+   }
+  ],
+  "issues": [],
+  "features": 8,
+  "skipped": 0,
+  "zones": "S200 G383 R410 B443 C404 G688 C325 R397 F356 R496 C317 F434 R410"
+ },
+ {
+  "seed": 78,
+  "mode": "Spur B Hocke",
+  "reached": 4000,
+  "time": 175.6,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 1688,
+    "impact": 5.6,
+    "air": 0.97,
+    "dist": 19.3,
+    "feat": "cliff"
+   },
+   {
+    "d": 2736,
+    "impact": 4.5,
+    "air": 0.99,
+    "dist": 19.2,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 28.783691359945497,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 1669,
+    "v": 22.1,
+    "vy": -8.7,
+    "x": 64
+   },
+   {
+    "d": 2717,
+    "v": 21.5,
+    "vy": -8.4,
+    "x": -46
+   }
+  ],
+  "issues": [],
+  "features": 8,
+  "skipped": 0,
+  "zones": "S200 G383 R410 B443 C404 G688 C325 R397 F356 R496 C317 F434 R410"
+ },
+ {
+  "seed": 85,
+  "mode": "Spur A aufrecht",
+  "reached": 4000,
+  "time": 208.8,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 1115,
+    "impact": 3.8,
+    "air": 1.13,
+    "dist": 22.9,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 25.513810830437663,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 1093,
+    "v": 21.5,
+    "vy": -4.5,
+    "x": 14
+   }
+  ],
+  "issues": [],
+  "features": 18,
+  "skipped": 0,
+  "zones": "S200 G712 C243 B445 C217 B309 F554 G677 F317 C246 F388 R392 C247 B402"
+ },
+ {
+  "seed": 85,
+  "mode": "Spur A Hocke",
+  "reached": 4000,
+  "time": 170.8,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 1133,
+    "impact": 6.4,
+    "air": 1.72,
+    "dist": 44.3,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1693,
+    "impact": 13.8,
+    "air": 2.69,
+    "dist": 64.1,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1785,
+    "impact": 7.2,
+    "air": 1.74,
+    "dist": 33.5,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 33.09743856130255,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 1090,
+    "v": 27.4,
+    "vy": -5,
+    "x": 14
+   },
+   {
+    "d": 1641,
+    "v": 25.6,
+    "vy": -1.4,
+    "x": -33
+   },
+   {
+    "d": 1753,
+    "v": 20.6,
+    "vy": -5.3,
+    "x": 16
+   }
+  ],
+  "issues": [],
+  "features": 18,
+  "skipped": 0,
+  "zones": "S200 G712 C243 B445 C217 B309 F554 G677 F317 C246 F388 R392 C247 B402"
+ },
+ {
+  "seed": 85,
+  "mode": "Spur B Hocke",
+  "reached": 4000,
+  "time": 177.3,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 1057,
+    "impact": 7.1,
+    "air": 0.52,
+    "dist": 13.1,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1106,
+    "impact": 2.3,
+    "air": 0.79,
+    "dist": 17.8,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1693,
+    "impact": 13.2,
+    "air": 2.57,
+    "dist": 59.8,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 32.707377334428344,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 1044,
+    "v": 28,
+    "vy": -10.6,
+    "x": 7
+   },
+   {
+    "d": 1089,
+    "v": 23.7,
+    "vy": -5.9,
+    "x": 12
+   },
+   {
+    "d": 1644,
+    "v": 25.1,
+    "vy": -2.8,
+    "x": -30
+   }
+  ],
+  "issues": [],
+  "features": 18,
+  "skipped": 0,
+  "zones": "S200 G712 C243 B445 C217 B309 F554 G677 F317 C246 F388 R392 C247 B402"
+ },
+ {
+  "seed": 92,
+  "mode": "Spur A aufrecht",
+  "reached": 4000,
+  "time": 206.8,
+  "crashes": [],
+  "landings": [],
+  "topSpeed": 25.257207570500913,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "issues": [],
+  "features": 9,
+  "skipped": 0,
+  "zones": "S200 G815 C464 R471 G471 F527 G541 B436 G794 C231 B522"
+ },
+ {
+  "seed": 92,
+  "mode": "Spur A Hocke",
+  "reached": 4000,
+  "time": 165.9,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 1292,
+    "impact": 2.4,
+    "air": 0.42,
+    "dist": 8,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 30.279967979529776,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 1284,
+    "v": 21.5,
+    "vy": -9.3,
+    "x": -55
+   }
+  ],
+  "issues": [],
+  "features": 9,
+  "skipped": 0,
+  "zones": "S200 G815 C464 R471 G471 F527 G541 B436 G794 C231 B522"
+ },
+ {
+  "seed": 92,
+  "mode": "Spur B Hocke",
+  "reached": 4000,
+  "time": 171.2,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 1292,
+    "impact": 2.4,
+    "air": 0.42,
+    "dist": 8,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 28.619849804315855,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 1284,
+    "v": 21.5,
+    "vy": -9.3,
+    "x": -55
+   }
+  ],
+  "issues": [],
+  "features": 9,
+  "skipped": 0,
+  "zones": "S200 G815 C464 R471 G471 F527 G541 B436 G794 C231 B522"
+ },
+ {
+  "seed": 99,
+  "mode": "Spur A aufrecht",
+  "reached": 4000,
+  "time": 208.4,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 2293,
+    "impact": 3,
+    "air": 0.53,
+    "dist": 7.4,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 25.309900188816723,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 2286,
+    "v": 15.1,
+    "vy": -5.6,
+    "x": -63
+   }
+  ],
+  "issues": [],
+  "features": 11,
+  "skipped": 0,
+  "zones": "S200 G717 C228 B297 R564 C483 G620 R370 B352 F403 C245 F406 R421"
+ },
+ {
+  "seed": 99,
+  "mode": "Spur A Hocke",
+  "reached": 4000,
+  "time": 167.9,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 2300,
+    "impact": 3.5,
+    "air": 0.69,
+    "dist": 13.6,
+    "feat": "cliff"
+   },
+   {
+    "d": 3698,
+    "impact": 3.2,
+    "air": 0.79,
+    "dist": 21.1,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 31.557093550816006,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 2286,
+    "v": 21.3,
+    "vy": -7.5,
+    "x": -64
+   },
+   {
+    "d": 3677,
+    "v": 30,
+    "vy": -11.7,
+    "x": 59
+   }
+  ],
+  "issues": [],
+  "features": 11,
+  "skipped": 0,
+  "zones": "S200 G717 C228 B297 R564 C483 G620 R370 B352 F403 C245 F406 R421"
+ },
+ {
+  "seed": 99,
+  "mode": "Spur B Hocke",
+  "reached": 4000,
+  "time": 173.2,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 2299,
+    "impact": 3.4,
+    "air": 0.67,
+    "dist": 12.7,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 28.57065659207646,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 2286,
+    "v": 20.6,
+    "vy": -7.2,
+    "x": -64
+   }
+  ],
+  "issues": [],
+  "features": 11,
+  "skipped": 0,
+  "zones": "S200 G717 C228 B297 R564 C483 G620 R370 B352 F403 C245 F406 R421"
+ },
+ {
+  "seed": 106,
+  "mode": "Spur A aufrecht",
+  "reached": 4000,
+  "time": 221.3,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 2158,
+    "impact": 2.7,
+    "air": 0.42,
+    "dist": 5.8,
+    "feat": "cliff"
+   },
+   {
+    "d": 3554,
+    "impact": 4.9,
+    "air": 0.83,
+    "dist": 11.1,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 25.24761400185772,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 2152,
+    "v": 15.8,
+    "vy": -7.1,
+    "x": 66
+   },
+   {
+    "d": 3543,
+    "v": 14.7,
+    "vy": -5.5,
+    "x": -67
+   }
+  ],
+  "issues": [],
+  "features": 9,
+  "skipped": 0,
+  "zones": "S200 G463 F447 R338 G465 C411 B419 R576 C388 R402 C209 F407 R420"
+ },
+ {
+  "seed": 106,
+  "mode": "Spur A Hocke",
+  "reached": 4000,
+  "time": 175.9,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 2165,
+    "impact": 3.8,
+    "air": 0.69,
+    "dist": 13.1,
+    "feat": "cliff"
+   },
+   {
+    "d": 3563,
+    "impact": 6.3,
+    "air": 1.07,
+    "dist": 19.8,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 30.261453709781936,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 2152,
+    "v": 20.7,
+    "vy": -8,
+    "x": 67
+   },
+   {
+    "d": 3543,
+    "v": 19.9,
+    "vy": -6.7,
+    "x": -69
+   }
+  ],
+  "issues": [],
+  "features": 9,
+  "skipped": 0,
+  "zones": "S200 G463 F447 R338 G465 C411 B419 R576 C388 R402 C209 F407 R420"
+ },
+ {
+  "seed": 106,
+  "mode": "Spur B Hocke",
+  "reached": 4000,
+  "time": 181.8,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 2164,
+    "impact": 3.7,
+    "air": 0.68,
+    "dist": 12.5,
+    "feat": "cliff"
+   },
+   {
+    "d": 3561,
+    "impact": 6,
+    "air": 1.03,
+    "dist": 18.4,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 28.604473607967183,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 2152,
+    "v": 20.4,
+    "vy": -7.9,
+    "x": 67
+   },
+   {
+    "d": 3543,
+    "v": 19.2,
+    "vy": -6.4,
+    "x": -69
+   }
+  ],
+  "issues": [],
+  "features": 9,
+  "skipped": 0,
+  "zones": "S200 G463 F447 R338 G465 C411 B419 R576 C388 R402 C209 F407 R420"
+ },
+ {
+  "seed": 113,
+  "mode": "Spur A aufrecht",
+  "reached": 4000,
+  "time": 204.3,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 2827,
+    "impact": 4.2,
+    "air": 1.14,
+    "dist": 23.8,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 26.72475569266111,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 2804,
+    "v": 23,
+    "vy": -7.7,
+    "x": -69
+   }
+  ],
+  "issues": [],
+  "features": 9,
+  "skipped": 0,
+  "zones": "S200 G595 R334 F451 G657 F431 B385 G449 C434 F428 B349 C243 F392"
+ },
+ {
+  "seed": 113,
+  "mode": "Spur A Hocke",
+  "reached": 4000,
+  "time": 165.4,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 3766,
+    "impact": 2,
+    "air": 0.4,
+    "dist": 8,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 30.335914866663924,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 3758,
+    "v": 22.1,
+    "vy": -8.8,
+    "x": -62
+   }
+  ],
+  "issues": [],
+  "features": 9,
+  "skipped": 0,
+  "zones": "S200 G595 R334 F451 G657 F431 B385 G449 C434 F428 B349 C243 F392"
+ },
+ {
+  "seed": 113,
+  "mode": "Spur B Hocke",
+  "reached": 4000,
+  "time": 172.5,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 3766,
+    "impact": 2,
+    "air": 0.41,
+    "dist": 8,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 28.676764358729653,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 3758,
+    "v": 21.6,
+    "vy": -8.6,
+    "x": -62
+   }
+  ],
+  "issues": [],
+  "features": 9,
+  "skipped": 0,
+  "zones": "S200 G595 R334 F451 G657 F431 B385 G449 C434 F428 B349 C243 F392"
+ },
+ {
+  "seed": 120,
+  "mode": "Spur A aufrecht",
+  "reached": 4000,
+  "time": 217.4,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 3540,
+    "impact": 2.7,
+    "air": 0.35,
+    "dist": 5,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 25.168095507775366,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 3535,
+    "v": 15.9,
+    "vy": -6.4,
+    "x": -81
+   }
+  ],
+  "issues": [],
+  "features": 12,
+  "skipped": 0,
+  "zones": "S200 G416 B385 G801 F549 G548 R417 C373 F355 R419 C275 B268 C253"
+ },
+ {
+  "seed": 120,
+  "mode": "Spur A Hocke",
+  "reached": 4000,
+  "time": 173.7,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 3546,
+    "impact": 3.6,
+    "air": 0.57,
+    "dist": 11.4,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 30.195814516434762,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 3534,
+    "v": 21.7,
+    "vy": -7.8,
+    "x": -82
+   }
+  ],
+  "issues": [],
+  "features": 12,
+  "skipped": 0,
+  "zones": "S200 G416 B385 G801 F549 G548 R417 C373 F355 R419 C275 B268 C253"
+ },
+ {
+  "seed": 120,
+  "mode": "Spur B Hocke",
+  "reached": 4000,
+  "time": 177.6,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 3545,
+    "impact": 3.4,
+    "air": 0.53,
+    "dist": 10.4,
+    "feat": "cliff"
+   }
+  ],
+  "topSpeed": 28.529219377205166,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 3534,
+    "v": 21,
+    "vy": -7.5,
+    "x": -82
+   }
+  ],
+  "issues": [],
+  "features": 12,
+  "skipped": 0,
+  "zones": "S200 G416 B385 G801 F549 G548 R417 C373 F355 R419 C275 B268 C253"
+ },
+ {
+  "seed": 127,
+  "mode": "Spur A aufrecht",
+  "reached": 4000,
+  "time": 209.9,
+  "crashes": [],
+  "landings": [],
+  "topSpeed": 24.578905665221306,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "issues": [],
+  "features": 8,
+  "skipped": 0,
+  "zones": "S200 G467 B458 R408 G599 R429 B426 R494 C253 G689 F327 C406"
+ },
+ {
+  "seed": 127,
+  "mode": "Spur A Hocke",
+  "reached": 4000,
+  "time": 168.6,
+  "crashes": [],
+  "landings": [],
+  "topSpeed": 30.010691455761446,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "issues": [],
+  "features": 8,
+  "skipped": 0,
+  "zones": "S200 G467 B458 R408 G599 R429 B426 R494 C253 G689 F327 C406"
+ },
+ {
+  "seed": 127,
+  "mode": "Spur B Hocke",
+  "reached": 4000,
+  "time": 174.3,
+  "crashes": [],
+  "landings": [],
+  "topSpeed": 28.06384912962521,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "issues": [],
+  "features": 8,
+  "skipped": 0,
+  "zones": "S200 G467 B458 R408 G599 R429 B426 R494 C253 G689 F327 C406"
+ },
+ {
+  "seed": 134,
+  "mode": "Spur A aufrecht",
+  "reached": 4000,
+  "time": 207.8,
+  "crashes": [],
+  "landings": [],
+  "topSpeed": 25.477260528325445,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "issues": [],
+  "features": 6,
+  "skipped": 0,
+  "zones": "S200 G540 B293 G603 R283 F389 B375 R438 F529 G597 C460 F416 C419"
+ },
+ {
+  "seed": 134,
+  "mode": "Spur A Hocke",
+  "reached": 4000,
+  "time": 169,
+  "crashes": [],
+  "landings": [],
+  "topSpeed": 30.479786447188502,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "issues": [],
+  "features": 6,
+  "skipped": 0,
+  "zones": "S200 G540 B293 G603 R283 F389 B375 R438 F529 G597 C460 F416 C419"
+ },
+ {
+  "seed": 134,
+  "mode": "Spur B Hocke",
+  "reached": 4000,
+  "time": 174.1,
+  "crashes": [],
+  "landings": [],
+  "topSpeed": 28.821588144527404,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "issues": [],
+  "features": 6,
+  "skipped": 0,
+  "zones": "S200 G540 B293 G603 R283 F389 B375 R438 F529 G597 C460 F416 C419"
+ },
+ {
+  "seed": 141,
+  "mode": "Spur A aufrecht",
+  "reached": 4000,
+  "time": 207.8,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 1019,
+    "impact": 12.5,
+    "air": 2.68,
+    "dist": 49,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1108,
+    "impact": 10.6,
+    "air": 2.43,
+    "dist": 42.5,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 31.071375271614436,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 978,
+    "v": 19.9,
+    "vy": -0.5,
+    "x": 20
+   },
+   {
+    "d": 1065,
+    "v": 19.9,
+    "vy": -6.1,
+    "x": -21
+   }
+  ],
+  "issues": [],
+  "features": 12,
+  "skipped": 0,
+  "zones": "S200 G375 B346 C207 G734 B411 R319 F382 C235 G742 C202 F522 B390 G567"
+ },
+ {
+  "seed": 141,
+  "mode": "Spur A Hocke",
+  "reached": 4000,
+  "time": 170.7,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 1008,
+    "impact": 14.4,
+    "air": 2.95,
+    "dist": 64.2,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1093,
+    "impact": 7.2,
+    "air": 1.66,
+    "dist": 25.5,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 32.29091986651984,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 965,
+    "v": 23.3,
+    "vy": 1.1,
+    "x": 34
+   },
+   {
+    "d": 1068,
+    "v": 16.8,
+    "vy": -5.8,
+    "x": -17
+   }
+  ],
+  "issues": [],
+  "features": 12,
+  "skipped": 0,
+  "zones": "S200 G375 B346 C207 G734 B411 R319 F382 C235 G742 C202 F522 B390 G567"
+ },
+ {
+  "seed": 141,
+  "mode": "Spur B Hocke",
+  "reached": 4000,
+  "time": 175,
+  "crashes": [],
+  "landings": [
+   {
+    "d": 1021,
+    "impact": 14,
+    "air": 2.76,
+    "dist": 59.4,
+    "feat": "-",
+    "lane": -1
+   }
+  ],
+  "topSpeed": 31.46495349090061,
+  "stuck": 0,
+  "hits": 0,
+  "respawns": 0,
+  "takeoffs": [
+   {
+    "d": 975,
+    "v": 22.9,
+    "vy": 0.1,
+    "x": 24
+   }
+  ],
+  "issues": [],
+  "features": 12,
+  "skipped": 0,
+  "zones": "S200 G375 B346 C207 G734 B411 R319 F382 C235 G742 C202 F522 B390 G567"
+ }
+]

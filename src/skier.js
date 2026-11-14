@@ -213,14 +213,15 @@ export class Skier {
     // Oberkörper
     const bend = 0.34 + 0.70 * c - air * 0.12 * (1 - grab) * (1 - tuck);
     tC.copy(W0).applyMatrix4(this.mPel);
-    eA.set(-bend, s.steer * 0.18 + spin * 0.45 + grab * 0.2 + (crash ? Math.sin(ca * 1.3) * 0.5 : 0), -lean * 0.18);
+    const look = s.look || 0;   // rückwärts fahren: Oberkörper dreht mit, Kopf schaut über die Schulter in Fahrtrichtung
+    eA.set(-bend, s.steer * 0.18 + spin * 0.45 + grab * 0.2 + look * 0.55 + (crash ? Math.sin(ca * 1.3) * 0.5 : 0), -lean * 0.18);
     qA.setFromEuler(eA);
     mR.makeRotationFromQuaternion(qA);
     this.mCh.copy(this.setBone(CH, tC, mR, W0));
 
     // Kopf: blickt nach vorne, leicht in die Kurve bzw. Drehrichtung
     tC.copy(N0).applyMatrix4(this.mCh);
-    eA.set(bend * 0.8 - tuck * 0.35, s.steer * 0.25 + spin * 0.5, 0);
+    eA.set(bend * 0.8 - tuck * 0.35, s.steer * 0.25 + spin * 0.5 + look * 1.15, 0);
     qB.setFromEuler(eA).premultiply(qA);
     mR.makeRotationFromQuaternion(qB).scale(tD.set(1.08, 1.08, 1.08));
     this.setBone(HD, tC, mR, N0);

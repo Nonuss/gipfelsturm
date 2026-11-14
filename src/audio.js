@@ -33,6 +33,19 @@ export class GameAudio {
     this.glide = loop('bandpass', 2600, 0.8);
     this.scrape = loop('highpass', 3500, 0.5);
     this.powder = loop('lowpass', 650, 0.3);
+    // Helikopter: tiefes Rauschen, rhythmisch mit dem Rotor (ca. 18 Schläge pro Sekunde) moduliert
+    this.heli = loop('lowpass', 220, 0.7);
+    const lfo = ctx.createOscillator(), lg = ctx.createGain();
+    lfo.type = 'square'; lfo.frequency.value = 18; lg.gain.value = 0;
+    lfo.connect(lg); lg.connect(this.heli.g.gain); lfo.start();
+    this.heliLfo = lg;
+  }
+
+  setHeli(v) {
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    this.heli.g.gain.setTargetAtTime(v * 0.35, t, 0.15);
+    this.heliLfo.gain.setTargetAtTime(v * 0.3, t, 0.15);
   }
 
   setMuted(m) {

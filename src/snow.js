@@ -56,7 +56,10 @@ const FRAG_NORMAL = /* glsl */ `
   // sonst flimmern sie in der Ferne und das Bild wirkt pixelig (besonders bei niedriger Auflösung am Handy).
   float pxw = max(length(fwidth(p)), 1e-4);
 #ifdef LOWQ
-  vec2 grad = vec2(0.);
+  // Niedrig: eine günstige Oktave Schneestruktur (nur nah und im Pulver), damit Tiefschnee nicht flach-weiß wirkt
+  float fL = (1.0 - smoothstep(25.0, 140.0, camDist)) * (1.0 - smoothstep(0.08, 0.3, pxw));
+  float l0 = sNoise(p*0.9), lx = sNoise((p+vec2(0.12,0.))*0.9), lz = sNoise((p+vec2(0.,0.12))*0.9);
+  vec2 grad = vec2(lx-l0, lz-l0)/0.12 * 0.07 * fL * (1.0 - rockF) * (0.4 + 0.6*vPow);
 #else
   float fNear = 1.0 - smoothstep(6.0, 40.0, camDist);
   float fMid = 1.0 - smoothstep(80.0, 320.0, camDist);

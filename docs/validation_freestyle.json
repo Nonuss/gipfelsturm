@@ -1044,9 +1044,9 @@
    "Zone 7: Mega Air bei 4874 m landet bei Höchsttempo hart (20.7 m/s)",
    "Zone 7: Kicker (Seitenlinie) bei 4927 m verworfen (keine sichere Landung)"
   ],
-  "features": 62,
-  "skipped": 4,
-  "zones": "S220 J742 M692 R812 M666 J627 R622 M820 B343"
+  "features": 74,
+  "skipped": 3,
+  "zones": "S220 J742 M692 R812 M666 J627 R622 M820 R617"
  },
  {
   "seed": 15,
@@ -1293,9 +1293,9 @@
    "Zone 7: Mega Air bei 4874 m landet bei Höchsttempo hart (20.7 m/s)",
    "Zone 7: Kicker (Seitenlinie) bei 4927 m verworfen (keine sichere Landung)"
   ],
-  "features": 62,
-  "skipped": 4,
-  "zones": "S220 J742 M692 R812 M666 J627 R622 M820 B343"
+  "features": 74,
+  "skipped": 3,
+  "zones": "S220 J742 M692 R812 M666 J627 R622 M820 R617"
  },
  {
   "seed": 15,
@@ -1554,9 +1554,9 @@
    "Zone 7: Mega Air bei 4874 m landet bei Höchsttempo hart (20.7 m/s)",
    "Zone 7: Kicker (Seitenlinie) bei 4927 m verworfen (keine sichere Landung)"
   ],
-  "features": 62,
-  "skipped": 4,
-  "zones": "S220 J742 M692 R812 M666 J627 R622 M820 B343"
+  "features": 74,
+  "skipped": 3,
+  "zones": "S220 J742 M692 R812 M666 J627 R622 M820 R617"
  },
  {
   "seed": 22,
@@ -3097,7 +3097,7 @@
   "seed": 36,
   "mode": "Spur A aufrecht",
   "reached": 4000,
-  "time": 196.4,
+  "time": 195.1,
   "crashes": [],
   "landings": [
    {
@@ -3189,63 +3189,79 @@
     "lane": 0
    },
    {
-    "d": 1813,
-    "impact": 8,
-    "air": 2.08,
-    "dist": 31.3,
-    "feat": "Big Air",
-    "lane": 0
-   },
-   {
-    "d": 1868,
-    "impact": 9.5,
-    "air": 1.09,
-    "dist": 22.3,
-    "feat": "Big Air",
-    "lane": 0
-   },
-   {
-    "d": 2253,
-    "impact": 10.3,
-    "air": 2.24,
-    "dist": 42.7,
-    "feat": "Tisch XL",
-    "lane": 0
-   },
-   {
-    "d": 2312,
-    "impact": 10.6,
-    "air": 1.24,
-    "dist": 25.4,
-    "feat": "Tisch XL",
-    "lane": 0
-   },
-   {
-    "d": 2483,
-    "impact": 10.3,
-    "air": 2.23,
-    "dist": 42.6,
-    "feat": "Tisch XL",
-    "lane": 0
-   },
-   {
-    "d": 2551,
-    "impact": 10.9,
-    "air": 1.25,
-    "dist": 25.8,
-    "feat": "Tisch XL",
-    "lane": 0
-   },
-   {
-    "d": 3031,
-    "impact": 6.6,
-    "air": 1.38,
-    "dist": 25.4,
+    "d": 1939,
+    "impact": 7.5,
+    "air": 1.59,
+    "dist": 30.7,
     "feat": "Tisch",
     "lane": 0
    },
    {
-    "d": 3059,
+    "d": 1976,
+    "impact": 5.4,
+    "air": 0.75,
+    "dist": 14.7,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 2
+   },
+   {
+    "d": 2204,
+    "impact": 5.1,
+    "air": 1.16,
+    "dist": 23.4,
+    "feat": "Spine (links)",
+    "lane": 0
+   },
+   {
+    "d": 2252,
+    "impact": 11,
+    "air": 1.54,
+    "dist": 26.6,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2699,
+    "impact": 10.3,
+    "air": 2.25,
+    "dist": 42.9,
+    "feat": "Tisch XL",
+    "lane": 0
+   },
+   {
+    "d": 2758,
+    "impact": 10.6,
+    "air": 1.25,
+    "dist": 25.6,
+    "feat": "Tisch XL",
+    "lane": 0
+   },
+   {
+    "d": 2929,
+    "impact": 10.3,
+    "air": 2.24,
+    "dist": 42.8,
+    "feat": "Tisch XL",
+    "lane": 0
+   },
+   {
+    "d": 2997,
+    "impact": 10.8,
+    "air": 1.24,
+    "dist": 25.6,
+    "feat": "Tisch XL",
+    "lane": 0
+   },
+   {
+    "d": 3477,
+    "impact": 6.5,
+    "air": 1.37,
+    "dist": 25.3,
+    "feat": "Tisch",
+    "lane": 0
+   },
+   {
+    "d": 3505,
     "impact": 3.6,
     "air": 0.63,
     "dist": 11.7,
@@ -3253,39 +3269,23 @@
     "lane": 0
    },
    {
-    "d": 3213,
-    "impact": 4.9,
-    "air": 1.03,
-    "dist": 19.5,
+    "d": 3659,
+    "impact": 5,
+    "air": 1.04,
+    "dist": 19.7,
     "feat": "Spine (links)",
     "lane": 0
    },
    {
-    "d": 3253,
+    "d": 3699,
     "impact": 9.9,
     "air": 1.37,
-    "dist": 22.7,
+    "dist": 22.5,
     "feat": "Spine (links)",
-    "lane": 0
-   },
-   {
-    "d": 3760,
-    "impact": 7.4,
-    "air": 1.95,
-    "dist": 27.9,
-    "feat": "Big Air",
-    "lane": 0
-   },
-   {
-    "d": 3819,
-    "impact": 9.4,
-    "air": 1.08,
-    "dist": 22,
-    "feat": "Big Air",
     "lane": 0
    }
   ],
-  "topSpeed": 29.07383899786352,
+  "topSpeed": 26.631862697749785,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -3357,76 +3357,76 @@
     "x": -1
    },
    {
-    "d": 1781,
-    "v": 16.1,
-    "vy": 2.6,
+    "d": 1908,
+    "v": 20.5,
+    "vy": 3.2,
     "x": -1
    },
    {
-    "d": 1846,
-    "v": 24.7,
-    "vy": -12.4,
+    "d": 1962,
+    "v": 20.9,
+    "vy": -5.7,
     "x": 0
    },
    {
-    "d": 2210,
+    "d": 2181,
     "v": 21.1,
-    "vy": 5.3,
-    "x": -8
+    "vy": 2.5,
+    "x": 4
    },
    {
-    "d": 2286,
+    "d": 2226,
+    "v": 18,
+    "vy": -0.7,
+    "x": 7
+   },
+   {
+    "d": 2656,
+    "v": 21.1,
+    "vy": 5.4,
+    "x": -7
+   },
+   {
+    "d": 2732,
     "v": 22.4,
-    "vy": -6.9,
+    "vy": -6.8,
     "x": -8
    },
    {
-    "d": 2440,
+    "d": 2886,
     "v": 21.1,
     "vy": 5.3,
-    "x": -6
+    "x": -8
    },
    {
-    "d": 2525,
+    "d": 2971,
     "v": 22.7,
     "vy": -6.9,
-    "x": -5
+    "x": -8
    },
    {
-    "d": 3006,
+    "d": 3451,
     "v": 19.4,
     "vy": 3,
-    "x": 3
+    "x": 2
    },
    {
-    "d": 3048,
+    "d": 3493,
     "v": 19.6,
     "vy": -5.1,
     "x": -1
    },
    {
-    "d": 3193,
+    "d": 3639,
     "v": 19.6,
     "vy": 2.3,
     "x": -5
    },
    {
-    "d": 3231,
+    "d": 3677,
     "v": 17.1,
     "vy": -0.3,
     "x": -5
-   },
-   {
-    "d": 3732,
-    "v": 15.2,
-    "vy": 2.5,
-    "x": -1
-   },
-   {
-    "d": 3797,
-    "v": 24.5,
-    "vy": -12.3,
-    "x": 0
    }
   ],
   "grinds": [
@@ -3439,21 +3439,20 @@
   ],
   "issues": [
    "Zone 1: Kicker (Seitenlinie) bei 505 m landet bei Höchsttempo hart (17.9 m/s)",
-   "Zone 3: Big Air bei 1781 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 4: Tisch XL bei 2440 m landet bei Höchsttempo hart (17.6 m/s)",
-   "Zone 6: Big Air bei 3732 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 9: Mega Air bei 5008 m landet bei Höchsttempo hart (20.7 m/s)",
-   "Zone 9: Kicker (Seitenlinie) bei 5135 m verworfen (keine sichere Landung)"
+   "Zone 4: Tisch XL bei 2886 m landet bei Höchsttempo hart (17.6 m/s)",
+   "Zone 6: Big Air bei 4178 m landet bei Höchsttempo hart (19.9 m/s)",
+   "Zone 9: Mega Air bei 5454 m landet bei Höchsttempo hart (20.7 m/s)",
+   "Zone 9: Kicker (Seitenlinie) bei 5581 m verworfen (keine sichere Landung)"
   ],
-  "features": 49,
+  "features": 58,
   "skipped": 3,
-  "zones": "S220 J711 R709 B362 J695 S804 B541 C393 F149 M706"
+  "zones": "S220 J711 R709 S808 J695 S804 B541 C393 F149 M706"
  },
  {
   "seed": 36,
   "mode": "Spur A Hocke",
   "reached": 4000,
-  "time": 154.1,
+  "time": 151.8,
   "crashes": [],
   "landings": [
    {
@@ -3529,31 +3528,31 @@
     "lane": 0
    },
    {
-    "d": 1862,
-    "impact": 12.2,
-    "air": 3.7,
-    "dist": 80.3,
-    "feat": "Big Air",
+    "d": 1974,
+    "impact": 8,
+    "air": 2.51,
+    "dist": 65.8,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2225,
+    "impact": 5.6,
+    "air": 1.61,
+    "dist": 44.5,
+    "feat": "Spine (links)",
     "lane": 0
    },
    {
-    "d": 2285,
-    "impact": 13.5,
-    "air": 2.99,
-    "dist": 74.7,
-    "feat": "Tisch XL",
-    "lane": 0
+    "d": 2256,
+    "impact": 10.5,
+    "air": 1.07,
+    "dist": 28.9,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
    },
    {
-    "d": 2319,
-    "impact": 11.8,
-    "air": 1.26,
-    "dist": 32.4,
-    "feat": "Tisch XL",
-    "lane": 0
-   },
-   {
-    "d": 2514,
+    "d": 2730,
     "impact": 13.5,
     "air": 2.97,
     "dist": 74.2,
@@ -3561,47 +3560,55 @@
     "lane": 0
    },
    {
-    "d": 2558,
+    "d": 2764,
     "impact": 11.8,
+    "air": 1.27,
+    "dist": 32.6,
+    "feat": "Tisch XL",
+    "lane": 0
+   },
+   {
+    "d": 2961,
+    "impact": 13.6,
+    "air": 2.98,
+    "dist": 74.6,
+    "feat": "Tisch XL",
+    "lane": 0
+   },
+   {
+    "d": 3004,
+    "impact": 11.7,
     "air": 1.27,
     "dist": 32.9,
     "feat": "Tisch XL",
     "lane": 0
    },
    {
-    "d": 3065,
-    "impact": 10.9,
+    "d": 3511,
+    "impact": 10.8,
     "air": 2.32,
-    "dist": 60.1,
+    "dist": 59.9,
     "feat": "Tisch",
     "lane": 0
    },
    {
-    "d": 3225,
-    "impact": 0.3,
-    "air": 1.25,
-    "dist": 32.7,
+    "d": 3671,
+    "impact": 0.8,
+    "air": 1.24,
+    "dist": 32.5,
     "feat": "Spine (links)",
     "lane": 0
    },
    {
-    "d": 3246,
-    "impact": 8.6,
-    "air": 0.78,
-    "dist": 19.5,
+    "d": 3693,
+    "impact": 9,
+    "air": 0.82,
+    "dist": 20.6,
     "feat": "Spine (links)",
-    "lane": 0
-   },
-   {
-    "d": 3812,
-    "impact": 11.7,
-    "air": 3.68,
-    "dist": 79.7,
-    "feat": "Big Air",
     "lane": 0
    }
   ],
-  "topSpeed": 34.250851522781346,
+  "topSpeed": 31.37551279406119,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -3661,58 +3668,64 @@
     "x": -1
    },
    {
-    "d": 1781,
-    "v": 24.1,
-    "vy": 4.4,
+    "d": 1908,
+    "v": 28.3,
+    "vy": 4.8,
     "x": -1
    },
    {
-    "d": 2210,
+    "d": 2181,
+    "v": 29,
+    "vy": 3.6,
+    "x": 5
+   },
+   {
+    "d": 2227,
+    "v": 28.5,
+    "vy": -7,
+    "x": 6
+   },
+   {
+    "d": 2656,
     "v": 27.8,
-    "vy": 7.3,
+    "vy": 7.1,
     "x": -8
    },
    {
-    "d": 2286,
+    "d": 2732,
     "v": 27.9,
-    "vy": -8.3,
+    "vy": -8.1,
+    "x": -8
+   },
+   {
+    "d": 2886,
+    "v": 27.8,
+    "vy": 7.2,
     "x": -9
    },
    {
-    "d": 2440,
-    "v": 27.8,
-    "vy": 7.1,
-    "x": -6
-   },
-   {
-    "d": 2525,
+    "d": 2971,
     "v": 28.2,
-    "vy": -8.3,
-    "x": -4
+    "vy": -8.2,
+    "x": -8
    },
    {
-    "d": 3005,
+    "d": 3451,
     "v": 27.7,
     "vy": 4.5,
-    "x": 3
+    "x": 2
    },
    {
-    "d": 3193,
-    "v": 27.1,
+    "d": 3639,
+    "v": 27.2,
     "vy": 3.4,
     "x": -5
    },
    {
-    "d": 3227,
+    "d": 3672,
     "v": 26.7,
-    "vy": -8.4,
+    "vy": -7.9,
     "x": -3
-   },
-   {
-    "d": 3732,
-    "v": 24,
-    "vy": 4.3,
-    "x": -1
    }
   ],
   "grinds": [
@@ -3737,21 +3750,20 @@
   ],
   "issues": [
    "Zone 1: Kicker (Seitenlinie) bei 505 m landet bei Höchsttempo hart (17.9 m/s)",
-   "Zone 3: Big Air bei 1781 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 4: Tisch XL bei 2440 m landet bei Höchsttempo hart (17.6 m/s)",
-   "Zone 6: Big Air bei 3732 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 9: Mega Air bei 5008 m landet bei Höchsttempo hart (20.7 m/s)",
-   "Zone 9: Kicker (Seitenlinie) bei 5135 m verworfen (keine sichere Landung)"
+   "Zone 4: Tisch XL bei 2886 m landet bei Höchsttempo hart (17.6 m/s)",
+   "Zone 6: Big Air bei 4178 m landet bei Höchsttempo hart (19.9 m/s)",
+   "Zone 9: Mega Air bei 5454 m landet bei Höchsttempo hart (20.7 m/s)",
+   "Zone 9: Kicker (Seitenlinie) bei 5581 m verworfen (keine sichere Landung)"
   ],
-  "features": 49,
+  "features": 58,
   "skipped": 3,
-  "zones": "S220 J711 R709 B362 J695 S804 B541 C393 F149 M706"
+  "zones": "S220 J711 R709 S808 J695 S804 B541 C393 F149 M706"
  },
  {
   "seed": 36,
   "mode": "Spur B Hocke",
   "reached": 4000,
-  "time": 161.3,
+  "time": 158.8,
   "crashes": [],
   "landings": [
    {
@@ -3803,47 +3815,71 @@
     "lane": -1
    },
    {
-    "d": 1861,
-    "impact": 11.2,
-    "air": 3.67,
-    "dist": 79.2,
-    "feat": "Big Air",
-    "lane": 0
-   },
-   {
-    "d": 2200,
-    "impact": 3.1,
-    "air": 0.45,
-    "dist": 11.8,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2385,
-    "impact": 10.1,
-    "air": 2.22,
-    "dist": 56.9,
+    "d": 1854,
+    "impact": 3.7,
+    "air": 2,
+    "dist": 51.3,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
    },
    {
-    "d": 2423,
-    "impact": 7.2,
+    "d": 2017,
+    "impact": 5.8,
+    "air": 1.92,
+    "dist": 49.5,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 2
+   },
+   {
+    "d": 2027,
+    "impact": 3.2,
+    "air": 0.33,
+    "dist": 8.6,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 2
+   },
+   {
+    "d": 2268,
+    "impact": 4.8,
+    "air": 1.23,
+    "dist": 33,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2302,
+    "impact": 6.8,
+    "air": 0.68,
+    "dist": 17.8,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2832,
+    "impact": 10.3,
+    "air": 2.27,
+    "dist": 57.8,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2869,
+    "impact": 7.1,
     "air": 0.74,
     "dist": 19.2,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
    },
    {
-    "d": 2544,
-    "impact": 3.7,
-    "air": 0.51,
-    "dist": 13.4,
+    "d": 2998,
+    "impact": 5.9,
+    "air": 1.17,
+    "dist": 31.4,
     "feat": "Tisch XL",
     "lane": 0
    },
    {
-    "d": 2965,
+    "d": 3410,
     "impact": 5.9,
     "air": 0.62,
     "dist": 15.6,
@@ -3851,31 +3887,23 @@
     "lane": 1
    },
    {
-    "d": 3171,
-    "impact": 2.4,
-    "air": 0.5,
-    "dist": 13.2,
+    "d": 3619,
+    "impact": 2.7,
+    "air": 0.57,
+    "dist": 14.9,
     "feat": "Kicker (Seitenlinie)",
     "lane": 2
    },
    {
-    "d": 3197,
+    "d": 3643,
     "impact": 6.1,
     "air": 0.63,
     "dist": 16.2,
     "feat": "Spine (links)",
     "lane": 0
-   },
-   {
-    "d": 3805,
-    "impact": 5,
-    "air": 3.43,
-    "dist": 72.4,
-    "feat": "Big Air",
-    "lane": 0
    }
   ],
-  "topSpeed": 33.82307636140366,
+  "topSpeed": 29.50791504975934,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -3917,58 +3945,70 @@
     "x": 39
    },
    {
-    "d": 1781,
-    "v": 23.9,
-    "vy": 4.3,
-    "x": -5
-   },
-   {
-    "d": 2179,
-    "v": 27.9,
-    "vy": -3.9,
+    "d": 1803,
+    "v": 27.1,
+    "vy": 3.6,
     "x": 47
    },
    {
-    "d": 2328,
-    "v": 27.2,
-    "vy": 3.2,
-    "x": 43
+    "d": 1968,
+    "v": 27.1,
+    "vy": 3.3,
+    "x": 50
    },
    {
-    "d": 2404,
+    "d": 2019,
     "v": 28,
-    "vy": -8.4,
+    "vy": -10,
+    "x": 52
+   },
+   {
+    "d": 2235,
+    "v": 27.6,
+    "vy": 0.9,
+    "x": 53
+   },
+   {
+    "d": 2284,
+    "v": 27.9,
+    "vy": -6.8,
+    "x": 53
+   },
+   {
+    "d": 2774,
+    "v": 27.2,
+    "vy": 3.5,
     "x": 42
    },
    {
-    "d": 2522,
-    "v": 27.5,
-    "vy": -7.2,
-    "x": 43
+    "d": 2850,
+    "v": 28,
+    "vy": -8.3,
+    "x": 42
    },
    {
-    "d": 2949,
-    "v": 26.4,
+    "d": 2967,
+    "v": 27.8,
+    "vy": -2.7,
+    "x": 49
+   },
+   {
+    "d": 3395,
+    "v": 26.3,
     "vy": -6,
     "x": -42
    },
    {
-    "d": 3158,
+    "d": 3604,
     "v": 26.8,
-    "vy": -2.8,
-    "x": -57
+    "vy": -2.5,
+    "x": -53
    },
    {
-    "d": 3181,
-    "v": 27,
+    "d": 3627,
+    "v": 27.1,
     "vy": -6,
-    "x": -56
-   },
-   {
-    "d": 3732,
-    "v": 23.2,
-    "vy": 4.2,
-    "x": -1
+    "x": -52
    }
   ],
   "grinds": [
@@ -3995,31 +4035,18 @@
     "dist": 10.5,
     "kind": "rail",
     "clean": true
-   },
-   {
-    "d": 2189,
-    "dist": 9.9,
-    "kind": "box",
-    "clean": true
-   },
-   {
-    "d": 2531,
-    "dist": 9.9,
-    "kind": "rail",
-    "clean": true
    }
   ],
   "issues": [
    "Zone 1: Kicker (Seitenlinie) bei 505 m landet bei Höchsttempo hart (17.9 m/s)",
-   "Zone 3: Big Air bei 1781 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 4: Tisch XL bei 2440 m landet bei Höchsttempo hart (17.6 m/s)",
-   "Zone 6: Big Air bei 3732 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 9: Mega Air bei 5008 m landet bei Höchsttempo hart (20.7 m/s)",
-   "Zone 9: Kicker (Seitenlinie) bei 5135 m verworfen (keine sichere Landung)"
+   "Zone 4: Tisch XL bei 2886 m landet bei Höchsttempo hart (17.6 m/s)",
+   "Zone 6: Big Air bei 4178 m landet bei Höchsttempo hart (19.9 m/s)",
+   "Zone 9: Mega Air bei 5454 m landet bei Höchsttempo hart (20.7 m/s)",
+   "Zone 9: Kicker (Seitenlinie) bei 5581 m verworfen (keine sichere Landung)"
   ],
-  "features": 49,
+  "features": 58,
   "skipped": 3,
-  "zones": "S220 J711 R709 B362 J695 S804 B541 C393 F149 M706"
+  "zones": "S220 J711 R709 S808 J695 S804 B541 C393 F149 M706"
  },
  {
   "seed": 43,
@@ -7647,7 +7674,7 @@
   "seed": 71,
   "mode": "Spur A aufrecht",
   "reached": 4000,
-  "time": 188.7,
+  "time": 190.3,
   "crashes": [],
   "landings": [
    {
@@ -7715,23 +7742,14 @@
     "lane": 0
    },
    {
-    "d": 2058,
-    "impact": 8.4,
-    "air": 2.17,
-    "dist": 33.7,
-    "feat": "Big Air",
-    "lane": 0
+    "d": 2105,
+    "impact": 3.1,
+    "air": 0.38,
+    "dist": 6.9,
+    "feat": "cliff"
    },
    {
-    "d": 2111,
-    "impact": 9.4,
-    "air": 1.08,
-    "dist": 22.3,
-    "feat": "Big Air",
-    "lane": 0
-   },
-   {
-    "d": 2543,
+    "d": 2573,
     "impact": 11.7,
     "air": 2.59,
     "dist": 50.5,
@@ -7739,63 +7757,47 @@
     "lane": 0
    },
    {
-    "d": 2615,
+    "d": 2645,
     "impact": 10.7,
-    "air": 1.15,
-    "dist": 25.1,
+    "air": 1.14,
+    "dist": 24.9,
     "feat": "Kicker (Seitenlinie)",
     "lane": 2
    },
    {
-    "d": 2774,
-    "impact": 12.7,
+    "d": 2805,
+    "impact": 12.8,
     "air": 2.62,
-    "dist": 51.9,
+    "dist": 52.1,
     "feat": "Step-down XL",
     "lane": 0
    },
    {
-    "d": 2845,
-    "impact": 8.1,
+    "d": 2876,
+    "impact": 8,
     "air": 0.83,
     "dist": 18.6,
     "feat": "Step-down XL",
     "lane": 0
    },
    {
-    "d": 3145,
-    "impact": 10.4,
-    "air": 1.89,
-    "dist": 37.9,
+    "d": 3175,
+    "impact": 10.3,
+    "air": 1.88,
+    "dist": 37.7,
     "feat": "Gap",
     "lane": 0
    },
    {
-    "d": 3203,
-    "impact": 0,
-    "air": 0.02,
-    "dist": 0.3,
-    "feat": "Gap",
-    "lane": 0
-   },
-   {
-    "d": 3219,
-    "impact": 4.2,
-    "air": 0.77,
-    "dist": 15.7,
+    "d": 3252,
+    "impact": 3.2,
+    "air": 0.41,
+    "dist": 8.3,
     "feat": "-",
     "lane": -1
-   },
-   {
-    "d": 3992,
-    "impact": 8,
-    "air": 1.7,
-    "dist": 33.7,
-    "feat": "Tisch",
-    "lane": 0
    }
   ],
-  "topSpeed": 29.140253715541814,
+  "topSpeed": 27.611934598251306,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -7849,64 +7851,60 @@
     "x": 10
    },
    {
-    "d": 2024,
-    "v": 16.6,
-    "vy": 2.8,
-    "x": 0
+    "d": 2098,
+    "v": 19.5,
+    "vy": -6.7,
+    "x": -67
    },
    {
-    "d": 2089,
-    "v": 24.8,
-    "vy": -12.4,
-    "x": 0
-   },
-   {
-    "d": 2492,
+    "d": 2523,
     "v": 22,
     "vy": 6.1,
-    "x": 0
+    "x": 1
    },
    {
-    "d": 2590,
+    "d": 2620,
     "v": 24.2,
     "vy": -8.1,
     "x": 2
    },
    {
-    "d": 2723,
+    "d": 2753,
     "v": 22.1,
     "vy": 4.8,
     "x": 2
    },
    {
-    "d": 2827,
+    "d": 2857,
     "v": 24.4,
     "vy": -8.2,
     "x": 1
    },
    {
-    "d": 3107,
+    "d": 3137,
     "v": 21.5,
     "vy": 3.4,
     "x": 1
    },
    {
-    "d": 3203,
-    "v": 21,
-    "vy": -1,
+    "d": 3233,
+    "v": 21.1,
+    "vy": -1.2,
     "x": -1
    },
    {
-    "d": 3203,
-    "v": 21,
-    "vy": -1.3,
-    "x": -1
-   },
-   {
-    "d": 3959,
+    "d": 3989,
     "v": 21.2,
     "vy": 3.4,
     "x": 2
+   }
+  ],
+  "grinds": [
+   {
+    "d": 3244,
+    "dist": 11,
+    "kind": "box",
+    "clean": true
    }
   ],
   "issues": [
@@ -7914,21 +7912,20 @@
    "Zone 2: Tisch bei 1297 m landet bei Höchsttempo hart (18.6 m/s)",
    "Zone 2: Spine (links) bei 1611 m landet bei Höchsttempo hart (17 m/s)",
    "Zone 2: Spine (rechts) bei 1611 m landet bei Höchsttempo hart (17 m/s)",
-   "Zone 3: Big Air bei 2024 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 4: Kicker XL bei 2492 m landet bei Höchsttempo hart (19.6 m/s)",
-   "Zone 4: Step-down XL bei 2723 m landet bei Höchsttempo hart (19.7 m/s)",
-   "Zone 4: Kicker (Seitenlinie) bei 2589 m landet bei Höchsttempo hart (18.5 m/s)",
-   "Zone 4: Kicker (Seitenlinie) bei 2594 m landet bei Höchsttempo hart (19.9 m/s)"
+   "Zone 4: Kicker XL bei 2523 m landet bei Höchsttempo hart (19.6 m/s)",
+   "Zone 4: Step-down XL bei 2753 m landet bei Höchsttempo hart (19.7 m/s)",
+   "Zone 4: Kicker (Seitenlinie) bei 2619 m landet bei Höchsttempo hart (18.5 m/s)",
+   "Zone 4: Kicker (Seitenlinie) bei 2624 m landet bei Höchsttempo hart (19.9 m/s)"
   ],
-  "features": 70,
+  "features": 68,
   "skipped": 5,
-  "zones": "S220 J813 S785 B455 J730 R645 S802 R608 J892"
+  "zones": "S220 J813 S785 C486 J730 R645 S802 R608 J892"
  },
  {
   "seed": 71,
   "mode": "Spur A Hocke",
   "reached": 4000,
-  "time": 151,
+  "time": 151.9,
   "crashes": [],
   "landings": [
    {
@@ -7996,15 +7993,22 @@
     "lane": 0
    },
    {
-    "d": 2112,
-    "impact": 16.5,
-    "air": 3.9,
-    "dist": 88.3,
-    "feat": "Big Air",
-    "lane": 0
+    "d": 1901,
+    "impact": 2.9,
+    "air": 0.43,
+    "dist": 11.6,
+    "feat": "-",
+    "lane": -1
    },
    {
-    "d": 2576,
+    "d": 2110,
+    "impact": 2.8,
+    "air": 0.47,
+    "dist": 11.7,
+    "feat": "cliff"
+   },
+   {
+    "d": 2606,
     "impact": 14.9,
     "air": 3.37,
     "dist": 84,
@@ -8012,7 +8016,7 @@
     "lane": 0
    },
    {
-    "d": 2620,
+    "d": 2650,
     "impact": 10.7,
     "air": 1.16,
     "dist": 30.6,
@@ -8020,15 +8024,15 @@
     "lane": 2
    },
    {
-    "d": 2806,
-    "impact": 15.3,
-    "air": 3.29,
-    "dist": 83.7,
+    "d": 2836,
+    "impact": 15.2,
+    "air": 3.27,
+    "dist": 83.2,
     "feat": "Step-down XL",
     "lane": 0
    },
    {
-    "d": 2850,
+    "d": 2880,
     "impact": 8.1,
     "air": 0.86,
     "dist": 23.3,
@@ -8036,7 +8040,7 @@
     "lane": 0
    },
    {
-    "d": 3170,
+    "d": 3201,
     "impact": 12.2,
     "air": 2.37,
     "dist": 63.2,
@@ -8044,7 +8048,7 @@
     "lane": 0
    }
   ],
-  "topSpeed": 35.352445863166054,
+  "topSpeed": 32.71509831083754,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -8098,43 +8102,49 @@
     "x": 6
    },
    {
-    "d": 2024,
-    "v": 25.4,
-    "vy": 4.6,
-    "x": 1
+    "d": 1891,
+    "v": 27.2,
+    "vy": -2.2,
+    "x": -57
    },
    {
-    "d": 2492,
-    "v": 28.3,
+    "d": 2098,
+    "v": 26.7,
+    "vy": -8.6,
+    "x": -66
+   },
+   {
+    "d": 2523,
+    "v": 28.2,
     "vy": 8,
     "x": 1
    },
    {
-    "d": 2589,
+    "d": 2620,
     "v": 29.1,
     "vy": -9.6,
-    "x": 3
-   },
-   {
-    "d": 2723,
-    "v": 28.4,
-    "vy": 6.4,
     "x": 2
    },
    {
-    "d": 2827,
-    "v": 29.8,
-    "vy": -9.7,
-    "x": -1
+    "d": 2753,
+    "v": 28.4,
+    "vy": 6.2,
+    "x": 2
    },
    {
-    "d": 3107,
+    "d": 2857,
+    "v": 29.8,
+    "vy": -9.8,
+    "x": 0
+   },
+   {
+    "d": 3137,
     "v": 28.7,
     "vy": 4.6,
     "x": 2
    },
    {
-    "d": 3959,
+    "d": 3989,
     "v": 28.7,
     "vy": 4.8,
     "x": 3
@@ -8145,21 +8155,20 @@
    "Zone 2: Tisch bei 1297 m landet bei Höchsttempo hart (18.6 m/s)",
    "Zone 2: Spine (links) bei 1611 m landet bei Höchsttempo hart (17 m/s)",
    "Zone 2: Spine (rechts) bei 1611 m landet bei Höchsttempo hart (17 m/s)",
-   "Zone 3: Big Air bei 2024 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 4: Kicker XL bei 2492 m landet bei Höchsttempo hart (19.6 m/s)",
-   "Zone 4: Step-down XL bei 2723 m landet bei Höchsttempo hart (19.7 m/s)",
-   "Zone 4: Kicker (Seitenlinie) bei 2589 m landet bei Höchsttempo hart (18.5 m/s)",
-   "Zone 4: Kicker (Seitenlinie) bei 2594 m landet bei Höchsttempo hart (19.9 m/s)"
+   "Zone 4: Kicker XL bei 2523 m landet bei Höchsttempo hart (19.6 m/s)",
+   "Zone 4: Step-down XL bei 2753 m landet bei Höchsttempo hart (19.7 m/s)",
+   "Zone 4: Kicker (Seitenlinie) bei 2619 m landet bei Höchsttempo hart (18.5 m/s)",
+   "Zone 4: Kicker (Seitenlinie) bei 2624 m landet bei Höchsttempo hart (19.9 m/s)"
   ],
-  "features": 70,
+  "features": 68,
   "skipped": 5,
-  "zones": "S220 J813 S785 B455 J730 R645 S802 R608 J892"
+  "zones": "S220 J813 S785 C486 J730 R645 S802 R608 J892"
  },
  {
   "seed": 71,
   "mode": "Spur B Hocke",
   "reached": 4000,
-  "time": 159.1,
+  "time": 162.1,
   "crashes": [],
   "landings": [
    {
@@ -8235,39 +8244,38 @@
     "lane": 2
    },
    {
-    "d": 2098,
-    "impact": 13.1,
-    "air": 3.27,
-    "dist": 76.6,
-    "feat": "Big Air",
-    "lane": 0
+    "d": 2145,
+    "impact": 15.7,
+    "air": 2.24,
+    "dist": 45.9,
+    "feat": "cliff"
    },
    {
-    "d": 2472,
-    "impact": 4.4,
-    "air": 0.86,
-    "dist": 22.8,
+    "d": 2504,
+    "impact": 4.7,
+    "air": 0.92,
+    "dist": 24.5,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2651,
-    "impact": 10.8,
-    "air": 2.42,
-    "dist": 61.7,
+    "d": 2682,
+    "impact": 11.1,
+    "air": 2.48,
+    "dist": 63,
     "feat": "Kicker (Seitenlinie)",
     "lane": 2
    },
    {
-    "d": 2703,
+    "d": 2733,
     "impact": 7.5,
-    "air": 0.78,
-    "dist": 20,
+    "air": 0.77,
+    "dist": 19.8,
     "feat": "Kicker (Seitenlinie)",
     "lane": 2
    },
    {
-    "d": 2846,
+    "d": 2877,
     "impact": 3.5,
     "air": 0.49,
     "dist": 12.9,
@@ -8275,39 +8283,31 @@
     "lane": 0
    },
    {
-    "d": 3519,
-    "impact": 0,
-    "air": 0.01,
-    "dist": 0.2,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3552,
+    "d": 3583,
     "impact": 6.5,
-    "air": 1.25,
-    "dist": 33.5,
+    "air": 1.29,
+    "dist": 34.6,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3914,
+    "d": 3944,
     "impact": 9.4,
-    "air": 2.02,
-    "dist": 51.9,
+    "air": 2.03,
+    "dist": 52.1,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
    },
    {
-    "d": 3935,
-    "impact": 6.6,
-    "air": 0.68,
-    "dist": 17.6,
+    "d": 3965,
+    "impact": 6.7,
+    "air": 0.69,
+    "dist": 17.8,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
    }
   ],
-  "topSpeed": 33.404186838098134,
+  "topSpeed": 30.27823374482136,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -8367,63 +8367,57 @@
     "x": -27
    },
    {
-    "d": 2022,
-    "v": 25.7,
-    "vy": 2.4,
-    "x": -30
+    "d": 2099,
+    "v": 21.7,
+    "vy": -2.7,
+    "x": 19
    },
    {
-    "d": 2449,
-    "v": 28,
-    "vy": -5.3,
+    "d": 2480,
+    "v": 27.9,
+    "vy": -5,
     "x": -34
    },
    {
-    "d": 2589,
+    "d": 2619,
     "v": 27.3,
-    "vy": 3.1,
+    "vy": 3.5,
     "x": -33
    },
    {
-    "d": 2683,
+    "d": 2713,
     "v": 28,
     "vy": -9.3,
     "x": -34
    },
    {
-    "d": 2821,
+    "d": 2852,
     "v": 27.7,
     "vy": -8.3,
     "x": -39
    },
    {
-    "d": 3518,
+    "d": 3549,
     "v": 27.7,
     "vy": 0.2,
     "x": 39
    },
    {
-    "d": 3519,
-    "v": 27.7,
-    "vy": 0,
-    "x": 39
-   },
-   {
-    "d": 3862,
+    "d": 3892,
     "v": 27.2,
-    "vy": 3.5,
-    "x": 41
+    "vy": 3.6,
+    "x": 42
    },
    {
-    "d": 3917,
+    "d": 3947,
     "v": 27.2,
     "vy": -7.1,
-    "x": 43
+    "x": 44
    }
   ],
   "grinds": [
    {
-    "d": 2833,
+    "d": 2864,
     "dist": 12.3,
     "kind": "rail",
     "clean": true
@@ -8434,21 +8428,20 @@
    "Zone 2: Tisch bei 1297 m landet bei Höchsttempo hart (18.6 m/s)",
    "Zone 2: Spine (links) bei 1611 m landet bei Höchsttempo hart (17 m/s)",
    "Zone 2: Spine (rechts) bei 1611 m landet bei Höchsttempo hart (17 m/s)",
-   "Zone 3: Big Air bei 2024 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 4: Kicker XL bei 2492 m landet bei Höchsttempo hart (19.6 m/s)",
-   "Zone 4: Step-down XL bei 2723 m landet bei Höchsttempo hart (19.7 m/s)",
-   "Zone 4: Kicker (Seitenlinie) bei 2589 m landet bei Höchsttempo hart (18.5 m/s)",
-   "Zone 4: Kicker (Seitenlinie) bei 2594 m landet bei Höchsttempo hart (19.9 m/s)"
+   "Zone 4: Kicker XL bei 2523 m landet bei Höchsttempo hart (19.6 m/s)",
+   "Zone 4: Step-down XL bei 2753 m landet bei Höchsttempo hart (19.7 m/s)",
+   "Zone 4: Kicker (Seitenlinie) bei 2619 m landet bei Höchsttempo hart (18.5 m/s)",
+   "Zone 4: Kicker (Seitenlinie) bei 2624 m landet bei Höchsttempo hart (19.9 m/s)"
   ],
-  "features": 70,
+  "features": 68,
   "skipped": 5,
-  "zones": "S220 J813 S785 B455 J730 R645 S802 R608 J892"
+  "zones": "S220 J813 S785 C486 J730 R645 S802 R608 J892"
  },
  {
   "seed": 78,
   "mode": "Spur A aufrecht",
   "reached": 4000,
-  "time": 196.8,
+  "time": 192.1,
   "crashes": [],
   "landings": [
    {
@@ -8484,78 +8477,111 @@
     "lane": 1
    },
    {
-    "d": 1209,
-    "impact": 3.9,
-    "air": 0.49,
+    "d": 1240,
+    "impact": 7.8,
+    "air": 1.67,
+    "dist": 33.1,
+    "feat": "Tisch",
+    "lane": 0
+   },
+   {
+    "d": 1278,
+    "impact": 5.7,
+    "air": 0.77,
+    "dist": 15.6,
+    "feat": "Tisch",
+    "lane": 0
+   },
+   {
+    "d": 1881,
+    "impact": 7.7,
+    "air": 2.02,
+    "dist": 29.7,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 1938,
+    "impact": 9.4,
+    "air": 1.08,
+    "dist": 22.1,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 2322,
+    "impact": 3.8,
+    "air": 0.48,
     "dist": 9.8,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1499,
-    "impact": 2.8,
-    "air": 0.46,
-    "dist": 9.3,
+    "d": 2426,
+    "impact": 9,
+    "air": 1.89,
+    "dist": 35.6,
+    "feat": "Gap",
+    "lane": 0
+   },
+   {
+    "d": 2554,
+    "impact": 8.8,
+    "air": 1.88,
+    "dist": 35.5,
+    "feat": "Gap",
+    "lane": 0
+   },
+   {
+    "d": 2635,
+    "impact": 0,
+    "air": 0.02,
+    "dist": 0.4,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1807,
-    "impact": 4.5,
-    "air": 0.58,
-    "dist": 9.8,
-    "feat": "cliff"
-   },
-   {
-    "d": 1957,
-    "impact": 4.2,
-    "air": 0.38,
-    "dist": 8.4,
+    "d": 2653,
+    "impact": 4.7,
+    "air": 0.84,
+    "dist": 17.4,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2130,
-    "impact": 8.1,
-    "air": 2.12,
-    "dist": 32.3,
-    "feat": "Big Air",
+    "d": 2756,
+    "impact": 9.6,
+    "air": 1.91,
+    "dist": 36.3,
+    "feat": "Gap",
     "lane": 0
    },
    {
-    "d": 2185,
-    "impact": 9.5,
-    "air": 1.09,
-    "dist": 22.4,
-    "feat": "Big Air",
-    "lane": 0
-   },
-   {
-    "d": 2560,
-    "impact": 10.6,
-    "air": 2.3,
-    "dist": 44.5,
+    "d": 3079,
+    "impact": 10.4,
+    "air": 2.27,
+    "dist": 43.8,
     "feat": "Kicker XL",
     "lane": 0
    },
    {
-    "d": 2606,
-    "impact": 8.6,
-    "air": 1.06,
-    "dist": 21.6,
+    "d": 3126,
+    "impact": 8.5,
+    "air": 1.05,
+    "dist": 21.4,
     "feat": "Kicker XL",
     "lane": 0
    },
    {
-    "d": 2728,
-    "impact": 10,
-    "air": 2.17,
-    "dist": 41.3,
+    "d": 3248,
+    "impact": 9.9,
+    "air": 2.15,
+    "dist": 40.9,
     "feat": "Tisch XL",
     "lane": 0
    },
    {
-    "d": 2782,
+    "d": 3302,
     "impact": 10.4,
     "air": 1.22,
     "dist": 24.5,
@@ -8563,55 +8589,23 @@
     "lane": 0
    },
    {
-    "d": 3567,
-    "impact": 3.1,
-    "air": 0.43,
-    "dist": 9,
+    "d": 3712,
+    "impact": 3.7,
+    "air": 0.64,
+    "dist": 14,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3606,
-    "impact": 0,
-    "air": 0.02,
-    "dist": 0.4,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 3627,
-    "impact": 5.4,
-    "air": 0.98,
-    "dist": 20.9,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 3726,
-    "impact": 8.2,
-    "air": 1.75,
-    "dist": 34.7,
-    "feat": "Tisch",
-    "lane": 0
-   },
-   {
-    "d": 3772,
-    "impact": 6.6,
-    "air": 0.83,
-    "dist": 17,
-    "feat": "Tisch",
-    "lane": 0
-   },
-   {
-    "d": 3972,
-    "impact": 3.5,
-    "air": 1.18,
-    "dist": 25.4,
-    "feat": "Spine (links)",
+    "d": 3868,
+    "impact": 9.7,
+    "air": 1.84,
+    "dist": 35.2,
+    "feat": "Gap",
     "lane": 0
    }
   ],
-  "topSpeed": 29.11315779712972,
+  "topSpeed": 28.964914000969653,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -8641,113 +8635,107 @@
     "x": -7
    },
    {
-    "d": 1185,
-    "v": 20.3,
-    "vy": -3.7,
+    "d": 1207,
+    "v": 21.2,
+    "vy": 3.4,
+    "x": 2
+   },
+   {
+    "d": 1262,
+    "v": 21.5,
+    "vy": -5.8,
+    "x": -1
+   },
+   {
+    "d": 1852,
+    "v": 15.7,
+    "vy": 2.6,
     "x": 0
    },
    {
-    "d": 1490,
-    "v": 20.7,
-    "vy": -2.6,
+    "d": 1916,
+    "v": 24.6,
+    "vy": -12.3,
     "x": 1
    },
    {
-    "d": 1797,
-    "v": 18.2,
-    "vy": -6.4,
-    "x": 77
-   },
-   {
-    "d": 1950,
-    "v": 22.9,
-    "vy": -5.6,
-    "x": 57
-   },
-   {
-    "d": 2097,
-    "v": 16.3,
-    "vy": 2.7,
-    "x": -2
-   },
-   {
-    "d": 2162,
-    "v": 24.7,
-    "vy": -12.4,
+    "d": 2300,
+    "v": 20.8,
+    "vy": -4.3,
     "x": 0
    },
    {
-    "d": 2515,
-    "v": 21.6,
-    "vy": 5.8,
-    "x": 5
+    "d": 2391,
+    "v": 20.2,
+    "vy": 3.2,
+    "x": 0
    },
    {
-    "d": 2585,
-    "v": 22.2,
-    "vy": -6.5,
-    "x": 5
+    "d": 2519,
+    "v": 20.2,
+    "vy": 3.2,
+    "x": 0
    },
    {
-    "d": 2687,
+    "d": 2635,
+    "v": 21.3,
+    "vy": -1.2,
+    "x": -1
+   },
+   {
+    "d": 2635,
+    "v": 21.3,
+    "vy": -1.4,
+    "x": -1
+   },
+   {
+    "d": 2719,
+    "v": 20.4,
+    "vy": 3.3,
+    "x": -1
+   },
+   {
+    "d": 3035,
+    "v": 21.5,
+    "vy": 5.7,
+    "x": 2
+   },
+   {
+    "d": 3105,
+    "v": 22.1,
+    "vy": -6.6,
+    "x": 2
+   },
+   {
+    "d": 3207,
     "v": 21,
-    "vy": 5.3,
-    "x": 4
+    "vy": 5.2,
+    "x": 2
    },
    {
-    "d": 2757,
-    "v": 21.9,
+    "d": 3277,
+    "v": 22,
     "vy": -6.5,
-    "x": 3
+    "x": 1
    },
    {
-    "d": 3550,
-    "v": 21.6,
+    "d": 3698,
+    "v": 22.4,
     "vy": -2.2,
     "x": -1
    },
    {
-    "d": 3606,
-    "v": 22,
-    "vy": -1.3,
-    "x": -1
-   },
-   {
-    "d": 3606,
-    "v": 22,
-    "vy": -1.5,
-    "x": -1
-   },
-   {
-    "d": 3691,
-    "v": 21.2,
-    "vy": 3.4,
-    "x": 0
-   },
-   {
-    "d": 3755,
-    "v": 21.9,
-    "vy": -6.1,
-    "x": 1
-   },
-   {
-    "d": 3947,
-    "v": 22.4,
-    "vy": 2.1,
+    "d": 3833,
+    "v": 20.5,
+    "vy": 3.2,
     "x": 2
    }
   ],
   "grinds": [
    {
-    "d": 1199,
-    "dist": 13.6,
+    "d": 2312,
+    "dist": 12.2,
     "kind": "rail",
-    "clean": true
-   },
-   {
-    "d": 3558,
-    "dist": 8.8,
-    "kind": "box",
     "clean": true
    }
   ],
@@ -8755,20 +8743,23 @@
    "Zone 1: Kicker (Seitenlinie) bei 413 m landet bei Höchsttempo hart (17.8 m/s)",
    "Zone 1: Kicker (Seitenlinie) bei 743 m landet bei Höchsttempo hart (17.9 m/s)",
    "Zone 1: Kicker (Seitenlinie) bei 716 m landet bei Höchsttempo hart (18 m/s)",
-   "Zone 4: Big Air bei 2097 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 8: Mega Air bei 4608 m verworfen (keine sichere Landung)",
-   "Zone 8: Mega Air bei 4608 m landet bei Höchsttempo hart (23 m/s)",
-   "Zone 8: Kicker (Seitenlinie) bei 4735 m verworfen (keine sichere Landung)"
+   "Zone 3: Big Air bei 1851 m landet bei Höchsttempo hart (19.9 m/s)",
+   "Zone 7: Mega Air bei 4631 m verworfen (keine sichere Landung)",
+   "Zone 7: Mega Air bei 4631 m landet bei Höchsttempo hart (22.3 m/s)",
+   "Zone 8: Step-down XL bei 5101 m landet bei Höchsttempo hart (19 m/s)",
+   "Zone 8: Step-down XL bei 5345 m landet bei Höchsttempo hart (19.6 m/s)",
+   "Zone 8: Kicker (Seitenlinie) bei 5233 m landet bei Höchsttempo hart (20.2 m/s)",
+   "Zone 8: Kicker (Seitenlinie) bei 5232 m landet bei Höchsttempo hart (19.2 m/s)"
   ],
-  "features": 69,
-  "skipped": 3,
-  "zones": "S220 J729 R643 C359 B374 J745 B342 S707 M815 S775"
+  "features": 70,
+  "skipped": 9,
+  "zones": "S220 J729 S662 B561 R672 J745 R652 M716 J850"
  },
  {
   "seed": 78,
   "mode": "Spur A Hocke",
   "reached": 4000,
-  "time": 154,
+  "time": 151.6,
   "crashes": [],
   "landings": [
    {
@@ -8804,102 +8795,87 @@
     "lane": 1
    },
    {
-    "d": 1219,
-    "impact": 6.2,
-    "air": 1.18,
-    "dist": 32.8,
+    "d": 1275,
+    "impact": 8.2,
+    "air": 2.57,
+    "dist": 68,
+    "feat": "Tisch",
+    "lane": 0
+   },
+   {
+    "d": 1936,
+    "impact": 16.2,
+    "air": 3.82,
+    "dist": 84.8,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 2325,
+    "impact": 3.8,
+    "air": 0.49,
+    "dist": 13.3,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1816,
-    "impact": 4.5,
-    "air": 0.83,
-    "dist": 18.7,
-    "feat": "cliff"
-   },
-   {
-    "d": 2160,
-    "impact": 9.3,
-    "air": 2.62,
-    "dist": 62.4,
-    "feat": "Big Air",
+    "d": 2453,
+    "impact": 12.5,
+    "air": 2.41,
+    "dist": 61.9,
+    "feat": "Gap",
     "lane": 0
    },
    {
-    "d": 2190,
-    "impact": 9.4,
-    "air": 1.11,
-    "dist": 27.7,
-    "feat": "Big Air",
+    "d": 2579,
+    "impact": 12.3,
+    "air": 2.37,
+    "dist": 59.9,
+    "feat": "Gap",
     "lane": 0
    },
    {
-    "d": 2598,
-    "impact": 9.3,
-    "air": 3.31,
-    "dist": 82.8,
+    "d": 2664,
+    "impact": 5.6,
+    "air": 1.08,
+    "dist": 29,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2780,
+    "impact": 12.5,
+    "air": 2.39,
+    "dist": 60.9,
+    "feat": "Gap",
+    "lane": 0
+   },
+   {
+    "d": 3119,
+    "impact": 9.8,
+    "air": 3.34,
+    "dist": 83.4,
     "feat": "Kicker XL",
     "lane": 0
    },
    {
-    "d": 2763,
-    "impact": 4.1,
-    "air": 3.05,
-    "dist": 76.1,
+    "d": 3282,
+    "impact": 3.8,
+    "air": 3,
+    "dist": 75,
     "feat": "Tisch XL",
     "lane": 0
    },
    {
-    "d": 3557,
-    "impact": 1.5,
-    "air": 0.25,
-    "dist": 7,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3606,
-    "impact": 0,
-    "air": 0.02,
-    "dist": 0.5,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 3641,
-    "impact": 6.4,
-    "air": 1.23,
-    "dist": 35,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 3756,
-    "impact": 6,
-    "air": 2.43,
-    "dist": 64.8,
-    "feat": "Tisch",
-    "lane": 0
-   },
-   {
-    "d": 3767,
-    "impact": 3.9,
-    "air": 0.38,
-    "dist": 10.2,
-    "feat": "Tisch",
-    "lane": 0
-   },
-   {
-    "d": 3991,
-    "impact": 4.5,
-    "air": 1.57,
-    "dist": 43.7,
-    "feat": "Spine (links)",
+    "d": 3897,
+    "impact": 12.5,
+    "air": 2.41,
+    "dist": 63.9,
+    "feat": "Gap",
     "lane": 0
    }
   ],
-  "topSpeed": 33.51469917939724,
+  "topSpeed": 34.89872932410868,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -8929,96 +8905,95 @@
     "x": -7
    },
    {
-    "d": 1186,
-    "v": 28.6,
-    "vy": -0.4,
-    "x": -1
-   },
-   {
-    "d": 1798,
-    "v": 24.2,
-    "vy": -8,
-    "x": 79
-   },
-   {
-    "d": 2098,
-    "v": 25.4,
-    "vy": 1.2,
-    "x": -8
-   },
-   {
-    "d": 2162,
-    "v": 30.3,
-    "vy": -14.9,
-    "x": -8
-   },
-   {
-    "d": 2515,
-    "v": 28.2,
-    "vy": 7.6,
-    "x": 5
-   },
-   {
-    "d": 2687,
-    "v": 27.8,
-    "vy": 7.2,
-    "x": 5
-   },
-   {
-    "d": 3550,
-    "v": 28.9,
-    "vy": -6.3,
-    "x": -1
-   },
-   {
-    "d": 3605,
-    "v": 29.4,
-    "vy": -1.7,
-    "x": 0
-   },
-   {
-    "d": 3606,
-    "v": 29.4,
-    "vy": -2,
-    "x": 0
-   },
-   {
-    "d": 3691,
+    "d": 1207,
     "v": 28.7,
     "vy": 4.9,
+    "x": 2
+   },
+   {
+    "d": 1852,
+    "v": 24.8,
+    "vy": 4.5,
     "x": 1
    },
    {
-    "d": 3757,
-    "v": 30,
-    "vy": -12.8,
+    "d": 2300,
+    "v": 28.2,
+    "vy": -5.9,
+    "x": 0
+   },
+   {
+    "d": 2391,
+    "v": 27.6,
+    "vy": 4.6,
+    "x": 0
+   },
+   {
+    "d": 2519,
+    "v": 27,
+    "vy": 4.5,
+    "x": -1
+   },
+   {
+    "d": 2635,
+    "v": 27.5,
+    "vy": -1.3,
+    "x": -1
+   },
+   {
+    "d": 2719,
+    "v": 27.3,
+    "vy": 4.5,
+    "x": 0
+   },
+   {
+    "d": 3035,
+    "v": 28.2,
+    "vy": 7.8,
     "x": 2
    },
    {
-    "d": 3947,
-    "v": 29.2,
-    "vy": 2.8,
+    "d": 3207,
+    "v": 27.8,
+    "vy": 7.1,
     "x": 2
+   },
+   {
+    "d": 3833,
+    "v": 28.6,
+    "vy": 4.7,
+    "x": 3
+   }
+  ],
+  "grinds": [
+   {
+    "d": 2312,
+    "dist": 12.2,
+    "kind": "rail",
+    "clean": true
    }
   ],
   "issues": [
    "Zone 1: Kicker (Seitenlinie) bei 413 m landet bei Höchsttempo hart (17.8 m/s)",
    "Zone 1: Kicker (Seitenlinie) bei 743 m landet bei Höchsttempo hart (17.9 m/s)",
    "Zone 1: Kicker (Seitenlinie) bei 716 m landet bei Höchsttempo hart (18 m/s)",
-   "Zone 4: Big Air bei 2097 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 8: Mega Air bei 4608 m verworfen (keine sichere Landung)",
-   "Zone 8: Mega Air bei 4608 m landet bei Höchsttempo hart (23 m/s)",
-   "Zone 8: Kicker (Seitenlinie) bei 4735 m verworfen (keine sichere Landung)"
+   "Zone 3: Big Air bei 1851 m landet bei Höchsttempo hart (19.9 m/s)",
+   "Zone 7: Mega Air bei 4631 m verworfen (keine sichere Landung)",
+   "Zone 7: Mega Air bei 4631 m landet bei Höchsttempo hart (22.3 m/s)",
+   "Zone 8: Step-down XL bei 5101 m landet bei Höchsttempo hart (19 m/s)",
+   "Zone 8: Step-down XL bei 5345 m landet bei Höchsttempo hart (19.6 m/s)",
+   "Zone 8: Kicker (Seitenlinie) bei 5233 m landet bei Höchsttempo hart (20.2 m/s)",
+   "Zone 8: Kicker (Seitenlinie) bei 5232 m landet bei Höchsttempo hart (19.2 m/s)"
   ],
-  "features": 69,
-  "skipped": 3,
-  "zones": "S220 J729 R643 C359 B374 J745 B342 S707 M815 S775"
+  "features": 70,
+  "skipped": 9,
+  "zones": "S220 J729 S662 B561 R672 J745 R652 M716 J850"
  },
  {
   "seed": 78,
   "mode": "Spur B Hocke",
   "reached": 4000,
-  "time": 165,
+  "time": 164.7,
   "crashes": [],
   "landings": [
    {
@@ -9062,102 +9037,111 @@
     "lane": 1
    },
    {
-    "d": 1097,
-    "impact": 3.9,
-    "air": 0.75,
-    "dist": 18.9,
-    "feat": "-",
-    "lane": -1
+    "d": 1171,
+    "impact": 8.8,
+    "air": 1.87,
+    "dist": 46.7,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
    },
    {
-    "d": 1166,
-    "impact": 3.6,
-    "air": 0.47,
-    "dist": 11.9,
-    "feat": "-",
-    "lane": -1
+    "d": 1192,
+    "impact": 6.6,
+    "air": 0.68,
+    "dist": 17.1,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
    },
    {
-    "d": 1605,
-    "impact": 1.8,
-    "air": 0.16,
-    "dist": 4.3,
-    "feat": "-",
-    "lane": -1
+    "d": 1409,
+    "impact": 2.5,
+    "air": 0.53,
+    "dist": 14,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 2
    },
    {
-    "d": 1850,
-    "impact": 16.4,
-    "air": 2.42,
-    "dist": 52.2,
-    "feat": "cliff"
+    "d": 1450,
+    "impact": 6.8,
+    "air": 0.68,
+    "dist": 18,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 2
    },
    {
-    "d": 2123,
-    "impact": 5.7,
-    "air": 2.17,
-    "dist": 50.2,
-    "feat": "Big Air",
+    "d": 1766,
+    "impact": 3.1,
+    "air": 0.77,
+    "dist": 18.3,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 1782,
+    "impact": 5.4,
+    "air": 0.49,
+    "dist": 11.6,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2450,
+    "impact": 12.2,
+    "air": 2.36,
+    "dist": 59.2,
+    "feat": "Gap",
     "lane": 0
    },
    {
-    "d": 2690,
-    "impact": 9.5,
-    "air": 2.08,
-    "dist": 53.6,
+    "d": 2577,
+    "impact": 12.1,
+    "air": 2.32,
+    "dist": 57.4,
+    "feat": "Gap",
+    "lane": 0
+   },
+   {
+    "d": 2653,
+    "impact": 3.6,
+    "air": 0.66,
+    "dist": 17.4,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2779,
+    "impact": 12.3,
+    "air": 2.37,
+    "dist": 59.6,
+    "feat": "Gap",
+    "lane": 0
+   },
+   {
+    "d": 3211,
+    "impact": 9.7,
+    "air": 2.12,
+    "dist": 54.4,
     "feat": "Tisch XL",
     "lane": 0
    },
    {
-    "d": 2721,
-    "impact": 6.3,
+    "d": 3241,
+    "impact": 6.4,
     "air": 0.7,
     "dist": 18.2,
     "feat": "Tisch XL",
     "lane": 0
    },
    {
-    "d": 3295,
-    "impact": 8.4,
-    "air": 1.53,
-    "dist": 38.2,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 3637,
-    "impact": 9.3,
-    "air": 2.01,
-    "dist": 50.6,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 3663,
-    "impact": 6.6,
-    "air": 0.69,
-    "dist": 17.7,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 3904,
-    "impact": 9.5,
-    "air": 2.05,
-    "dist": 52.5,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 3928,
-    "impact": 6.6,
-    "air": 0.69,
-    "dist": 17.9,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
+    "d": 3423,
+    "impact": 6.7,
+    "air": 1.38,
+    "dist": 36.8,
+    "feat": "-",
+    "lane": -1
    }
   ],
-  "topSpeed": 31.180832955843556,
+  "topSpeed": 29.727494306087962,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -9193,104 +9177,105 @@
     "x": 79
    },
    {
-    "d": 1079,
-    "v": 25.7,
-    "vy": -1.7,
-    "x": -41
-   },
-   {
-    "d": 1143,
+    "d": 1124,
     "v": 26.2,
-    "vy": -2.9,
-    "x": -41
+    "vy": 3.2,
+    "x": -52
    },
    {
-    "d": 1601,
-    "v": 27.8,
-    "vy": -6.7,
-    "x": -36
+    "d": 1175,
+    "v": 26.6,
+    "vy": -6.8,
+    "x": -48
    },
    {
-    "d": 1799,
-    "v": 22.9,
-    "vy": -2.5,
-    "x": -7
+    "d": 1395,
+    "v": 27.3,
+    "vy": -3.7,
+    "x": -56
    },
    {
-    "d": 2074,
-    "v": 24.4,
-    "vy": 2,
-    "x": 35
+    "d": 1432,
+    "v": 27.9,
+    "vy": -6.9,
+    "x": -55
    },
    {
-    "d": 2637,
+    "d": 1748,
+    "v": 24.2,
+    "vy": 0.5,
+    "x": 50
+   },
+   {
+    "d": 1771,
+    "v": 24.2,
+    "vy": -4.8,
+    "x": 50
+   },
+   {
+    "d": 2391,
+    "v": 26.9,
+    "vy": 4.4,
+    "x": 0
+   },
+   {
+    "d": 2519,
+    "v": 26.4,
+    "vy": 4.3,
+    "x": 0
+   },
+   {
+    "d": 2635,
+    "v": 27.1,
+    "vy": -3.3,
+    "x": -1
+   },
+   {
+    "d": 2719,
+    "v": 27,
+    "vy": 4.5,
+    "x": 0
+   },
+   {
+    "d": 3157,
     "v": 27.2,
-    "vy": 2.9,
-    "x": -59
+    "vy": 3.1,
+    "x": -53
    },
    {
-    "d": 2703,
+    "d": 3223,
     "v": 27.9,
     "vy": -8,
-    "x": -59
+    "x": -54
    },
    {
-    "d": 3257,
-    "v": 25.9,
-    "vy": 2.3,
-    "x": -41
-   },
-   {
-    "d": 3587,
-    "v": 26.6,
-    "vy": 3.3,
-    "x": 46
-   },
-   {
-    "d": 3645,
-    "v": 27.2,
-    "vy": -7.4,
-    "x": 42
-   },
-   {
-    "d": 3851,
-    "v": 27.2,
-    "vy": 3.4,
-    "x": 44
-   },
-   {
-    "d": 3910,
-    "v": 27.4,
-    "vy": -7.4,
-    "x": 44
-   }
-  ],
-  "grinds": [
-   {
-    "d": 1154,
-    "dist": 11.7,
-    "kind": "rail",
-    "clean": true
+    "d": 3386,
+    "v": 27.7,
+    "vy": -1.1,
+    "x": -57
    }
   ],
   "issues": [
    "Zone 1: Kicker (Seitenlinie) bei 413 m landet bei Höchsttempo hart (17.8 m/s)",
    "Zone 1: Kicker (Seitenlinie) bei 743 m landet bei Höchsttempo hart (17.9 m/s)",
    "Zone 1: Kicker (Seitenlinie) bei 716 m landet bei Höchsttempo hart (18 m/s)",
-   "Zone 4: Big Air bei 2097 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 8: Mega Air bei 4608 m verworfen (keine sichere Landung)",
-   "Zone 8: Mega Air bei 4608 m landet bei Höchsttempo hart (23 m/s)",
-   "Zone 8: Kicker (Seitenlinie) bei 4735 m verworfen (keine sichere Landung)"
+   "Zone 3: Big Air bei 1851 m landet bei Höchsttempo hart (19.9 m/s)",
+   "Zone 7: Mega Air bei 4631 m verworfen (keine sichere Landung)",
+   "Zone 7: Mega Air bei 4631 m landet bei Höchsttempo hart (22.3 m/s)",
+   "Zone 8: Step-down XL bei 5101 m landet bei Höchsttempo hart (19 m/s)",
+   "Zone 8: Step-down XL bei 5345 m landet bei Höchsttempo hart (19.6 m/s)",
+   "Zone 8: Kicker (Seitenlinie) bei 5233 m landet bei Höchsttempo hart (20.2 m/s)",
+   "Zone 8: Kicker (Seitenlinie) bei 5232 m landet bei Höchsttempo hart (19.2 m/s)"
   ],
-  "features": 69,
-  "skipped": 3,
-  "zones": "S220 J729 R643 C359 B374 J745 B342 S707 M815 S775"
+  "features": 70,
+  "skipped": 9,
+  "zones": "S220 J729 S662 B561 R672 J745 R652 M716 J850"
  },
  {
   "seed": 85,
   "mode": "Spur A aufrecht",
   "reached": 4000,
-  "time": 205.7,
+  "time": 202.8,
   "crashes": [],
   "landings": [
    {
@@ -9358,98 +9343,91 @@
     "lane": 0
    },
    {
-    "d": 1778,
-    "impact": 3.6,
-    "air": 0.34,
-    "dist": 4.9,
-    "feat": "cliff"
-   },
-   {
-    "d": 2167,
-    "impact": 7.9,
-    "air": 2.06,
-    "dist": 30.6,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 2224,
-    "impact": 9.4,
-    "air": 1.08,
-    "dist": 22.1,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 2511,
-    "impact": 3.3,
-    "air": 0.55,
-    "dist": 10.2,
+    "d": 1673,
+    "impact": 3.1,
+    "air": 0.42,
+    "dist": 7.7,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2569,
-    "impact": 3.2,
-    "air": 0.41,
-    "dist": 7.3,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2616,
-    "impact": 4,
-    "air": 1.29,
-    "dist": 21,
+    "d": 1723,
+    "impact": 4.7,
+    "air": 1.44,
+    "dist": 24.3,
     "feat": "Gap",
     "lane": 0
    },
    {
-    "d": 2738,
-    "impact": 3.7,
-    "air": 0.6,
-    "dist": 10.8,
+    "d": 1882,
+    "impact": 4.8,
+    "air": 1.46,
+    "dist": 24.7,
+    "feat": "Gap",
+    "lane": 0
+   },
+   {
+    "d": 1990,
+    "impact": 2,
+    "air": 0.32,
+    "dist": 6,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3208,
+    "d": 2056,
+    "impact": 4.9,
+    "air": 1.47,
+    "dist": 25.1,
+    "feat": "Gap",
+    "lane": 0
+   },
+   {
+    "d": 2878,
+    "impact": 7.6,
+    "air": 2,
+    "dist": 29.3,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 2935,
+    "impact": 9.5,
+    "air": 1.09,
+    "dist": 22.2,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 3329,
     "impact": 9.8,
-    "air": 2.12,
-    "dist": 42.1,
+    "air": 2.14,
+    "dist": 42.7,
     "feat": "Großer Tisch",
     "lane": 0
    },
    {
-    "d": 3261,
-    "impact": 8.9,
-    "air": 1.07,
-    "dist": 22.3,
+    "d": 3381,
+    "impact": 8.8,
+    "air": 1.06,
+    "dist": 22.2,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
    },
    {
-    "d": 3387,
-    "impact": 10.9,
-    "air": 2.37,
-    "dist": 46,
+    "d": 3508,
+    "impact": 10.8,
+    "air": 2.35,
+    "dist": 45.7,
     "feat": "Kicker XL",
     "lane": 0
    },
    {
-    "d": 3444,
-    "impact": 10.1,
-    "air": 1.08,
-    "dist": 22.6,
+    "d": 3564,
+    "impact": 10.2,
+    "air": 1.09,
+    "dist": 22.7,
     "feat": "Kicker XL",
-    "lane": 0
-   },
-   {
-    "d": 3998,
-    "impact": 11.7,
-    "air": 2.27,
-    "dist": 44.8,
-    "feat": "Step-down XL",
     "lane": 0
    }
   ],
@@ -9507,102 +9485,96 @@
     "x": 0
    },
    {
-    "d": 1773,
-    "v": 15.2,
-    "vy": -4.3,
-    "x": -63
+    "d": 1658,
+    "v": 19.2,
+    "vy": -0.4,
+    "x": 1
    },
    {
-    "d": 2137,
-    "v": 15.9,
+    "d": 1699,
+    "v": 17.7,
     "vy": 2.7,
-    "x": 1
+    "x": 0
    },
    {
-    "d": 2202,
-    "v": 24.6,
-    "vy": -12.4,
-    "x": 1
-   },
-   {
-    "d": 2501,
-    "v": 18.9,
-    "vy": -1,
+    "d": 1857,
+    "v": 17.8,
+    "vy": 2.7,
     "x": -1
    },
    {
-    "d": 2551,
-    "v": 18.4,
-    "vy": -2.8,
-    "x": 0
+    "d": 1984,
+    "v": 19.3,
+    "vy": -2.3,
+    "x": -1
    },
    {
-    "d": 2595,
-    "v": 17,
+    "d": 2031,
+    "v": 17.9,
+    "vy": 2.7,
+    "x": -1
+   },
+   {
+    "d": 2848,
+    "v": 15.6,
     "vy": 2.5,
+    "x": -1
+   },
+   {
+    "d": 2913,
+    "v": 24.6,
+    "vy": -12.3,
     "x": 0
    },
    {
-    "d": 2727,
-    "v": 18.3,
-    "vy": -0.8,
-    "x": 1
-   },
-   {
-    "d": 3165,
-    "v": 21.7,
+    "d": 3286,
+    "v": 21.8,
     "vy": 4.6,
-    "x": 5
-   },
-   {
-    "d": 3238,
-    "v": 22.8,
-    "vy": -6.9,
-    "x": 5
-   },
-   {
-    "d": 3341,
-    "v": 21.7,
-    "vy": 5.9,
     "x": 7
    },
    {
-    "d": 3421,
-    "v": 22.7,
-    "vy": -6.9,
-    "x": 9
+    "d": 3359,
+    "v": 22.9,
+    "vy": -7,
+    "x": 7
    },
    {
-    "d": 3953,
-    "v": 21.6,
-    "vy": 4.5,
-    "x": 6
+    "d": 3462,
+    "v": 21.7,
+    "vy": 5.8,
+    "x": 8
+   },
+   {
+    "d": 3542,
+    "v": 22.7,
+    "vy": -6.8,
+    "x": 9
    }
   ],
   "grinds": [
    {
-    "d": 2561,
-    "dist": 9.8,
+    "d": 1665,
+    "dist": 7.4,
     "kind": "box",
     "clean": true
    }
   ],
   "issues": [
    "Zone 2: Big Air bei 1223 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 4: Big Air bei 2137 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 6: Kicker (Seitenlinie) bei 3271 m landet bei Höchsttempo hart (17.4 m/s)",
-   "Zone 8: Mega Air bei 4983 m landet bei Höchsttempo hart (20.6 m/s)",
-   "Zone 8: Kicker (Seitenlinie) bei 5075 m verworfen (keine sichere Landung)"
+   "Zone 5: Big Air bei 2848 m landet bei Höchsttempo hart (19.9 m/s)",
+   "Zone 6: Kicker (Seitenlinie) bei 3392 m landet bei Höchsttempo hart (17.4 m/s)",
+   "Zone 8: Mega Air bei 5104 m landet bei Höchsttempo hart (20.6 m/s)",
+   "Zone 8: Kicker (Seitenlinie) bei 5196 m verworfen (keine sichere Landung)"
   ],
   "features": 53,
   "skipped": 5,
-  "zones": "S220 J755 B575 C388 B365 R640 J812 J793 M689"
+  "zones": "S220 J755 B575 R670 C393 B451 J812 J793 M689"
  },
  {
   "seed": 85,
   "mode": "Spur A Hocke",
   "reached": 4000,
-  "time": 159.7,
+  "time": 159.4,
   "crashes": [],
   "landings": [
    {
@@ -9638,70 +9610,78 @@
     "lane": 0
    },
    {
-    "d": 1783,
-    "impact": 4.1,
-    "air": 0.48,
-    "dist": 9.8,
-    "feat": "cliff"
-   },
-   {
-    "d": 2214,
-    "impact": 9.1,
-    "air": 3.6,
-    "dist": 77.6,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 2510,
-    "impact": 2,
-    "air": 0.35,
-    "dist": 9.2,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2572,
+    "d": 1676,
     "impact": 3.2,
-    "air": 0.42,
-    "dist": 10.4,
+    "air": 0.43,
+    "dist": 11.1,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 2638,
-    "impact": 10.3,
-    "air": 1.87,
+    "d": 1747,
+    "impact": 10.7,
+    "air": 1.98,
+    "dist": 47.5,
+    "feat": "Gap",
+    "lane": 0
+   },
+   {
+    "d": 1902,
+    "impact": 10.5,
+    "air": 1.93,
+    "dist": 44.8,
+    "feat": "Gap",
+    "lane": 0
+   },
+   {
+    "d": 2075,
+    "impact": 10.5,
+    "air": 1.92,
     "dist": 43.6,
     "feat": "Gap",
     "lane": 0
    },
    {
-    "d": 3238,
+    "d": 2459,
+    "impact": 2.5,
+    "air": 0.31,
+    "dist": 6.7,
+    "feat": "cliff"
+   },
+   {
+    "d": 2928,
     "impact": 11.4,
-    "air": 2.8,
-    "dist": 72.2,
+    "air": 3.67,
+    "dist": 79.4,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 3358,
+    "impact": 11.8,
+    "air": 2.79,
+    "dist": 72.1,
     "feat": "Großer Tisch",
     "lane": 0
    },
    {
-    "d": 3265,
-    "impact": 10.4,
-    "air": 0.98,
-    "dist": 26.1,
+    "d": 3386,
+    "impact": 10.3,
+    "air": 1.02,
+    "dist": 26.9,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
    },
    {
-    "d": 3419,
+    "d": 3539,
     "impact": 14,
-    "air": 3.1,
-    "dist": 78,
+    "air": 3.07,
+    "dist": 77.5,
     "feat": "Kicker XL",
     "lane": 0
    },
    {
-    "d": 3449,
+    "d": 3570,
     "impact": 10.4,
     "air": 1.1,
     "dist": 28.6,
@@ -9739,90 +9719,90 @@
     "x": -1
    },
    {
-    "d": 1773,
-    "v": 21.2,
-    "vy": -5.1,
-    "x": -64
+    "d": 1657,
+    "v": 26.8,
+    "vy": -0.5,
+    "x": 1
    },
    {
-    "d": 2137,
-    "v": 23.8,
-    "vy": 4.3,
-    "x": 3
+    "d": 1699,
+    "v": 25.3,
+    "vy": 4,
+    "x": 0
    },
    {
-    "d": 2501,
-    "v": 26.6,
-    "vy": -2.8,
+    "d": 1857,
+    "v": 24.4,
+    "vy": 3.9,
     "x": -2
    },
    {
-    "d": 2551,
-    "v": 25.9,
-    "vy": -3.9,
-    "x": 0
+    "d": 2031,
+    "v": 24,
+    "vy": 3.8,
+    "x": -1
    },
    {
-    "d": 2595,
-    "v": 24.5,
-    "vy": 3.9,
-    "x": 0
+    "d": 2452,
+    "v": 23,
+    "vy": -7.4,
+    "x": -69
    },
    {
-    "d": 3166,
+    "d": 2848,
+    "v": 23.9,
+    "vy": 4.3,
+    "x": -2
+   },
+   {
+    "d": 3286,
     "v": 28.3,
     "vy": 6.1,
+    "x": 6
+   },
+   {
+    "d": 3359,
+    "v": 28.8,
+    "vy": -9.1,
     "x": 5
    },
    {
-    "d": 3239,
-    "v": 28.9,
-    "vy": -9.5,
-    "x": 4
-   },
-   {
-    "d": 3341,
+    "d": 3462,
     "v": 28.2,
-    "vy": 7.8,
-    "x": 6
+    "vy": 7.7,
+    "x": 7
    },
    {
-    "d": 3421,
+    "d": 3542,
     "v": 28,
-    "vy": -8.1,
+    "vy": -8.2,
     "x": 11
-   },
-   {
-    "d": 3953,
-    "v": 28.3,
-    "vy": 6,
-    "x": 6
    }
   ],
   "grinds": [
    {
-    "d": 2561,
-    "dist": 9.7,
+    "d": 1665,
+    "dist": 7.5,
     "kind": "box",
     "clean": true
    }
   ],
   "issues": [
    "Zone 2: Big Air bei 1223 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 4: Big Air bei 2137 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 6: Kicker (Seitenlinie) bei 3271 m landet bei Höchsttempo hart (17.4 m/s)",
-   "Zone 8: Mega Air bei 4983 m landet bei Höchsttempo hart (20.6 m/s)",
-   "Zone 8: Kicker (Seitenlinie) bei 5075 m verworfen (keine sichere Landung)"
+   "Zone 5: Big Air bei 2848 m landet bei Höchsttempo hart (19.9 m/s)",
+   "Zone 6: Kicker (Seitenlinie) bei 3392 m landet bei Höchsttempo hart (17.4 m/s)",
+   "Zone 8: Mega Air bei 5104 m landet bei Höchsttempo hart (20.6 m/s)",
+   "Zone 8: Kicker (Seitenlinie) bei 5196 m verworfen (keine sichere Landung)"
   ],
   "features": 53,
   "skipped": 5,
-  "zones": "S220 J755 B575 C388 B365 R640 J812 J793 M689"
+  "zones": "S220 J755 B575 R670 C393 B451 J812 J793 M689"
  },
  {
   "seed": 85,
   "mode": "Spur B Hocke",
   "reached": 4000,
-  "time": 165,
+  "time": 164.1,
   "crashes": [],
   "landings": [
    {
@@ -9874,54 +9854,78 @@
     "lane": 1
    },
    {
-    "d": 1810,
-    "impact": 7.9,
-    "air": 1.77,
-    "dist": 36.2,
-    "feat": "cliff"
-   },
-   {
-    "d": 2198,
-    "impact": 12.1,
-    "air": 2.91,
-    "dist": 60.3,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 2580,
+    "d": 1698,
     "impact": 3.2,
     "air": 0.43,
-    "dist": 10.6,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2648,
-    "impact": 3.9,
-    "air": 0.49,
-    "dist": 11.8,
+    "dist": 10.7,
     "feat": "Gap",
     "lane": 0
    },
    {
-    "d": 2736,
-    "impact": 3.2,
-    "air": 0.57,
-    "dist": 13.8,
+    "d": 1763,
+    "impact": 3.7,
+    "air": 0.48,
+    "dist": 11.6,
+    "feat": "Gap",
+    "lane": 0
+   },
+   {
+    "d": 1850,
+    "impact": 2,
+    "air": 0.33,
+    "dist": 8.4,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3315,
-    "impact": 9.7,
-    "air": 2.17,
-    "dist": 55.5,
+    "d": 2014,
+    "impact": 2,
+    "air": 0.33,
+    "dist": 8.5,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 2089,
+    "impact": 3.7,
+    "air": 0.48,
+    "dist": 11.7,
+    "feat": "Gap",
+    "lane": 0
+   },
+   {
+    "d": 2488,
+    "impact": 13.8,
+    "air": 2.01,
+    "dist": 41.5,
+    "feat": "cliff"
+   },
+   {
+    "d": 2852,
+    "impact": 4.6,
+    "air": 1.55,
+    "dist": 36.4,
+    "feat": "Big Air",
+    "lane": 0
+   },
+   {
+    "d": 3067,
+    "impact": 1.3,
+    "air": 0.24,
+    "dist": 6.5,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 3435,
+    "impact": 9.6,
+    "air": 2.16,
+    "dist": 55.3,
     "feat": "Kicker (Seitenlinie)",
     "lane": 2
    },
    {
-    "d": 3351,
+    "d": 3471,
     "impact": 6.9,
     "air": 0.72,
     "dist": 18.8,
@@ -9929,15 +9933,15 @@
     "lane": 0
    },
    {
-    "d": 3964,
+    "d": 3602,
     "impact": 3.1,
-    "air": 0.43,
-    "dist": 11.5,
-    "feat": "Step-down XL",
+    "air": 0.59,
+    "dist": 15.8,
+    "feat": "Kicker XL",
     "lane": 0
    }
   ],
-  "topSpeed": 30.8420248733281,
+  "topSpeed": 29.379138637882875,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -9979,84 +9983,102 @@
     "x": 48
    },
    {
-    "d": 1774,
-    "v": 21.2,
-    "vy": -1.9,
-    "x": 11
+    "d": 1678,
+    "v": 26,
+    "vy": -4.2,
+    "x": 37
    },
    {
-    "d": 2137,
-    "v": 22.2,
-    "vy": 2.1,
-    "x": -40
+    "d": 1739,
+    "v": 25.2,
+    "vy": -4.2,
+    "x": 38
    },
    {
-    "d": 2562,
-    "v": 25.6,
-    "vy": -1,
-    "x": -54
+    "d": 1842,
+    "v": 25.5,
+    "vy": -3.2,
+    "x": 37
    },
    {
-    "d": 2627,
-    "v": 24.6,
-    "vy": -3.7,
+    "d": 2006,
+    "v": 25.8,
+    "vy": -3.2,
+    "x": 39
+   },
+   {
+    "d": 2069,
+    "v": 25.4,
+    "vy": -4.1,
+    "x": 41
+   },
+   {
+    "d": 2447,
+    "v": 21.7,
+    "vy": -2.2,
+    "x": 12
+   },
+   {
+    "d": 2816,
+    "v": 24.4,
+    "vy": 2,
+    "x": 35
+   },
+   {
+    "d": 3061,
+    "v": 27.5,
+    "vy": -4.9,
+    "x": 30
+   },
+   {
+    "d": 3380,
+    "v": 27.2,
+    "vy": 3,
     "x": -52
    },
    {
-    "d": 2722,
-    "v": 24.7,
-    "vy": -1.8,
+    "d": 3452,
+    "v": 28,
+    "vy": -8.3,
     "x": -51
    },
    {
-    "d": 3259,
-    "v": 27.2,
-    "vy": 3,
-    "x": -53
-   },
-   {
-    "d": 3332,
-    "v": 28,
-    "vy": -8.3,
-    "x": -52
-   },
-   {
-    "d": 3942,
+    "d": 3586,
     "v": 27.9,
-    "vy": -3.4,
-    "x": -61
+    "vy": -5.6,
+    "x": -49
    }
   ],
   "grinds": [
    {
-    "d": 2570,
-    "dist": 8.5,
+    "d": 1687,
+    "dist": 9.3,
     "kind": "box",
     "clean": true
    },
    {
-    "d": 2636,
-    "dist": 9.4,
+    "d": 1751,
+    "dist": 12.2,
     "kind": "rail",
     "clean": true
    },
    {
-    "d": 3952,
-    "dist": 11.3,
-    "kind": "box",
+    "d": 2077,
+    "dist": 8.2,
+    "kind": "rail",
     "clean": true
    }
   ],
   "issues": [
    "Zone 2: Big Air bei 1223 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 4: Big Air bei 2137 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 6: Kicker (Seitenlinie) bei 3271 m landet bei Höchsttempo hart (17.4 m/s)",
-   "Zone 8: Mega Air bei 4983 m landet bei Höchsttempo hart (20.6 m/s)",
-   "Zone 8: Kicker (Seitenlinie) bei 5075 m verworfen (keine sichere Landung)"
+   "Zone 5: Big Air bei 2848 m landet bei Höchsttempo hart (19.9 m/s)",
+   "Zone 6: Kicker (Seitenlinie) bei 3392 m landet bei Höchsttempo hart (17.4 m/s)",
+   "Zone 8: Mega Air bei 5104 m landet bei Höchsttempo hart (20.6 m/s)",
+   "Zone 8: Kicker (Seitenlinie) bei 5196 m verworfen (keine sichere Landung)"
   ],
   "features": 53,
   "skipped": 5,
-  "zones": "S220 J755 B575 C388 B365 R640 J812 J793 M689"
+  "zones": "S220 J755 B575 R670 C393 B451 J812 J793 M689"
  },
  {
   "seed": 92,
@@ -10838,7 +10860,7 @@
   "seed": 99,
   "mode": "Spur A aufrecht",
   "reached": 4000,
-  "time": 194.3,
+  "time": 197.8,
   "crashes": [],
   "landings": [
    {
@@ -10914,118 +10936,87 @@
     "lane": -1
    },
    {
-    "d": 1817,
-    "impact": 2,
-    "air": 0.17,
-    "dist": 3,
-    "feat": "cliff"
-   },
-   {
-    "d": 2131,
-    "impact": 3.2,
-    "air": 0.43,
-    "dist": 8.5,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2227,
-    "impact": 5.2,
-    "air": 0.92,
-    "dist": 17.9,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2285,
-    "impact": 5.2,
-    "air": 0.92,
-    "dist": 17.6,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2337,
-    "impact": 3.1,
-    "air": 0.41,
-    "dist": 7.7,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2394,
-    "impact": 5,
-    "air": 1.52,
-    "dist": 26.4,
-    "feat": "Gap",
+    "d": 2320,
+    "impact": 7.7,
+    "air": 1.64,
+    "dist": 32.1,
+    "feat": "Tisch",
     "lane": 0
    },
    {
-    "d": 2560,
+    "d": 2360,
     "impact": 5.4,
-    "air": 1.57,
+    "air": 0.77,
+    "dist": 15.3,
+    "feat": "Tisch",
+    "lane": 0
+   },
+   {
+    "d": 2604,
+    "impact": 5.3,
+    "air": 1.24,
+    "dist": 25.6,
+    "feat": "Spine (links)",
+    "lane": 0
+   },
+   {
+    "d": 2655,
+    "impact": 11.1,
+    "air": 1.58,
     "dist": 27.4,
-    "feat": "Gap",
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 3175,
+    "impact": 5.8,
+    "air": 1.62,
+    "dist": 19.6,
+    "feat": "Mega Air",
     "lane": 0
    },
    {
-    "d": 2916,
-    "impact": 9.8,
-    "air": 2.11,
-    "dist": 38.3,
-    "feat": "Kicker XL",
+    "d": 3243,
+    "impact": 10.7,
+    "air": 1.24,
+    "dist": 24.3,
+    "feat": "Mega Air",
     "lane": 0
    },
    {
-    "d": 2970,
+    "d": 3655,
     "impact": 9.2,
-    "air": 1.06,
-    "dist": 20.9,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 3218,
-    "impact": 11.8,
-    "air": 2.32,
-    "dist": 45.7,
-    "feat": "Step-down XL",
-    "lane": 0
-   },
-   {
-    "d": 3266,
-    "impact": 6,
-    "air": 0.71,
-    "dist": 15,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 3691,
-    "impact": 9.6,
-    "air": 2.09,
-    "dist": 41.6,
+    "air": 1.99,
+    "dist": 38,
     "feat": "Tisch ",
     "lane": 0
    },
    {
-    "d": 3739,
-    "impact": 8.8,
-    "air": 1.05,
-    "dist": 21.8,
+    "d": 3705,
+    "impact": 8.4,
+    "air": 1.04,
+    "dist": 21.1,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
    },
    {
-    "d": 3963,
+    "d": 3930,
     "impact": 11.9,
-    "air": 2.34,
-    "dist": 46.3,
+    "air": 2.35,
+    "dist": 46.4,
+    "feat": "Step-down XL",
+    "lane": 0
+   },
+   {
+    "d": 3977,
+    "impact": 6.1,
+    "air": 0.72,
+    "dist": 15.2,
     "feat": "Step-down XL",
     "lane": 0
    }
   ],
-  "topSpeed": 26.115517348915766,
+  "topSpeed": 29.077697667299397,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -11085,91 +11076,61 @@
     "x": 0
    },
    {
-    "d": 1814,
-    "v": 19.1,
-    "vy": -6.5,
-    "x": -55
+    "d": 2288,
+    "v": 20.8,
+    "vy": 3.3,
+    "x": -3
    },
    {
-    "d": 2114,
-    "v": 20.5,
-    "vy": -3.5,
-    "x": 0
+    "d": 2345,
+    "v": 21.3,
+    "vy": -5.8,
+    "x": -6
    },
    {
-    "d": 2209,
-    "v": 19.9,
-    "vy": 0,
-    "x": 1
+    "d": 2579,
+    "v": 21.6,
+    "vy": 2.5,
+    "x": 5
    },
    {
-    "d": 2268,
-    "v": 19.7,
-    "vy": 0,
-    "x": 1
-   },
-   {
-    "d": 2318,
-    "v": 19.7,
+    "d": 2628,
+    "v": 18.1,
     "vy": -0.6,
+    "x": 8
+   },
+   {
+    "d": 3155,
+    "v": 12.8,
+    "vy": 2.4,
+    "x": -1
+   },
+   {
+    "d": 3219,
+    "v": 23.7,
+    "vy": -11.9,
+    "x": 0
+   },
+   {
+    "d": 3617,
+    "v": 20.7,
+    "vy": 4.4,
     "x": 1
    },
    {
-    "d": 2367,
-    "v": 18.2,
-    "vy": 2.7,
-    "x": 0
-   },
-   {
-    "d": 2533,
-    "v": 18.4,
-    "vy": 2.8,
-    "x": -2
-   },
-   {
-    "d": 2878,
-    "v": 20,
-    "vy": 5.3,
-    "x": 0
-   },
-   {
-    "d": 2949,
-    "v": 21.4,
-    "vy": -6.3,
-    "x": -2
-   },
-   {
-    "d": 3172,
-    "v": 21.7,
-    "vy": 4.4,
-    "x": -4
-   },
-   {
-    "d": 3251,
-    "v": 22.7,
-    "vy": -6.7,
-    "x": -2
-   },
-   {
-    "d": 3650,
-    "v": 21.7,
-    "vy": 4.6,
-    "x": 2
-   },
-   {
-    "d": 3717,
-    "v": 22.5,
-    "vy": -6.7,
+    "d": 3684,
+    "v": 22,
+    "vy": -6.6,
     "x": 3
    },
    {
-    "d": 3917,
+    "d": 3884,
     "v": 21.7,
     "vy": 4.5,
     "x": 6
    },
    {
-    "d": 3995,
+    "d": 3962,
     "v": 22.8,
     "vy": -6.8,
     "x": 7
@@ -11193,18 +11154,6 @@
     "dist": 11.3,
     "kind": "box",
     "clean": true
-   },
-   {
-    "d": 2123,
-    "dist": 8,
-    "kind": "box",
-    "clean": true
-   },
-   {
-    "d": 2329,
-    "dist": 10.9,
-    "kind": "box",
-    "clean": true
    }
   ],
   "issues": [
@@ -11212,17 +11161,18 @@
    "Zone 1: Tisch  bei 583 m landet bei Höchsttempo hart (17.9 m/s)",
    "Zone 1: Kicker (Seitenlinie) bei 523 m landet bei Höchsttempo hart (17.4 m/s)",
    "Zone 1: Kicker (Seitenlinie) bei 478 m landet bei Höchsttempo hart (17.8 m/s)",
-   "Zone 8: Big Air bei 5267 m landet bei Höchsttempo hart (19.9 m/s)"
+   "Zone 5: Mega Air bei 3155 m landet bei Höchsttempo hart (20.4 m/s)",
+   "Zone 8: Big Air bei 5234 m landet bei Höchsttempo hart (19.9 m/s)"
   ],
-  "features": 77,
-  "skipped": 4,
-  "zones": "S220 J733 R642 C373 R793 J743 J663 S854 B414"
+  "features": 64,
+  "skipped": 6,
+  "zones": "S220 J733 R642 B352 S836 M687 J663 S854 B414"
  },
  {
   "seed": 99,
   "mode": "Spur A Hocke",
   "reached": 4000,
-  "time": 154,
+  "time": 152.6,
   "crashes": [],
   "landings": [
    {
@@ -11290,110 +11240,87 @@
     "lane": -1
    },
    {
-    "d": 1694,
-    "impact": 3.5,
-    "air": 0.31,
-    "dist": 8.3,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 1823,
-    "impact": 2.6,
-    "air": 0.38,
-    "dist": 9.5,
-    "feat": "cliff"
-   },
-   {
-    "d": 2234,
-    "impact": 4.8,
-    "air": 0.9,
-    "dist": 24.6,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2303,
-    "impact": 7.1,
-    "air": 1.34,
-    "dist": 35.7,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2340,
-    "impact": 3.1,
-    "air": 0.42,
-    "dist": 10.9,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2418,
-    "impact": 11.2,
-    "air": 2.09,
-    "dist": 50.8,
-    "feat": "Gap",
-    "lane": 0
-   },
-   {
-    "d": 2580,
-    "impact": 10.9,
-    "air": 2.02,
-    "dist": 48,
-    "feat": "Gap",
-    "lane": 0
-   },
-   {
-    "d": 2948,
-    "impact": 12.1,
-    "air": 2.9,
-    "dist": 70.7,
-    "feat": "Kicker XL",
-    "lane": 0
-   },
-   {
-    "d": 2974,
-    "impact": 10.4,
-    "air": 0.98,
-    "dist": 25.2,
+    "d": 1824,
+    "impact": 5.7,
+    "air": 0.66,
+    "dist": 17.6,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
    },
    {
-    "d": 3247,
-    "impact": 14.2,
+    "d": 1841,
+    "impact": 3.4,
+    "air": 0.47,
+    "dist": 12.2,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2356,
+    "impact": 7.3,
+    "air": 2.58,
+    "dist": 68.5,
+    "feat": "Tisch",
+    "lane": 0
+   },
+   {
+    "d": 2626,
+    "impact": 7,
+    "air": 1.71,
+    "dist": 47.1,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2659,
+    "impact": 10.6,
+    "air": 1.15,
+    "dist": 30.8,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 3220,
+    "impact": 7.4,
+    "air": 3.2,
+    "dist": 64.6,
+    "feat": "Mega Air",
+    "lane": 0
+   },
+   {
+    "d": 3237,
+    "impact": 6.8,
+    "air": 0.73,
+    "dist": 16.4,
+    "feat": "Mega Air",
+    "lane": 0
+   },
+   {
+    "d": 3692,
+    "impact": 4.8,
     "air": 2.92,
     "dist": 75,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 3960,
+    "impact": 14.2,
+    "air": 2.94,
+    "dist": 75.6,
     "feat": "Step-down XL",
     "lane": 0
    },
    {
-    "d": 3270,
-    "impact": 7.3,
-    "air": 0.73,
-    "dist": 19.5,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 3726,
-    "impact": 5.5,
-    "air": 2.97,
-    "dist": 76.4,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 3993,
-    "impact": 14.3,
-    "air": 2.95,
-    "dist": 75.8,
+    "d": 3982,
+    "impact": 7.5,
+    "air": 0.75,
+    "dist": 20,
     "feat": "Step-down XL",
     "lane": 0
    }
   ],
-  "topSpeed": 31.695288016219596,
+  "topSpeed": 33.02066492347906,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -11447,88 +11374,64 @@
     "x": 0
    },
    {
-    "d": 1686,
-    "v": 27.6,
-    "vy": -5.7,
-    "x": -60
-   },
-   {
-    "d": 1814,
-    "v": 26.3,
-    "vy": -8.1,
-    "x": -54
-   },
-   {
-    "d": 2209,
-    "v": 28,
-    "vy": -1.3,
-    "x": 1
-   },
-   {
-    "d": 2268,
-    "v": 27.5,
-    "vy": 0.8,
-    "x": -1
-   },
-   {
-    "d": 2319,
+    "d": 1806,
     "v": 27.3,
-    "vy": -1.2,
-    "x": -1
-   },
-   {
-    "d": 2367,
-    "v": 25.8,
-    "vy": 4.2,
-    "x": 0
-   },
-   {
-    "d": 2533,
-    "v": 25.1,
-    "vy": 4,
+    "vy": -1.5,
     "x": -2
    },
    {
-    "d": 2878,
-    "v": 27.1,
-    "vy": 7.4,
+    "d": 1829,
+    "v": 26.7,
+    "vy": -3.1,
+    "x": -2
+   },
+   {
+    "d": 2288,
+    "v": 28.7,
+    "vy": 5,
+    "x": -6
+   },
+   {
+    "d": 2579,
+    "v": 29,
+    "vy": 3.8,
+    "x": 7
+   },
+   {
+    "d": 2628,
+    "v": 28.4,
+    "vy": -6.6,
+    "x": 7
+   },
+   {
+    "d": 3155,
+    "v": 22.1,
+    "vy": 4.8,
+    "x": -1
+   },
+   {
+    "d": 3220,
+    "v": 30.2,
+    "vy": -19.3,
+    "x": 0
+   },
+   {
+    "d": 3617,
+    "v": 28.3,
+    "vy": 6,
     "x": 1
    },
    {
-    "d": 2949,
-    "v": 27.7,
-    "vy": -8.7,
-    "x": -4
-   },
-   {
-    "d": 3172,
-    "v": 28.3,
-    "vy": 6,
-    "x": -4
-   },
-   {
-    "d": 3251,
-    "v": 28.3,
-    "vy": -8,
-    "x": -4
-   },
-   {
-    "d": 3650,
-    "v": 28.3,
-    "vy": 6,
-    "x": 2
-   },
-   {
-    "d": 3917,
+    "d": 3884,
     "v": 28.3,
     "vy": 6,
     "x": 7
    },
    {
-    "d": 3995,
+    "d": 3962,
     "v": 28.3,
-    "vy": -8,
-    "x": 9
+    "vy": -8.1,
+    "x": 10
    }
   ],
   "grinds": [
@@ -11543,12 +11446,6 @@
     "dist": 11.3,
     "kind": "box",
     "clean": true
-   },
-   {
-    "d": 2329,
-    "dist": 10.8,
-    "kind": "box",
-    "clean": true
    }
   ],
   "issues": [
@@ -11556,17 +11453,18 @@
    "Zone 1: Tisch  bei 583 m landet bei Höchsttempo hart (17.9 m/s)",
    "Zone 1: Kicker (Seitenlinie) bei 523 m landet bei Höchsttempo hart (17.4 m/s)",
    "Zone 1: Kicker (Seitenlinie) bei 478 m landet bei Höchsttempo hart (17.8 m/s)",
-   "Zone 8: Big Air bei 5267 m landet bei Höchsttempo hart (19.9 m/s)"
+   "Zone 5: Mega Air bei 3155 m landet bei Höchsttempo hart (20.4 m/s)",
+   "Zone 8: Big Air bei 5234 m landet bei Höchsttempo hart (19.9 m/s)"
   ],
-  "features": 77,
-  "skipped": 4,
-  "zones": "S220 J733 R642 C373 R793 J743 J663 S854 B414"
+  "features": 64,
+  "skipped": 6,
+  "zones": "S220 J733 R642 B352 S836 M687 J663 S854 B414"
  },
  {
   "seed": 99,
   "mode": "Spur B Hocke",
   "reached": 4000,
-  "time": 160.2,
+  "time": 161.2,
   "crashes": [],
   "landings": [
    {
@@ -11642,105 +11540,90 @@
     "lane": -1
    },
    {
-    "d": 1614,
-    "impact": 3.1,
-    "air": 0.28,
-    "dist": 7.4,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 1851,
-    "impact": 12.9,
-    "air": 1.87,
-    "dist": 42.4,
-    "feat": "cliff"
-   },
-   {
-    "d": 2228,
-    "impact": 2.2,
-    "air": 0.38,
-    "dist": 9.9,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2301,
-    "impact": 3.2,
-    "air": 0.44,
-    "dist": 11.2,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 2373,
-    "impact": 5.7,
-    "air": 1.05,
-    "dist": 26.6,
-    "feat": "Gap",
-    "lane": 0
-   },
-   {
-    "d": 2429,
-    "impact": 3.1,
-    "air": 0.43,
-    "dist": 10.9,
-    "feat": "Gap",
-    "lane": 0
-   },
-   {
-    "d": 2524,
-    "impact": 4.5,
-    "air": 0.82,
-    "dist": 20.8,
-    "feat": "-",
-    "lane": -1
-   },
-   {
-    "d": 3009,
-    "impact": 9.5,
-    "air": 2.12,
-    "dist": 54.4,
+    "d": 1835,
+    "impact": 8.3,
+    "air": 1.51,
+    "dist": 37.5,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
    },
    {
-    "d": 3041,
+    "d": 2155,
+    "impact": 4.2,
+    "air": 0.92,
+    "dist": 23.6,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2180,
+    "impact": 6.7,
+    "air": 0.68,
+    "dist": 17.5,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2389,
+    "impact": 2.9,
+    "air": 0.96,
+    "dist": 25.9,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 2434,
     "impact": 6.8,
-    "air": 0.73,
-    "dist": 19,
+    "air": 0.68,
+    "dist": 18,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
    },
    {
-    "d": 3318,
-    "impact": 10.4,
-    "air": 2.32,
-    "dist": 58.8,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 2
-   },
-   {
-    "d": 3352,
-    "impact": 7.2,
-    "air": 0.76,
-    "dist": 19.6,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 2
-   },
-   {
-    "d": 3780,
-    "impact": 10.1,
-    "air": 2.21,
-    "dist": 56.4,
+    "d": 2643,
+    "impact": 2.4,
+    "air": 0.49,
+    "dist": 13.1,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
    },
    {
-    "d": 3814,
+    "d": 2688,
+    "impact": 6.9,
+    "air": 0.69,
+    "dist": 18.2,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 3040,
     "impact": 7.1,
-    "air": 0.73,
-    "dist": 19,
+    "air": 1.52,
+    "dist": 33.7,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 3200,
+    "impact": 9.8,
+    "air": 2.67,
+    "dist": 56.7,
+    "feat": "Mega Air",
+    "lane": 0
+   },
+   {
+    "d": 3747,
+    "impact": 10.1,
+    "air": 2.2,
+    "dist": 56.2,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 3781,
+    "impact": 7.2,
+    "air": 0.74,
+    "dist": 19.3,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
    }
@@ -11805,82 +11688,70 @@
     "x": -40
    },
    {
-    "d": 1607,
-    "v": 28,
-    "vy": -6.3,
-    "x": -31
+    "d": 1797,
+    "v": 25.8,
+    "vy": 2.2,
+    "x": -30
    },
    {
-    "d": 1809,
-    "v": 23.7,
-    "vy": -2.3,
-    "x": 16
-   },
-   {
-    "d": 2218,
+    "d": 2132,
     "v": 26.3,
-    "vy": -3.5,
+    "vy": -1.4,
     "x": 50
    },
    {
-    "d": 2283,
-    "v": 26.1,
-    "vy": -4.4,
-    "x": 48
+    "d": 2163,
+    "v": 26.9,
+    "vy": -6.8,
+    "x": 45
    },
    {
-    "d": 2347,
-    "v": 25.9,
-    "vy": -0.4,
-    "x": 49
-   },
-   {
-    "d": 2410,
-    "v": 25.9,
-    "vy": -4.4,
-    "x": 48
-   },
-   {
-    "d": 2503,
-    "v": 26,
-    "vy": -1.5,
-    "x": 46
-   },
-   {
-    "d": 2954,
-    "v": 27.2,
-    "vy": 3.3,
-    "x": 51
-   },
-   {
-    "d": 3022,
-    "v": 27.8,
-    "vy": -7.8,
-    "x": 46
-   },
-   {
-    "d": 3260,
-    "v": 27.1,
-    "vy": 4.3,
-    "x": 44
-   },
-   {
-    "d": 3332,
+    "d": 2363,
     "v": 27.7,
-    "vy": -7.9,
-    "x": 47
+    "vy": -0.1,
+    "x": 40
    },
    {
-    "d": 3724,
-    "v": 27.2,
-    "vy": 3.6,
+    "d": 2416,
+    "v": 28,
+    "vy": -7.1,
+    "x": 41
+   },
+   {
+    "d": 2630,
+    "v": 27.3,
+    "vy": -4,
+    "x": 53
+   },
+   {
+    "d": 2670,
+    "v": 28,
+    "vy": -7.1,
+    "x": 50
+   },
+   {
+    "d": 3006,
+    "v": 23.1,
+    "vy": 2.7,
     "x": -54
    },
    {
-    "d": 3795,
-    "v": 27.9,
-    "vy": -8.1,
-    "x": -48
+    "d": 3143,
+    "v": 22.6,
+    "vy": 2.7,
+    "x": -54
+   },
+   {
+    "d": 3691,
+    "v": 27.2,
+    "vy": 3.4,
+    "x": -55
+   },
+   {
+    "d": 3762,
+    "v": 28,
+    "vy": -8,
+    "x": -53
    }
   ],
   "grinds": [
@@ -11919,18 +11790,6 @@
     "dist": 11,
     "kind": "rail",
     "clean": true
-   },
-   {
-    "d": 2290,
-    "dist": 6.3,
-    "kind": "box",
-    "clean": true
-   },
-   {
-    "d": 2418,
-    "dist": 7.5,
-    "kind": "box",
-    "clean": true
    }
   ],
   "issues": [
@@ -11938,11 +11797,12 @@
    "Zone 1: Tisch  bei 583 m landet bei Höchsttempo hart (17.9 m/s)",
    "Zone 1: Kicker (Seitenlinie) bei 523 m landet bei Höchsttempo hart (17.4 m/s)",
    "Zone 1: Kicker (Seitenlinie) bei 478 m landet bei Höchsttempo hart (17.8 m/s)",
-   "Zone 8: Big Air bei 5267 m landet bei Höchsttempo hart (19.9 m/s)"
+   "Zone 5: Mega Air bei 3155 m landet bei Höchsttempo hart (20.4 m/s)",
+   "Zone 8: Big Air bei 5234 m landet bei Höchsttempo hart (19.9 m/s)"
   ],
-  "features": 77,
-  "skipped": 4,
-  "zones": "S220 J733 R642 C373 R793 J743 J663 S854 B414"
+  "features": 64,
+  "skipped": 6,
+  "zones": "S220 J733 R642 B352 S836 M687 J663 S854 B414"
  },
  {
   "seed": 106,
@@ -12897,7 +12757,7 @@
   "seed": 113,
   "mode": "Spur A aufrecht",
   "reached": 4000,
-  "time": 190.8,
+  "time": 194.9,
   "crashes": [],
   "landings": [
    {
@@ -13029,52 +12889,20 @@
     "lane": 0
    },
    {
-    "d": 3426,
-    "impact": 11.2,
-    "air": 2.47,
-    "dist": 47.9,
-    "feat": "Kicker XL",
-    "lane": 0
-   },
-   {
-    "d": 3487,
-    "impact": 10.4,
-    "air": 1.12,
-    "dist": 23.6,
+    "d": 3791,
+    "impact": 6.8,
+    "air": 1.83,
+    "dist": 23.8,
     "feat": "Kicker (Seitenlinie)",
-    "lane": 2
+    "lane": 1
    },
    {
-    "d": 3724,
-    "impact": 12.3,
-    "air": 2.48,
-    "dist": 49.2,
-    "feat": "Step-down XL",
-    "lane": 0
-   },
-   {
-    "d": 3784,
-    "impact": 7.3,
-    "air": 0.78,
-    "dist": 17.2,
-    "feat": "Step-down XL",
-    "lane": 0
-   },
-   {
-    "d": 3911,
-    "impact": 10.2,
-    "air": 2.24,
-    "dist": 44.7,
-    "feat": "Großer Tisch",
-    "lane": 0
-   },
-   {
-    "d": 3972,
-    "impact": 9.3,
-    "air": 1.1,
-    "dist": 23.6,
-    "feat": "Großer Tisch",
-    "lane": 0
+    "d": 3866,
+    "impact": 10.9,
+    "air": 1.27,
+    "dist": 25.9,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
    }
   ],
   "topSpeed": 30.498790315684396,
@@ -13179,40 +13007,16 @@
     "x": 5
    },
    {
-    "d": 3378,
-    "v": 21.8,
-    "vy": 6,
-    "x": 13
-   },
-   {
-    "d": 3463,
-    "v": 23.2,
-    "vy": -7.3,
-    "x": 11
-   },
-   {
-    "d": 3675,
-    "v": 21.9,
-    "vy": 4.7,
-    "x": 7
-   },
-   {
     "d": 3767,
-    "v": 23.8,
-    "vy": -7.5,
-    "x": 7
+    "v": 13.8,
+    "vy": 2.8,
+    "x": 1
    },
    {
-    "d": 3866,
-    "v": 21.9,
-    "vy": 4.7,
-    "x": 8
-   },
-   {
-    "d": 3949,
-    "v": 23.5,
-    "vy": -7.5,
-    "x": 9
+    "d": 3840,
+    "v": 24.7,
+    "vy": -12.4,
+    "x": 1
    }
   ],
   "issues": [
@@ -13222,23 +13026,21 @@
    "Zone 3: Mega Air bei 2145 m landet bei Höchsttempo hart (22.5 m/s)",
    "Zone 4: Kicker (Seitenlinie) bei 2596 m landet bei Höchsttempo hart (17.1 m/s)",
    "Zone 4: Kicker (Seitenlinie) bei 2923 m landet bei Höchsttempo hart (17.4 m/s)",
-   "Zone 5: Kicker XL bei 3378 m landet bei Höchsttempo hart (17.3 m/s)",
-   "Zone 5: Step-down XL bei 3675 m landet bei Höchsttempo hart (17 m/s)",
-   "Zone 5: Kicker (Seitenlinie) bei 3429 m landet bei Höchsttempo hart (17.3 m/s)",
-   "Zone 5: Kicker (Seitenlinie) bei 3797 m landet bei Höchsttempo hart (18.6 m/s)",
-   "Zone 7: Tisch XL bei 4418 m landet bei Höchsttempo hart (18.5 m/s)",
-   "Zone 7: Kicker (Seitenlinie) bei 4443 m landet bei Höchsttempo hart (18.7 m/s)",
-   "Zone 7: Kicker (Seitenlinie) bei 4429 m landet bei Höchsttempo hart (17.8 m/s)"
+   "Zone 5: Mega Air bei 3767 m landet bei Höchsttempo hart (21.5 m/s)",
+   "Zone 5: Kicker (Seitenlinie) bei 3780 m landet bei Höchsttempo hart (17.2 m/s)",
+   "Zone 7: Tisch XL bei 4395 m landet bei Höchsttempo hart (18.5 m/s)",
+   "Zone 7: Kicker (Seitenlinie) bei 4421 m landet bei Höchsttempo hart (18.7 m/s)",
+   "Zone 7: Kicker (Seitenlinie) bei 4406 m landet bei Höchsttempo hart (17.8 m/s)"
   ],
-  "features": 60,
+  "features": 57,
   "skipped": 1,
-  "zones": "S220 J690 S774 M700 J866 J816 F123 J615 R609"
+  "zones": "S220 J690 S774 M700 J866 M793 F123 J615 R609"
  },
  {
   "seed": 113,
   "mode": "Spur A Hocke",
   "reached": 4000,
-  "time": 152.6,
+  "time": 153.5,
   "crashes": [],
   "landings": [
    {
@@ -13354,52 +13156,20 @@
     "lane": 0
    },
    {
-    "d": 3458,
-    "impact": 14.4,
-    "air": 3.19,
-    "dist": 80.1,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 2
-   },
-   {
-    "d": 3492,
-    "impact": 10.5,
-    "air": 1.12,
-    "dist": 29.4,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 2
-   },
-   {
-    "d": 3754,
-    "impact": 14.8,
-    "air": 3.11,
-    "dist": 79.5,
-    "feat": "Step-down XL",
-    "lane": 0
-   },
-   {
-    "d": 3788,
-    "impact": 7.8,
-    "air": 0.81,
-    "dist": 21.8,
-    "feat": "Step-down XL",
-    "lane": 0
-   },
-   {
-    "d": 3941,
+    "d": 3836,
     "impact": 13.2,
-    "air": 2.92,
-    "dist": 75.2,
-    "feat": "Großer Tisch",
-    "lane": 0
+    "air": 3.32,
+    "dist": 68.5,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
    },
    {
-    "d": 3978,
-    "impact": 10.5,
-    "air": 1.12,
-    "dist": 29.8,
-    "feat": "Großer Tisch",
-    "lane": 0
+    "d": 3871,
+    "impact": 10.8,
+    "air": 1.28,
+    "dist": 30.9,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
    }
   ],
   "topSpeed": 34.18119969711751,
@@ -13492,40 +13262,16 @@
     "x": 1
    },
    {
-    "d": 3378,
-    "v": 28.2,
-    "vy": 7.8,
-    "x": 14
+    "d": 3768,
+    "v": 22.7,
+    "vy": 5.1,
+    "x": 1
    },
    {
-    "d": 3463,
-    "v": 28.4,
-    "vy": -8.7,
-    "x": 8
-   },
-   {
-    "d": 3675,
-    "v": 28.3,
-    "vy": 6.1,
-    "x": 7
-   },
-   {
-    "d": 3767,
-    "v": 29,
-    "vy": -8.9,
-    "x": 4
-   },
-   {
-    "d": 3866,
-    "v": 28.4,
-    "vy": 6.3,
-    "x": 8
-   },
-   {
-    "d": 3949,
-    "v": 28.8,
-    "vy": -8.8,
-    "x": 12
+    "d": 3840,
+    "v": 29.2,
+    "vy": -14.5,
+    "x": 2
    }
   ],
   "issues": [
@@ -13535,23 +13281,21 @@
    "Zone 3: Mega Air bei 2145 m landet bei Höchsttempo hart (22.5 m/s)",
    "Zone 4: Kicker (Seitenlinie) bei 2596 m landet bei Höchsttempo hart (17.1 m/s)",
    "Zone 4: Kicker (Seitenlinie) bei 2923 m landet bei Höchsttempo hart (17.4 m/s)",
-   "Zone 5: Kicker XL bei 3378 m landet bei Höchsttempo hart (17.3 m/s)",
-   "Zone 5: Step-down XL bei 3675 m landet bei Höchsttempo hart (17 m/s)",
-   "Zone 5: Kicker (Seitenlinie) bei 3429 m landet bei Höchsttempo hart (17.3 m/s)",
-   "Zone 5: Kicker (Seitenlinie) bei 3797 m landet bei Höchsttempo hart (18.6 m/s)",
-   "Zone 7: Tisch XL bei 4418 m landet bei Höchsttempo hart (18.5 m/s)",
-   "Zone 7: Kicker (Seitenlinie) bei 4443 m landet bei Höchsttempo hart (18.7 m/s)",
-   "Zone 7: Kicker (Seitenlinie) bei 4429 m landet bei Höchsttempo hart (17.8 m/s)"
+   "Zone 5: Mega Air bei 3767 m landet bei Höchsttempo hart (21.5 m/s)",
+   "Zone 5: Kicker (Seitenlinie) bei 3780 m landet bei Höchsttempo hart (17.2 m/s)",
+   "Zone 7: Tisch XL bei 4395 m landet bei Höchsttempo hart (18.5 m/s)",
+   "Zone 7: Kicker (Seitenlinie) bei 4421 m landet bei Höchsttempo hart (18.7 m/s)",
+   "Zone 7: Kicker (Seitenlinie) bei 4406 m landet bei Höchsttempo hart (17.8 m/s)"
   ],
-  "features": 60,
+  "features": 57,
   "skipped": 1,
-  "zones": "S220 J690 S774 M700 J866 J816 F123 J615 R609"
+  "zones": "S220 J690 S774 M700 J866 M793 F123 J615 R609"
  },
  {
   "seed": 113,
   "mode": "Spur B Hocke",
   "reached": 4000,
-  "time": 161.4,
+  "time": 163.2,
   "crashes": [],
   "landings": [
    {
@@ -13675,52 +13419,28 @@
     "lane": 2
    },
    {
-    "d": 3433,
-    "impact": 7.4,
-    "air": 2.19,
-    "dist": 55.2,
+    "d": 3428,
+    "impact": 3.7,
+    "air": 1.47,
+    "dist": 33.8,
     "feat": "Kicker (Seitenlinie)",
-    "lane": 2
+    "lane": 1
    },
    {
-    "d": 3486,
-    "impact": 6.7,
-    "air": 0.88,
-    "dist": 19.2,
+    "d": 3583,
+    "impact": 7.6,
+    "air": 1.65,
+    "dist": 38.1,
     "feat": "Kicker (Seitenlinie)",
-    "lane": 2
+    "lane": 1
    },
    {
-    "d": 3745,
-    "impact": 14,
-    "air": 2.92,
-    "dist": 70.1,
-    "feat": "Step-down XL",
-    "lane": 0
-   },
-   {
-    "d": 3787,
-    "impact": 7.7,
-    "air": 0.8,
-    "dist": 20.6,
-    "feat": "Step-down XL",
-    "lane": 0
-   },
-   {
-    "d": 3931,
-    "impact": 12.2,
-    "air": 2.71,
-    "dist": 65.5,
-    "feat": "Großer Tisch",
-    "lane": 0
-   },
-   {
-    "d": 3977,
-    "impact": 10.4,
-    "air": 1.12,
-    "dist": 28.2,
-    "feat": "Großer Tisch",
-    "lane": 0
+    "d": 3849,
+    "impact": 6.5,
+    "air": 3,
+    "dist": 68.2,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
    }
   ],
   "topSpeed": 33.32531191596298,
@@ -13819,40 +13539,22 @@
     "x": -41
    },
    {
-    "d": 3378,
-    "v": 26.8,
-    "vy": 3.2,
-    "x": 17
+    "d": 3395,
+    "v": 23.7,
+    "vy": 2.4,
+    "x": 58
    },
    {
-    "d": 3466,
-    "v": 23,
-    "vy": -5.9,
-    "x": 25
+    "d": 3544,
+    "v": 24.1,
+    "vy": 2.9,
+    "x": 54
    },
    {
-    "d": 3675,
-    "v": 26.4,
-    "vy": 5.7,
-    "x": 7
-   },
-   {
-    "d": 3767,
-    "v": 28,
-    "vy": -8.6,
-    "x": 6
-   },
-   {
-    "d": 3866,
-    "v": 26.4,
-    "vy": 5.7,
-    "x": 8
-   },
-   {
-    "d": 3949,
-    "v": 27.8,
-    "vy": -8.6,
-    "x": 11
+    "d": 3780,
+    "v": 24.6,
+    "vy": 0.5,
+    "x": 56
    }
   ],
   "issues": [
@@ -13862,17 +13564,15 @@
    "Zone 3: Mega Air bei 2145 m landet bei Höchsttempo hart (22.5 m/s)",
    "Zone 4: Kicker (Seitenlinie) bei 2596 m landet bei Höchsttempo hart (17.1 m/s)",
    "Zone 4: Kicker (Seitenlinie) bei 2923 m landet bei Höchsttempo hart (17.4 m/s)",
-   "Zone 5: Kicker XL bei 3378 m landet bei Höchsttempo hart (17.3 m/s)",
-   "Zone 5: Step-down XL bei 3675 m landet bei Höchsttempo hart (17 m/s)",
-   "Zone 5: Kicker (Seitenlinie) bei 3429 m landet bei Höchsttempo hart (17.3 m/s)",
-   "Zone 5: Kicker (Seitenlinie) bei 3797 m landet bei Höchsttempo hart (18.6 m/s)",
-   "Zone 7: Tisch XL bei 4418 m landet bei Höchsttempo hart (18.5 m/s)",
-   "Zone 7: Kicker (Seitenlinie) bei 4443 m landet bei Höchsttempo hart (18.7 m/s)",
-   "Zone 7: Kicker (Seitenlinie) bei 4429 m landet bei Höchsttempo hart (17.8 m/s)"
+   "Zone 5: Mega Air bei 3767 m landet bei Höchsttempo hart (21.5 m/s)",
+   "Zone 5: Kicker (Seitenlinie) bei 3780 m landet bei Höchsttempo hart (17.2 m/s)",
+   "Zone 7: Tisch XL bei 4395 m landet bei Höchsttempo hart (18.5 m/s)",
+   "Zone 7: Kicker (Seitenlinie) bei 4421 m landet bei Höchsttempo hart (18.7 m/s)",
+   "Zone 7: Kicker (Seitenlinie) bei 4406 m landet bei Höchsttempo hart (17.8 m/s)"
   ],
-  "features": 60,
+  "features": 57,
   "skipped": 1,
-  "zones": "S220 J690 S774 M700 J866 J816 F123 J615 R609"
+  "zones": "S220 J690 S774 M700 J866 M793 F123 J615 R609"
  },
  {
   "seed": 120,
@@ -14741,7 +14441,7 @@
   "seed": 127,
   "mode": "Spur A aufrecht",
   "reached": 4000,
-  "time": 199.9,
+  "time": 201.8,
   "crashes": [],
   "landings": [
    {
@@ -14793,55 +14493,62 @@
     "lane": 0
    },
    {
-    "d": 1557,
+    "d": 1282,
+    "impact": 2.4,
+    "air": 0.21,
+    "dist": 3.3,
+    "feat": "cliff"
+   },
+   {
+    "d": 1542,
     "impact": 3.2,
     "air": 0.43,
-    "dist": 8.4,
+    "dist": 8.6,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 1752,
-    "impact": 7.6,
-    "air": 1.63,
-    "dist": 31.5,
+    "d": 1738,
+    "impact": 7.8,
+    "air": 1.66,
+    "dist": 32.2,
     "feat": "Tisch",
     "lane": 0
    },
    {
-    "d": 1794,
-    "impact": 5.4,
-    "air": 0.77,
-    "dist": 15.2,
-    "feat": "Tisch",
-    "lane": 0
-   },
-   {
-    "d": 2015,
+    "d": 1779,
     "impact": 5.5,
-    "air": 1.23,
-    "dist": 25.5,
+    "air": 0.77,
+    "dist": 15.3,
+    "feat": "Tisch",
+    "lane": 0
+   },
+   {
+    "d": 2000,
+    "impact": 5.7,
+    "air": 1.25,
+    "dist": 25.8,
     "feat": "Spine (links)",
     "lane": 0
    },
    {
-    "d": 2063,
+    "d": 2048,
     "impact": 10.9,
-    "air": 1.45,
-    "dist": 25.5,
+    "air": 1.46,
+    "dist": 25.6,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
    },
    {
-    "d": 2400,
-    "impact": 9.5,
-    "air": 2.05,
-    "dist": 38.3,
+    "d": 2385,
+    "impact": 9.6,
+    "air": 2.07,
+    "dist": 38.6,
     "feat": "Kicker XL",
     "lane": 0
    },
    {
-    "d": 2445,
+    "d": 2430,
     "impact": 7.8,
     "air": 1,
     "dist": 19.5,
@@ -14849,15 +14556,15 @@
     "lane": 0
    },
    {
-    "d": 2665,
+    "d": 2650,
     "impact": 8.6,
-    "air": 1.83,
-    "dist": 35.4,
+    "air": 1.84,
+    "dist": 35.5,
     "feat": "Großer Tisch",
     "lane": 0
    },
    {
-    "d": 2709,
+    "d": 2693,
     "impact": 6.8,
     "air": 0.96,
     "dist": 19,
@@ -14865,7 +14572,7 @@
     "lane": 0
    },
    {
-    "d": 3043,
+    "d": 3028,
     "impact": 3.1,
     "air": 0.42,
     "dist": 8.7,
@@ -14873,23 +14580,23 @@
     "lane": -1
    },
    {
-    "d": 3229,
+    "d": 3214,
     "impact": 7.2,
-    "air": 1.54,
-    "dist": 29.4,
+    "air": 1.53,
+    "dist": 29.2,
     "feat": "Tisch",
     "lane": 0
    },
    {
-    "d": 3265,
-    "impact": 5.3,
-    "air": 0.74,
-    "dist": 14.4,
+    "d": 3250,
+    "impact": 5.4,
+    "air": 0.75,
+    "dist": 14.5,
     "feat": "Tisch",
     "lane": 0
    },
    {
-    "d": 3503,
+    "d": 3488,
     "impact": 6,
     "air": 1.19,
     "dist": 23.6,
@@ -14897,15 +14604,15 @@
     "lane": 0
    },
    {
-    "d": 3545,
-    "impact": 10.8,
+    "d": 3530,
+    "impact": 10.7,
     "air": 1.41,
     "dist": 24.5,
     "feat": "Kicker (Seitenlinie)",
     "lane": 2
    }
   ],
-  "topSpeed": 24.101067283670535,
+  "topSpeed": 24.081568232474826,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -14947,118 +14654,124 @@
     "x": -12
    },
    {
-    "d": 1538,
-    "v": 20.5,
-    "vy": -1.7,
-    "x": 1
+    "d": 1279,
+    "v": 16.9,
+    "vy": -5.3,
+    "x": -58
    },
    {
-    "d": 1721,
-    "v": 20.5,
-    "vy": 3.3,
+    "d": 1523,
+    "v": 20.8,
+    "vy": -4.6,
+    "x": 0
+   },
+   {
+    "d": 1706,
+    "v": 20.7,
+    "vy": 3.4,
     "x": -4
    },
    {
-    "d": 1779,
-    "v": 21.1,
-    "vy": -5.8,
+    "d": 1764,
+    "v": 21.3,
+    "vy": -5.9,
     "x": -3
    },
    {
-    "d": 1990,
-    "v": 21.6,
-    "vy": 2.6,
+    "d": 1975,
+    "v": 21.7,
+    "vy": 2.7,
     "x": 5
    },
    {
-    "d": 2038,
+    "d": 2022,
     "v": 18.4,
     "vy": -1.7,
     "x": 8
    },
    {
-    "d": 2362,
-    "v": 20.5,
-    "vy": 5.3,
+    "d": 2346,
+    "v": 20.6,
+    "vy": 5.4,
     "x": -1
    },
    {
-    "d": 2425,
+    "d": 2410,
     "v": 21,
     "vy": -5.8,
     "x": -2
    },
    {
-    "d": 2630,
+    "d": 2615,
     "v": 20.8,
-    "vy": 4.1,
+    "vy": 4.2,
     "x": -7
    },
    {
-    "d": 2690,
+    "d": 2675,
     "v": 21.3,
     "vy": -5.9,
     "x": -7
    },
    {
-    "d": 3023,
+    "d": 3008,
     "v": 21.7,
     "vy": -1.4,
     "x": 33
    },
    {
-    "d": 3200,
+    "d": 3184,
     "v": 20.2,
-    "vy": 3.3,
+    "vy": 3.2,
     "x": 31
    },
    {
-    "d": 3251,
+    "d": 3235,
     "v": 20.6,
-    "vy": -5.5,
+    "vy": -5.4,
     "x": 32
    },
    {
-    "d": 3480,
+    "d": 3464,
     "v": 20.7,
     "vy": 2.4,
     "x": 38
    },
    {
-    "d": 3521,
-    "v": 18.1,
-    "vy": -1.6,
+    "d": 3506,
+    "v": 18.2,
+    "vy": -1.5,
     "x": 41
    }
   ],
   "grinds": [
    {
-    "d": 1549,
-    "dist": 10.9,
+    "d": 1534,
+    "dist": 10.8,
     "kind": "box",
     "clean": true
    },
    {
-    "d": 3034,
+    "d": 3019,
     "dist": 10.9,
     "kind": "box",
     "clean": true
    }
   ],
   "issues": [
-   "Zone 6: Big Air bei 4043 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 7: Mega Air bei 4717 m landet bei Höchsttempo hart (21 m/s)",
-   "Zone 7: Kicker (Seitenlinie) bei 4846 m verworfen (keine sichere Landung)"
+   "Zone 6: Big Air bei 4028 m landet bei Höchsttempo hart (19.9 m/s)",
+   "Zone 7: Mega Air bei 4702 m landet bei Höchsttempo hart (21 m/s)",
+   "Zone 7: Kicker (Seitenlinie) bei 4831 m verworfen (keine sichere Landung)"
   ],
   "features": 45,
-  "skipped": 3,
-  "zones": "S220 J854 B366 S778 J667 S874 B487 M851 B397"
+  "skipped": 2,
+  "zones": "S220 J854 C351 S778 J667 S874 B487 M851 B397"
  },
  {
   "seed": 127,
   "mode": "Spur A Hocke",
   "reached": 4000,
-  "time": 151.2,
+  "time": 152.9,
   "crashes": [],
   "landings": [
    {
@@ -15086,95 +14799,78 @@
     "lane": 0
    },
    {
-    "d": 1307,
-    "impact": 3.6,
-    "air": 0.49,
-    "dist": 13.1,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 1326,
-    "impact": 2.7,
-    "air": 0.32,
-    "dist": 8.3,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 1560,
-    "impact": 3.2,
+    "d": 1289,
+    "impact": 3.4,
     "air": 0.43,
-    "dist": 11.4,
-    "feat": "-",
-    "lane": -1
+    "dist": 9.9,
+    "feat": "cliff"
    },
    {
-    "d": 1783,
-    "impact": 4.3,
-    "air": 2.37,
-    "dist": 62.2,
+    "d": 1766,
+    "impact": 3.6,
+    "air": 2.28,
+    "dist": 60.9,
     "feat": "Tisch",
     "lane": 0
    },
    {
-    "d": 2037,
-    "impact": 3.6,
+    "d": 2022,
+    "impact": 2.1,
     "air": 1.72,
     "dist": 47.5,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
    },
    {
-    "d": 2061,
-    "impact": 9.9,
-    "air": 0.85,
-    "dist": 22.6,
+    "d": 2041,
+    "impact": 8.3,
+    "air": 0.72,
+    "dist": 18.8,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
    },
    {
-    "d": 2441,
-    "impact": 10.5,
-    "air": 3.16,
-    "dist": 79.4,
+    "d": 2425,
+    "impact": 10.6,
+    "air": 3.17,
+    "dist": 79.6,
     "feat": "Kicker XL",
     "lane": 0
    },
    {
-    "d": 2687,
+    "d": 2672,
     "impact": 9,
-    "air": 2.1,
-    "dist": 56.4,
+    "air": 2.11,
+    "dist": 56.6,
     "feat": "Großer Tisch",
     "lane": 0
    },
    {
-    "d": 2717,
+    "d": 2702,
     "impact": 9.4,
     "air": 1.02,
-    "dist": 27.4,
+    "dist": 27.2,
     "feat": "Großer Tisch",
     "lane": 0
    },
    {
-    "d": 3266,
+    "d": 3251,
     "impact": 10.2,
     "air": 2.52,
-    "dist": 66.7,
+    "dist": 67,
     "feat": "Tisch",
     "lane": 0
    },
    {
-    "d": 3541,
-    "impact": 10,
-    "air": 2.3,
-    "dist": 62.1,
+    "d": 3526,
+    "impact": 9.8,
+    "air": 2.29,
+    "dist": 61.8,
     "feat": "Kicker (Seitenlinie)",
     "lane": 2
    }
   ],
-  "topSpeed": 31.60219701295545,
+  "topSpeed": 31.60326829836653,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -15198,94 +14894,74 @@
     "x": -12
    },
    {
-    "d": 1294,
-    "v": 27,
-    "vy": -2.7,
-    "x": 2
+    "d": 1279,
+    "v": 24,
+    "vy": -6.6,
+    "x": -60
    },
    {
-    "d": 1318,
-    "v": 26.8,
-    "vy": -3.9,
-    "x": 2
-   },
-   {
-    "d": 1539,
-    "v": 27.7,
-    "vy": -2.2,
-    "x": 1
-   },
-   {
-    "d": 1721,
-    "v": 28.2,
-    "vy": 4.8,
+    "d": 1706,
+    "v": 28.6,
+    "vy": 4.4,
     "x": -6
    },
    {
-    "d": 1990,
+    "d": 1975,
     "v": 29,
-    "vy": 3.8,
+    "vy": 3.7,
+    "x": 7
+   },
+   {
+    "d": 2023,
+    "v": 29.1,
+    "vy": -11.2,
     "x": 6
    },
    {
-    "d": 2038,
-    "v": 29,
-    "vy": -9.8,
-    "x": 6
-   },
-   {
-    "d": 2361,
+    "d": 2346,
     "v": 28.2,
     "vy": 7.5,
     "x": 0
    },
    {
-    "d": 2630,
-    "v": 28.5,
-    "vy": 3.8,
+    "d": 2615,
+    "v": 28.6,
+    "vy": 3.9,
     "x": -9
    },
    {
-    "d": 2690,
+    "d": 2675,
     "v": 28.6,
     "vy": -7.5,
-    "x": -19
+    "x": -20
    },
    {
-    "d": 3200,
-    "v": 28.6,
-    "vy": 4.7,
+    "d": 3184,
+    "v": 28.7,
+    "vy": 4.8,
     "x": 30
    },
    {
-    "d": 3480,
+    "d": 3464,
     "v": 28.8,
-    "vy": 3.6,
+    "vy": 3.5,
     "x": 39
    }
   ],
-  "grinds": [
-   {
-    "d": 1549,
-    "dist": 10.9,
-    "kind": "box",
-    "clean": true
-   }
-  ],
   "issues": [
-   "Zone 6: Big Air bei 4043 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 7: Mega Air bei 4717 m landet bei Höchsttempo hart (21 m/s)",
-   "Zone 7: Kicker (Seitenlinie) bei 4846 m verworfen (keine sichere Landung)"
+   "Zone 6: Big Air bei 4028 m landet bei Höchsttempo hart (19.9 m/s)",
+   "Zone 7: Mega Air bei 4702 m landet bei Höchsttempo hart (21 m/s)",
+   "Zone 7: Kicker (Seitenlinie) bei 4831 m verworfen (keine sichere Landung)"
   ],
   "features": 45,
-  "skipped": 3,
-  "zones": "S220 J854 B366 S778 J667 S874 B487 M851 B397"
+  "skipped": 2,
+  "zones": "S220 J854 C351 S778 J667 S874 B487 M851 B397"
  },
  {
   "seed": 127,
   "mode": "Spur B Hocke",
   "reached": 4000,
-  "time": 160.3,
+  "time": 160.4,
   "crashes": [],
   "landings": [
    {
@@ -15321,31 +14997,38 @@
     "lane": 0
    },
    {
-    "d": 1311,
-    "impact": 7.7,
-    "air": 1.45,
-    "dist": 34,
+    "d": 1109,
+    "impact": 3.3,
+    "air": 0.73,
+    "dist": 19.9,
+    "feat": "-",
+    "lane": -1
+   },
+   {
+    "d": 1313,
+    "impact": 7,
+    "air": 1.84,
+    "dist": 36.7,
+    "feat": "cliff"
+   },
+   {
+    "d": 1673,
+    "impact": 5.1,
+    "air": 1.28,
+    "dist": 34.3,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
    },
    {
-    "d": 1686,
-    "impact": 4.7,
-    "air": 1.22,
-    "dist": 32.8,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 1725,
-    "impact": 6.9,
+    "d": 1710,
+    "impact": 6.8,
     "air": 0.69,
     "dist": 18.2,
     "feat": "Tisch",
     "lane": 0
    },
    {
-    "d": 1876,
+    "d": 1861,
     "impact": 9.2,
     "air": 1.97,
     "dist": 50.7,
@@ -15353,7 +15036,7 @@
     "lane": 1
    },
    {
-    "d": 1897,
+    "d": 1881,
     "impact": 6.7,
     "air": 0.68,
     "dist": 17.6,
@@ -15361,23 +15044,23 @@
     "lane": 1
    },
    {
-    "d": 2077,
-    "impact": 6.6,
-    "air": 1.54,
-    "dist": 40.7,
+    "d": 2060,
+    "impact": 6.2,
+    "air": 1.47,
+    "dist": 38.9,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
    },
    {
-    "d": 2108,
-    "impact": 6.9,
+    "d": 2093,
+    "impact": 6.8,
     "air": 0.69,
-    "dist": 18.1,
+    "dist": 18.2,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
    },
    {
-    "d": 2411,
+    "d": 2396,
     "impact": 8.5,
     "air": 1.97,
     "dist": 49.6,
@@ -15385,23 +15068,23 @@
     "lane": 0
    },
    {
-    "d": 2451,
+    "d": 2436,
     "impact": 10.1,
     "air": 1.05,
-    "dist": 26.3,
+    "dist": 26.4,
     "feat": "Kicker XL",
     "lane": 0
    },
    {
-    "d": 2684,
-    "impact": 9.7,
-    "air": 2.17,
-    "dist": 53.7,
+    "d": 2668,
+    "impact": 9.6,
+    "air": 2.15,
+    "dist": 53.4,
     "feat": "Großer Tisch",
     "lane": 0
    },
    {
-    "d": 2716,
+    "d": 2700,
     "impact": 9.4,
     "air": 1.02,
     "dist": 25.7,
@@ -15409,39 +15092,39 @@
     "lane": 0
    },
    {
-    "d": 3144,
-    "impact": 7.8,
+    "d": 3129,
+    "impact": 7.9,
     "air": 1.74,
-    "dist": 45.2,
+    "dist": 45.1,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
    },
    {
-    "d": 3163,
-    "impact": 6.5,
-    "air": 0.65,
-    "dist": 16.9,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 3334,
-    "impact": 3.9,
-    "air": 2.01,
-    "dist": 51.5,
-    "feat": "Kicker (Seitenlinie)",
-    "lane": 1
-   },
-   {
-    "d": 3559,
-    "impact": 3,
-    "air": 0.64,
+    "d": 3148,
+    "impact": 6.6,
+    "air": 0.66,
     "dist": 17.1,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 3317,
+    "impact": 3.5,
+    "air": 1.95,
+    "dist": 50.1,
+    "feat": "Kicker (Seitenlinie)",
+    "lane": 1
+   },
+   {
+    "d": 3543,
+    "impact": 3,
+    "air": 0.63,
+    "dist": 16.9,
     "feat": "Kicker (Seitenlinie)",
     "lane": 2
    },
    {
-    "d": 3591,
+    "d": 3576,
     "impact": 6.8,
     "air": 0.68,
     "dist": 17.8,
@@ -15449,23 +15132,23 @@
     "lane": 2
    },
    {
-    "d": 3773,
-    "impact": 4.9,
+    "d": 3757,
+    "impact": 4.7,
     "air": 0.5,
     "dist": 13.4,
     "feat": "-",
     "lane": -1
    },
    {
-    "d": 3918,
+    "d": 3902,
     "impact": 5.6,
-    "air": 0.51,
-    "dist": 12.7,
+    "air": 0.5,
+    "dist": 12.5,
     "feat": "Kicker (Seitenlinie)",
     "lane": 1
    }
   ],
-  "topSpeed": 29.095793101221968,
+  "topSpeed": 29.209899296062,
   "stuck": 0,
   "hits": 0,
   "respawns": 0,
@@ -15495,122 +15178,128 @@
     "x": 48
    },
    {
-    "d": 1277,
-    "v": 24.3,
-    "vy": 2.1,
-    "x": -39
+    "d": 1090,
+    "v": 27.7,
+    "vy": -2.3,
+    "x": 42
    },
    {
-    "d": 1654,
+    "d": 1277,
+    "v": 20.8,
+    "vy": -1.9,
+    "x": 11
+   },
+   {
+    "d": 1639,
     "v": 27.6,
-    "vy": 0.6,
+    "vy": 0.8,
     "x": -48
    },
    {
-    "d": 1707,
+    "d": 1692,
     "v": 28,
     "vy": -7.1,
-    "x": -48
+    "x": -47
    },
    {
-    "d": 1825,
-    "v": 27.2,
+    "d": 1810,
+    "v": 27.1,
     "vy": 3.3,
     "x": -42
    },
    {
-    "d": 1879,
+    "d": 1864,
     "v": 27.2,
     "vy": -7,
     "x": -37
    },
    {
-    "d": 2037,
+    "d": 2021,
     "v": 27.5,
-    "vy": 1.7,
-    "x": -39
+    "vy": 1.5,
+    "x": -38
    },
    {
-    "d": 2090,
-    "v": 27.8,
+    "d": 2075,
+    "v": 27.9,
     "vy": -7.1,
     "x": -38
    },
    {
-    "d": 2362,
+    "d": 2346,
     "v": 26.6,
     "vy": 3.8,
-    "x": 4
+    "x": 3
    },
    {
-    "d": 2425,
-    "v": 26.7,
-    "vy": -6.9,
+    "d": 2410,
+    "v": 26.9,
+    "vy": -7,
     "x": 9
    },
    {
-    "d": 2630,
+    "d": 2615,
     "v": 26.5,
     "vy": 4.5,
     "x": -9
    },
    {
-    "d": 2690,
+    "d": 2675,
     "v": 26.7,
     "vy": -7,
-    "x": -19
+    "x": -18
    },
    {
-    "d": 3099,
-    "v": 27.2,
+    "d": 3084,
+    "v": 27.1,
     "vy": 2.7,
     "x": 66
    },
    {
-    "d": 3146,
+    "d": 3130,
     "v": 27.2,
     "vy": -6.7,
     "x": 62
    },
    {
-    "d": 3282,
+    "d": 3267,
     "v": 27.1,
-    "vy": 3.5,
-    "x": 73
+    "vy": 3.3,
+    "x": 72
    },
    {
-    "d": 3542,
+    "d": 3527,
     "v": 27.2,
-    "vy": -2.7,
+    "vy": -2.8,
     "x": 77
    },
    {
-    "d": 3574,
+    "d": 3559,
     "v": 27.7,
-    "vy": -6.5,
+    "vy": -6.6,
     "x": 75
    },
    {
-    "d": 3760,
+    "d": 3744,
     "v": 28,
-    "vy": -6.1,
+    "vy": -5.9,
     "x": 64
    },
    {
-    "d": 3905,
+    "d": 3890,
     "v": 25.8,
     "vy": -4.9,
     "x": 37
    }
   ],
   "issues": [
-   "Zone 6: Big Air bei 4043 m landet bei Höchsttempo hart (19.9 m/s)",
-   "Zone 7: Mega Air bei 4717 m landet bei Höchsttempo hart (21 m/s)",
-   "Zone 7: Kicker (Seitenlinie) bei 4846 m verworfen (keine sichere Landung)"
+   "Zone 6: Big Air bei 4028 m landet bei Höchsttempo hart (19.9 m/s)",
+   "Zone 7: Mega Air bei 4702 m landet bei Höchsttempo hart (21 m/s)",
+   "Zone 7: Kicker (Seitenlinie) bei 4831 m verworfen (keine sichere Landung)"
   ],
   "features": 45,
-  "skipped": 3,
-  "zones": "S220 J854 B366 S778 J667 S874 B487 M851 B397"
+  "skipped": 2,
+  "zones": "S220 J854 C351 S778 J667 S874 B487 M851 B397"
  },
  {
   "seed": 134,

@@ -333,6 +333,7 @@ export function genChunk(i) {
   // Querrichtung der Spur: Modelle mit Längsachse X werden entlang der Fahrtrichtung gedreht
   const laneYaw = (li, d) => Math.atan2(12, P.props(d + 6).lx[li] - P.props(d - 6).lx[li]);
 
+  const heli = cfg.style === 'heli';   // Heli-Berg: Hochgebirge, keine Pistenausstattung
   // ---- Wald: dichte Inseln und lichte Lichtungen, auch weit abseits der Spuren
   const N = Math.round(2800 * cfg.treeMul), maxTrees = Math.round(720 * cfg.treeMul);
   for (let n = 0; n < N && out.trees.length < maxTrees; n++) {
@@ -347,7 +348,7 @@ export function genChunk(i) {
     const trailNear = c.lk[sf.lane] === 1;
     if (edge < (trailNear ? 1.3 : 2.8)) continue;
     let dens = sf.forest * (0.12 + 0.88 * smoothstep(0.8, 8, edge));
-    dens = Math.max(dens, 0.4 * smoothstep(c.valley - 5, c.valley + 45, au));
+    if (!heli || c.forest > 0.05) dens = Math.max(dens, 0.4 * smoothstep(c.valley - 5, c.valley + 45, au));   // Heli: über der Baumgrenze kein Waldrand
     // Zonen „mit Baum-Inseln“: dichte Baumgruppen mitten im offenen Gelände zwischen den Pisten
     const zm = P.zoneAtD(dd).mods;
     if (zm && zm.islands) dens = Math.max(dens, zm.islands.amt * smoothstep(0.56, 0.7, fbm(x / 38 + cfg.seed * 0.13, dd / 38)) * smoothstep(7, 16, edge));
@@ -362,7 +363,7 @@ export function genChunk(i) {
     addCollider(x, z, 0.5 * scale + 0.15, 'baum');
   }
   // ---- Felsblöcke und Felsen an steilen Flanken
-  for (let n = 0; n < Math.round(34 * cfg.treeMul + 8); n++) {
+  for (let n = 0; n < Math.round((34 * cfg.treeMul + 8) * (heli ? 2.2 : 1)); n++) {
     const dd = d0 + R() * CHUNK, ur = R() * 2 - 1, sc = R(), rot = R() * 6.283, vr = Math.floor(R() * 6), wallPref = R();
     const c = P.props(dd);
     let x, wall = false;
@@ -374,7 +375,7 @@ export function genChunk(i) {
     const hh = P.heightP(x, z);
     const steep = Math.abs(P.heightP(x + 2, z) - P.heightP(x - 2, z)) / 4;
     if (wall && steep < 0.5) continue;
-    const scale = wall ? 1.6 + sc * 3.2 + Math.min(2, steep) : 0.6 + sc * 1.6;
+    const scale = (wall ? 1.6 + sc * 3.2 + Math.min(2, steep) : 0.6 + sc * 1.6) * (heli ? 1.35 : 1);
     out.rocks.push({ x, z, y: rockY(x, z, scale), scale, rot, variant: vr });
     addCollider(x, z, 1.3 * scale, 'fels');
   }
@@ -413,7 +414,19 @@ export function genChunk(i) {
       addD('IceCluster', x, f.dc + 3 + R() * 3, { rot: R() * 6.28, scale: 0.8 + R() * 1.1 });
     }
     // Zaun beidseits der Sprunglinie am Klippenrand
-    for (const sgn of [-1, 1]) for (let k = 0; k < 3; k++) { const xa = f.xB + sgn * (f.wB + 1.5 + k * 4), xb = xa + sgn * 4; addFence(Math.min(xa, xb), f.dc - 2.5, Math.max(xa, xb), f.dc - 2.5, false); }
+    if (!heli) for (const sgn of [-1, 1]) for (let k = 0; k < 3; k++) { const xa = f.xB + sgn * (f.wB + 1.5 + k * 4), xb = xa + sgn * 4; addFence(Math.min(xa, xb), f.dc - 2.5, Math.max(xa, xb), f.dc - 2.5, false); }
+  }
+  // ---- Gletscher: Séracs (Eistürme) und Eisbrocken im offenen Gelände
+  if (heli) {
+    const zg = P.zoneAtD(d0 + CHUNK / 2);
+    if (zg.type === 'glacier') {
+      for (let n = 0; n < Math.round(9 * Math.max(0.6, cfg.treeMul)); n++) {
+        const dd = d0 + R() * CHUNK, c = P.props(dd), x = c.hub + (R() * 2 - 1) * Math.min(c.valley + 10, 210);
+        if (P.surf(x, dd).edge < 7 || P.inFeatureZone(x, dd, 6)) continue;
+        const sc = 1.4 + R() * 2.2;
+        addD('IceCluster', x, dd, { rot: R() * 6.28, scale: sc, dy: -0.3 * sc, r: 1.1 * sc, type: 'fels' });
+      }
+    }
   }
   // ---- Engstellen in Rinnen: die Felsnase besteht aus echten Brocken (zwei Reihen, innen kleiner, außen größer)
   for (const f of P.featuresIn(d0, d1)) {
@@ -476,7 +489,7 @@ export function genChunk(i) {
           addFence(f.x + sgn * (f.wL + 5.2), dd, f.x + sgn * (f.wL + 5.2), dd + 4, false);
         }
       }
-    } else if (f.kind === 'cliff') {
+    } else if (f.kind === 'cliff' && !heli) {
       for (const t of [-1, 1]) {
         const x = f.xB + t * (f.wB + 1.4), z = -(f.dc - 2);
         out.markers.push({ x, z, y: P.heightP(x, z), cliff: true });
@@ -519,7 +532,7 @@ export function genChunk(i) {
     }
   }
   // ---- Wegweiser und Torbögen an Abzweigungen
-  for (let dm = d0; dm < d1; dm += 8) {
+  for (let dm = d0; dm < d1 && !heli; dm += 8) {
     const aw = P.props(Math.max(0, dm - 8)).lw.slice(), b = P.props(dm);   // props() liefert ein wiederverwendetes Objekt: Werte vorher kopieren
     for (let li = 1; li < NL; li++) {
       if (aw[li] < 2.2 && b.lw[li] >= 2.2) {
@@ -544,7 +557,7 @@ export function genChunk(i) {
     }
   }
   // ---- Zonenbezogene Dekoration
-  for (let dm = Math.ceil(d0 / 30) * 30; dm < d1; dm += 30) {
+  for (let dm = Math.ceil(d0 / 30) * 30; dm < d1 && !heli; dm += 30) {
     if (dm < 40) continue;
     const z = P.zoneAtD(dm), c = P.props(dm), type = z.type;
     const k = Math.floor(dm / 30);
@@ -572,7 +585,7 @@ export function genChunk(i) {
     const x = c.lx[li] + sx * (c.lw[li] + off);
     const sf = P.surf(x, dd);
     if (sf.edge < 1.6 || P.inFeatureZone(x, dd, 3)) continue;
-    const forestOk = sf.forest > 0.2 || r2 < 0.3;
+    const forestOk = sf.forest > 0.2 || (r2 < 0.3 && (!heli || c.forest > 0.05));   // Heli: kein Totholz über der Baumgrenze
     if (!forestOk) continue;
     if (pick < 0.3) addD('Bush', x, dd, { rot: r3 * 6.28, scale: 0.8 + r2 * 0.8 });
     else if (pick < 0.46) addD('Log', x, dd, { rot: r3 * 3.14, scale: 0.9 + r2 * 0.5 });

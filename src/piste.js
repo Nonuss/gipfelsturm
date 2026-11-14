@@ -30,7 +30,7 @@ export function pisteInit(seed, style = 'freeride') {
   // Berg-Charakter: jeder Startwert bevorzugt andere Zonen und hat eigene Grundzüge (Waldberg, Pulverberg, Felsberg …)
   const Rc = mulberry32((Math.imul(seed, 2246822519) ^ 0x5bd1e995) >>> 0);
   const ch = { w: {}, wide: 0.85 + Rc() * 0.35, steep: 0.92 + Rc() * 0.16, forest: 0.7 + Rc() * 0.6, pow: 0.75 + Rc() * 0.5, curvy: 0.75 + Rc() * 0.6, mods: 0.6 + Rc() * 0.8 };
-  for (const k of [...Object.keys(W), ...Object.keys(WF)]) ch.w[k] = 0.45 + Rc() * 1.2;
+  for (const k of [...Object.keys(W), ...Object.keys(WF), ...Object.keys(WH)]) ch.w[k] = 0.45 + Rc() * 1.2;
   S.ch = ch;
   PR.d = NaN;
   report.seed = seed; report.zones = []; report.features = []; report.issues = []; report.skipped = 0;
@@ -56,7 +56,24 @@ function pickFreestyle(idx, R) {
   for (const k in w) { r -= w[k]; if (r <= 0) return k; }
   return 'jumpline';
 }
+// Heli-Berg: Gipfel, Gletscher, steile Pulverflanken, Felsgärten, Riesenklippen, Rinnen – alles Tiefschnee, keine Pisten
+const WH = { glacier: 1.7, face: 2.0, rockgarden: 1.6, cliff: 1.4, couloir: 0.9, bowl: 1.2 };
+function pickHeli(idx, R) {
+  if (idx === 0) return 'summit';
+  if (idx === 1) return 'glacier';
+  const hist = S.types, last = hist[hist.length - 1];
+  const w = { ...WH };
+  for (const k in w) w[k] *= S.ch ? S.ch.w[k] || 1 : 1;
+  if (w[last] !== undefined) w[last] = 0;
+  if (last === 'couloir' || last === 'cliff') { w.glacier *= 1.6; w.bowl *= 1.5; w.couloir = 0; w.cliff *= 0.3; }
+  let sum = 0;
+  for (const k in w) sum += w[k];
+  let r = R() * sum;
+  for (const k in w) { r -= w[k]; if (r <= 0) return k; }
+  return 'face';
+}
 function pickType(idx, R) {
+  if (S.style === 'heli') return pickHeli(idx, R);
   if (S.style === 'freestyle') return pickFreestyle(idx, R);
   const hist = S.types;
   if (idx === 0) return 'start';
@@ -169,6 +186,31 @@ function makeZone(type, idx, d0) {
       L[0] = lane(rr(14, 16));
       L[1] = lane(rr(6.5, 8), sg * rr(48, 60), { groom: 0.95 });
       break;
+    // ---- Heli-Zonen: Hochgebirge über der Baumgrenze, überall Tiefschnee
+    case 'summit':
+      Object.assign(z, { len: 200, slope: 0.36, valley: 70, wall: 0.55, rock: 0.9, pow: 1, forest: 0, rough: 1.0, hill: 14, cap: 40 });
+      z.head = { A: 0.05, lam: 600, ph: ph() };
+      L[0] = lane(11, 0, { groom: 0 });
+      break;
+    case 'glacier':
+      Object.assign(z, { len: rr(480, 680), slope: rr(0.28, 0.36), valley: rr(170, 215), wall: rr(0.05, 0.1), rock: 0.45, pow: 1, forest: 0, rough: 1.5, hill: rr(12, 18), cap: 26 });
+      z.head = { A: rr(0.1, 0.22), lam: rr(700, 1000), ph: ph() };
+      L[0] = lane(rr(9, 12), sg * rr(0, 30), { groom: 0, wob: 10, wl: 260, ph: ph() });
+      L[1] = lane(rr(8, 10), -sg * rr(70, 110), { groom: 0, wob: 10, wl: 240, ph: ph() });
+      z.mods = { waves: { lam: rr(110, 160), a: rr(1.6, 2.6), ph: ph(), sk: rr(-0.3, 0.3) } };
+      break;
+    case 'face':
+      Object.assign(z, { len: rr(320, 460), slope: rr(0.5, 0.62), valley: rr(140, 185), wall: rr(0.06, 0.14), rock: 0.7, pow: 1, forest: 0, rough: 1.2, hill: rr(10, 16), cap: 24 });
+      z.head = { A: rr(0.12, 0.24), lam: rr(420, 600), ph: ph() };
+      L[0] = lane(rr(9, 12), sg * rr(10, 40), { groom: 0, wob: 8, wl: 180, ph: ph() });
+      if (R() < 0.7) L[1] = lane(rr(8, 10), -sg * rr(60, 100), { groom: 0, wob: 8, wl: 180, ph: ph() });
+      break;
+    case 'rockgarden':
+      Object.assign(z, { len: rr(340, 460), slope: rr(0.42, 0.5), valley: rr(120, 160), wall: rr(0.08, 0.16), rock: 1, pow: 1, forest: 0, rough: 1.3, hill: rr(10, 14), cap: 26 });
+      z.head = { A: rr(0.16, 0.28), lam: rr(380, 520), ph: ph() };
+      L[0] = lane(rr(8, 10), sg * rr(0, 30), { groom: 0, wob: 9, wl: 150, ph: ph() });
+      L[1] = lane(rr(7, 9), -sg * rr(55, 90), { groom: 0, wob: 9, wl: 150, ph: ph() });
+      break;
     case 'railpark':
       Object.assign(z, { len: rr(560, 720), slope: rr(0.18, 0.22), valley: rr(95, 120), wall: rr(0.06, 0.12), rock: 0.2, pow: 0.15, forest: 0.2, rough: 0.3, hill: rr(4, 7) });
       z.head = { A: rr(0.06, 0.12), lam: rr(700, 900), ph: ph() };
@@ -190,6 +232,15 @@ function makeZone(type, idx, d0) {
       break;
   }
   varyZone(z, R, rr, ph);
+  if (S.style === 'heli') {
+    // keine präparierten Pisten: Spuren sind nur noch Linien für Features, überall Tiefschnee
+    for (const l of z.lanes) { l.groom = 0; if (l.kind !== KIND.jump && l.kind !== KIND.chute) l.kind = 0; }
+    z.pow = 1;
+    z.forest = idx < 7 ? 0 : Math.min(0.35, (idx - 6) * 0.06);   // weiter unten beginnt langsam der Wald
+    if (z.forest === 0 && z.mods && z.mods.islands) { delete z.mods.islands; z.label = z.label.split(', ').filter((x) => x !== 'mit Baum-Inseln').join(', '); }
+    if (z.type === 'rockgarden') z.mods = { ...(z.mods || {}), rocks: { amt: 2.4 } };
+    if (z.type === 'glacier') z.label = z.label ? 'Gletscher, ' + z.label : '';
+  }
   z.d1 = z.d0 + z.len;
   // Kurvenradius prüfen: R = lam / (2π A) darf nicht unter rmin fallen
   const A = z.head.A, lam = z.head.lam;
@@ -205,9 +256,9 @@ function makeZone(type, idx, d0) {
 const MOD_NAMES = { waves: 'wellig', gully: 'Mulde', ridge: 'mit Rücken', knolls: 'kuppig', islands: 'mit Baum-Inseln', rocks: 'mit Felsinseln', wide: 'weit', narrow: 'eng' };
 function varyZone(z, R, rr, ph) {
   const ch = S.ch || { wide: 1, steep: 1, forest: 1, pow: 1, curvy: 1, mods: 1 };
-  z.mods = {};
+  z.mods = z.mods || {};
   z.label = '';
-  if (z.type === 'start' || z.type === 'couloir') return;
+  if (z.type === 'start' || z.type === 'couloir' || z.type === 'summit') return;
   const fsZone = z.type === 'jumpline' || z.type === 'megaair' || z.type === 'slopestyle' || z.type === 'railpark';
   // Grundwerte leicht verschieben (Berg-Charakter + Zufall)
   z.len *= fsZone ? rr(0.95, 1.15) : rr(0.75, 1.3);
@@ -921,6 +972,20 @@ function genFeatures(z, R) {
       ].map((it) => (it.kind === 'box' ? { ...it, name: 'Box', h: 0.5 } : it)));
       break;
     }
+    case 'summit': break;
+    case 'glacier': {
+      for (let k = 0; k < 6; k++) { const dd = rr(a + 20, b - 20), sd = R() < 0.5 ? -1 : 1; addPillow(z, R, dd, hubX(dd) + sd * rr(25, z.valley * 0.85), k % 2 === 0); }
+      break;
+    }
+    case 'face': {
+      // Pillow-Linien: Kissen in Reihen hintereinander, dazwischen freie Pulverhänge
+      for (let k = 0; k < 12; k++) { const dd = rr(a + 10, b - 10), sd = R() < 0.5 ? -1 : 1; addPillow(z, R, dd, hubX(dd) + sd * rr(18, z.valley * 0.9), k % 3 !== 0); }
+      break;
+    }
+    case 'rockgarden': {
+      for (let k = 0; k < 8; k++) { const dd = rr(a + 10, b - 10), sd = R() < 0.5 ? -1 : 1; addPillow(z, R, dd, hubX(dd) + sd * rr(20, z.valley * 0.8), true); }
+      break;
+    }
     case 'railpark': {
       // Rail-Park: Boxen, Rails und kleine Gaps im Wechsel, mit ruhigem Gefälle dazwischen
       cur = a + 30;
@@ -985,8 +1050,9 @@ function genFeatures(z, R) {
       const dc = z.d0 + z.len * 0.58;
       const sShelf = 0.09;
       z.pitches.push({ d: dc - 110, amt: sShelf - z.slope, len: 108, e: 16 });
-      const hs = rr(9, 19);
-      const des = designCliff({ theta: Math.atan(sShelf), vDes: 17.5, drop: hs, maxWall: 11 });
+      const heli = S.style === 'heli';
+      const hs = heli ? rr(18, 30) : rr(9, 19);   // Heli-Berg: Riesenklippen
+      const des = designCliff({ theta: Math.atan(sShelf), vDes: 17.5, drop: hs, maxWall: heli ? 17 : 11 });
       if (!des) { issue(`Zone ${z.idx}: Klippe nicht konstruierbar`); break; }
       const xB = laneX(z, 1, dc), xAs = [laneX(z, 0, dc)];
       if (z.lanes[2].w > 0) xAs.push(laneX(z, 2, dc));

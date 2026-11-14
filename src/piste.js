@@ -57,7 +57,7 @@ function pickFreestyle(idx, R) {
   return 'jumpline';
 }
 // Heli-Berg: Gipfel, Gletscher, steile Pulverflanken, Felsgärten, Riesenklippen, Rinnen – alles Tiefschnee, keine Pisten
-const WH = { glacier: 1.7, face: 2.0, rockgarden: 1.6, cliff: 1.4, couloir: 0.9, bowl: 1.2 };
+const WH = { glacier: 1.5, face: 1.8, rockgarden: 1.3, cliff: 1.0, couloir: 0.9, bowl: 0.9, spines: 1.4, dropzone: 1.6, icefall: 1.0 };
 function pickHeli(idx, R) {
   if (idx === 0) return 'summit';
   if (idx === 1) return 'glacier';
@@ -65,7 +65,8 @@ function pickHeli(idx, R) {
   const w = { ...WH };
   for (const k in w) w[k] *= S.ch ? S.ch.w[k] || 1 : 1;
   if (w[last] !== undefined) w[last] = 0;
-  if (last === 'couloir' || last === 'cliff') { w.glacier *= 1.6; w.bowl *= 1.5; w.couloir = 0; w.cliff *= 0.3; }
+  if (last === 'couloir' || last === 'cliff' || last === 'dropzone') { w.glacier *= 1.6; w.bowl *= 1.5; w.couloir = 0; w.cliff *= 0.3; w.dropzone *= 0.3; }
+  if (last !== 'glacier') w.icefall *= 0.4;   // Eisbruch meist unterhalb eines Gletschers
   let sum = 0;
   for (const k in w) sum += w[k];
   let r = R() * sum;
@@ -205,6 +206,29 @@ function makeZone(type, idx, d0) {
       L[0] = lane(rr(9, 12), sg * rr(10, 40), { groom: 0, wob: 8, wl: 180, ph: ph() });
       if (R() < 0.7) L[1] = lane(rr(8, 10), -sg * rr(60, 100), { groom: 0, wob: 8, wl: 180, ph: ph() });
       break;
+    case 'spines':
+      // Alaska-Spines: scharfe Grate in Falllinie, dazwischen Rinnen, in denen der Schnee abrutscht
+      Object.assign(z, { len: rr(300, 420), slope: rr(0.55, 0.66), valley: rr(130, 170), wall: rr(0.08, 0.14), rock: 0.6, pow: 1, forest: 0, rough: 0.8, hill: rr(8, 12), cap: 26 });
+      z.head = { A: rr(0.06, 0.12), lam: rr(600, 800), ph: ph() };
+      L[0] = lane(rr(6, 8), sg * rr(0, 12), { groom: 0 });
+      L[1] = lane(rr(6, 8), -sg * rr(40, 70), { groom: 0 });
+      z.mods = { spines: { A: rr(3.2, 5.2), lam: rr(15, 22), sd: R() * 100 } };
+      break;
+    case 'dropzone':
+      // Klippengelände: Bänder mit mehreren Drops verschiedener Höhe, dazwischen steile Pulverhänge
+      Object.assign(z, { len: rr(520, 680), slope: rr(0.44, 0.52), valley: rr(140, 180), wall: rr(0.08, 0.14), rock: 1, pow: 1, forest: 0, rough: 1.1, hill: rr(10, 14), cap: 26 });
+      z.head = { A: rr(0.06, 0.12), lam: rr(600, 800), ph: ph() };
+      L[0] = lane(rr(8, 10), sg * rr(0, 20), { groom: 0 });
+      L[1] = lane(rr(7, 9), -sg * rr(50, 80), { groom: 0 });
+      break;
+    case 'icefall':
+      // Eisbruch: steile Gletscherstufe mit Séracs (Eistürmen) und einer Eishöhle
+      Object.assign(z, { len: rr(380, 520), slope: rr(0.4, 0.5), valley: rr(150, 190), wall: rr(0.06, 0.12), rock: 0.4, pow: 1, forest: 0, rough: 1.3, hill: rr(12, 16), cap: 26 });
+      z.head = { A: rr(0.08, 0.16), lam: rr(600, 800), ph: ph() };
+      L[0] = lane(rr(8, 10), sg * rr(0, 20), { groom: 0 });
+      L[1] = lane(rr(7, 9), -sg * rr(50, 90), { groom: 0 });
+      z.mods = { waves: { lam: rr(90, 130), a: rr(1.2, 2.0), ph: ph(), sk: rr(-0.3, 0.3) } };
+      break;
     case 'rockgarden':
       Object.assign(z, { len: rr(340, 460), slope: rr(0.42, 0.5), valley: rr(120, 160), wall: rr(0.08, 0.16), rock: 1, pow: 1, forest: 0, rough: 1.3, hill: rr(10, 14), cap: 26 });
       z.head = { A: rr(0.16, 0.28), lam: rr(380, 520), ph: ph() };
@@ -330,6 +354,7 @@ function modHeight(z, x, d, u, run) {
   if (m.waves) y += m.waves.a * Math.sin(TAU * d / m.waves.lam + m.waves.ph + m.waves.sk * u / 20) * (1 - run);
   if (m.gully) { const g = m.gully; const uu = Math.min(Math.abs(u), g.w); y += g.k * uu * uu + g.k * 2 * g.w * Math.max(0, Math.abs(u) - g.w); }
   if (m.ridge) { const r = m.ridge; y += r.h * Math.exp(-(u * u) / (r.w * r.w)) * (1 - run); }
+  if (m.spines) { const sp = m.spines, sv = u / sp.lam + 0.35 * snoise(d / 90, sp.sd, S.seed); y += sp.A * (1 - Math.abs(Math.sin(Math.PI * sv))) * (1 - run); }   // scharfe Grate, runde Rinnen
   if (m.knolls) { const k = m.knolls; y += k.a * (vnoise(x / k.s + k.sd, d / k.s) - 0.5) * 2 * (1 - run); }
   return y * fade;
 }
@@ -468,10 +493,12 @@ function zoneSlopeAt(z, d) {
 }
 const GENTLE = 130;   // Länge der sanften Rampe (Spur A), über die die Klippenhöhe verteilt wird
 function cliffSlope(z, d) {
+  let s = 0;
   const f = z.cliffF;
-  if (!f) return 0;
-  const t = (d - f.dc + 55) / GENTLE, h = 0.02;
-  return (f.hs * (ramp01(t + h, 0.3) - ramp01(t - h, 0.3))) / (2 * h * GENTLE);
+  if (f) { const t = (d - f.dc + 55) / GENTLE, h = 0.02; s += (f.hs * (ramp01(t + h, 0.3) - ramp01(t - h, 0.3))) / (2 * h * GENTLE); }
+  // Klippen-Drops: neben dem Drop wird dieselbe Höhe auf einer langen, sanften Rampe abgebaut
+  if (z.drops) for (const g of z.drops) { const t = (d - g.dc + 55) / g.GL, h = 0.02; s += (g.hs * (ramp01(t + h, 0.3) - ramp01(t - h, 0.3))) / (2 * h * g.GL); }
+  return s;
 }
 /** Anlauf vor Sprüngen: 1 = völlig glatt und gerade (ca. 90 m vor dem Absprung), blendet davor und seitlich weich aus. */
 let RW_U = 0;
@@ -633,6 +660,20 @@ function cliffDelta(f, d, x) {
   return (1 - mA * 0.96) * (sharp - gentle);
 }
 
+/** Klippen-Drop: Wand + Geröllhang nur in einer Breite um f.x; daneben die sanfte Rampe (steckt im Grundgefälle). */
+function dropDelta(f, d, x) {
+  const ax = Math.abs(x - f.x);
+  const m = 1 - smoothstep(f.w, f.w + 11, ax + 3 * snoise(d / 9, f.x * 0.1, S.seed));
+  if (m <= 0) return 0;
+  const jag = 2.5 * snoise(x / 7, f.dc * 0.02, S.seed);
+  const dd = d - f.dc - jag;
+  const C = f.C;
+  let sharp = C.wall * smoothstep(0, 2.6, dd);
+  if (dd > C.a) sharp += (f.hs - C.wall) * ramp01((dd - C.a) / C.L2, 0.3);
+  const gentle = f.hs * ramp01((d - f.dc + 55) / f.GL, 0.3);
+  return m * (sharp - gentle);
+}
+
 let lastZoneHint = 0;
 export function heightP(x, z) {
   const d = -z;
@@ -688,6 +729,8 @@ export function heightP(x, z) {
     const f = feats[k];
     if (dc < f.s0 || dc > f.s1) continue;
     if (f.kind === 'cliff') y -= cliffDelta(f, dc, x);
+    else if (f.kind === 'drop') y -= dropDelta(f, dc, x);
+    else if (f.kind === 'icecave') continue;
     else if (f.kind === 'roller' || f.kind === 'pillow' || f.kind === 'moguls' || f.kind === 'berm') y += featRel(f, dc, x, c) * (1 - runM);   // kein Kleinkram im Anlauf
     else y += featRel(f, dc, x, c);
   }
@@ -808,6 +851,34 @@ export function railsIn(d0, d1) {
     for (const r of z.rails) if (r.d0 + r.len >= d0 && r.d0 < d1) out.push(r);
   }
   return out;
+}
+
+/** Klippenband mit mehreren Drops nebeneinander (verschiedene Höhen) und sanften Umgehungen dazwischen. */
+function addDropBand(z, R, dc, n) {
+  const rr = (a, b) => a + (b - a) * R();
+  const sShelf = 0.24;
+  z.pitches.push({ d: dc - 95, amt: sShelf - z.slope, len: 92, e: 14 });   // kurzer Absatz vor der Kante: Tempo kontrollierbar
+  const vDes = Math.min(21, terminalSpeed(sShelf, 0) * 0.92);
+  const hub = hubX(dc), span = Math.min(z.valley * 0.75, 120);
+  const hs = [rr(7, 11), rr(13, 19), rr(20, 30)].sort(() => R() - 0.5).slice(0, n);
+  z.drops = z.drops || [];
+  for (let k = 0; k < n; k++) {
+    const x = hub + (n === 1 ? 0 : (k / (n - 1) - 0.5) * 2 * span) + rr(-8, 8);
+    const des = designCliff({ theta: Math.atan(sShelf), vDes, drop: hs[k], maxWall: Math.min(22, hs[k] * 0.75) });
+    if (!des) { issue(`Zone ${z.idx}: Drop ${hs[k].toFixed(0)} m nicht konstruierbar`); continue; }
+    const GL = Math.max(130, hs[k] * 8), C = des.C;
+    const f = { kind: 'drop', dc, x, w: rr(9, 15), hs: hs[k], C, GL, s0: dc - 60, s1: Math.max(dc + C.a + C.L2 + 15, dc - 55 + GL + 5) };
+    z.feats.push(f);
+    z.drops.push(f);
+    report.features.push({ zone: z.idx, kind: `Drop ${hs[k].toFixed(0)} m`, d: Math.round(dc), x: Math.round(x), drop: +hs[k].toFixed(1), wall: +C.wall.toFixed(1), vn: +des.vn.toFixed(1), flight: +des.flight.toFixed(1) });
+  }
+}
+/** Eishöhle: ein Tunnel durch das Gletschereis entlang der Hauptlinie. */
+function addIceCave(z, R, d) {
+  const len = 55 + R() * 45;
+  if (d + len > z.d1 - PCFG.transition - 10 || d < z.d0 + PCFG.transition) return;
+  z.feats.push({ kind: 'icecave', d, len, lane: 0, W: 5.5 + R() * 1.5, H: 5 + R() * 1.5, s0: d - 4, s1: d + len + 4 });
+  report.features.push({ zone: z.idx, kind: 'Eishöhle', d: Math.round(d), len: Math.round(len) });
 }
 
 function addRoller(z, o) {
@@ -973,11 +1044,24 @@ function genFeatures(z, R) {
       break;
     }
     case 'summit': break;
+    case 'spines': break;
+    case 'dropzone': {
+      addDropBand(z, R, z.d0 + z.len * 0.32, 3);
+      addDropBand(z, R, z.d0 + z.len * 0.72, 2 + (R() < 0.5 ? 1 : 0));
+      break;
+    }
+    case 'icefall': {
+      addIceCave(z, R, a + rr(40, 120));
+      for (let k = 0; k < 5; k++) { const dd = rr(a + 10, b - 10), sd = R() < 0.5 ? -1 : 1; addPillow(z, R, dd, hubX(dd) + sd * rr(40, z.valley * 0.85), true); }
+      break;
+    }
     case 'glacier': {
+      if (R() < 0.55) addIceCave(z, R, a + rr(60, Math.max(70, z.len - 260)));
       for (let k = 0; k < 6; k++) { const dd = rr(a + 20, b - 20), sd = R() < 0.5 ? -1 : 1; addPillow(z, R, dd, hubX(dd) + sd * rr(25, z.valley * 0.85), k % 2 === 0); }
       break;
     }
     case 'face': {
+      if (R() < 0.6) addDropBand(z, R, z.d0 + z.len * rr(0.4, 0.62), 2);
       // Pillow-Linien: Kissen in Reihen hintereinander, dazwischen freie Pulverhänge
       for (let k = 0; k < 12; k++) { const dd = rr(a + 10, b - 10), sd = R() < 0.5 ? -1 : 1; addPillow(z, R, dd, hubX(dd) + sd * rr(18, z.valley * 0.9), k % 3 !== 0); }
       break;
@@ -1130,6 +1214,10 @@ export function featuresIn(d0, d1) {
 /** Steht an (x, d) ein Feature (Sprung, Landung, Rollen, Mogulfeld, Kissen), das frei von Bäumen und Felsen bleiben muss? */
 export function inFeatureZone(x, d, m = 3) {
   const z = zoneAtD(d);
+  for (const f of z.feats) {
+    if (f.kind === 'drop' && d > f.dc - 30 - m && d < f.dc + f.C.a + f.C.L2 + 20 + m && Math.abs(x - f.x) < f.w + 6 + m) return true;
+    if (f.kind === 'icecave' && d > f.d - 12 - m && d < f.d + f.len + 12 + m && Math.abs(x - laneX(z, 0, d)) < f.W + 4 + m) return true;
+  }
   for (const r of z.rails) if (d > r.d0 - 8 - m && d < r.d0 + r.len + 4 + m && Math.abs(x - (r.x0 + r.x1) / 2) < 3 + m) return true;
   for (const f of z.feats) {
     if (f.kind === 'jump') {

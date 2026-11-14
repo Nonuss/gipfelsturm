@@ -334,6 +334,7 @@ export class World {
     grp.add(m);
     const data = C.genChunk(job.i);
     this.addInstances(data.trees, data.rocks, data.markers, grp, 0, data.decor);
+    if (data.caves && data.caves.length) this.buildCaves(data.caves, grp);
     this.course.add(grp);
     this.chunks.set(job.i, grp);
   }
@@ -366,6 +367,61 @@ export class World {
       this.finishJob(this.job);
       this.job = null;
       if (!urgent) return;
+    }
+  }
+
+  // ------------------------------------------------------------ Eishöhlen
+  /** Tunnel aus Gletschereis: innen tiefblau bis türkis (leuchtet leicht), außen dicke Eisschale mit Schneekappe. */
+  buildCaves(caves, parent) {
+    if (!this.caveMat) {
+      this.caveMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.22, metalness: 0.05, emissive: new THREE.Color(0.03, 0.12, 0.2), side: THREE.DoubleSide });
+    }
+    const SEG = 16;
+    for (const cv of caves) {
+      const P = cv.pts, n = P.length, rings = 2 * (SEG + 1);   // innere + äußere Schale
+      const pos = new Float32Array(n * rings * 3), col = new Float32Array(n * rings * 3);
+      const hash = (a, b) => { const t = Math.sin(a * 12.9898 + b * 78.233 + cv.seed) * 43758.5453; return t - Math.floor(t); };
+      for (let i = 0; i < n; i++) {
+        const p = P[i], end = Math.min(i, n - 1 - i);
+        const portal = 1 + 0.35 * Math.max(0, 1 - end / 3);          // Eingang etwas größer und unregelmäßiger
+        for (let shell = 0; shell < 2; shell++) {
+          const th = shell ? 1.9 : 0;                                 // Eisdicke
+          for (let j = 0; j <= SEG; j++) {
+            const a = (j / SEG) * Math.PI, ca = Math.cos(a), sa = Math.sin(a);
+            const nz = (hash(i, j + shell * 50) - 0.5) * (shell ? 0.9 : 0.55);
+            const W = (cv.W + th) * portal + nz, H = (cv.H + th * 1.1) * portal + nz;
+            const gy = ca > 0 ? p.gc + (p.gr - p.gc) * ca : p.gc + (p.gl - p.gc) * -ca;   // Boden folgt dem Gelände
+            const k = (i * rings + shell * (SEG + 1) + j) * 3;
+            pos[k] = p.x - ca * W; pos[k + 1] = gy - 0.25 + sa * H; pos[k + 2] = -p.d;
+            const v = hash(j, i * 3 + 7);
+            if (shell === 0) {               // innen: unten tiefblau, oben hell türkis
+              const t = sa;
+              col[k] = 0.08 + 0.35 * t + v * 0.05; col[k + 1] = 0.32 + 0.5 * t + v * 0.06; col[k + 2] = 0.62 + 0.36 * t;
+            } else {                          // außen: Schnee oben, Eis an den Flanken
+              const snow = Math.max(0, sa - 0.55) / 0.45;
+              col[k] = 0.55 + 0.4 * snow; col[k + 1] = 0.75 + 0.22 * snow; col[k + 2] = 0.9 + 0.08 * snow;
+            }
+          }
+        }
+      }
+      const idx = [];
+      for (let i = 0; i < n - 1; i++) for (let shell = 0; shell < 2; shell++) for (let j = 0; j < SEG; j++) {
+        const a = i * rings + shell * (SEG + 1) + j, b = a + 1, c = a + rings, d = c + 1;
+        idx.push(a, c, b, b, c, d);
+      }
+      // Stirnflächen (Eisrand am Eingang und Ausgang)
+      for (const i of [0, n - 1]) for (let j = 0; j < SEG; j++) {
+        const a = i * rings + j, b = a + 1, c = a + SEG + 1, d = c + 1;
+        idx.push(a, b, c, b, d, c);
+      }
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+      g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+      g.setIndex(idx);
+      g.computeVertexNormals();
+      const m = new THREE.Mesh(g, this.caveMat);
+      m.castShadow = true; m.receiveShadow = true;
+      parent.add(m);
     }
   }
 

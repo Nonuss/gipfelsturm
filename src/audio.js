@@ -39,7 +39,15 @@ export class GameAudio {
     lfo.type = 'square'; lfo.frequency.value = 18; lg.gain.value = 0;
     lfo.connect(lg); lg.connect(this.heli.g.gain); lfo.start();
     this.heliLfo = lg;
+    this.rumble = loop('lowpass', 95, 0.9);   // Lawine: tiefes Grollen
   }
+
+  setRumble(v) {
+    if (!this.ctx) return;
+    this.rumble.g.gain.setTargetAtTime(v * 0.9, this.ctx.currentTime, 0.25);
+  }
+
+  crack() { this.burst(0.18, 3200, 0.6); this.tone(60, 1.2, 'sawtooth', 0.25, 0.5); this.burst(1.6, 300, 0.5); }
 
   setHeli(v) {
     if (!this.ctx) return;

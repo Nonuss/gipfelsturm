@@ -294,7 +294,7 @@ const ZONE_DECOR_CANNON = { cruise: 1, flat: 1, start: 1, bowl: 0.4 };
 export function genChunk(i) {
   const d0 = i * CHUNK, d1 = d0 + CHUNK;
   const R = mulberry32((Math.imul(cfg.seed, 2654435761) ^ Math.imul(i + 1000, 40503)) >>> 0);
-  const out = { trees: [], rocks: [], markers: [], decor: [] };
+  const out = { trees: [], rocks: [], markers: [], decor: [], caves: [] };
   const decor = out.decor;
   const addD = (m, x, d, o = {}) => {
     const z = -d;
@@ -426,6 +426,31 @@ export function genChunk(i) {
         const sc = 1.4 + R() * 2.2;
         addD('IceCluster', x, dd, { rot: R() * 6.28, scale: sc, dy: -0.3 * sc, r: 1.1 * sc, type: 'fels' });
       }
+    }
+  }
+  // ---- Eishöhlen: Querschnitte alle 2 m (Mitte und Bodenhöhe links/rechts), Wände bekommen Kollision
+  for (const f of P.featuresIn(d0, d1)) {
+    if (f.kind !== 'icecave') continue;
+    const pts = [];
+    for (let dd = f.d; dd <= f.d + f.len + 0.01; dd += 2) {
+      const c = P.props(dd), cx = c.lx[f.lane];
+      pts.push({ d: dd, x: cx, gl: P.heightP(cx - f.W, -dd), gr: P.heightP(cx + f.W, -dd), gc: P.heightP(cx, -dd) });
+    }
+    out.caves.push({ pts, W: f.W, H: f.H, seed: Math.floor(f.d) });
+    for (let k = 1; k < pts.length; k++) {
+      const a = pts[k - 1], b = pts[k], ln = Math.hypot(b.x - a.x, 2);
+      for (const sg of [-1, 1]) addCollider(b.x + sg * (f.W - 0.4), -b.d, 0.55, 'zaun', (b.x - a.x) / ln, -2 / ln);
+    }
+    // Séracs um den Eingang
+    for (let k = 0; k < 6; k++) { const sg = k % 2 ? 1 : -1, dd = f.d - 3 + R() * 6; addD('IceCluster', pts[0].x + sg * (f.W + 3 + R() * 9), dd, { rot: R() * 6.28, scale: 1.6 + R() * 2.2, dy: -0.5 }); }
+  }
+  // ---- Klippen-Drops: Felsen an den Seiten der Kante und am Wandfuß rahmen die Drops ein
+  for (const f of P.featuresIn(d0, d1)) {
+    if (f.kind !== 'drop') continue;
+    for (const sg of [-1, 1]) for (let k = 0; k < 4; k++) {
+      const x = f.x + sg * (f.w + 3 + k * 3.2 + R() * 2), dd = f.dc + (R() - 0.3) * 6, sc = 1.6 + R() * 2.6;
+      out.rocks.push({ x, z: -dd, y: rockY(x, -dd, sc), scale: sc, rot: R() * 6.283, variant: Math.floor(R() * 6) });
+      addCollider(x, -dd, 1.1 * sc, 'fels');
     }
   }
   // ---- Engstellen in Rinnen: die Felsnase besteht aus echten Brocken (zwei Reihen, innen kleiner, außen größer)

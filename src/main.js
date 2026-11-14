@@ -15,6 +15,7 @@ import { GameAudio } from './audio.js';
 import { Q, setTier, ORDER } from './quality.js';
 import { PowderPatch } from './powder.js';
 import { setupTouch, updateTouch, touch, isTouch, viewSize } from './touch.js';
+import { Avalanche } from './avalanche.js';
 
 const { clamp, lerp, smoothstep, G } = C;
 const $ = (id) => document.getElementById(id);
@@ -56,7 +57,7 @@ composer.addPass(grade);
 const fxaa = new FXAAPass();
 composer.addPass(fxaa);
 
-let world, skier, tracks, spray, dust, patch, blob;
+let world, skier, tracks, spray, dust, patch, blob, aval;
 const phys = new SkiPhysics();
 const audio = new GameAudio();
 
@@ -301,6 +302,7 @@ function startRun() {
   });
   $('penalty').textContent = '';
   heliStart();
+  if (aval) { aval.stop(); aval.cool = 6; } avRisk = 0;
 }
 
 // ---------------------------------------------------------------- Heli-Skiing: Absprung aus dem Helikopter
@@ -314,7 +316,7 @@ function heliStart() {
     const m = (name) => { const o = new THREE.Mesh(world.models[name], world.propMat); o.castShadow = true; o.receiveShadow = true; return o; };
     heli.group.add(m('Heli'));
     heli.rotor = m('HeliRotor'); heli.rotor.position.set(-0.2, 0.35, 0); heli.group.add(heli.rotor);
-    heli.tail = m('HeliTail'); heli.tail.position.set(-6.3, -0.75, -0.25); heli.group.add(heli.tail);
+    heli.tail = m("HeliTail"); heli.tail.position.set(-6.5, -0.1, -0.22); heli.group.add(heli.tail);
     scene.add(heli.group);
   }
   heli.group.visible = heli.on;
@@ -331,6 +333,41 @@ function heliStart() {
   phys.pos.copy(heli.drop);
   phys.grounded = false;
 }
+// ---------------------------------------------------------------- Lawinen (Heli-Berg)
+// Steile, tiefverschneite Hänge können abreißen: je steiler, schneller und härter (Landungen), desto eher.
+// Das Brett reißt oberhalb ab, die Front rollt hinab – wer schnell genug ist oder seitlich rausfährt, entkommt.
+let avRisk = 0, avCam = 0;
+function avalancheUpdate(dt) {
+  if (!aval) return;
+  const heliMode = game.kind === 'endless' && game.style === 'heli';
+  if (heliMode && game.mode === 'run' && !aval.active && aval.cool <= 0 && phys.grounded && phys.crashed <= 0) {
+    const ny = Math.max(0.3, phys.normal.y), tanS = Math.sqrt(1 - ny * ny) / ny;
+    if (tanS > 0.55 && phys.pow > 0.5 && phys.speed > 6) avRisk += dt * (tanS - 0.5) * 0.9 * (C.zoneAt(-phys.pos.z)?.type === 'spines' || C.zoneAt(-phys.pos.z)?.type === 'face' ? 1.5 : 1);
+    if (avRisk > 1 + Math.random() * 0.02) triggerAvalanche();
+  }
+  const r = aval.update(dt, C, phys.pos);
+  audio.setRumble(aval.active ? r.near : 0);
+  if (aval.active) vis.shake = Math.max(vis.shake, r.near * 0.45);
+  if (r.caught && phys.crashed <= 0 && game.mode === 'run') {
+    showMsg('Von der Lawine erfasst!', 'bad');
+    quietCrash = true;
+    phys.crash();
+    aval.stop(); aval.cool = 15;
+  } else if (r.ended && game.mode === 'run' && phys.crashed <= 0) {
+    const pts = addPending(1500, true);
+    showMsg(`Lawine entkommen!  +${num(pts)}`, 'gold');
+  }
+}
+function triggerAvalanche(landing = false) {
+  avRisk = 0;
+  const d = -phys.pos.z, hub = C.centerX(d);
+  aval.start(d - (landing ? 6 : 14), phys.pos.x - hub + (Math.random() - 0.5) * 20, 70 + Math.random() * 60);
+  audio.crack();
+  avCam = 2.8;   // kurz seitlich zeigen, wie die Lawine hinter dem Fahrer abgeht
+  vis.shake = 1;
+  showMsg('LAWINE! Schnell weg hier!', 'bad');
+}
+
 function heliUpdate(dt) {
   if (!heli.group || !heli.group.visible) return;
   heli.t += dt;
@@ -360,6 +397,7 @@ function toMenu() {
   game.mode = 'menu';
   resetRunState();
   heli.on = false; if (heli.group) heli.group.visible = false; audio.setHeli(0);
+  if (aval) aval.stop(); audio.setRumble(0);
   $('menu').classList.remove('hidden');
   $('finish').classList.add('hidden');
   $('hud').classList.add('hidden');
@@ -627,6 +665,22 @@ function updateCamera(dt, time) {
     camSnap = false;
     return;
   }
+  // Lawinen-Kamera: seitlich und etwas unterhalb, Blick auf Fahrer und die anrollende Front
+  if (avCam > 0 && game.mode === 'run') {
+    avCam -= dt;
+    const f = smoothstep(0, 0.5, avCam) * smoothstep(2.8, 2.3, avCam) ;
+    tV.set(Math.sin(phys.heading), 0, -Math.cos(phys.heading));
+    tV2.set(-tV.z, 0, tV.x);                                          // rechts
+    tV3.copy(phys.pos).addScaledVector(tV2, 17).addScaledVector(tV, 9);
+    tV3.y = Math.max(C.height(tV3.x, tV3.z) + 2.5, phys.pos.y + 1.5);
+    camPos.lerp(tV3, 1 - Math.exp(-dt * 6));
+    lookSm.lerp(tV.multiplyScalar(-9).add(phys.pos).setY(phys.pos.y + 3), 1 - Math.exp(-dt * 6));
+    camera.position.copy(camPos);
+    camera.lookAt(lookSm);
+    if (Math.abs(camera.fov - 62) > 0.1) { camera.fov = 62; camera.updateProjectionMatrix(); }
+    void f;
+    if (avCam > 0) return;
+  }
   const z = vis.zoom, cc = vis.crashCam;
   if (sp > 2) tV.set(phys.vel.x, 0, phys.vel.z).normalize();
   else tV.set(Math.sin(phys.heading), 0, -Math.cos(phys.heading));
@@ -837,6 +891,7 @@ function handleEvents() {
       vis.compress = Math.max(vis.compress, clamp(e.impact / 9, 0.15, 1));
       vis.shake = Math.max(vis.shake, clamp(e.impact / 30, 0, 0.5));
       vis.dip = Math.max(vis.dip, clamp((e.impact - 2) / 14, 0, 0.6));   // Kamera federt bei der Landung kurz mit
+      if (game.style === 'heli' && game.mode === 'run' && aval && !aval.active && aval.cool <= 0 && e.airTime > 1.4 && phys.pow > 0.5 && phys.normal.y < 0.88 && Math.random() < 0.45) triggerAvalanche(true);
       audio.land(e.impact);
       burst(Math.min(110, 12 + e.impact * 9), 2 + e.impact * 0.35);
       if (e.impact > 8) cloud(Math.min(40, e.impact * 2), 0.8, 2.5);
@@ -1148,6 +1203,7 @@ function tick(dt, render) {
 
     updateSkier(dt);
     heliUpdate(dt);
+    avalancheUpdate(dt);
     updateCamera(dt, time);
     stampTracks();
     emitSpray(dt);
@@ -1190,6 +1246,7 @@ function tick(dt, render) {
   tracks = new SnowTracks(renderer);
   patch = new PowderPatch(scene);
   spray = new Spray(scene);
+  aval = new Avalanche(scene);
   dust = new DiamondDust(scene);
   applyQuality();
   setKind('race');
@@ -1200,6 +1257,7 @@ function tick(dt, render) {
   window.addEventListener('beforeunload', saveEndlessBest);
   window.__game = {
     game, phys, inp, keys, airKey, trick, world, skier, camera, renderer, scene, vis, Q, startRun, setKind, toMenu, setCheckpoint, toCheckpoint, chooseQuality, C,
+    avalanche: () => triggerAvalanche(), aval: () => aval,
     tp: (d, lane = 0, speed = 0) => { const L = C.mapSlice(d, d + 1, 1).rows[0].lanes[lane]; teleport(L.x, -d); const x0 = C.centerX(d + 6) - C.centerX(d); phys.heading = Math.atan2(x0, 6); phys.vel.set(Math.sin(phys.heading) * speed, 0, -Math.cos(phys.heading) * speed); if (game.mode === 'menu') { game.mode = 'run'; } },
         advance: (sec, noRender) => { const n = Math.round(sec * 60); for (let i = 0; i < n; i++) tick(1 / 60, !noRender && i === n - 1); },
   };

@@ -268,8 +268,10 @@ export class Skier {
         if (spinAbs > 0.01) k.hand.lerp(tD.set(side * 0.34, 1.28, -0.22).applyMatrix4(this.mCh), Math.min(1, spinAbs) * 0.85);
         if (tuck > 0.01) k.hand.lerp(tD.copy(k.knee).add(tC.set(side * 0.17, 0.03, -0.12)), tuck * (1 - grab));
         if (grab > 0.01) {
-          if (side > 0) tD.set(0.13, 0.11, -0.22).applyMatrix4(f.matrix);
-          else tD.copy(k.shoulder).add(tC.set(-0.42, 0.26, 0.05));
+          // Grab-Arten: 0 Safety (rechte Hand an rechten Ski), -1 Mute (linke Hand an linken Ski), 1 Tail (rechte Hand ans Skiende)
+          const gs = s.grabSide || 0, gHand = gs < 0 ? -1 : 1;
+          if (side === gHand) tD.set(side * 0.13, 0.11, gs > 0 ? 0.5 : -0.22).applyMatrix4(f.matrix);
+          else tD.copy(k.shoulder).add(tC.set(side * 0.42, 0.26, 0.05));
           k.hand.lerp(tD, grab);
         }
       }

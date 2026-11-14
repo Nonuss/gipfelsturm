@@ -136,7 +136,7 @@ export function setupTouch({ isAir, isRunning, onResize }) {
       <button class="tsm" id="tCam" aria-label="Kamera wechseln: Verfolger oder Ego-Sicht">🎥</button>
       <button class="tsm" id="tMenu" aria-label="Menü">☰</button>
     </div>
-    <div id="tHelp">Handy neigen = lenken · Wischen ↑↓ in der Luft = Flip · neigen in der Luft = Spin</div>`;
+    <div id="tHelp">Neigen = lenken · in der Luft: Wischen ↑↓ Flip, ←→ halten Grab, neigen Spin</div>`;
   app.appendChild(ui);
   applyRot();
   const $ = (id) => ui.querySelector('#' + id);
@@ -173,6 +173,9 @@ export function setupTouch({ isAir, isRunning, onResize }) {
     const dx = px - sx, dy = py - sy;
     if (isAir() && Math.abs(dy) > 36 && Math.abs(dy) > Math.abs(dx) && !flip) {
       flip = dy < 0 ? 'KeyS' : 'KeyW';     // hoch = Backflip, runter = Frontflip
+      key(flip, true);
+    } else if (isAir() && Math.abs(dx) > 36 && Math.abs(dx) > Math.abs(dy) && !flip) {
+      flip = dx < 0 ? 'ArrowLeft' : 'ArrowRight';   // seitlich wischen und halten = Mute Grab (links) / Tail Grab (rechts)
       key(flip, true);
     } else if (!isAir()) {   // Daumen-Lenkung geht immer, auch wenn Neigen an ist (Ziehen hat Vorrang)
       dragSteer = Math.max(-1, Math.min(1, dx / 70));

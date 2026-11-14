@@ -163,8 +163,8 @@ const game = {
 };
 const PEND_TIME = 1.6;      // so lange muss man nach einer Landung ohne Sturz weiterfahren
 const COMBO_TIME = 14;      // ohne neuen Trick fällt der Multiplikator danach zurück
-const keys = { left: false, right: false, up: false, down: false, space: false };
-const airKey = { left: false, right: false, up: false, down: false, space: false };
+const keys = { left: false, right: false, up: false, down: false, space: false, gl: false, gr: false };
+const airKey = { left: false, right: false, up: false, down: false, space: false, gl: false, gr: false };
 const inp = { steer: 0, tuck: 0, brake: 0, jump: false };
 const zeroInp = { steer: 0, tuck: 0, brake: 0, jump: false };
 const vis = {
@@ -179,7 +179,7 @@ function toggleView() {
   try { localStorage.setItem('gipfelsturm_fpv', firstPerson ? '1' : '0'); } catch {}
   showMsg(firstPerson ? 'Ego-Sicht' : 'Verfolger-Kamera', 'good');
 }
-const trick = { pitch: 0, yaw: 0, pv: 0, yv: 0, grab: 0, grabT: 0, wasAir: false };
+const trick = { pitch: 0, yaw: 0, pv: 0, yv: 0, grab: 0, grabT: 0, wasAir: false, gs: 0, gT: { safety: 0, mute: 0, tail: 0 } };
 let jumpQueued = false;
 let quietCrash = false;
 let hasPrevSki = false;
@@ -233,7 +233,7 @@ function buildMenuControls() {
   for (const b of $('quality').children) {
     b.addEventListener('click', () => {
       chooseQuality(b.dataset.q);
-      if (game.mode === 'menu' && game.kind === 'endless') setKind('endless');
+      if (game.mode === 'menu' && game.kind === 'endless') setKind(game.style === 'freestyle' ? 'freestyle' : 'endless');
       b.blur();
     });
   }
@@ -260,13 +260,20 @@ function resetRunState() {
 }
 
 function setKind(kind, seed) {
+  // 'freestyle' ist eine Endlos-Welt mit eigenem Generator-Stil (fast nur Sprünge)
+  const style = kind === 'freestyle' ? 'freestyle' : 'freeride';
+  if (kind === 'freestyle') kind = 'endless';
   game.kind = kind;
+  game.style = style;
+  game.bestEndless = parseInt(localStorage.getItem(BEST_E_KEY + (style === 'freestyle' ? '_fs' : '')) || '0', 10) || 0;
+  game.bestDist = parseInt(localStorage.getItem(BEST_D_KEY + (style === 'freestyle' ? '_fs' : '')) || '0', 10) || 0;
   C.cfg.treeMul = Q.trees;
-  C.setMode(kind === 'endless', seed || 1 + Math.floor(Math.random() * 1e6));
+  C.setMode(kind === 'endless', seed || 1 + Math.floor(Math.random() * 1e6), style);
   world.setMode();
   resetRunState();
-  for (const b of document.querySelectorAll('.mode')) b.classList.toggle('sel', b.dataset.mode === kind);
-  $('menuKicker').textContent = kind === 'endless' ? 'Freeride · jedes Mal ein neuer Berg' : 'Abfahrt · 2,4 km · 650 Höhenmeter';
+  const sel = kind === 'endless' && style === 'freestyle' ? 'freestyle' : kind;
+  for (const b of document.querySelectorAll('.mode')) b.classList.toggle('sel', b.dataset.mode === sel);
+  $('menuKicker').textContent = sel === 'freestyle' ? 'Freestyle · riesige Sprünge, jedes Mal neu' : kind === 'endless' ? 'Freeride · jedes Mal ein neuer Berg' : 'Abfahrt · 2,4 km · 650 Höhenmeter';
   $('lblMain').textContent = kind === 'endless' ? 'Punkte' : 'Zeit';
   $('lblSide').textContent = kind === 'endless' ? 'Respawn' : 'Tore';
   $('progress').classList.toggle('off', kind === 'endless');
@@ -275,7 +282,7 @@ function setKind(kind, seed) {
 function startRun() {
   audio.start();
   saveEndlessBest();
-  if (game.kind === 'endless') setKind('endless', game.forceSeed);   // jedes Mal ein neuer Berg (forceSeed nur für Tests)
+  if (game.kind === 'endless') setKind(game.style === 'freestyle' ? 'freestyle' : 'endless', game.forceSeed);   // jedes Mal ein neuer Berg (forceSeed nur für Tests)
   else { world.resetGates(); resetRunState(); }
   $('menu').classList.add('hidden');
   $('finish').classList.add('hidden');
@@ -304,9 +311,10 @@ const totalScore = () => Math.round(game.score);
 function saveEndlessBest() {
   if (game.kind !== 'endless' || game.mode === 'menu' || game.mode === 'loading') return;
   const t = totalScore();
-  if (t > game.bestEndless) { game.bestEndless = t; localStorage.setItem(BEST_E_KEY, String(t)); }
+  const sfx = game.style === 'freestyle' ? '_fs' : '';
+  if (t > game.bestEndless) { game.bestEndless = t; localStorage.setItem(BEST_E_KEY + sfx, String(t)); }
   const m = Math.round(game.maxD);
-  if (m > game.bestDist) { game.bestDist = m; localStorage.setItem(BEST_D_KEY, String(m)); }
+  if (m > game.bestDist) { game.bestDist = m; localStorage.setItem(BEST_D_KEY + sfx, String(m)); }
 }
 /** Endlos-Welt: Punkte einer Landung vormerken; gesichert werden sie erst nach sauberem Weiterfahren. */
 function addPending(pts, isTrick) {
@@ -386,7 +394,9 @@ window.addEventListener('keydown', (e) => {
   if (e.repeat) return;
   if (e.target instanceof HTMLInputElement) return;
   const k = e.code;
-  const name = KEYMAP[k];
+  let name = KEYMAP[k];
+  // In der Luft: Pfeil links = Mute Grab (linke Hand), Pfeil rechts = Tail Grab (rechte Hand); A/D drehen weiter
+  if ((k === 'ArrowLeft' || k === 'ArrowRight') && game.mode === 'run' && !phys.grounded) name = k === 'ArrowLeft' ? 'gl' : 'gr';
   if (name) {
     keys[name] = true;
     // Tricks zählen nur für Tasten, die erst in der Luft gedrückt werden
@@ -406,6 +416,8 @@ window.addEventListener('keydown', (e) => {
 window.addEventListener('keyup', (e) => {
   const name = KEYMAP[e.code];
   if (name) { keys[name] = false; airKey[name] = false; }
+  if (e.code === 'ArrowLeft') { keys.gl = false; airKey.gl = false; }
+  if (e.code === 'ArrowRight') { keys.gr = false; airKey.gr = false; }
 });
 window.addEventListener('blur', () => { for (const k in keys) { keys[k] = false; airKey[k] = false; } });
 // Handy: Knöpfe, Neigungssteuerung (Erlaubnis wird beim Start-Tipp eingeholt)
@@ -414,13 +426,13 @@ $('startBtn').addEventListener('click', () => { if (touchCtl) touchCtl.onStart()
 $('againBtn').addEventListener('click', () => { if (touchCtl) touchCtl.onStart(); startRun(); });
 $('menuBtn').addEventListener('click', () => toMenu());
 for (const b of document.querySelectorAll('.mode')) {
-  b.addEventListener('click', () => { if (game.mode === 'menu' && game.kind !== b.dataset.mode) setKind(b.dataset.mode); b.blur(); });
+  b.addEventListener('click', () => { const cur = game.kind === 'endless' && game.style === 'freestyle' ? 'freestyle' : game.kind; if (game.mode === 'menu' && cur !== b.dataset.mode) setKind(b.dataset.mode); b.blur(); });
 }
 
 // ---------------------------------------------------------------- Tricks
 function updateTricks(dt) {
   const inAir = !phys.grounded && phys.crashed <= 0 && game.mode === 'run';
-  if (inAir && !trick.wasAir) { for (const k in airKey) airKey[k] = false; trick.grabT = 0; }
+  if (inAir && !trick.wasAir) { for (const k in airKey) airKey[k] = false; trick.grabT = 0; trick.gT.safety = trick.gT.mute = trick.gT.tail = 0; }
   trick.wasAir = inAir;
   if (inAir) {
     const flipIn = (airKey.down ? 1 : 0) - (airKey.up ? 1 : 0);
@@ -433,9 +445,10 @@ function updateTricks(dt) {
     trick.yv += clamp(yT - trick.yv, -44 * dt, 44 * dt);
     trick.pitch += trick.pv * dt;
     trick.yaw += trick.yv * dt;
-    const gT = airKey.space ? 1 : 0;
+    const gT = airKey.space || airKey.gl || airKey.gr ? 1 : 0;
+    if (airKey.gl) trick.gs = -1; else if (airKey.gr) trick.gs = 1; else if (airKey.space) trick.gs = 0;
     trick.grab += clamp(gT - trick.grab, -6 * dt, 6 * dt);
-    if (trick.grab > 0.7) trick.grabT += dt;
+    if (trick.grab > 0.7) { trick.grabT += dt; trick.gT[trick.gs < 0 ? 'mute' : trick.gs > 0 ? 'tail' : 'safety'] += dt; }
   } else {
     const k = 1 - Math.exp(-dt * 12);
     trick.pitch -= trick.pitch * k;
@@ -466,10 +479,15 @@ function updateTricks(dt) {
 function scoreLanding(e) {
   const flips = Math.round(trick.pitch / TAU), spins = Math.round(trick.yaw / TAU);
   const pOff = trick.pitch - flips * TAU, yOff = trick.yaw - spins * TAU;
-  const grabT = trick.grabT;
+  const grabT = trick.grabT, gTs = { ...trick.gT };
   trick.pitch = pOff; trick.yaw = yOff; trick.grabT = 0;
   if (phys.crashed > 0) return;
-  if (Math.abs(pOff) > 0.85 || Math.abs(yOff) > 1.1) {
+  // Wer (fast) steht, landet quer genauso sicher wie gerade: Drehung wird einfach zur neuen Blickrichtung.
+  // Bei Fahrt bleibt es streng – quer aufsetzen heißt stürzen.
+  const vh = Math.hypot(phys.vel.x, phys.vel.z);
+  const yawTol = vh < 3 ? Infinity : vh < 8 ? lerp(2.6, 1.1, (vh - 3) / 5) : 1.1;
+  if (Math.abs(yOff) > 1.1 && Math.abs(yOff) <= yawTol) { phys.heading += yOff; trick.yaw = 0; }
+  if (Math.abs(pOff) > 0.85 || Math.abs(yOff) > yawTol) {
     showMsg('Nicht ausgedreht!', 'bad');
     quietCrash = true;
     phys.crash();
@@ -489,11 +507,14 @@ function scoreLanding(e) {
     pts += Math.round(250 * Math.pow(n, 1.5));
     cats++;
   }
-  if (grabT > 0.25) {
-    parts.push('Safety Grab');
-    pts += 150 + Math.round(Math.min(grabT, 1.5) * 300);
-    cats++;
+  for (const [k, nm] of [['safety', 'Safety Grab'], ['mute', 'Mute Grab'], ['tail', 'Tail Grab']]) {
+    if (gTs[k] > 0.25) {
+      parts.push(nm);
+      pts += 150 + Math.round(Math.min(gTs[k], 1.5) * 300);
+      cats++;
+    }
   }
+  void grabT;
   const airPts = e.airTime > 0.55 ? Math.round(e.dist * 4) : 0;
   if (cats > 0) {
     if (cats > 1) pts = Math.round(pts * 1.5);
@@ -505,7 +526,7 @@ function scoreLanding(e) {
     if (pts > game.bestTrickPts) { game.bestTrickPts = pts; game.bestTrick = name; }
     showMsg(`${name}  +${num(pts)}${game.kind === 'endless' && comboNow > 1 ? `  (×${comboNow.toFixed(1).replace('.0', '')})` : ''}`, 'gold');
     audio.gate();
-  } else if (e.airTime > 0.55) {
+  } else if (e.airTime > 0.55 && e.dist > 3) {   // Hüpfer auf der Stelle zählen nicht als Sprung
     const p = addPending(airPts, false);
     showMsg(`${e.dist.toFixed(1)} m Sprung${game.kind === 'endless' ? `  +${p}` : ''}`, 'gold');
   }
@@ -852,7 +873,7 @@ function updateSkier(dt) {
   }
   skier.update({
     lean: vis.lean, crouch: vis.crouch, steer: phys.grounded ? inp.steer : 0, plow: vis.plow, air: vis.air, compress: vis.compress,
-    speed: phys.speed, grab: trick.grab, tuck: vis.tuck, spin: vis.spin, extend: vis.extend, crash: crashed ? 1 : 0, crashA: vis.crashAngle,
+    speed: phys.speed, grab: trick.grab, grabSide: trick.gs, tuck: vis.tuck, spin: vis.spin, extend: vis.extend, crash: crashed ? 1 : 0, crashA: vis.crashAngle,
   }, dt);
   skier.updateLoose(dt, C.height);
   if (blob) {
@@ -870,7 +891,7 @@ function updateSkier(dt) {
 }
 
 // ---------------------------------------------------------------- Minikarte & Zonen
-const ZONE_NAMES = { start: 'Start', cruise: 'Panorama-Piste', glade: 'Waldbahn', bowl: 'Pulverhang', park: 'Ski-Cross-Park', bigair: 'Big Air', couloir: 'Rinne', cliff: 'Klippenband', flat: 'Auslauf' };
+const ZONE_NAMES = { start: 'Start', cruise: 'Panorama-Piste', glade: 'Waldbahn', bowl: 'Pulverhang', park: 'Ski-Cross-Park', bigair: 'Big Air', couloir: 'Rinne', cliff: 'Klippenband', flat: 'Auslauf', jumpline: 'Sprunglinie', megaair: 'Mega Air', slopestyle: 'Slopestyle' };
 let lastZone = -1, zoneTimer = 0;
 function updateZone(dt) {
   if (game.kind !== 'endless' || game.mode !== 'run') return;

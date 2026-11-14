@@ -80,7 +80,7 @@ button:disabled { opacity: 0.4; cursor: default; }
   #hint { display: none; }
 }
 
-.modes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.modes { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 16px; }
 .mode { text-align: left; padding: 12px 14px; border-radius: 14px; background: var(--glass); border: 2px solid rgba(255, 255, 255, 0.22); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: border-color 0.12s, background 0.12s; }
 .mode b { display: block; font: italic 800 24px var(--font); letter-spacing: 0.03em; }
 .mode span { display: block; font: 14px "Avenir Next", "Helvetica Neue", Arial, sans-serif; opacity: 0.85; margin-top: 2px; }

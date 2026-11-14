@@ -25,12 +25,12 @@ let S = null;
 export const report = { seed: 0, zones: [], features: [], issues: [] };
 
 // ------------------------------------------------------------------ Zustand
-export function pisteInit(seed) {
-  S = { seed, Z: [], hub: [0], H: [0], busy: false, types: [], slopes: [] };
+export function pisteInit(seed, style = 'freeride') {
+  S = { seed, style, Z: [], hub: [0], H: [0], busy: false, types: [], slopes: [] };
   // Berg-Charakter: jeder Startwert bevorzugt andere Zonen und hat eigene Grundzüge (Waldberg, Pulverberg, Felsberg …)
   const Rc = mulberry32((Math.imul(seed, 2246822519) ^ 0x5bd1e995) >>> 0);
   const ch = { w: {}, wide: 0.85 + Rc() * 0.35, steep: 0.92 + Rc() * 0.16, forest: 0.7 + Rc() * 0.6, pow: 0.75 + Rc() * 0.5, curvy: 0.75 + Rc() * 0.6, mods: 0.6 + Rc() * 0.8 };
-  for (const k of Object.keys(W)) ch.w[k] = 0.45 + Rc() * 1.2;
+  for (const k of [...Object.keys(W), ...Object.keys(WF)]) ch.w[k] = 0.45 + Rc() * 1.2;
   S.ch = ch;
   PR.d = NaN;
   report.seed = seed; report.zones = []; report.features = []; report.issues = []; report.skipped = 0;
@@ -40,7 +40,24 @@ const issue = (msg) => { if (report.issues.length < 400) report.issues.push(msg)
 
 // ------------------------------------------------------------------ Zonen
 const W = { cruise: 0.85, glade: 1.25, bowl: 1.0, park: 0.8, bigair: 0.6, couloir: 0.55, cliff: 0.85, steep: 1.15, flat: 0.25 };
+// Freestyle-Berg: fast nur Sprungzonen, dazwischen gelegentlich Klippen und kurze Ausläufe
+const WF = { jumpline: 2.6, megaair: 1.1, slopestyle: 1.7, bigair: 0.9, cliff: 0.5, flat: 0.15 };
+function pickFreestyle(idx, R) {
+  if (idx === 0) return 'start';
+  if (idx === 1) return 'jumpline';
+  const hist = S.types, last = hist[hist.length - 1];
+  const w = { ...WF };
+  for (const k in w) w[k] *= S.ch ? S.ch.w[k] || 1 : 1;
+  if (w[last] !== undefined) w[last] *= last === 'jumpline' ? 0.35 : 0;
+  if (last === 'megaair') w.flat = 0.8;
+  let sum = 0;
+  for (const k in w) sum += w[k];
+  let r = R() * sum;
+  for (const k in w) { r -= w[k]; if (r <= 0) return k; }
+  return 'jumpline';
+}
 function pickType(idx, R) {
+  if (S.style === 'freestyle') return pickFreestyle(idx, R);
   const hist = S.types;
   if (idx === 0) return 'start';
   if (idx === 1) return R() < 0.5 ? 'glade' : 'cruise';
@@ -138,6 +155,27 @@ function makeZone(type, idx, d0) {
       L[1] = lane(6.5, -sg * rr(8, 25), { groom: 0.55, kind: KIND.jump });
       if (R() < 0.55) L[2] = lane(rr(7, 8), -sg * rr(70, 92), { groom: 0.95, wob: 3, wl: 150, ph: ph() });
       break;
+    // ---- Freestyle-Zonen: breite, präparierte Hänge mit gleichmäßigem Gefälle, damit man vor jedem Sprung Tempo aufbaut
+    case 'jumpline':
+      Object.assign(z, { len: rr(620, 820), slope: rr(0.25, 0.3), valley: rr(105, 135), wall: rr(0.05, 0.1), rock: 0.2, pow: 0.2, forest: rr(0.15, 0.35), rough: 0.4, hill: rr(4, 7) });
+      z.head = { A: rr(0.08, 0.16), lam: rr(700, 950), ph: ph() };
+      L[0] = lane(rr(13, 15), sg * rr(0, 10), { wob: 2, wl: 200, ph: ph() });
+      L[1] = lane(rr(7, 8.5), -sg * rr(44, 56), { groom: 0.95, wob: 3, wl: 180, ph: ph() });
+      if (R() < 0.7) L[2] = lane(rr(7, 8.5), sg * rr(46, 58), { groom: 0.95, wob: 3, wl: 180, ph: ph() });
+      break;
+    case 'megaair':
+      Object.assign(z, { len: rr(640, 780), slope: rr(0.15, 0.17), valley: rr(110, 140), wall: rr(0.05, 0.1), rock: 0.3, pow: 0.2, forest: 0.2, rough: 0.35, hill: rr(4, 7) });
+      z.head = { A: 0.04, lam: 900, ph: ph() };
+      L[0] = lane(rr(14, 16));
+      L[1] = lane(rr(6.5, 8), sg * rr(48, 60), { groom: 0.95 });
+      break;
+    case 'slopestyle':
+      Object.assign(z, { len: rr(640, 800), slope: rr(0.22, 0.26), valley: rr(95, 120), wall: rr(0.06, 0.12), rock: 0.2, pow: 0.15, forest: 0.2, rough: 0.35, hill: rr(4, 7) });
+      z.head = { A: rr(0.12, 0.2), lam: rr(600, 800), ph: ph() };
+      L[0] = lane(rr(13, 15));
+      L[1] = lane(rr(6.5, 7.5), -sg * rr(40, 50), { groom: 0.95, wob: 2, wl: 150, ph: ph() });
+      if (R() < 0.6) L[2] = lane(rr(6.5, 7.5), sg * rr(42, 52), { groom: 0.95, wob: 2, wl: 150, ph: ph() });
+      break;
     case 'flat':
       Object.assign(z, { len: rr(110, 170), slope: rr(0.09, 0.12), valley: rr(100, 125), wall: 0.06, rock: 0.2, pow: 0.25, forest: 0.4, rough: 0.6, hill: 4 });
       z.head = { A: rr(0.12, 0.2), lam: rr(380, 460), ph: ph() };
@@ -163,8 +201,9 @@ function varyZone(z, R, rr, ph) {
   z.mods = {};
   z.label = '';
   if (z.type === 'start' || z.type === 'couloir') return;
+  const fsZone = z.type === 'jumpline' || z.type === 'megaair' || z.type === 'slopestyle';
   // Grundwerte leicht verschieben (Berg-Charakter + Zufall)
-  z.len *= rr(0.75, 1.3);
+  z.len *= fsZone ? rr(0.95, 1.15) : rr(0.75, 1.3);
   z.valley *= ch.wide * rr(0.9, 1.12);
   z.forest = clamp(z.forest * ch.forest * rr(0.7, 1.35), 0, 1);
   z.pow = clamp(z.pow * ch.pow * rr(0.8, 1.2), 0, 1);
@@ -199,7 +238,8 @@ function varyZone(z, R, rr, ph) {
   }
   // Gelände-Formen (0 bis 2 pro Zone)
   const flatZone = z.type === 'park' || z.type === 'bigair' || z.type === 'flat';
-  const pool = flatZone || z.type === 'cliff' ? ['islands', 'rocks', 'wide', 'gully'] : ['waves', 'gully', 'ridge', 'knolls', 'islands', 'rocks', 'wide', 'narrow', 'waves'];
+  if (fsZone) z.head.A = Math.min(z.head.A, 0.18);   // Freestyle: Kurven ruhig halten
+  const pool = fsZone ? ['islands', 'rocks', 'wide'] : flatZone || z.type === 'cliff' ? ['islands', 'rocks', 'wide', 'gully'] : ['waves', 'gully', 'ridge', 'knolls', 'islands', 'rocks', 'wide', 'narrow', 'waves'];
   const nm = Math.min(2, Math.floor(R() * 2.6 * ch.mods));
   const names = [];
   for (let k = 0; k < nm; k++) {
@@ -639,7 +679,7 @@ function addJump(z, R, o) {
   const sRun = zoneSlopeAt(z, d - 70) * 0.5 + zoneSlopeAt(z, d - 20) * 0.5;
   const sHere = zoneSlopeAt(z, d);
   const vu = terminalSpeed(sRun, 0), vt = terminalSpeed(sRun, 1);
-  const v = Math.sqrt(vu * vt);
+  const v = o.vBias !== undefined ? Math.pow(vu, 1 - o.vBias) * Math.pow(vt, o.vBias) : Math.sqrt(vu * vt);   // vBias > 0.5: für Hocke ausgelegt (Freestyle)
   const steep = o.steep ? { t2: o.steep, xb: 4, len: 160 } : null;
   const des = designJump({
     kind: o.kind === 'stepup' ? 'stepup' : 'table', theta: Math.atan(sHere), steep, vDes: v, vRange: [vu * 0.95, vt * 1.03],
@@ -724,7 +764,7 @@ function genFeatures(z, R) {
         const j = addJump(z, R, { d: cur + 25, lane: it.lane || 0, ...it });
         end = j ? j.end : null;
       }
-      cur = (end === null ? cur + 20 : end) + (it.gap === undefined ? (it.t === 'jump' ? rr(8, 18) : rr(26, 44)) : Math.min(it.gap, it.t === 'jump' ? 18 : 99));
+      cur = (end === null ? cur + 20 : end) + (it.big !== undefined ? it.big : it.gap === undefined ? (it.t === 'jump' ? rr(8, 18) : rr(26, 44)) : Math.min(it.gap, it.t === 'jump' ? 18 : 99));
     }
   };
   const sideLine = (li, start, items) => { if (z.lanes[li].w > 0) { cur = a + start; chain(items.map((x) => ({ lane: li, ...x }))); } };
@@ -788,6 +828,45 @@ function genFeatures(z, R) {
       ]);
       sideLine(1, 70, [{ t: 'jump', kind: 'table', name: 'Kicker (Seitenlinie)', phi: 6, Lr: 11, hMax: 3.4, wT: 3, gap: 40 }, { t: 'roller', n: 3, w: 5, sp: 9 }, { t: 'jump', kind: 'table', name: 'Kicker (Seitenlinie)', phi: 7, Lr: 12, hMax: 3.8, wT: 3, gap: 30 }]);
       sideLine(2, 90, [{ t: 'roller', n: 3, w: 4.5, sp: 10, gap: 36 }, { t: 'berm', h: 1.4, len: 40 }, { t: 'roller', n: 2, w: 4.5, sp: 11 }]);
+      break;
+    }
+    case 'jumpline': {
+      // Sprunglinie: große Tische und Step-ups, dazwischen jeweils 110–160 m freier Hang zum Tempo-Aufbauen
+      const big = [
+        { name: 'Großer Tisch', phi: 12, Lr: 20, hMax: 8, wT: 6 },
+        { name: 'Riesen-Tisch', phi: 14, Lr: 24, hMax: 10, wT: 6.5 },
+        { name: 'Kicker XL', phi: 15, Lr: 18, hMax: 7, wT: 5.5 },
+        { sd: 3, name: 'Step-down XL', phi: 12, Lr: 20, hMax: 8, wT: 6 },
+      ];
+      cur = a + rr(60, 90);
+      const list = [];
+      for (let k = 0; k < 6; k++) list.push({ t: 'jump', kind: 'table', ...big[Math.floor(R() * big.length)], big: rr(110, 160), vBias: 0.62 });
+      chain(list);
+      for (const li of [1, 2]) sideLine(li, rr(50, 90), [0, 1, 2, 3, 4].map(() => ({ t: 'jump', kind: 'table', name: 'Kicker (Seitenlinie)', phi: rr(7, 10), Lr: 12, hMax: rr(3.4, 4.6), wT: 3.4, big: rr(70, 95) })));
+      break;
+    }
+    case 'megaair': {
+      // Ein Riesensprung mit sehr langem Anlauf (≈ 60 % der Zone), Landung in einen steileren Hang
+      cur = z.d0 + z.len * 0.6;
+      let j = null;
+      for (const [phi, Lr, hMax] of [[18, 28, 14], [17, 26, 12.5], [16, 24, 11.5], [16, 23, 11]]) {
+        j = addJump(z, R, { d: cur, exactD: snapStraight(z, cur, 40), lane: 0, kind: 'table', name: hMax >= 12 ? 'Mega Air' : 'Big Air', phi, Lr, hMax, wT: 7, steep: 0.55, vBias: 0.6 });
+        if (j) break;
+      }
+      sideLine(1, 70, [0, 1, 2, 3].map(() => ({ t: 'jump', kind: 'table', name: 'Kicker (Seitenlinie)', phi: 8, Lr: 12, hMax: 4, wT: 3.2, big: rr(80, 110) })));
+      break;
+    }
+    case 'slopestyle': {
+      // Slopestyle-Linie: Tisch, Spine, Step-up, großer Tisch, Step-down – mit Platz zum Anfahren dazwischen
+      cur = a + 50;
+      chain([
+        { t: 'jump', kind: 'table', name: 'Tisch', phi: 10, Lr: 16, hMax: 6, wT: 5.5, big: rr(80, 110) },
+        { t: 'spine', gap: 60 },
+        { t: 'jump', kind: 'stepup', su: 2, name: 'Step-up', phi: 12, Lr: 18, hMax: 7, wT: 5.5, big: rr(90, 120) },
+        { t: 'jump', kind: 'table', name: 'Großer Tisch', phi: 14, Lr: 22, hMax: 10, wT: 6, big: rr(100, 130) },
+        { t: 'jump', kind: 'table', sd: 3, name: 'Step-down XL', phi: 12, Lr: 20, hMax: 8, wT: 6, big: rr(90, 120) },
+      ]);
+      for (const li of [1, 2]) sideLine(li, 60, [0, 1, 2, 3].map(() => ({ t: 'jump', kind: 'table', name: 'Kicker (Seitenlinie)', phi: 8, Lr: 12, hMax: 4, wT: 3.2, big: rr(70, 100) })));
       break;
     }
     case 'bigair': {

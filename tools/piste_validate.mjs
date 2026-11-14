@@ -14,7 +14,7 @@ const phys = new SkiPhysics();
 const clamp = C.clamp;
 
 function runBot(seed, o) {
-  C.setMode(true, seed);
+  C.setMode(true, seed, STYLE);
   const R = P.report;
   phys.reset(-1);
   phys.events.length = 0;
@@ -85,7 +85,8 @@ function runBot(seed, o) {
   return res;
 }
 
-const OFF = process.argv[4] === 'off';   // Freeride-Test: abseits der Pisten, ohne Bäume (nur Gelände)
+const OFF = process.argv[4] === 'off';
+const STYLE = process.argv[4] === 'freestyle' ? 'freestyle' : 'freeride';   // node tools/piste_validate.mjs 20 3800 freestyle   // Freeride-Test: abseits der Pisten, ohne Bäume (nur Gelände)
 const modes = OFF ? [
   { name: 'Frei -85 aufrecht', lane: 0, off: -85, tuck: false, vMax: 24 },
   { name: 'Frei +85 Hocke', lane: 0, off: 85, tuck: true, vMax: 30 },
@@ -108,5 +109,5 @@ for (let seed = 1; seed <= NSEEDS; seed++) {
   }
 }
 fs.mkdirSync(path.join(ROOT, 'docs'), { recursive: true });
-fs.writeFileSync(path.join(ROOT, 'docs', OFF ? 'validation_offpiste.json' : 'validation_results.json'), JSON.stringify(out, null, 1));
+fs.writeFileSync(path.join(ROOT, 'docs', OFF ? 'validation_offpiste.json' : STYLE === 'freestyle' ? 'validation_freestyle.json' : 'validation_results.json'), JSON.stringify(out, null, 1));
 console.log(`fertig in ${((Date.now() - t0) / 1000).toFixed(1)} s`);

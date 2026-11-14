@@ -553,13 +553,14 @@ export function dropChunk(i) {
   for (let k = i * 5; k < i * 5 + 5; k++) colliders.delete(k);
 }
 
-export function setMode(endless, seed = 1) {
+export function setMode(endless, seed = 1, style = 'freeride') {
   cfg.endless = endless;
   cfg.seed = seed;
+  cfg.style = style;
   for (const a of [gates, trees, rocks, chalets, markers, kickers, pads, lift.pylons]) a.length = 0;
   colliders.clear();
   if (endless) {
-    P.pisteInit(seed);
+    P.pisteInit(seed, style);
     FINISH_D = Infinity;
     MESH_D1 = Infinity;
   } else {

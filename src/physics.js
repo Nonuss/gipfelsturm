@@ -32,7 +32,7 @@ export class SkiPhysics {
     this.pow = 0;        // 0 = fester Schnee, 1 = tiefer Pulverschnee (bremst, federt Landungen ab)
     this.sink = 0;       // Einsinktiefe (m) für die Darstellung
     this.airTime = 0;
-    this.airStart = new THREE.Vector3();
+    this.airStart = new THREE.Vector3(x, height(x, z), z);   // nach Teleport/Respawn keine Fantasie-Sprungweite
     this.gap = 0;
     this.yawRate = 0;
     this.pressure = 1;

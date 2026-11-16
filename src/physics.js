@@ -82,10 +82,11 @@ export class SkiPhysics {
       }
 
       // Reibung + Luftwiderstand
-      const mu = lerp(0.04, cfg.endless ? 0.072 : 0.11, pw);
-      // Heli-Berg: tiefer Pulver bremst bei hohem Tempo stärker (Endtempo um 100 km/h auch in 45-Grad-Flanken)
-      const k = lerp(0.0036, 0.0019, inp.tuck) * (cfg.heli ? 1.45 : 1);
-      const dec = mu * G * N.y + k * speed * speed + (cfg.endless ? pw * (0.26 + (cfg.heli ? 0.05 : 0.03) * speed) : pw * 0.05 * speed) + inp.brake * 4.6;
+      const mu = lerp(0.04, cfg.heli ? 0.05 : cfg.endless ? 0.072 : 0.11, pw);
+      // Heli-Berg: tiefer, leichter Pulver trägt – man schwebt darüber und wird kaum gebremst (wie echter Powder)
+      const k = lerp(0.0036, 0.0019, inp.tuck);
+      const powDrag = cfg.heli ? pw * (0.08 + 0.012 * speed) : cfg.endless ? pw * (0.26 + 0.03 * speed) : pw * 0.05 * speed;
+      const dec = mu * G * N.y + k * speed * speed + powDrag + inp.brake * 4.6;
       if (speed > 1e-4) v.multiplyScalar(Math.max(0, speed - dec * dt) / speed);
       v.y -= G * dt;
 
@@ -196,8 +197,9 @@ export class SkiPhysics {
     this.speed = v.length();
 
     // Hindernisse: Streifkontakte werden abgelenkt, nur ein frontaler Aufprall lässt stürzen
-    if (gap < 2.5) {
+    {
       nearColliders(p.z, (c) => {
+        if (c.top !== undefined ? p.y > c.top + 0.2 : gap >= 2.5) return;   // über das Hindernis hinweg geflogen
         const dx = p.x - c.x, dz = p.z - c.z;
         const rr = c.r + 0.2;
         const d2 = dx * dx + dz * dz;

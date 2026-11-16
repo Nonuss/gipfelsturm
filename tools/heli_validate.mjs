@@ -18,7 +18,7 @@ function ensureTiles(x, d) {
     const k = i + ',' + j;
     if (built.has(k)) continue;
     built.add(k);
-    if (!NOOBST) HB.genTile(i, j, T, 1, C.addCollider);
+    if (!NOOBST) HB.genTile(i, j, T, 1, C.addCollider, (x, z, y, sc, rot, v) => C.addRockCollider(C.addCollider, x, z, y, sc, rot, v));
   }
 }
 function fallDir(x, d, R = 25) {

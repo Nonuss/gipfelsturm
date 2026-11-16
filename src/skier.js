@@ -125,6 +125,21 @@ export class Skier {
     this.mPel = new THREE.Matrix4();
     this.mCh = new THREE.Matrix4();
     this.t = 0;
+    // Snowboard: Brett entlang der Körper-Querachse (die Füße stehen nebeneinander auf dem Brett), Fahrer seitlich
+    this.board = makeBoard();
+    this.board.visible = false;
+    this.board.renderOrder = 10;
+    this.body.add(this.board);
+    this.gear = 'ski';
+  }
+
+  /** 'ski' oder 'board' */
+  setGear(g) {
+    this.gear = g;
+    const b = g === 'board';
+    this.board.visible = b;
+    for (const k of this.sides) { k.ski.visible = !b; k.pole.visible = !b; }
+    this.body.rotation.y = b ? -Math.PI / 2 : 0;   // Regular: linker Fuß vorne, Blick zur rechten Seite der Fahrtrichtung
   }
 
   /** Ego-Sicht: Körper, Helm und Stöcke nicht zeichnen (sie würden die Kamera verdecken), ihr Schatten bleibt sichtbar. */
@@ -233,10 +248,15 @@ export class Skier {
       if (crash) {
         f.position.set(side * (0.24 + 0.08 * Math.sin(ca * 1.3 + side)), 0.28 + 0.2 * Math.sin(ca * 1.9 + side * 1.7), -0.05 + 0.32 * Math.sin(ca * 1.1 + side * 2.3));
         f.rotation.set(0.6 * Math.sin(ca * 1.5 + side), side * 0.5, 0.4 * Math.sin(ca * 2 + side));
+      } else if (this.gear === 'board') {
+        // Bindungen: Füße 52 cm auseinander, Duck-Stellung (vorne +15, hinten -15 Grad), Brett hebt sich beim Grab
+        f.position.set(side * 0.26, 0.05 + grab * 0.22 + tuck * 0.14, 0);
+        f.rotation.set(grab * 0.25 + tuck * 0.1, side * 0.26, 0);
       } else {
         const stance = 0.17 + 0.07 * Math.abs(lean) + 0.13 * plow + air * 0.03 + grab * 0.03;
         f.position.set(side * stance, Math.abs(Math.sin(edge)) * 0.03 + grab * 0.2 + tuck * 0.16, -0.09 * lean * side - grab * 0.06);
-        f.rotation.set(air * 0.1 * (1 - ext) + grab * 0.32 + tuck * 0.12, side * (plow * 0.33 + grab * 0.22), -(edge - side * plow * 0.28));
+        // Pflug: vorwärts Spitzen zusammen, rückwärts Enden zusammen (plowDir = -1) – der Keil öffnet sich immer in Fahrtrichtung
+        f.rotation.set(air * 0.1 * (1 - ext) + grab * 0.32 + tuck * 0.12, side * (plow * 0.33 * (s.plowDir || 1) + grab * 0.22), -(edge - side * plow * 0.28));
       }
       f.updateMatrix();
       if (!k.loose) {
@@ -276,6 +296,11 @@ export class Skier {
           k.hand.lerp(tD, grab);
         }
       }
+      if (this.gear === 'board' && !crash && grab < 0.01) {
+        // ohne Stöcke: Arme locker seitlich, leicht vor dem Körper, zum Ausbalancieren
+        tD.set(side * 0.62, 0.95 - c * 0.18 + air * 0.25, -0.18 - side * 0.12).applyMatrix4(this.mPel);
+        k.hand.lerp(tD, 0.85);
+      }
       tD.set(side * 0.8, -0.45, 0.5);
       ik(k.shoulder, k.hand, L_UA, L_FA, tD, k.elbow);
       tD.negate();
@@ -284,6 +309,12 @@ export class Skier {
       tC.copy(k.hand).sub(k.elbow).normalize();
       this.setBone(FA[i], k.elbow, basis(tC, tD, mR).multiply(ARM_B0_INV[i]), EL0[i]);
 
+      if (i === 1 && this.gear === 'board') {
+        const a = this.sides[0].foot, b2 = this.sides[1].foot;
+        this.board.position.set(0, (a.position.y + b2.position.y) / 2 - 0.03, 0);
+        this.board.rotation.set(0, 0, (a.rotation.x + b2.rotation.x) / 2 * 0);
+        this.board.rotation.x = (a.rotation.x + b2.rotation.x) / 2;
+      }
       // Stock in der Hand
       k.pole.position.copy(k.hand).addScaledVector(tC, 0.09);
       tB.set(side * 0.10, -0.66, 0.74);
@@ -292,4 +323,24 @@ export class Skier {
       k.pole.quaternion.setFromUnitVectors(DOWN, tB);
     }
   }
+}
+
+/** Snowboard: Taillierung, aufgebogene Nose und Tail, Belag dunkel, Oberseite mit Streifen. Länge entlang X. */
+function makeBoard() {
+  const L = 1.56, W = 0.27, geo = new THREE.BoxGeometry(L, 0.022, W, 32, 1, 4);
+  const p = geo.attributes.position, col = new Float32Array(p.count * 3);
+  for (let i = 0; i < p.count; i++) {
+    const x = p.getX(i), y = p.getY(i), z = p.getZ(i), t = Math.abs(x) / (L / 2);
+    const side = 1 - 0.07 * Math.cos(Math.min(1, t / 0.8) * Math.PI / 2) - (t > 0.82 ? (1 - Math.sqrt(Math.max(0, 1 - ((t - 0.82) / 0.18) ** 2))) * 0.75 : 0);
+    p.setZ(i, z * side);
+    p.setY(i, y + (t > 0.72 ? 0.14 * ((t - 0.72) / 0.28) ** 2 : 0));
+    const top = y > 0, stripe = Math.abs(Math.sin(x * 7.5)) > 0.85;
+    const c = top ? (stripe ? [1.0, 0.42, 0.08] : [0.12, 0.14, 0.18]) : [0.05, 0.05, 0.06];
+    col.set(c, i * 3);
+  }
+  geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  geo.computeVertexNormals();
+  const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.35, metalness: 0.1, transparent: true }));
+  m.castShadow = true;
+  return m;
 }

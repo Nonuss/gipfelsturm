@@ -274,3 +274,32 @@ Die erste Fassung war ein einzelner Hang mit vorgegebener Linie. Jetzt erzeugt `
 
 - Kein Mensch hat das Gebirge gespielt; ob der Wald mit rund 6 bis 7 m Baumabstand angenehm fahrbar ist, ist offen.
 - Bildrate nur auf diesem Rechner gemessen (60 Bilder/s), nicht auf Handys.
+
+## Heli-Gebirge, dritte Fassung (2026-11-16, nachts)
+
+Rückmeldung nach dem ersten Spieltest: Tiefschnee zu langsam, durch Felsen durchgeglitten, Tal erst spät sichtbar, Berg zu gleichförmig („Rillenpisten“), Hängen beim Moduswechsel, Rückwärts-Pizza falsch, Handy-Steuerung, Wunsch nach Snowboard.
+
+| Punkt | Änderung |
+|---|---|
+| Tiefschnee | Pulver bremst im Heli-Modus kaum noch (wie leichter Powder); Abfahrt rund ein Drittel schneller |
+| Felsen | Felsen kollidieren als Kreiskette über ihre ganze Länge und bis zu ihrer Oberkante; Felswände der Klippen haben Kollisionen am Wandfuß; jede Kachel entfernt nur ihre eigenen Kollisionen (vorher konnten Kollisionen beim Entladen der Nachbarkachel verschwinden) |
+| Sichtbarkeit | Horizont-Ring bis rund 35 km um das Gebirge; Kacheln bauen sich schrittweise auf, bis dahin zeigt die Fernsicht |
+| Abwechslung | Grundrillen deutlich schwächer, Erosion sanfter; neu: 9 Couloirs mit Felswänden, Klippenbänder (bis 80 Klippen), 38 Windlippen mit geprüfter Landung, Pillow-Felder, Spines-Zonen, Felsinseln |
+| Hängen | Gebirge und Fernsicht entstehen im Web Worker, der nächste Berg wird vorab erzeugt; Menü bleibt bedienbar |
+| Rückwärts bremsen | Pflug gespiegelt: rückwärts Enden zusammen, der Keil öffnet sich in Fahrtrichtung |
+| Handy | keine automatische Nulllage mehr (geradeaus = Handy waagrecht); weniger Knöpfe mit eigenen Symbolen; Respawn-Punkt in einem Knopf (tippen zurück, halten setzen), im Heli-Modus ausgeblendet; Lenkung Neigen/Daumen unter Einstellungen |
+| Snowboard | wählbar im Startmenü (Taste B): seitliche Haltung, Kurven über die Kante, Bremsen durch Querstellen, eine breite Spur, Tricks Indy, Melon, Tail Grab, Frontside und Backside, Fakie |
+
+### Bot-Test `node tools/heli_validate.mjs 6 ohne`
+
+| Prüfung | Ergebnis |
+|---|---|
+| Fahrten Gipfel bis Tal (6 Berge, je 5 Linien) | 30 von 30 im Tal, 0 Geländestürze, 0 steckengeblieben, 3 bis 6 Minuten |
+| Klippensprünge | 3840, 0 Stürze, höchster Aufprall 15,6 m/s |
+| Andere Welten | weiterhin 0 Stürze |
+
+### Nicht geprüft
+
+- Moduswechsel-Flüssigkeit und Handy-Knöpfe nur bei ausgeblendetem Browserfenster geprüft (Animationen liefen dort nicht); im sichtbaren Fenster nicht gemessen.
+- Snowboard nur im Standbild angesehen, Tricks nicht von Hand gespielt; Bot-Test fährt nur Ski.
+- Ob der Zustand „Tal am Anfang nicht sichtbar“ damit behoben ist, ist nicht sicher belegt: ich konnte den Fehler nicht nachstellen.

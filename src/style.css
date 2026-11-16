@@ -280,3 +280,26 @@ body.touch #hud { z-index: 32; }   /* nur der Vollbild-Knopf im HUD fängt Tipps
 
 #snap { position: fixed; inset: 0; width: 100%; height: 100%; display: none; pointer-events: none; transform-origin: 50% 55%; will-change: opacity, transform, filter; }
 #snap.on { display: block; }
+
+/* ---------------------------------------------------------------- Handy-Knöpfe (neu): Glas-Kreise mit Linien-Symbolen */
+#touchUI button { display: grid; place-items: center; padding: 0; color: #fff; background: rgba(12, 22, 38, 0.32); border: 1.5px solid rgba(255, 255, 255, 0.42);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); box-shadow: 0 6px 22px rgba(0, 0, 0, 0.18); transition: transform 0.08s, background 0.12s, border-color 0.12s; }
+#touchUI button svg { width: 46%; height: 46%; fill: none; stroke: #fff; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+#touchUI .tbtn { width: 74px; height: 74px; border-radius: 50%; }
+#touchUI .tbtn.big { width: 104px; height: 104px; background: rgba(255, 106, 19, 0.34); border-color: rgba(255, 190, 150, 0.7); }
+#touchUI .tbtn.on, #touchUI .tsm.on { transform: scale(0.92); background: rgba(255, 255, 255, 0.34); border-color: #fff; }
+#touchUI .tb.right { flex-direction: column-reverse; align-items: center; gap: 14px; }
+#touchUI .tb.left { bottom: calc(26px + env(safe-area-inset-bottom)); }
+#touchUI .tsm { width: 42px; height: 42px; min-width: 0; border-radius: 50%; }
+#touchUI .tsm svg { width: 52%; height: 52%; }
+#touchUI .tb.top { left: auto; right: calc(14px + env(safe-area-inset-right)); transform: none; top: calc(96px + env(safe-area-inset-top)); flex-direction: column; gap: 10px; }
+body.touch #touchUI .tb.left, html.rot #touchUI .tb.left { bottom: calc(26px + env(safe-area-inset-bottom)); }
+@media (max-height: 500px) { #touchUI .tbtn { width: 62px; height: 62px; } #touchUI .tbtn.big { width: 88px; height: 88px; } #touchUI .tb.top { top: calc(78px + env(safe-area-inset-top)); } }
+html.rot #touchUI .tbtn { width: 62px; height: 62px; } html.rot #touchUI .tbtn.big { width: 88px; height: 88px; } html.rot #touchUI .tb.top { top: 78px; }
+.touchonly { display: none !important; } body.touch .touchonly { display: flex !important; }
+body.touch #minimap { left: calc(12px + env(safe-area-inset-left)); right: auto; top: 104px; }   /* rechts liegen die Knöpfe */
+
+.menu .seg.gear { margin-left: auto; pointer-events: auto; }
+.menu .seg.gear button { padding: 8px 14px; font-size: 15px; letter-spacing: 0.1em; text-transform: uppercase; }
+@media (max-height: 520px) { .menu .seg.gear button { padding: 6px 10px; font-size: 12px; } }
+html.rot .menu .seg.gear button { padding: 6px 10px; font-size: 12px; }

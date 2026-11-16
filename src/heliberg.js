@@ -117,8 +117,8 @@ function detail(s, x, d, base, fine) {
     if (env2 > 0) {
       const w1 = 160 * (fbm(r / 600 + s.ns, th * 4) - 0.5);
       const fade = 1 - smoothstep(s.DV - 1800, s.DV - 600, d);
-      y += env2 * fade * 30 * (Math.pow(ridged((u + w1) / 210 + s.ns, r / 900), 2) - 0.45);
-      if (fine) y += env2 * fade * 10 * (Math.pow(ridged((u + w1 * 0.6) / 70 + s.ns * 2, r / 380), 2) - 0.45);
+      y += env2 * fade * 17 * (Math.pow(ridged((u + w1) / 230 + s.ns, r / 900), 2) - 0.45);
+      if (fine) y += env2 * fade * 5 * (Math.pow(ridged((u + w1 * 0.6) / 70 + s.ns * 2, r / 380), 2) - 0.45);
     }
     // Grat-Rauschen überall in den Bergen (Nachbargipfel, Seitenflanken); in der Hauptflanke zurückgenommen,
     // denn richtungsloses Rauschen erzeugt dort Buckel quer zur Falllinie
@@ -196,7 +196,7 @@ export function init(seed, opts = {}) {
   }
   if (!opts.noFill) fillDepressions(fg, 0, epsMap);   // Becken zu Rampen, die Erosion schneidet dann Rinnen hinein
   if (!opts.noErosion) {
-    erode(fg, opts.drops ?? 160000, R);
+    erode(fg, opts.drops ?? 110000, R, 0.8);   // etwas sanfter: Rinnen ja, aber kein durchgehendes Rillenmuster
     thermal(fg, 1.1, 8);
     keepFloor(s, fg, pre);
   }
@@ -209,6 +209,7 @@ export function init(seed, opts = {}) {
     const w = smoothstep(0, B, e), x = fg.x0 + i * cell, d = fg.d0 + j * cell, k = j * fg.nx + i;
     fg.h[k] = lerp(sampleCubic(cg, x, d), fg.h[k], w);
   }
+  s.couloirs = carveCouloirs(s, fg, R, rr);
   if (!opts.noFill) { for (let k = 0; k < epsMap.length; k++) epsMap[k] *= 0.9; fillDepressions(fg, 0, epsMap); }
   // Talboden und Ziel
   s.fin = Math.round(valleyAxis(s, 0) - s.Wv - 60);
@@ -221,6 +222,8 @@ export function init(seed, opts = {}) {
   // Klippen (vor dem Schatten, damit die Felsbänder mitzählen)
   s.cliffs = []; s.cliffBuckets = new Map();
   placeCliffs(s, R, rr);
+  s.feats = []; s.featBuckets = new Map();
+  placeFeatures(s, R, rr);
   // Gelände-Schatten
   s.shF = bakeShadow(s, fg, 2);
   s.shC = bakeShadow(s, cg, 1);
@@ -382,14 +385,25 @@ function cliffDelta(c, x, d) {
 const bucketKey = (x, d) => (Math.floor(x / 100) + 500) * 1000 + Math.floor(d / 100) + 500;
 function placeCliffs(s, R, rr) {
   const g = s.fg, { nx, cell } = g;
-  for (let t = 0; t < 2600 && s.cliffs.length < 46; t++) {
-    const x = rr(-2600, 2600), d = rr(250, s.DV - 900);
+  const cand = [];
+  // Klippenbänder: ein Anker, daneben weitere Klippen quer zur Falllinie mit Rinnen dazwischen
+  for (let b = 0; b < 40; b++) {
+    const ax = rr(-2500, 2500), ad = rr(250, s.DV - 1100);
+    const ia = Math.round((ax - g.x0) / cell), ja = Math.round((ad - g.d0) / cell), ka = ja * nx + ia;
+    const gx = (g.h[ka + 3] - g.h[ka - 3]) / (6 * cell), gd = (g.h[ka + 3 * nx] - g.h[ka - 3 * nx]) / (6 * cell), gl = Math.hypot(gx, gd) || 1;
+    const px = gd / gl, pd = -gx / gl, n = 2 + Math.floor(R() * 4);
+    let off = 0;
+    for (let q = 0; q < n; q++) { cand.push([ax + px * off, ad + pd * off + rr(-8, 8)]); off += rr(55, 95) * (R() < 0.5 ? 1 : 1); }
+  }
+  for (let t = 0; t < 2600 + cand.length && s.cliffs.length < 80; t++) {
+    const [x, d] = t < cand.length ? cand[t] : [rr(-2600, 2600), rr(250, s.DV - 900)];
+    if (x < -2900 || x > 2900 || d < 150 || d > s.DV - 700) continue;
     const i = Math.round((x - g.x0) / cell), j = Math.round((d - g.d0) / cell), k = j * nx + i;
     const sl = s.slope[k];
     if (sl < 0.42 || sl > 0.95) continue;
     if (s.forest[k] > 0.25 || s.glacier[k] > 0.3) continue;
     const y = g.h[k];
-    if (R() > lerp(1, 0.25, smoothstep(s.treeY + 900, s.treeY, y))) continue;   // oben häufiger
+    if (t >= cand.length && R() > lerp(1, 0.25, smoothstep(s.treeY + 900, s.treeY, y))) continue;   // oben häufiger
     // Falllinie aus einem größeren Fenster, damit die Kante nicht schräg im Hang liegt
     const gx = (g.h[k + 4] - g.h[k - 4]) / (8 * cell), gd = (g.h[k + 4 * nx] - g.h[k - 4 * nx]) / (8 * cell);
     const gl = Math.hypot(gx, gd);
@@ -397,7 +411,7 @@ function placeCliffs(s, R, rr) {
     const fx = -gx / gl, fd = -gd / gl;
     const w = rr(18, 60), h = rr(8, 38) * lerp(0.55, 1, smoothstep(s.treeY + 100, s.treeY + 900, y));
     const c = { x, d, fx, fd, ax: fd, ad: -fx, u0: -w / 2, u1: w / 2, h, ice: s.glacier[k] > 0.1, wA: rr(1.5, 5), wL: rr(12, 26), wP: rr(0, 6.28), tilt: rr(-0.06, 0.06), tpL: rr(0.08, 0.34), tpR: rr(0.08, 0.34), wn: rr(0.8, 2.2) };
-    if (s.cliffs.some((o) => Math.hypot(o.x - x, o.d - d) < 70 + (o.u1 - o.u0) / 2 + w / 2)) continue;
+    if (s.cliffs.some((o) => Math.hypot(o.x - x, o.d - d) < 18 + (o.u1 - o.u0) / 2 + w / 2)) continue;
     // Bank nach örtlichem Gefälle auslegen: oberhalb der Kante darf es nie flach werden
     let sMin = 9;
     for (const fu of [-0.4, 0, 0.4]) {
@@ -510,8 +524,11 @@ export function heightDU(d, x, s = S) {
   let y = sampleCubic(fg, x, d);
   // feine Unruhe im Schnee (das Raster hat 10 m)
   y += 0.9 * (vnoise(x / 19 + 3, d / 19 + s.ns) - 0.5) + 0.3 * (vnoise(x / 6.5, d / 6.5) - 0.5);
-  const l = s.cliffBuckets && s.cliffBuckets.get(bucketKey(x, d));
+  const key = bucketKey(x, d);
+  const l = s.cliffBuckets && s.cliffBuckets.get(key);
   if (l) for (let i = 0; i < l.length; i++) y += cliffDelta(l[i], x, d);
+  const fl = s.featBuckets && s.featBuckets.get(key);
+  if (fl) for (let i = 0; i < fl.length; i++) y += featDelta(fl[i], x, d);
   return y;
 }
 /** Höhe ohne Feinrauschen und Klippen (für Fernsicht und Bäume in der Ferne). */
@@ -552,7 +569,7 @@ export function nearCliff(x, d, m) {
 }
 
 /** Bäume, Felsen und Felswände einer Kachel (Weltkoordinaten, Kante T Meter), deterministisch. */
-export function genTile(ti, tj, T, treeMul, addCollider) {
+export function genTile(ti, tj, T, treeMul, addCollider, addRock) {
   const s = S, x0 = ti * T, d0 = tj * T;
   const R = mulberry32((Math.imul(s.seed, 2654435761) ^ Math.imul(ti + 7000, 40503) ^ Math.imul(tj + 9000, 69069)) >>> 0);
   const out = { trees: [], rocks: [], markers: [], decor: [], caves: [], walls: [], houses: [] };
@@ -568,7 +585,7 @@ export function genTile(ti, tj, T, treeMul, addCollider) {
     if (Math.abs(heightH(x + 1.4, z) - hh) > 1.6 || Math.abs(heightH(x, z - 1.4) - hh) > 1.8) continue;
     const scale = (0.7 + sc0 * 0.9) * lerp(0.75, 1.15, f);
     out.trees.push({ x, z, y: hh - 0.15, scale, rot, variant: vr < 0.45 ? 0 : vr2 < 0.6 ? 1 : 2, tint });
-    addCollider(x, z, 0.5 * scale + 0.15, 'baum');
+    addCollider(x, z, 0.5 * scale + 0.15, 'baum', 0, 0, hh + 7 * scale);
   }
   // Felsblöcke: wenige, große, auf steilen Rippen
   for (let n = 0; n < 14; n++) {
@@ -579,7 +596,15 @@ export function genTile(ti, tj, T, treeMul, addCollider) {
     let y = heightH(x, -d);
     for (let q = 0; q < 6; q++) { const a = q * 1.047; y = Math.min(y, heightH(x + Math.cos(a) * scale, -d + Math.sin(a) * scale)); }
     out.rocks.push({ x, z: -d, y: y - 0.2 * scale, scale, rot, variant: vr });
-    addCollider(x, -d, 1.1 * scale, 'fels');
+    addRock(x, -d, y - 0.2 * scale, scale, rot, vr);
+  }
+  // Felsinseln
+  for (const isl of s.rockIslands || []) for (const r of isl.rocks) {
+    if (r.x < x0 || r.x >= x0 + T || r.d < d0 || r.d >= d0 + T) continue;
+    let y = heightH(r.x, -r.d);
+    for (let q = 0; q < 6; q++) { const a = q * 1.047; y = Math.min(y, heightH(r.x + Math.cos(a) * r.sc, -r.d + Math.sin(a) * r.sc)); }
+    out.rocks.push({ x: r.x, z: -r.d, y: y - 0.25 * r.sc, scale: r.sc, rot: r.rot, variant: r.v });
+    addRock(r.x, -r.d, y - 0.25 * r.sc, r.sc, r.rot, r.v);
   }
   // Felswände der Klippen, deren Kante in dieser Kachel liegt, dazu Blöcke am Wandfuß
   for (const c of s.cliffs) {
@@ -588,8 +613,15 @@ export function genTile(ti, tj, T, treeMul, addCollider) {
     const nB = c.ice ? 0 : 1 + Math.floor(R() * 2.4);
     for (let k = 0; k < nB; k++) {
       const u = R() < 0.5 ? c.u0 - 3 - R() * 5 : c.u1 + 3 + R() * 5, p = cliffPoint(c, 4 + R() * 7, u), sc = 1.7 + R() * 2.3;
-      out.rocks.push({ x: p.x, z: -p.d, y: heightH(p.x, -p.d) - 0.35 * sc, scale: sc, rot: R() * TAU, variant: Math.floor(R() * 6) });
-      addCollider(p.x, -p.d, 1.15 * sc, 'fels');
+      const rot = R() * TAU, vr = Math.floor(R() * 6), y = heightH(p.x, -p.d) - 0.35 * sc;
+      out.rocks.push({ x: p.x, z: -p.d, y, scale: sc, rot, variant: vr });
+      addRock(p.x, -p.d, y, sc, rot, vr);
+    }
+    // Felswand: Kreise am Wandfuß, Oberkante knapp unter der Bank (wer oben auf der Bank fährt, fliegt darüber)
+    for (const q of wallLine(c)) {
+      const yT = heightH(q.x - q.nx * 3, q.z - q.nz * 3), yB = heightH(q.x + q.nx * 3.3, q.z + q.nz * 3.3);
+      if (yT - yB < 1.8) continue;
+      addCollider(q.x + q.nx * 2.3, q.z + q.nz * 2.3, 1.35, 'fels', 0, 0, yT - 1.5);
     }
   }
   // Häuser im Tal
@@ -619,3 +651,177 @@ export function wallLine(c) {
 }
 /** Absprungpunkt des Helikopters: knapp unter dem Gipfel auf der Talseite. */
 export function dropPoint() { const d = 34, x = 0; return { x, d, y: heightDU(d, x) }; }
+
+// ------------------------------------------------------------------ Couloirs
+// Rinnen zwischen Felswänden: von einem Startpunkt im oberen Berg der steilsten Richtung folgen (mit etwas Trägheit),
+// einen Kanal mit flachem Boden und steilen Wänden ins Raster schneiden, am Ende auslaufen lassen.
+function carveCouloirs(s, g, R, rr) {
+  const { nx, nd, h, cell } = g, out = [];
+  const H = (x, d) => sampleLin(g, h, x, d);
+  for (let c = 0; c < 9; c++) {
+    let x = rr(-1900, 1900), d = rr(120, 1700);
+    if (Math.abs(x) < 60 && d < 300) continue;
+    const L = rr(320, 700), W = rr(12, 20), D = rr(14, 30), path = [];
+    let dx = 0, dd = 1;
+    for (let l = 0; l < L; l += 6) {
+      const e = 12, gx = H(x + e, d) - H(x - e, d), gd = H(x, d + e) - H(x, d - e), gl = Math.hypot(gx, gd) || 1;
+      dx = dx * 0.75 - (gx / gl) * 0.25; dd = dd * 0.75 - (gd / gl) * 0.25;
+      const dl = Math.hypot(dx, dd) || 1; dx /= dl; dd /= dl;
+      path.push({ x, d, y: H(x, d) });
+      x += dx * 6; d += dd * 6;
+      if (!inGrid(g, x, d, 6)) break;
+    }
+    if (path.length < 30) continue;
+    // Boden: monoton fallend
+    for (let i = 1; i < path.length; i++) path[i].y = Math.min(path[i].y, path[i - 1].y - 1.2);
+    const n = path.length;
+    for (let i = 0; i < n; i++) {
+      const p = path[i], t = i / (n - 1);
+      const depth = D * smoothstep(0, 0.12, t) * (1 - smoothstep(0.75, 1, t)), Wb = W * (0.8 + 0.4 * Math.sin(i * 0.21 + c));
+      if (depth < 0.5) continue;
+      const floorY = p.y - depth, reach = Wb + depth / 2.2 + cell;
+      const i0 = Math.floor((p.x - reach - g.x0) / cell), i1 = Math.ceil((p.x + reach - g.x0) / cell);
+      const j0 = Math.floor((p.d - reach - g.d0) / cell), j1 = Math.ceil((p.d + reach - g.d0) / cell);
+      for (let j = Math.max(1, j0); j <= Math.min(nd - 2, j1); j++) for (let ii = Math.max(1, i0); ii <= Math.min(nx - 2, i1); ii++) {
+        const cx = g.x0 + ii * cell, cd = g.d0 + j * cell, dist = Math.hypot(cx - p.x, cd - p.d);
+        const lim = floorY + Math.max(0, dist - Wb) * 2.2;   // Wände um 65 Grad
+        const k = j * nx + ii;
+        if (h[k] > lim) h[k] = lim;
+      }
+    }
+    out.push({ path: path.map((p) => [p.x, p.d]), W, D });
+  }
+  return out;
+}
+
+// ------------------------------------------------------------------ Gelände-Formen: Windlippen, Pillows, Spines, Felsinseln
+function featDelta(f, x, d) {
+  const dx = x - f.x, dd = d - f.d;
+  if (f.k === 'pillow') {
+    const al = dx * f.fx + dd * f.fd, u = dx * f.ax + dd * f.ad;
+    const ra = al > 0 ? f.r * 0.55 : f.r;          // talseitig steil: kleiner Drop über die Kante
+    const q = (al * al) / (ra * ra) + (u * u) / (f.r * f.r * 0.8);
+    return q < 6 ? f.h * Math.exp(-q * q * 0.5) : 0;
+  }
+  if (f.k === 'kick') {
+    const al = dx * f.fx + dd * f.fd, u = dx * f.ax + dd * f.ad;
+    if (al < -f.L || al > 2 || Math.abs(u) > f.w + 3) return 0;
+    const wl = 1 - smoothstep(f.w - 2, f.w + 3, Math.abs(u));
+    if (al <= 0) { const t = 1 + al / f.L; return f.h * t * t * wl; }
+    return f.h * (1 - smoothstep(0, 2, al)) * wl;
+  }
+  if (f.k === 'spines') {
+    const al = dx * f.fx + dd * f.fd, u = dx * f.ax + dd * f.ad, rr2 = (al * al) / (f.R * f.R * 2.2) + (u * u) / (f.R * f.R);
+    if (rr2 > 1) return 0;
+    const w = smoothstep(1, 0.55, rr2);
+    const v = u / f.lam + 0.35 * (vnoise(al / 70 + f.sd, 1.3) * 2 - 1);
+    return f.A * w * (1 - Math.abs(Math.sin(Math.PI * v))) - f.A * 0.4 * w;
+  }
+  return 0;
+}
+function addFeat(s, f, r) {
+  s.feats.push(f);
+  for (let x = Math.floor((f.x - r) / 100); x <= Math.floor((f.x + r) / 100); x++) for (let d = Math.floor((f.d - r) / 100); d <= Math.floor((f.d + r) / 100); d++) {
+    const key = (x + 500) * 1000 + d + 500;
+    if (!s.featBuckets.has(key)) s.featBuckets.set(key, []);
+    s.featBuckets.get(key).push(f);
+  }
+}
+const featRange = (f) => (f.k === 'kick' ? f.L + f.w + 6 : f.k === 'spines' ? f.R * 1.5 + 5 : f.r * 3);
+function fallAt(s, x, d) {
+  const e = 12, gx = heightCoarse(x + e, d) - heightCoarse(x - e, d), gd = heightCoarse(x, d + e) - heightCoarse(x, d - e), gl = Math.hypot(gx, gd) || 1;
+  return { fx: -gx / gl, fd: -gd / gl, sl: gl / (2 * e) };
+}
+/** Flug über eine Kante entlang (fx, fd) ab Punkt (x, d): Aufprall-Normalgeschwindigkeit (wie flightImpact). */
+function lipImpact(s, x, d, fx, fd, v) {
+  const P = (al) => heightDU(d + fd * al, x + fx * al, s);
+  const h0 = P(-0.3), h1 = P(-2.3), sl = (h1 - h0) / 2, inv = 1 / Math.hypot(1, sl);
+  let al = -0.3, y = h0, va = v * inv, vy = -v * sl * inv;
+  for (let t = 0; t < 10; t += 0.02) {
+    vy -= G * 0.02; al += va * 0.02; y += vy * 0.02;
+    if (al > 2 && y <= P(al)) { const sd = (P(al + 0.6) - P(al - 0.6)) / 1.2, k = 1 / Math.hypot(1, sd); return Math.max(0, -(va * -sd * k + vy * k)) * 0.58; }
+  }
+  return 99;
+}
+function placeFeatures(s, R, rr) {
+  const free = (x, d, m) => !nearCliff(x, d, m) && forestAt(x, d) < 0.3 && !s.feats.some((f) => Math.hypot(f.x - x, f.d - d) < m + featRange(f) * 0.5);
+  // Windlippen (natürliche Kicker) auf mittelsteilen, offenen Hängen
+  for (let t = 0, n = 0; t < 900 && n < 38; t++) {
+    const x = rr(-2400, 2400), d = rr(300, s.DV - 1100), fa = fallAt(s, x, d);
+    if (fa.sl < 0.32 || fa.sl > 0.8 || !free(x, d, 40)) continue;
+    const f = { k: 'kick', x, d, fx: fa.fx, fd: fa.fd, ax: fa.fd, ad: -fa.fx, h: rr(1.6, 3.4), L: rr(10, 16), w: rr(6, 12) };
+    addFeat(s, f, featRange(f));
+    let worst = 0;
+    for (const v of [8, 14, 20, 27, 33]) worst = Math.max(worst, lipImpact(s, x, d, f.fx, f.fd, v));
+    if (worst > 15) { s.feats.pop(); for (const l of s.featBuckets.values()) { const i = l.indexOf(f); if (i >= 0) l.splice(i, 1); } continue; }
+    n++;
+  }
+  // Pillow-Felder: viele verschneite Blöcke dicht beieinander, an steileren Hängen um die Baumgrenze
+  for (let t = 0, n = 0; t < 400 && n < 9; t++) {
+    const x = rr(-2300, 2300), d = rr(900, s.DV - 900), fa = fallAt(s, x, d);
+    if (fa.sl < 0.4 || fa.sl > 0.95 || nearCliff(x, d, 30)) continue;
+    const m = 18 + Math.floor(R() * 26);
+    for (let q = 0; q < m; q++) {
+      const px = x + rr(-55, 55), pd = d + rr(-60, 60), r = rr(3.2, 6.2);
+      if (forestAt(px, pd) > 0.5) continue;
+      addFeat(s, { k: 'pillow', x: px, d: pd, fx: fa.fx, fd: fa.fd, ax: fa.fd, ad: -fa.fx, r, h: rr(1.2, 3.0) }, r * 3);
+    }
+    n++;
+  }
+  // Spines: scharfe Grate in Falllinie in steilen, offenen Flanken
+  for (let t = 0, n = 0; t < 300 && n < 6; t++) {
+    const x = rr(-2200, 2200), d = rr(250, 2400), fa = fallAt(s, x, d);
+    if (fa.sl < 0.6 || !free(x, d, 140)) continue;
+    const f = { k: 'spines', x, d, fx: fa.fx, fd: fa.fd, ax: fa.fd, ad: -fa.fx, R: rr(70, 130), lam: rr(16, 24), A: rr(4, 7), sd: R() * 50 };
+    addFeat(s, f, featRange(f));
+    n++;
+  }
+  // Felsinseln: Gruppen großer Blöcke mitten im offenen Hang (werden in genTile als Felsen gesetzt)
+  s.rockIslands = [];
+  for (let t = 0; t < 200 && s.rockIslands.length < 22; t++) {
+    const x = rr(-2400, 2400), d = rr(250, s.DV - 1000), fa = fallAt(s, x, d);
+    if (fa.sl < 0.35 || !free(x, d, 35) || Math.hypot(x, d) < 250) continue;
+    const rocks = [], m = 3 + Math.floor(R() * 5);
+    for (let q = 0; q < m; q++) rocks.push({ x: x + rr(-14, 14), d: d + rr(-14, 14), sc: rr(1.8, 4.5), rot: rr(0, TAU), v: Math.floor(R() * 6) });
+    s.rockIslands.push({ x, d, rocks });
+  }
+}
+
+// ------------------------------------------------------------------ Austausch mit dem Web Worker
+/** Makroform mit grobem Relief an beliebiger Stelle (für den Horizont-Ring außerhalb der Raster). */
+export function macroAt(x, d) { const b = macro(S, x, d); return b + detail(S, x, d, b, false); }
+const TYPED = ['slope', 'curv', 'forest', 'glacier'];
+/** Gebirge als übertragbares Objekt (alle großen Felder als ArrayBuffer, die übertragen statt kopiert werden). */
+export function pack(s, far) {
+  const out = {}, transfer = [];
+  for (const k of Object.keys(s)) {
+    if (k === 'cliffBuckets' || k === 'featBuckets' || typeof s[k] === 'function') continue;
+    out[k] = s[k];
+  }
+  for (const g of ['fg', 'cg']) transfer.push(s[g].h.buffer);
+  for (const k of TYPED) transfer.push(s[k].buffer);
+  for (const k of ['shF', 'shC']) transfer.push(s[k].data.buffer);
+  if (far) {
+    out.far = far;
+    for (const m of ['I', 'O', 'Hz']) for (const a of ['pos', 'nor', 'am', 'idx']) transfer.push(far[m][a].buffer);
+    transfer.push(far.trees.buffer);
+  }
+  return { data: out, transfer: [...new Set(transfer)] };
+}
+/** Ein im Worker erzeugtes Gebirge übernehmen. */
+export function adopt(data) {
+  S = data;
+  S.cliffBuckets = new Map();
+  for (const c of S.cliffs) addBucket(S, c);
+  const fs = S.feats || [];
+  S.feats = []; S.featBuckets = new Map();
+  for (const f of fs) addFeat(S, f, featRange(f));
+  return S;
+}
+let pending = null;
+/** Vorab erzeugtes Gebirge für den nächsten init-Aufruf mit diesem Startwert bereitlegen. */
+export function setPending(data) { pending = data; }
+export function initOrAdopt(seed) {
+  if (pending && pending.seed === seed) { const p = pending; pending = null; return adopt(p); }
+  return init(seed);
+}

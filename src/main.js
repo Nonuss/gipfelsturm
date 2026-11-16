@@ -16,6 +16,7 @@ import { Q, setTier, ORDER } from './quality.js';
 import { PowderPatch } from './powder.js';
 import { setupTouch, updateTouch, touch, isTouch, viewSize, view } from './touch.js';
 import { Avalanche } from './avalanche.js';
+import * as HG from './heligen.js';
 
 const { clamp, lerp, smoothstep, G } = C;
 const $ = (id) => document.getElementById(id);
@@ -174,6 +175,16 @@ const vis = {
   tuck: 0, spin: 0, extend: 0, zoom: 0, shake: 0, crashCam: 0,
   camSide: 1, flipCam: 0, bigAir: 0, dip: 0, fpv: 0, slide: 0, grindSide: 1, look: 0,
 };
+// Ausrüstung: Ski oder Snowboard (gleiche Tasten, eigene Haltung und Tricknamen). Wird gemerkt.
+let gear = 'ski';
+try { gear = localStorage.getItem('gipfelsturm_gear') === 'board' ? 'board' : 'ski'; } catch {}
+const BOARD = () => gear === 'board';
+function setGear(g) {
+  gear = g;
+  try { localStorage.setItem('gipfelsturm_gear', g); } catch {}
+  if (skier) skier.setGear(g);
+  syncOpts();
+}
 // Switch: Körper ist um 180° gedreht (fährt rückwärts). swYaw ist 0 oder pi.
 let swYaw = 0;
 const isSwitch = () => Math.abs(Math.sin(swYaw / 2)) > 0.7;
@@ -195,6 +206,8 @@ function syncOpts() {
   sel('optSound', audio.muted ? '0' : '1');
   sel('optCam', firstPerson ? '1' : '0');
   sel('optFs', fsOn() ? '1' : '0');
+  sel('optGear', gear);
+  if (typeof touchCtl !== 'undefined' && touchCtl) sel('optSteer', touchCtl.tiltOn() ? '1' : '0');
 }
 
 // ---------------------------------------------------------------- Vollbild
@@ -285,13 +298,15 @@ function buildMenuControls() {
   for (const b of $('optSound').children) b.addEventListener('click', () => setMuted(b.dataset.v === '0'));
   for (const b of $('optCam').children) b.addEventListener('click', () => toggleView(b.dataset.v === '1'));
   for (const b of $('optFs').children) b.addEventListener('click', () => toggleFs(b.dataset.v === '1'));
+  for (const b of $('optGear').children) b.addEventListener('click', () => { setGear(b.dataset.v); b.blur(); });
+  for (const b of $('optSteer').children) b.addEventListener('click', async () => { if (touchCtl) await touchCtl.setTilt(b.dataset.v === '1'); syncOpts(); });
   $('fsBtn').addEventListener('click', () => { toggleFs(); $('fsBtn').blur(); });
   try { if (localStorage.getItem('gipfelsturm_muted') === '1') audio.setMuted(true); } catch {}
   syncOpts();
   for (const b of $('quality').children) {
     b.addEventListener('click', () => {
       chooseQuality(b.dataset.q);
-      if (game.mode === 'menu' && game.kind === 'endless') selectMode(modeIdx, true);
+      if (game.mode === 'menu' && game.kind === 'endless' && !C.cfg.heli) selectMode(modeIdx, true);
       b.blur();
     });
   }
@@ -358,11 +373,25 @@ function releaseFrame() {
     setTimeout(() => { if (snap.style.opacity === '0') snap.classList.remove('on'); }, ms + 260);
   }));
 }
-function buildMode() {
-  setKind(MODES[modeIdx].id);
+// Heli-Gebirge entstehen im Web Worker; der nächste Berg wird schon vorab erzeugt
+let heliNext = 0;
+const newSeed = () => 1 + Math.floor(Math.random() * 1e6);
+function prefetchHeli() { heliNext = newSeed(); HG.request(heliNext, Q.tier); }
+async function buildMode() {
+  const id = MODES[modeIdx].id;
+  let seed;
+  if (id === 'heli') {
+    seed = heliNext || newSeed();
+    heliNext = 0;
+    await HG.request(seed, Q.tier);
+    if (MODES[modeIdx].id !== id) { heliNext = seed; return; }   // inzwischen weitergeblättert: Berg für später aufheben
+    HG.use(seed);
+  }
+  setKind(id, seed);
   demoStart();
   builtIdx = modeIdx;
   menuIntro = RM ? 0 : 1;
+  if (id === 'heli') prefetchHeli();
 }
 /** Modus wechseln. Mehrfaches Drücken während des Übergangs springt direkt zum zuletzt gewählten Modus. */
 function selectMode(i, instant) {
@@ -371,13 +400,13 @@ function selectMode(i, instant) {
   modeIdx = i;
   try { localStorage.setItem(MODE_KEY, MODES[i].id); } catch {}
   renderMode(!instant);
-  if (instant) { buildMode(); menuIntro = 0; return; }
+  if (instant) return buildMode().then(() => { menuIntro = 0; });
   if (switching) return;
   switching = true;
   freezeFrame();
-  // erst das eingefrorene Bild zeigen lassen, dann (blockierend) die neue Welt bauen
-  requestAnimationFrame(() => setTimeout(() => {
-    while (builtIdx !== modeIdx) buildMode();
+  // erst das eingefrorene Bild zeigen lassen, dann die neue Welt bauen (Heli: im Worker, das Menü bleibt bedienbar)
+  requestAnimationFrame(() => setTimeout(async () => {
+    while (builtIdx !== modeIdx) await buildMode();
     switching = false;
     releaseFrame();
   }, 16));
@@ -476,6 +505,11 @@ function startRun(same) {
   // Heli-Berg: nach einem Sturz geht es auf demselben Berg wieder ganz oben los (same), sonst gibt es einen neuen.
   // Aus dem Menü heraus wird der Berg gefahren, der im Hintergrund zu sehen war.
   if ((C.cfg.heli && same === true) || (game.kind === 'endless' && fromMenu)) { resetRunState(); if (C.cfg.heli) { const dp = C.HB.dropPoint(); world.updateChunks(dp.d, true, dp.x); } else world.updateChunks(0, true); }
+  else if (C.cfg.heli && !game.forceSeed) {
+    // neuer Berg, wenn der vorab erzeugte fertig ist; sonst derselbe Berg noch einmal (kein Warten)
+    if (heliNext && HG.isReady(heliNext)) { const sd = heliNext; HG.use(sd); setKind('heli', sd); prefetchHeli(); }
+    else { resetRunState(); const dp = C.HB.dropPoint(); world.updateChunks(dp.d, true, dp.x); }
+  }
   else if (game.kind === 'endless') setKind(game.style !== 'freeride' && game.style ? game.style : 'endless', game.forceSeed);   // jedes Mal ein neuer Berg (forceSeed nur für Tests)
   else { world.resetGates(); resetRunState(); }
   $('menu').classList.add('hidden');
@@ -599,7 +633,9 @@ function toMenu() {
   $('finish').classList.add('hidden');
   $('hud').classList.add('hidden');
   $('count').innerHTML = '';
-  selectMode(modeIdx, true);   // frischer Berg im Hintergrund, Rekorde aktualisiert
+  // Heli: den gerade gefahrenen Berg im Menü behalten (kein Warten); sonst frische Welt im Hintergrund
+  if (MODES[modeIdx].id === 'heli' && C.cfg.heli) { renderMode(); demoStart(); }
+  else selectMode(modeIdx, true);
 }
 
 const totalScore = () => Math.round(game.score);
@@ -696,6 +732,7 @@ window.addEventListener('keydown', (e) => {
   if (game.mode === 'menu') {
     const open = document.querySelector('.dlg:not(.hidden)');
     if (k === 'Escape' && open) { const id = open.id; closeDlg(); document.querySelector(`[data-dlg="${id}"]`)?.focus(); return; }
+    if (!open && k === 'KeyB') { setGear(BOARD() ? 'ski' : 'board'); return; }
     if (!open && (k === 'ArrowLeft' || k === 'KeyA' || k === 'ArrowRight' || k === 'KeyD')) { e.preventDefault(); selectMode(modeIdx + (k === 'ArrowLeft' || k === 'KeyA' ? -1 : 1)); return; }
   }
   // Enter/Leertaste auf einem Knopf: der Knopf selbst reagiert (sonst würde doppelt gestartet)
@@ -827,11 +864,12 @@ function scoreLanding(e) {
   }
   if (halves !== 0) {
     const n = Math.abs(halves);
-    parts.push((wasSwitch ? 'Switch ' : '') + String(n * 180) + (n % 2 ? (isSwitch() ? ' (rückwärts)' : ' (vorwärts)') : ''));
+    if (BOARD()) parts.push((wasSwitch ? 'Fakie ' : '') + (halves < 0 ? 'Frontside ' : 'Backside ') + String(n * 180) + (n % 2 && isSwitch() ? ' (Fakie)' : ''));
+    else parts.push((wasSwitch ? 'Switch ' : '') + String(n * 180) + (n % 2 ? (isSwitch() ? ' (rückwärts)' : ' (vorwärts)') : ''));
     pts += Math.round(150 * Math.pow(n, 1.45) * (wasSwitch ? 1.25 : 1));
     cats++;
   }
-  for (const [k, nm] of [['safety', 'Safety Grab'], ['mute', 'Mute Grab'], ['tail', 'Tail Grab']]) {
+  for (const [k, nm] of BOARD() ? [['safety', 'Indy Grab'], ['mute', 'Melon Grab'], ['tail', 'Tail Grab']] : [['safety', 'Safety Grab'], ['mute', 'Mute Grab'], ['tail', 'Tail Grab']]) {
     if (gTs[k] > 0.25) {
       parts.push(nm);
       pts += 150 + Math.round(Math.min(gTs[k], 1.5) * 300);
@@ -1032,9 +1070,19 @@ function stampTracks() {
   const depth = clamp(0.5 + 0.3 * phys.pressure + phys.off * 0.3 + phys.pow * 0.35, 0, 1);
   const skidG = clamp(phys.skid / 2.2 + inp.brake * 0.4, 0, 1);
   const hw = 0.062 + phys.off * 0.05 + phys.pow * 0.07;
-  for (let i = 0; i < 2; i++) {
+  if (BOARD()) {
+    // eine breite Spur; beim Bremsen steht das Brett quer und schiebt Schnee
+    const a = vis.plow * 1.05, ca = Math.cos(a), sa = Math.sin(a);
+    const fx = f.x * ca + r.x * sa, fz = f.z * ca + r.z * sa, rx = r.x * ca - f.x * sa, rz = r.z * ca - f.z * sa;
+    const bw = 0.15 + phys.pow * 0.08, hx = p.x + fx * 0.78, hz = p.z + fz * 0.78, tx = p.x - fx * 0.78, tz = p.z - fz * 0.78;
+    tracks.quad(tx - rx * bw, tz - rz * bw, -1, tx + rx * bw, tz + rz * bw, 1, hx + rx * bw, hz + rz * bw, 1, hx - rx * bw, hz - rz * bw, -1, depth, skidG * 0.6);
+    const q = prevSki[0];
+    if (hasPrevSki && (skidG > 0.12 || phys.off > 0.3)) tracks.quad(q.tx, q.tz, 0, q.hx, q.hz, 0, hx, hz, 0, tx, tz, 0, 0.25 + skidG * 0.35, Math.max(skidG, phys.off * 0.6));
+    q.tx = tx; q.tz = tz; q.hx = hx; q.hz = hz;
+  }
+  for (let i = 0; i < (BOARD() ? 0 : 2); i++) {
     const side = i === 0 ? -1 : 1;
-    const yaw = side * vis.plow * 0.33;
+    const yaw = side * vis.plow * 0.33 * (Math.cos(trick.yaw + swYaw) < 0 ? -1 : 1);
     const fx = f.x - r.x * yaw, fz = f.z - r.z * yaw;
     const cx = p.x + r.x * side * stance, cz = p.z + r.z * side * stance;
     const hx = cx + fx * 0.86, hz = cz + fz * 0.86, tx = cx - fx * 0.8, tz = cz - fz * 0.8;
@@ -1176,7 +1224,7 @@ function handleEvents() {
       if (game.mode === 'run') {
         if (e.clean && e.dist > 1.5) {
           const rail = e.kind === 'rail';
-          const name = rail ? 'Boardslide' : '50-50 Box';
+          const name = BOARD() ? (rail ? 'Boardslide' : '50-50') : rail ? 'Railslide' : '50-50 Box';
           let pts = Math.round((rail ? 120 : 70) + e.dist * (rail ? 34 : 22));
           pts = addPending(pts, true);
           game.tricks++;
@@ -1292,15 +1340,18 @@ function updateSkier(dt) {
     vis.slide += (railSlide * vis.grindSide - vis.slide) * k(14);
     // auf der Rail: Körper quer zur Rail, Balance als leichte Neigung sichtbar
     const balTilt = phys.grind ? -phys.grind.bal * 0.35 : 0;
-    pv.rotation.set(trick.pitch, -(trick.yaw + swYaw) + vis.slide * 1.45, vis.spin * 0.18 + balTilt);
-    vis.look += ((isSwitch() && !phys.grind ? 1 : 0) - vis.look) * k(6);
+    const bs = Math.cos(trick.yaw + swYaw) < 0 ? -1 : 1;
+    // Snowboard: der ganze Fahrer kippt mit dem Brett auf die Kante (in die Kurve), Bremsen = Brett quer stellen
+    const bLean = BOARD() ? -vis.lean * 0.8 * bs : 0, bSkid = BOARD() ? vis.plow * 1.05 : 0;
+    pv.rotation.set(trick.pitch, -(trick.yaw + swYaw) + vis.slide * 1.45 + bSkid, vis.spin * 0.18 + balTilt + bLean);
+    vis.look += ((BOARD() ? (phys.grind ? 0 : 0.72 * bs) : isSwitch() && !phys.grind ? 1 : 0) - vis.look) * k(6);
     pv.position.y = 0.85;
   }
   // Rückwärts (Switch) ist der Körper um 180° gedreht: Neigung und Lenkdrehung müssen im Körper gespiegelt werden,
   // sonst lehnt er sich aus der Kurve heraus statt hinein.
   const bodySign = Math.cos(trick.yaw + swYaw);
   skier.update({
-    lean: vis.lean * bodySign, crouch: vis.crouch, steer: phys.grounded ? inp.steer * bodySign : 0, plow: vis.plow, air: vis.air, compress: vis.compress,
+    lean: BOARD() ? 0 : vis.lean * bodySign, crouch: vis.crouch, steer: phys.grounded && !BOARD() ? inp.steer * bodySign : 0, plow: BOARD() ? 0 : vis.plow, plowDir: bodySign < 0 ? -1 : 1, air: vis.air, compress: vis.compress,
     speed: phys.speed, grab: trick.grab, grabSide: trick.gs, look: vis.look, tuck: vis.tuck, spin: vis.spin, extend: vis.extend, crash: crashed ? 1 : 0, crashA: vis.crashAngle,
   }, dt);
   skier.updateLoose(dt, C.height);
@@ -1431,7 +1482,7 @@ function tick(dt, render) {
 
   const airNow = game.mode === 'run' && !phys.grounded && phys.crashed <= 0;
   updateTouch(airNow, dt);
-  if (touchCtl) touchCtl.setRunning(game.mode === 'run' || game.mode === 'countdown');
+  if (touchCtl) { touchCtl.setRunning(game.mode === 'run' || game.mode === 'countdown'); touchCtl.setCheckpoints(!C.cfg.heli); }
   // Handy: analoger Lenkwert aus Neigung/Daumen (am Boden); sonst Tasten
   const st = touch.steer !== null && !airNow ? touch.steer : (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
   // Analog (Neigen/Daumen): direkt folgen; Tasten: weich einblenden
@@ -1514,6 +1565,7 @@ function tick(dt, render) {
   world = new World(scene, models);
   skier = new Skier(models);
   scene.add(skier.root);
+  skier.setGear(gear);
   // Ohne Echtzeit-Schatten (niedrige Stufe): weicher Kontaktschatten unter dem Fahrer, damit man Höhe und Landung abschätzen kann
   {
     const c = document.createElement('canvas'); c.width = c.height = 64;
@@ -1531,7 +1583,7 @@ function tick(dt, render) {
   aval = new Avalanche(scene);
   dust = new DiamondDust(scene);
   applyQuality();
-  selectMode(modeIdx, true);
+  await selectMode(modeIdx, true);
   applyOutfit();
   tracks.update(phys.pos.x, phys.pos.z);
   $('loading').classList.add('hidden');

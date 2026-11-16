@@ -44,7 +44,7 @@ function tiltAngle(e) {
 function onOrient(e) {
   if (e.beta == null && e.gamma == null) return;
   rawTilt = tiltAngle(e);
-  if (!haveTilt) { haveTilt = true; neutral = rawTilt; filtTilt = rawTilt; }
+  if (!haveTilt) { haveTilt = true; filtTilt = rawTilt; }
   touch.tiltOk = true;
 }
 
@@ -62,7 +62,10 @@ export async function enableTilt() {
   } catch { touch.tilt = false; return false; }
 }
 /** Aktuelle Haltung als „geradeaus“ übernehmen. */
-export function calibrate() { neutral = rawTilt; filtTilt = rawTilt; }
+// Geradeaus ist immer „Handy waagrecht wie ein Lenkrad“ (Winkel zur Schwerkraft in der Bildschirmebene). Früher wurde
+// die aktuelle Haltung übernommen, z. B. nach einem Sturz oder wenn die Adressleiste die Fenstergröße ändert – dann
+// galt eine schiefe Haltung als geradeaus. Deshalb gibt es keine automatische Nulllage mehr.
+export function calibrate() { neutral = 0; filtTilt = rawTilt; }
 
 /** Pro Bild aufrufen: berechnet den Lenkwert und die Spin-Tasten in der Luft. */
 export function updateTouch(inAir, dt = 1 / 60) {
@@ -114,29 +117,27 @@ export function setupTouch({ isAir, isRunning, onResize }) {
       app.style.transform = `translateX(${window.innerWidth}px) rotate(90deg)`;
     } else { app.style.width = ''; app.style.height = ''; app.style.transform = ''; }
     if (onResize) onResize();
-    calibrate();
   };
   window.addEventListener('resize', applyRot);
   window.addEventListener('orientationchange', () => setTimeout(applyRot, 150));
   const ui = document.createElement('div');
   ui.id = 'touchUI';
+  // Wenige Knöpfe mit eigenen Symbolen: rechts Sprung (halten = Grab) und Hocke, links Bremse, oben klein Menü, Kamera
+  // und Respawn-Punkt (tippen = zurück, halten = neu setzen; im Heli-Modus ausgeblendet). Lenken: Neigen oder Daumen.
   ui.innerHTML = `
     <div class="tz" id="tzDrag"></div>
     <div class="tb right">
-      <button class="tbtn big" id="tJump" aria-label="Springen, in der Luft Grab">SPRUNG<small>halten = Grab</small></button>
-      <button class="tbtn" id="tTuck" aria-label="Hocke">HOCKE</button>
+      <button class="tbtn big" id="tJump" aria-label="Springen, in der Luft halten für Grab"><svg viewBox="0 0 24 24"><path d="M5 15l7-7 7 7"/><path d="M5 20h14"/></svg></button>
+      <button class="tbtn" id="tTuck" aria-label="Hocke"><svg viewBox="0 0 24 24"><path d="M6 6l6 6 6-6"/><path d="M6 13l6 6 6-6"/></svg></button>
     </div>
     <div class="tb left">
-      <button class="tbtn" id="tBrake" aria-label="Bremsen">BREMSE</button>
+      <button class="tbtn" id="tBrake" aria-label="Bremsen"><svg viewBox="0 0 24 24"><path d="M8 4l-3 16M16 4l3 16"/><path d="M6.5 13h11"/></svg></button>
     </div>
     <div class="tb top">
-      <button class="tsm" id="tCp" aria-label="Respawn-Punkt setzen">⚑ Punkt</button>
-      <button class="tsm" id="tBack" aria-label="Zurück zum Respawn-Punkt oder auf die Piste">↺ Zurück</button>
-      <button class="tsm" id="tTilt" aria-label="Neigungssteuerung an oder aus">Neigen</button>
-      <button class="tsm" id="tCam" aria-label="Kamera wechseln: Verfolger oder Ego-Sicht">🎥</button>
-      <button class="tsm" id="tMenu" aria-label="Menü">☰</button>
-    </div>
-    <div id="tHelp">Neigen = lenken · in der Luft: Wischen ↑↓ Flip, ←→ halten Grab, neigen Spin</div>`;
+      <button class="tsm" id="tMenu" aria-label="Menü"><svg viewBox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h14"/></svg></button>
+      <button class="tsm" id="tCam" aria-label="Kamera wechseln"><svg viewBox="0 0 24 24"><path d="M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><circle cx="12" cy="12" r="2.6"/></svg></button>
+      <button class="tsm" id="tCp" aria-label="Respawn-Punkt: tippen zurück, halten neu setzen"><svg viewBox="0 0 24 24"><path d="M6 21V4"/><path d="M6 5h11l-2.5 4L17 13H6"/></svg></button>
+    </div>`;
   app.appendChild(ui);
   applyRot();
   const $ = (id) => ui.querySelector('#' + id);
@@ -151,15 +152,19 @@ export function setupTouch({ isAir, isRunning, onResize }) {
   hold($('tTuck'), 'KeyW');
   hold($('tBrake'), 'KeyS');
   const tap = (el, code) => el.addEventListener('click', (e) => { e.preventDefault(); key(code, true); key(code, false); });
-  tap($('tCp'), 'KeyF'); tap($('tBack'), 'KeyT'); tap($('tMenu'), 'Escape'); tap($('tCam'), 'KeyC');
-  const tiltBtn = $('tTilt');
-  const showTilt = () => tiltBtn.classList.toggle('on', touch.tilt);
-  tiltBtn.addEventListener('click', async () => {
-    if (touch.tilt) { touch.tilt = false; window.removeEventListener('deviceorientation', onOrient); }
+  tap($('tMenu'), 'Escape'); tap($('tCam'), 'KeyC');
+  // Respawn-Punkt: kurz tippen = zurück (ohne Punkt: zurück auf die Spur), halten = hier neu setzen
+  { const el = $('tCp'); let tm = null, long = false;
+    el.addEventListener('pointerdown', (e) => { e.preventDefault(); long = false; el.classList.add('on'); tm = setTimeout(() => { long = true; key('KeyF', true); key('KeyF', false); }, 550); });
+    const up = (e) => { e.preventDefault(); el.classList.remove('on'); clearTimeout(tm); if (!long && e.type === 'pointerup') { key('KeyT', true); key('KeyT', false); } };
+    el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up); }
+  const showTilt = () => {};
+  const setTilt = async (on) => {
+    if (!on) { touch.tilt = false; window.removeEventListener('deviceorientation', onOrient); }
     else { await enableTilt(); calibrate(); }
+    touch.wantTilt = on;
     try { localStorage.setItem('gs_tilt', touch.tilt ? '1' : '0'); } catch {}
-    showTilt();
-  });
+  };
 
   // Fläche: Daumen ziehen = lenken (wenn Neigen aus ist oder zusätzlich), in der Luft wischen = Flip
   const dz = $('tzDrag');
@@ -203,6 +208,9 @@ export function setupTouch({ isAir, isRunning, onResize }) {
       ui.classList.toggle('noTilt', !touch.tilt);
     },
     setRunning(r) { ui.classList.toggle('active', r); },
+    setTilt,
+    tiltOn: () => touch.wantTilt,
+    setCheckpoints(on) { $('tCp').style.display = on ? '' : 'none'; },
     isRunning,
   };
 }

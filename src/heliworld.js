@@ -9,6 +9,7 @@ import * as THREE from 'three';
 import * as C from './course.js';
 import { Q } from './quality.js';
 import { snowUniforms } from './snow.js';
+import { farArrays } from './helifar.js';
 
 const T = 100;
 const GLSL_NOISE = /* glsl */ `
@@ -122,32 +123,31 @@ export class HeliWorld {
     return g;
   }
 
+  /** Fernsicht aus den (im Worker vorbereiteten) Zahlenfeldern. */
+  farData() {
+    const s = this.s, tier = Q.tier;
+    if (!s.far || s.farTier !== tier) { s.far = farArrays(s, tier); s.farTier = tier; }
+    return s.far;
+  }
+  geo(a) {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(a.pos, 3));
+    g.setAttribute('normal', new THREE.BufferAttribute(a.nor, 3));
+    g.setAttribute('aMat', new THREE.BufferAttribute(a.am, 4));
+    g.setIndex(new THREE.BufferAttribute(a.idx, 1));
+    g.computeBoundingSphere();
+    return g;
+  }
   buildFar() {
-    const s = this.s, HB = C.HB, fg = s.fg, cg = s.cg, low = Q.tier === 'low';
-    // Fels: steil (über ca. 42 Grad) oder scharfe Grate; in der Ferne nach Gefälle des groben Rasters
-    const rockOf = (slope, curv) => C.smoothstep(0.62, 1.0, slope) + C.clamp(-curv * 120, 0, 0.45) * C.smoothstep(0.4, 0.75, slope);
-    const coarseForest = (x, d, y, slope) => {
-      const fl = HB.floorY(x, d), tl = s.treeY + (fl - s.valleyY) + 160 * (C.fbm(x / 900, d / 900) - 0.5);
-      return C.smoothstep(tl + 40, tl - 200, y) * C.smoothstep(1.0, 0.6, slope) * C.smoothstep(fl + 25, fl + 70, y) * (0.35 + 0.65 * C.smoothstep(0.3, 0.6, C.fbm(x / 260 + 4, d / 260)));
-    };
-    // Massiv (feines Raster)
-    const st = low ? 3 : 2, nx = Math.floor((fg.nx - 1) / st) + 1, nd = Math.floor((fg.nd - 1) / st) + 1;
-    const gI = this.gridMesh(nx, nd, (i, j) => [fg.x0 + i * st * fg.cell, fg.d0 + j * st * fg.cell], HB.heightCoarse,
-      (x, d, y, slope) => [rockOf(HB.slopeAt(x, d), HB.curvAt(x, d)), HB.forestAt(x, d), HB.sunAt(x, d), HB.glacierAt(x, d)]);
-    this.farI = new THREE.Mesh(gI, this.farMaterial(false));
+    const f = this.farData();
+    this.farI = new THREE.Mesh(this.geo(f.I), this.farMaterial(false));
     this.farI.frustumCulled = false;
     this.farI.receiveShadow = true;
-    this.group.add(this.farI);
-    // Gebirge rundherum (grobes Raster), das Massiv ausgespart
-    const cs = low ? 2 : 1, cx = Math.floor((cg.nx - 1) / cs) + 1, cd = Math.floor((cg.nd - 1) / cs) + 1;
-    const fx0 = fg.x0 + 60, fx1 = fg.x0 + (fg.nx - 1) * fg.cell - 60, fd0 = fg.d0 + 60, fd1 = fg.d0 + (fg.nd - 1) * fg.cell - 60;
-    const gO = this.gridMesh(cx, cd, (i, j) => [cg.x0 + i * cs * cg.cell, cg.d0 + j * cs * cg.cell], HB.heightCoarse,
-      (x, d, y, slope) => [rockOf(slope * 2.0, 0) * C.smoothstep(s.valleyY + 450, s.valleyY + 1000, y) + 0.35 * C.smoothstep(s.treeY + 300, s.treeY + 1200, y) * C.smoothstep(0.3, 0.55, slope), coarseForest(x, d, y, slope), HB.sunAt(x, d), C.smoothstep(0.5, 0.25, slope) * C.smoothstep(s.treeY + 700, s.treeY + 1000, y)],
-      (xa, da, xb, db) => xa >= fx0 && xb <= fx1 && da >= fd0 && db <= fd1);
-    this.coarseForest = coarseForest;
-    this.farO = new THREE.Mesh(gO, this.farMaterial(true));
+    this.farO = new THREE.Mesh(this.geo(f.O), this.farMaterial(true));
     this.farO.frustumCulled = false;
-    this.group.add(this.farO);
+    this.farH = new THREE.Mesh(this.geo(f.Hz), this.farMaterial(true));
+    this.farH.frustumCulled = false;
+    this.group.add(this.farI, this.farO, this.farH);
   }
 
   // ------------------------------------------------------------ Wald in der Ferne
@@ -178,38 +178,17 @@ export class HeliWorld {
           { vec4 ip = instanceMatrix * vec4(0.0, 0.0, 0.0, 1.0); if (distance(ip.xz, uHole.xy) < uHole.z - 10.0) transformed *= 0.0; }`);
     };
     mat.customProgramCacheKey = () => 'heliTree';
-    const N = Math.round((Q.tier === 'low' ? 14000 : Q.tier === 'mid' ? 26000 : 42000));
-    const im = new THREE.InstancedMesh(geo, mat, N);
-    const R = C.mulberry32(s.seed * 31 + 5), o = new THREE.Object3D(), c3 = new THREE.Color();
-    let n = 0, tries = 0;
-    const x0 = fg.x0, x1 = fg.x0 + (fg.nx - 1) * fg.cell, d0 = fg.d0, d1 = fg.d0 + (fg.nd - 1) * fg.cell;
-    const nIn = Math.round(N * 0.6);
-    while (n < N && tries < N * 40) {
-      tries++;
-      let x, d, f;
-      if (n < nIn) { x = x0 + R() * (x1 - x0); d = d0 + R() * (d1 - d0); f = HB.forestAt(x, d); }
-      else {
-        x = (R() * 2 - 1) * 9000; d = s.DV + (R() * 2 - 1) * 4500;
-        if (x > x0 && x < x1 && d > d0 && d < d1) continue;
-        const e = 30, y = HB.heightCoarse(x, d), sl = Math.hypot(HB.heightCoarse(x + e, d) - HB.heightCoarse(x - e, d), HB.heightCoarse(x, d + e) - HB.heightCoarse(x, d - e)) / (2 * e);
-        f = this.coarseForest(x, d, y, sl);
-      }
-      const pr = R();
-      if (f < 0.2 || pr > f * 0.9) continue;
-      // Gruppe aus mehreren Bäumen: Wälder sind Bestände mit Lücken, keine gleichmäßige Streuung
-      const nG = 3 + Math.floor(R() * 7 * Math.min(1, f + 0.3));
-      for (let q = 0; q < nG && n < N; q++) {
-        const tx = x + (R() - 0.5) * 26, td = d + (R() - 0.5) * 26;
-        const hgt = 10 + R() * 14;
-        o.position.set(tx, HB.heightCoarse(tx, td) - 0.6, -td);
-        o.rotation.set(0, R() * 6.28, 0);
-        o.scale.set(hgt * (0.8 + R() * 0.3), hgt, hgt * (0.8 + R() * 0.3));
-        o.updateMatrix();
-        im.setMatrixAt(n, o.matrix);
-        const t = 0.62 + R() * 0.3;
-        im.setColorAt(n, c3.setRGB(t, t * (0.95 + R() * 0.1), t));
-        n++;
-      }
+    const f = this.farData(), tr = f.trees, n = f.treeCount;
+    const im = new THREE.InstancedMesh(geo, mat, Math.max(1, n));
+    const o = new THREE.Object3D(), c3 = new THREE.Color();
+    for (let i = 0; i < n; i++) {
+      const k = i * 7;
+      o.position.set(tr[k], tr[k + 1], tr[k + 2]);
+      o.rotation.set(0, tr[k + 3], 0);
+      o.scale.set(tr[k + 4], tr[k + 5], tr[k + 4]);
+      o.updateMatrix();
+      im.setMatrixAt(i, o.matrix);
+      im.setColorAt(i, c3.setRGB(tr[k + 6], tr[k + 6], tr[k + 6]));
     }
     im.count = n;
     im.frustumCulled = false;
@@ -318,17 +297,19 @@ export class HeliWorld {
     m.matrixAutoUpdate = false;
     const grp = new THREE.Group();
     grp.add(m);
-    const data = HB.genTile(ti, tj, T, Q.trees, C.addCollider);
+    const cols = [];
+    const add = (...a) => { cols.push(C.addCollider(...a)); };
+    const data = HB.genTile(ti, tj, T, Q.trees, add, (x, z, y, sc, rot, v) => C.addRockCollider(add, x, z, y, sc, rot, v));
     this.w.addInstances(data.trees, data.rocks, [], grp, 0, data.decor);
     if (data.walls.length) this.w.buildWalls(data.walls, grp);
     this.group.add(grp);
-    return { ti, tj, grp };
+    return { ti, tj, grp, cols };
   }
 
   disposeTile(t) {
     t.grp.traverse((o) => { if (o.geometry && !o.geometry.userData.shared) o.geometry.dispose(); if (o.isInstancedMesh) o.dispose(); });
     this.group.remove(t.grp);
-    C.dropTile(t.ti, t.tj, T);
+    C.removeColliders(t.cols);
   }
 
   /** Kacheln um (px, pz) laden und entfernen. all: alles sofort (Start, Respawn). */

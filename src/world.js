@@ -88,7 +88,7 @@ export class World {
       this.heliW = new HeliWorld(this);
       this.heliW.build();
       const dp = C.HB.dropPoint();
-      this.heliW.updateTiles(dp.x, -dp.d, true);
+      this.heliW.updateTiles(dp.x, -dp.d, false);   // Kacheln bauen sich über die nächsten Bilder auf; bis dahin zeigt die Fernsicht
     } else if (C.cfg.endless) {
       this.scene.fog.near = 230;   // weiter vorne klar sehen, Nebel erst in der Ferne
       this.scene.fog.far = Q.view - 30;

@@ -172,10 +172,31 @@ export const markers = [];
 export const colliders = new Map();
 
 const hKey = (i, j) => (i + 1000) * 100000 + j + 1000;
-export function addCollider(x, z, r, type, lx = 0, lz = 0) {
+export function addCollider(x, z, r, type, lx = 0, lz = 0, top) {
   const key = cfg.heli ? hKey(Math.floor(x / 20), Math.floor(-z / 20)) : Math.floor(-z / 20);
   if (!colliders.has(key)) colliders.set(key, []);
-  colliders.get(key).push({ x, z, r, type, lx, lz });   // lx/lz: Richtung der Zaunlinie (Einheitsvektor)
+  const c = { x, z, r, type, lx, lz, top };   // lx/lz: Richtung der Zaunlinie (Einheitsvektor); top: Oberkante (Welt-Y), darüber fliegt man frei
+  colliders.get(key).push(c);
+  return { key, c };
+}
+/** Einzelne Kollisionen wieder entfernen (Heli-Kacheln merken sich genau ihre eigenen). */
+export function removeColliders(list) {
+  for (const { key, c } of list) { const l = colliders.get(key); if (!l) continue; const i = l.indexOf(c); if (i >= 0) l.splice(i, 1); if (!l.length) colliders.delete(key); }
+}
+// Halbe Ausdehnung der Felsmodelle (x, z) bei Maßstab 1, gemessen an den Blender-Modellen
+const ROCK_EXT = [[1.29, 1.47], [2.04, 1.36], [1.09, 1.07], [0.93, 1.06], [1.65, 1.54], [2.4, 1.42]];
+const ROCK_TOP = [0.94, 1.45, 0.81, 1.53, 1.06, 1.02];
+/** Fels als Kette von Kreisen entlang seiner Längsachse (längliche Blöcke sind sonst an den Enden durchlässig). */
+export function addRockCollider(add, x, z, y, scale, rot, variant) {
+  const [ex, ez] = ROCK_EXT[variant % 6], top = y + ROCK_TOP[variant % 6] * scale;
+  const long = Math.max(ex, ez), short = Math.min(ex, ez), alongX = ex >= ez;
+  // Achse im Weltsystem: Modell-X bzw. -Z um rot (Y-Achse) gedreht
+  const ax = alongX ? Math.cos(rot) : Math.sin(rot), az = alongX ? -Math.sin(rot) : Math.cos(rot);
+  const r = short * scale * 0.92, n = Math.max(1, Math.ceil((long - short) / short * 1.5) + 1);
+  for (let i = 0; i < n; i++) {
+    const t = n === 1 ? 0 : (i / (n - 1) - 0.5) * 2 * (long - short) * scale;
+    add(x + ax * t, z + az * t, r, 'fels', 0, 0, top);
+  }
 }
 /** Rails und Boxen in der Nähe (Endlos-Welten): Geometrie wird beim ersten Abruf aus dem Gelände berechnet.
  *  g: Anfangspunkt (ax, ay, az) = Oberkante, Richtung (dx, dy, dz), Länge L, halbe Breite w. */
@@ -648,7 +669,7 @@ export function setMode(endless, seed = 1, style = 'freeride') {
   for (const a of [gates, trees, rocks, chalets, markers, kickers, pads, lift.pylons]) a.length = 0;
   colliders.clear();
   if (cfg.heli) {
-    const hb = HB.init(seed);
+    const hb = HB.initOrAdopt(seed);
     FINISH_D = hb.fin;
     MESH_D1 = hb.end;
     chalets.push(...HB.chalets());

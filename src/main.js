@@ -336,22 +336,51 @@ function renderMode(anim) {
   $('mIdx').textContent = String(modeIdx + 1).padStart(2, '0');
   [...$('mDots').children].forEach((b, i) => { b.classList.toggle('sel', i === modeIdx); b.setAttribute('aria-pressed', String(i === modeIdx)); });
 }
-let switching = false;
-/** Modus wechseln: kurzer Weißblende-Übergang (wie Schneegestöber), dahinter wird die neue Welt gebaut. */
+let switching = false, builtIdx = -1, menuIntro = 0;
+// Übergang zwischen den Modi: das aktuelle Bild wird eingefroren (2D-Leinwand über dem 3D-Bild), dahinter entsteht die
+// neue Welt, dann löst sich das eingefrorene Bild mit leichtem Zoom und Unschärfe auf, während die neue Kamera einfährt.
+const snap = $('snap'), snapCtx = snap.getContext('2d');
+function freezeFrame() {
+  composer.render();
+  const w = canvas.width, h = canvas.height, k = Math.min(1, 1400 / w);
+  snap.width = Math.max(1, Math.round(w * k)); snap.height = Math.max(1, Math.round(h * k));
+  snapCtx.drawImage(canvas, 0, 0, snap.width, snap.height);   // gleiche Aufgabe wie render(): der Bildpuffer ist noch gültig
+  snap.style.transition = 'none';
+  snap.style.opacity = '1'; snap.style.transform = 'none'; snap.style.filter = 'none';
+  snap.classList.add('on');
+}
+function releaseFrame() {
+  const ms = RM ? 260 : 820;
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    snap.style.transition = RM ? `opacity ${ms}ms linear` : `opacity ${ms}ms cubic-bezier(0.33, 0, 0.2, 1), transform ${ms + 200}ms cubic-bezier(0.2, 0.7, 0.2, 1), filter ${ms}ms ease-out`;
+    snap.style.opacity = '0';
+    if (!RM) { snap.style.transform = 'scale(1.06)'; snap.style.filter = 'blur(10px) brightness(1.08)'; }
+    setTimeout(() => { if (snap.style.opacity === '0') snap.classList.remove('on'); }, ms + 260);
+  }));
+}
+function buildMode() {
+  setKind(MODES[modeIdx].id);
+  demoStart();
+  builtIdx = modeIdx;
+  menuIntro = RM ? 0 : 1;
+}
+/** Modus wechseln. Mehrfaches Drücken während des Übergangs springt direkt zum zuletzt gewählten Modus. */
 function selectMode(i, instant) {
   i = (i + MODES.length) % MODES.length;
-  if (!instant && (game.mode !== 'menu' || switching)) return;
+  if (!instant && game.mode !== 'menu') return;
   modeIdx = i;
   try { localStorage.setItem(MODE_KEY, MODES[i].id); } catch {}
   renderMode(!instant);
-  if (instant) { setKind(MODES[i].id); demoStart(); return; }
+  if (instant) { buildMode(); menuIntro = 0; return; }
+  if (switching) return;
   switching = true;
-  $('wipe').classList.add('on');
-  setTimeout(() => {
-    setKind(MODES[modeIdx].id);
-    demoStart();
-    requestAnimationFrame(() => requestAnimationFrame(() => { $('wipe').classList.remove('on'); switching = false; }));
-  }, RM ? 130 : 220);
+  freezeFrame();
+  // erst das eingefrorene Bild zeigen lassen, dann (blockierend) die neue Welt bauen
+  requestAnimationFrame(() => setTimeout(() => {
+    while (builtIdx !== modeIdx) buildMode();
+    switching = false;
+    releaseFrame();
+  }, 16));
 }
 function closeDlg() {
   for (const d of document.querySelectorAll('.dlg')) d.classList.add('hidden');
@@ -389,9 +418,10 @@ function demoUpdate(dt) {
   demo.inp.brake = sp > vMax ? clamp((sp - vMax) / 4, 0, 1) : 0;
   airKey.space = demo.kind === 'freestyle' && !phys.grounded && phys.airTime > 0.12;
   if (demo.t > (demo.kind === 'freestyle' ? 16 : 34) && !switching && phys.grounded) {
-    switching = true;
-    $('wipe').classList.add('on');
-    setTimeout(() => { demoReset(); requestAnimationFrame(() => requestAnimationFrame(() => { $('wipe').classList.remove('on'); switching = false; })); }, 220);
+    freezeFrame();
+    demoReset();
+    menuIntro = 1;
+    releaseFrame();
   }
 }
 
@@ -823,6 +853,15 @@ const camPos = new THREE.Vector3(0, 5, 12), camDir = new THREE.Vector3(0, 0, -1)
 const tV = new THREE.Vector3(), tV2 = new THREE.Vector3(), tV3 = new THREE.Vector3();
 let camSnap = true;
 
+/** Einfahrt der Menükamera nach einem Moduswechsel: startet weiter weg und gleitet weich heran. */
+function menuIntroCam(dt) {
+  if (menuIntro <= 0) return;
+  menuIntro = Math.max(0, menuIntro - dt / 1.4);
+  const e = menuIntro * menuIntro * (3 - 2 * menuIntro);
+  tV.copy(camera.position).sub(lookSm);
+  camera.position.addScaledVector(tV, e * 0.35);
+  camera.position.y += e * 1.5;
+}
 function updateCamera(dt, time) {
   const p = phys.pos, sp = phys.speed;
   if (game.mode === 'menu' && demo.kind === 'heli' && heli.group && heli.on) {
@@ -835,6 +874,7 @@ function updateCamera(dt, time) {
     camPos.lerp(tV, camSnap ? 1 : 1 - Math.exp(-dt * 2));
     camera.position.copy(camPos);
     lookSm.set(c.x - (camera.aspect > 1.2 ? 4 : 10), c.y - 22, c.z - 90);
+    menuIntroCam(dt);
     camera.lookAt(lookSm);
     if (camera.fov !== 52) { camera.fov = 52; camera.updateProjectionMatrix(); }
     camSnap = false;
@@ -852,6 +892,7 @@ function updateCamera(dt, time) {
     camera.position.copy(camPos);
     tV3.copy(p).addScaledVector(camDir, 16); tV3.y = p.y + 0.5;
     lookSm.lerp(tV3, camSnap ? 1 : 1 - Math.exp(-dt * 3));
+    menuIntroCam(dt);
     camera.lookAt(lookSm);
     if (camera.fov !== 58) { camera.fov = 58; camera.updateProjectionMatrix(); }
     camSnap = false;
@@ -865,6 +906,7 @@ function updateCamera(dt, time) {
     camPos.lerp(tV, camSnap ? 1 : 1 - Math.exp(-dt * 2));
     lookSm.set(p.x - (camera.aspect > 1.2 ? 2.1 : 0.4), p.y + 1.25, p.z);
     camera.position.copy(camPos);
+    menuIntroCam(dt);
     camera.lookAt(lookSm);
     camera.fov = 42;
     camera.updateProjectionMatrix();

@@ -277,3 +277,6 @@ html.rot .dlg { bottom: calc(48px + env(safe-area-inset-bottom)); max-height: 78
 }
 body.touch #hud { z-index: 32; }   /* nur der Vollbild-Knopf im HUD fängt Tipps ab, der Rest lässt sie durch */
 .menu .seg button.sel { background: var(--acc); border-color: var(--acc); color: #0b1422; }
+
+#snap { position: fixed; inset: 0; width: 100%; height: 100%; display: none; pointer-events: none; transform-origin: 50% 55%; will-change: opacity, transform, filter; }
+#snap.on { display: block; }

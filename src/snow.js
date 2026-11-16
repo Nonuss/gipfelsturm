@@ -52,6 +52,8 @@ const FRAG_NORMAL = /* glsl */ `
   vec3 Vw = toCam / camDist;
   vec2 p = vSnowPos.xz;
   float rockF = smoothstep(0.72, 0.5, Nw.y);
+  // Fels ist nie eine geschlossene Fläche: in Rinnen und auf Absätzen bleibt Schnee liegen
+  rockF *= 0.3 + 0.7 * smoothstep(0.32, 0.62, sNoise(p * 0.085 + vec2(vSnowPos.y * 0.04, 0.0)) * 0.7 + sNoise(p * 0.31) * 0.3);
   // Wie viele Meter Boden deckt ein Bildpunkt ab? Details, die kleiner als ein paar Pixel wären, werden ausgeblendet –
   // sonst flimmern sie in der Ferne und das Bild wirkt pixelig (besonders bei niedriger Auflösung am Handy).
   float pxw = max(length(fwidth(p)), 1e-4);

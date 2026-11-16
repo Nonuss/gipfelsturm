@@ -105,7 +105,7 @@ function applyQuality() {
   if (world) {
     world.setLowQuality(Q.tier === 'low');
     if (Q.shadow > 0) world.setShadowSize(Q.shadow);
-    if (C.cfg.endless) scene.fog.far = Q.view - 30;
+    if (C.cfg.endless && !C.cfg.heli) scene.fog.far = Q.view - 30;
   }
   if (dust) dust.points.visible = Q.dust;
   if (patch && Q.patch > 0 && patch.cell !== Q.patch) { const old = patch; scene.remove(old.mesh); old.geo.dispose(); patch = new PowderPatch(scene, Q.patch, Math.round(18 / Q.patch) + 1); }
@@ -281,15 +281,18 @@ function setKind(kind, seed) {
   const sel = kind === 'endless' && style !== 'freeride' ? style : kind;
   for (const b of document.querySelectorAll('.mode')) b.classList.toggle('sel', b.dataset.mode === sel);
   $('menuKicker').textContent = sel === 'heli' ? 'Heli-Skiing · Absprung am Gipfel, Gletscher und Tiefschnee' : sel === 'freestyle' ? 'Freestyle · riesige Sprünge, jedes Mal neu' : kind === 'endless' ? 'Freeride · jedes Mal ein neuer Berg' : 'Abfahrt · 2,4 km · 650 Höhenmeter';
-  $('lblMain').textContent = kind === 'endless' ? 'Punkte' : 'Zeit';
-  $('lblSide').textContent = kind === 'endless' ? 'Respawn' : 'Tore';
+  game.bestHeli = parseFloat(localStorage.getItem(BEST_KEY + '_heli') || '0') || 0;
+  $('lblMain').textContent = kind === 'endless' && !C.cfg.heli ? 'Punkte' : 'Zeit';
+  $('lblSide').textContent = C.cfg.heli ? 'Über Tal' : kind === 'endless' ? 'Respawn' : 'Tore';
   $('progress').classList.toggle('off', kind === 'endless');
 }
 
-function startRun() {
+function startRun(same) {
   audio.start();
   saveEndlessBest();
-  if (game.kind === 'endless') setKind(game.style !== 'freeride' && game.style ? game.style : 'endless', game.forceSeed);   // jedes Mal ein neuer Berg (forceSeed nur für Tests)
+  // Heli-Berg: nach einem Sturz geht es auf demselben Berg wieder ganz oben los (same), sonst gibt es einen neuen
+  if (C.cfg.heli && same === true) { resetRunState(); world.updateChunks(0, true); }
+  else if (game.kind === 'endless') setKind(game.style !== 'freeride' && game.style ? game.style : 'endless', game.forceSeed);   // jedes Mal ein neuer Berg (forceSeed nur für Tests)
   else { world.resetGates(); resetRunState(); }
   $('menu').classList.add('hidden');
   $('finish').classList.add('hidden');
@@ -297,10 +300,11 @@ function startRun() {
   $('hint').classList.remove('fade');
   setTimeout(() => $('hint').classList.add('fade'), 14000);
   Object.assign(game, {
-    mode: 'countdown', time: 0, penalty: 0, passed: 0, gateIdx: 0, topSpeed: 0, bestJump: 0, countdown: 3.0, lastCount: 4, finishT: 0,
+    mode: 'countdown', time: 0, penalty: 0, passed: 0, gateIdx: 0, topSpeed: 0, bestJump: 0, countdown: same === true ? 2.0 : 3.0, lastCount: 4, finishT: 0,
     score: 0, maxD: 0, bestTrick: '', bestTrickPts: 0, tricks: 0, pend: 0, pendT: 0, combo: 1, comboT: 0,
   });
   $('penalty').textContent = '';
+  $('hint').textContent = C.cfg.heli ? HINT_HELI : HINT_STD;
   heliStart();
   if (aval) { aval.stop(); aval.cool = 6; } avRisk = 0;
 }
@@ -308,6 +312,8 @@ function startRun() {
 // ---------------------------------------------------------------- Heli-Skiing: Absprung aus dem Helikopter
 // Während des Countdowns schwebt der Helikopter über dem Gipfel, der Fahrer steht in der offenen Tür.
 // Bei „Spring!“ fällt er gut 4 m in den Tiefschnee, der Helikopter dreht ab und fliegt davon.
+const HINT_STD = $('hint').textContent;
+const HINT_HELI = 'A/D lenken · W Hocke · S bremsen · Leertaste springen  |  Gipfel bis Tal auf Zeit · ein Sturz heißt zurück zum Gipfel · den Weg suchst du selbst';
 const heli = { on: false, t: 0, pos: new THREE.Vector3(), drop: new THREE.Vector3(), group: null, rotor: null, tail: null, vel: new THREE.Vector3() };
 function heliStart() {
   heli.on = game.kind === 'endless' && game.style === 'heli';
@@ -323,7 +329,7 @@ function heliStart() {
   if (!heli.on) { audio.setHeli(0); return; }
   heli.t = 0;
   // Absprungpunkt: 4,5 m über dem Schnee am Gipfel, Helikopter quer zum Hang, Tür zum Fahrer
-  const d = 18, x = C.centerX(d), z = -d, gy = C.height(x, z);
+  const d = C.cfg.heli ? 7 : 18, x = C.centerX(d), z = -d, gy = C.height(x, z);
   heli.drop.set(x, gy + 4.5, z);
   heli.pos.set(x + 0.3, gy + 4.5 + 2.7, z - 1.75);   // Fahrer steht außen auf der Kufe vor der offenen Tür
   heli.group.position.copy(heli.pos);
@@ -342,7 +348,8 @@ function avalancheUpdate(dt) {
   const heliMode = game.kind === 'endless' && game.style === 'heli';
   if (heliMode && game.mode === 'run' && !aval.active && aval.cool <= 0 && phys.grounded && phys.crashed <= 0) {
     const ny = Math.max(0.3, phys.normal.y), tanS = Math.sqrt(1 - ny * ny) / ny;
-    if (tanS > 0.55 && phys.pow > 0.5 && phys.speed > 6) avRisk += dt * (tanS - 0.5) * 0.9 * (C.zoneAt(-phys.pos.z)?.type === 'spines' || C.zoneAt(-phys.pos.z)?.type === 'face' ? 1.5 : 1);
+    // realistisch: nur steile (ab etwa 32 Grad), tief eingeschneite Hänge; scharfe Schwünge belasten die Schneedecke zusätzlich
+    if (tanS > 0.62 && phys.pow > 0.6 && phys.speed > 6 && -phys.pos.z > 60) avRisk += dt * (tanS - 0.55) * (0.1 + 0.16 * clamp(Math.abs(phys.aLat) / 9, 0, 1.5));
     if (avRisk > 1 + Math.random() * 0.02) triggerAvalanche();
   }
   const r = aval.update(dt, C, phys.pos);
@@ -352,20 +359,20 @@ function avalancheUpdate(dt) {
     showMsg('Von der Lawine erfasst!', 'bad');
     quietCrash = true;
     phys.crash();
-    aval.stop(); aval.cool = 15;
+    aval.active = false; aval.cool = 1e9;   // die Lawine läuft sichtbar aus; weg ist sie erst beim nächsten Start am Gipfel
   } else if (r.ended && game.mode === 'run' && phys.crashed <= 0) {
-    const pts = addPending(1500, true);
-    showMsg(`Lawine entkommen!  +${num(pts)}`, 'gold');
+    showMsg('Lawine entkommen!', 'gold');
   }
+  if (r.broke) { audio.crack(); vis.shake = 1; showMsg('LAWINE! Raus aus dem Hang!', 'bad'); }
 }
 function triggerAvalanche(landing = false) {
   avRisk = 0;
   const d = -phys.pos.z, hub = C.centerX(d);
-  aval.start(d - (landing ? 6 : 14), phys.pos.x - hub + (Math.random() - 0.5) * 20, 70 + Math.random() * 60);
+  aval.start(d - (landing ? 7 : 16), phys.pos.x - hub + (Math.random() - 0.5) * 20, 70 + Math.random() * 60, C);
   audio.crack();
-  avCam = 2.8;   // kurz seitlich zeigen, wie die Lawine hinter dem Fahrer abgeht
-  vis.shake = 1;
-  showMsg('LAWINE! Schnell weg hier!', 'bad');
+  avCam = 3.4;   // kurz seitlich zeigen, wie der Riss durch den Hang läuft und die Platte bricht
+  vis.shake = 0.5;
+  showMsg('Der Hang reißt!', 'bad');
 }
 
 function heliUpdate(dt) {
@@ -406,7 +413,7 @@ function toMenu() {
 
 const totalScore = () => Math.round(game.score);
 function saveEndlessBest() {
-  if (game.kind !== 'endless' || game.mode === 'menu' || game.mode === 'loading') return;
+  if (C.cfg.heli || game.kind !== 'endless' || game.mode === 'menu' || game.mode === 'loading') return;
   const t = totalScore();
   const sfx = STYLE_SFX[game.style] || '';
   if (t > game.bestEndless) { game.bestEndless = t; localStorage.setItem(BEST_E_KEY + sfx, String(t)); }
@@ -415,6 +422,7 @@ function saveEndlessBest() {
 }
 /** Endlos-Welt: Punkte einer Landung vormerken; gesichert werden sie erst nach sauberem Weiterfahren. */
 function addPending(pts, isTrick) {
+  if (C.cfg.heli) return 0;   // Speedrun: keine Punkte
   if (game.kind !== 'endless') { game.score += pts; return pts; }
   const mult = isTrick ? game.combo : 1;
   const p = Math.round(pts * mult);
@@ -444,18 +452,20 @@ function finishRun() {
   game.mode = 'finished';
   game.finishT = 0;
   const total = game.time + game.penalty;
-  const isBest = !game.best || total < game.best;
-  if (isBest) { game.best = total; localStorage.setItem(BEST_KEY, String(total)); }
+  const hk = C.cfg.heli, bk = hk ? 'bestHeli' : 'best';
+  const isBest = !game[bk] || total < game[bk];
+  if (isBest) { game[bk] = total; localStorage.setItem(BEST_KEY + (hk ? '_heli' : ''), String(total)); }
   audio.finish();
-  $('finTitle').textContent = isBest ? 'Neue Bestzeit!' : 'Im Ziel';
+  $('finTitle').textContent = isBest ? 'Neue Bestzeit!' : hk ? 'Im Tal' : 'Im Ziel';
   $('finTime').textContent = fmt(total);
-  const rows = [['Tore', `${game.passed}/${C.gates.length}`], ['Strafzeit', `+${game.penalty.toFixed(0)} s`], ['Trickpunkte', num(game.score)],
+  const rows = hk ? [['Höhenmeter', `${num(-C.baseH(C.FINISH_D))} m`], ['Höchsttempo', `${Math.round(game.topSpeed * 3.6)} km/h`], ['Weitester Sprung', `${game.bestJump.toFixed(1)} m`], ['Bestzeit', fmt(game.bestHeli)]] : [['Tore', `${game.passed}/${C.gates.length}`], ['Strafzeit', `+${game.penalty.toFixed(0)} s`], ['Trickpunkte', num(game.score)],
     ['Höchsttempo', `${Math.round(game.topSpeed * 3.6)} km/h`], ['Weitester Sprung', `${game.bestJump.toFixed(1)} m`], ['Bestzeit', fmt(game.best)]];
   $('finStats').innerHTML = rows.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
 }
 
 // ---------------------------------------------------------------- Respawn-Punkte
 function setCheckpoint() {
+  if (C.cfg.heli) return;   // Heli-Berg: keine Respawn-Punkte, ein Sturz heißt zurück zum Gipfel
   if (game.mode !== 'run' || !phys.grounded || phys.crashed > 0) return;
   game.cp = { x: phys.pos.x, z: phys.pos.z, h: phys.heading };
   world.setFlag(game.cp);
@@ -472,6 +482,7 @@ function teleport(x, z, heading) {
   resetVisuals();
 }
 function toCheckpoint() {
+  if (C.cfg.heli) return;
   if (game.mode !== 'run' || phys.crashed > 0) return;
   if (game.cp) {
     teleport(game.cp.x, game.cp.z, game.cp.h);
@@ -627,11 +638,11 @@ function scoreLanding(e) {
     pts = addPending(pts, true);
     game.tricks++;
     if (pts > game.bestTrickPts) { game.bestTrickPts = pts; game.bestTrick = name; }
-    showMsg(`${name}  +${num(pts)}${game.kind === 'endless' && comboNow > 1 ? `  (×${comboNow.toFixed(1).replace('.0', '')})` : ''}`, 'gold');
+    showMsg(C.cfg.heli ? name : `${name}  +${num(pts)}${game.kind === 'endless' && comboNow > 1 ? `  (×${comboNow.toFixed(1).replace('.0', '')})` : ''}`, 'gold');
     audio.gate();
   } else if (e.airTime > 0.55 && e.dist > 3) {   // Hüpfer auf der Stelle zählen nicht als Sprung
     const p = addPending(airPts, false);
-    showMsg(`${e.dist.toFixed(1)} m Sprung${game.kind === 'endless' ? `  +${p}` : ''}`, 'gold');
+    showMsg(`${e.dist.toFixed(1)} m Sprung${game.kind === 'endless' && !C.cfg.heli ? `  +${p}` : ''}`, 'gold');
   }
 }
 
@@ -668,7 +679,7 @@ function updateCamera(dt, time) {
   // Lawinen-Kamera: seitlich und etwas unterhalb, Blick auf Fahrer und die anrollende Front
   if (avCam > 0 && game.mode === 'run') {
     avCam -= dt;
-    const f = smoothstep(0, 0.5, avCam) * smoothstep(2.8, 2.3, avCam) ;
+    const f = 1;
     tV.set(Math.sin(phys.heading), 0, -Math.cos(phys.heading));
     tV2.set(-tV.z, 0, tV.x);                                          // rechts
     tV3.copy(phys.pos).addScaledVector(tV2, 17).addScaledVector(tV, 9);
@@ -887,7 +898,8 @@ function emitCrash(dt) {
 function handleEvents() {
   for (let i = 0; i < phys.events.length; i++) {
     const e = phys.events[i];
-    if (e.type === 'land') {
+    if (e.type === 'hit') lastHit = e.what;
+    else if (e.type === 'land') {
       vis.compress = Math.max(vis.compress, clamp(e.impact / 9, 0.15, 1));
       vis.shake = Math.max(vis.shake, clamp(e.impact / 30, 0, 0.5));
       vis.dip = Math.max(vis.dip, clamp((e.impact - 2) / 14, 0, 0.6));   // Kamera federt bei der Landung kurz mit
@@ -927,8 +939,9 @@ function handleEvents() {
       tV.copy(phys.vel);
       skier.detachSkis(scene, tV);
       if (game.mode === 'run') {
-        let lostMsg = 'Sturz!';
-        if (game.kind === 'endless') {
+        let lostMsg = C.cfg.heli ? (lastHit === 'flanke' ? 'Abgestürzt! Zurück zum Gipfel' : 'Sturz! Zurück zum Gipfel') : 'Sturz!';
+        lastHit = null;
+        if (game.kind === 'endless' && !C.cfg.heli) {
           saveEndlessBest();
           const lost = game.score + game.pend;
           lostMsg = lost > 0 ? `Sturz!  ${num(lost)} Punkte verloren` : 'Sturz!';
@@ -939,7 +952,8 @@ function handleEvents() {
         quietCrash = false;
       }
     } else if (e.type === 'respawn') {
-      if (game.cp && game.mode === 'run') teleport(game.cp.x, game.cp.z, game.cp.h);
+      if (C.cfg.heli && game.mode === 'run') heliAgain = true;
+      else if (game.cp && game.mode === 'run') teleport(game.cp.x, game.cp.z, game.cp.h);
       else {
         const d = clamp(-phys.pos.z, 0, C.MESH_D1 - 40);
         let x;
@@ -951,7 +965,9 @@ function handleEvents() {
     }
   }
   phys.events.length = 0;
+  if (heliAgain) { heliAgain = false; startRun(true); }
 }
+let heliAgain = false, lastHit = null;
 
 function checkGates() {
   const p = phys.pos, d = -p.z;
@@ -1025,8 +1041,11 @@ function updateSkier(dt) {
     vis.look += ((isSwitch() && !phys.grind ? 1 : 0) - vis.look) * k(6);
     pv.position.y = 0.85;
   }
+  // Rückwärts (Switch) ist der Körper um 180° gedreht: Neigung und Lenkdrehung müssen im Körper gespiegelt werden,
+  // sonst lehnt er sich aus der Kurve heraus statt hinein.
+  const bodySign = Math.cos(trick.yaw + swYaw);
   skier.update({
-    lean: vis.lean, crouch: vis.crouch, steer: phys.grounded ? inp.steer : 0, plow: vis.plow, air: vis.air, compress: vis.compress,
+    lean: vis.lean * bodySign, crouch: vis.crouch, steer: phys.grounded ? inp.steer * bodySign : 0, plow: vis.plow, air: vis.air, compress: vis.compress,
     speed: phys.speed, grab: trick.grab, grabSide: trick.gs, look: vis.look, tuck: vis.tuck, spin: vis.spin, extend: vis.extend, crash: crashed ? 1 : 0, crashA: vis.crashAngle,
   }, dt);
   skier.updateLoose(dt, C.height);
@@ -1048,7 +1067,7 @@ function updateSkier(dt) {
 const ZONE_NAMES = { start: 'Start', cruise: 'Panorama-Piste', glade: 'Waldbahn', bowl: 'Pulverhang', park: 'Ski-Cross-Park', bigair: 'Big Air', couloir: 'Rinne', cliff: 'Klippenband', flat: 'Auslauf', summit: 'Gipfel', glacier: 'Gletscher', face: 'Pulverflanke', rockgarden: 'Felsgarten', jumpline: 'Sprunglinie', megaair: 'Mega Air', slopestyle: 'Slopestyle' };
 let lastZone = -1, zoneTimer = 0;
 function updateZone(dt) {
-  if (game.kind !== 'endless' || game.mode !== 'run') return;
+  if (game.kind !== 'endless' || game.mode !== 'run' || C.cfg.heli) return;   // Heli-Berg: keine Einblendungen, man liest den Berg selbst
   const z = C.zoneAt(-phys.pos.z);
   if (z && z.idx !== lastZone) {
     lastZone = z.idx;
@@ -1064,7 +1083,7 @@ const mmc = $('minimap'), mm = mmc.getContext('2d');
 let mmAcc = 0;
 const LANE_COL = ['#58a7ff', '#ffb02e', '#ffd84a'];
 function drawMinimap(dt) {
-  const on = game.kind === 'endless' && (game.mode === 'run' || game.mode === 'countdown');
+  const on = game.kind === 'endless' && !C.cfg.heli && (game.mode === 'run' || game.mode === 'countdown');
   mmc.style.display = on ? 'block' : 'none';
   if (!on) return;
   mmAcc += dt;
@@ -1118,7 +1137,12 @@ function updateHud(dt) {
   hudAcc = 0;
   $('speed').textContent = Math.round(phys.speed * 3.6);
   $('speedfill').style.width = `${clamp(phys.speed / 42, 0, 1) * 100}%`;
-  if (game.kind === 'endless') {
+  if (C.cfg.heli) {
+    $('time').textContent = fmt(game.time);
+    $('best').textContent = game.bestHeli ? `Bestzeit ${fmt(game.bestHeli)}` : 'Bestzeit –';
+    $('gates').innerHTML = `${num(Math.max(0, phys.pos.y - C.baseH(C.FINISH_D)))}<span> m</span>`;
+    $('penalty').textContent = '';
+  } else if (game.kind === 'endless') {
     $('time').innerHTML = num(totalScore()) + (game.pend > 0 ? `<span class="pend"> +${num(game.pend)}</span>` : '');
     $('best').textContent = `${num(game.maxD)} m${game.combo > 1 ? ` · ×${game.combo.toFixed(1).replace('.0', '')}` : ''} · Rekord ${num(Math.max(game.bestEndless, totalScore()))} P / ${num(Math.max(game.bestDist, game.maxD))} m`;
     $('gates').innerHTML = game.cp ? '<span class="lives">✓ gesetzt</span>' : '<span class="lives">–</span>';
@@ -1199,6 +1223,7 @@ function tick(dt, render) {
     updatePoints(dt);
     updateTricks(dt);
     if (game.mode === 'run' && game.kind === 'race') checkGates();
+    if (game.mode === 'run' && C.cfg.heli && -phys.pos.z >= C.FINISH_D) finishRun();
     if (game.mode === 'finished' && game.finishT > 1.6) { $('finish').classList.remove('hidden'); $('hud').classList.add('hidden'); }
 
     updateSkier(dt);
@@ -1258,7 +1283,10 @@ function tick(dt, render) {
   window.__game = {
     game, phys, inp, keys, airKey, trick, world, skier, camera, renderer, scene, vis, Q, startRun, setKind, toMenu, setCheckpoint, toCheckpoint, chooseQuality, C,
     avalanche: () => triggerAvalanche(), aval: () => aval,
-    tp: (d, lane = 0, speed = 0) => { const L = C.mapSlice(d, d + 1, 1).rows[0].lanes[lane]; teleport(L.x, -d); const x0 = C.centerX(d + 6) - C.centerX(d); phys.heading = Math.atan2(x0, 6); phys.vel.set(Math.sin(phys.heading) * speed, 0, -Math.cos(phys.heading) * speed); if (game.mode === 'menu') { game.mode = 'run'; } },
+    tp: (d, lane = 0, speed = 0) => { const L = C.cfg.heli ? { x: C.centerX(d) + lane } : C.mapSlice(d, d + 1, 1).rows[0].lanes[lane]; teleport(L.x, -d); const x0 = C.centerX(d + 6) - C.centerX(d); phys.heading = Math.atan2(x0, 6); phys.vel.set(Math.sin(phys.heading) * speed, 0, -Math.cos(phys.heading) * speed); if (game.mode === 'menu') { game.mode = 'run'; } },
+    // Testhilfe: freie Kamera für Standbilder (Position, Blickpunkt), rendert genau ein Bild
+    shot: (px, py, pz, lx, ly, lz, fov = 55) => { camera.position.set(px, py, pz); camera.fov = fov; camera.near = 0.3; camera.updateProjectionMatrix(); camera.lookAt(lx, ly, lz); world.sky.position.copy(camera.position); composer.render(); },
+    restartHeli: () => startRun(true),
         advance: (sec, noRender) => { const n = Math.round(sec * 60); for (let i = 0; i < n; i++) tick(1 / 60, !noRender && i === n - 1); },
   };
   requestAnimationFrame((t) => { last = t; frame(t); });

@@ -64,12 +64,26 @@ export class World {
       this.scene.remove(this.course);
     }
     this.chunks.clear();
+    this.mountains.scale.set(1, 1, 1);
     this.cables = [];
     this.chairs = null;
     this.course = new THREE.Group();
     this.scene.add(this.course);
     this.grp = this.course;
-    if (C.cfg.endless) {
+    if (this.far) this.far.visible = false;
+    if (C.cfg.heli) {
+      // Heli-Berg: klare Fernsicht bis ins Tal (nur leichter Dunst), Nachbargipfel stehen fest um den Berg
+      this.scene.fog.near = 700;
+      this.scene.fog.far = 11000;
+      this.job = null;
+      this.buildColumnsE(Q.grid);
+      this.buildFar();
+      // Nachbargipfel: niedriger als unser Gipfel, ihre Sockel verschwinden unter dem Talboden
+      this.mountains.scale.set(1, 0.62, 1);
+      this.mountains.position.set(0, C.HB.info().floorY - 450, -1500);
+      this.buildProps();
+      this.updateChunks(0, true);
+    } else if (C.cfg.endless) {
       this.scene.fog.near = 230;   // weiter vorne klar sehen, Nebel erst in der Ferne
       this.scene.fog.far = Q.view - 30;
       this.job = null;
@@ -335,12 +349,13 @@ export class World {
     const data = C.genChunk(job.i);
     this.addInstances(data.trees, data.rocks, data.markers, grp, 0, data.decor);
     if (data.caves && data.caves.length) this.buildCaves(data.caves, grp);
+    if (data.walls && data.walls.length) this.buildWalls(data.walls, grp);
     this.course.add(grp);
     this.chunks.set(job.i, grp);
   }
 
   updateChunks(d, all = false) {
-    const i0 = Math.floor((d - 170) / C.CHUNK), i1 = Math.floor((d + Q.view + 40) / C.CHUNK);
+    const i0 = Math.floor((d - 170) / C.CHUNK), i1 = Math.min(Math.floor((d + Q.view + 40) / C.CHUNK), isFinite(C.MESH_D1) ? Math.floor((C.MESH_D1 + 250) / C.CHUNK) : 1e9);
     for (const [i, g] of this.chunks) {
       if (i < i0 || i > i1) {
         g.traverse((o) => {
@@ -423,6 +438,172 @@ export class World {
       m.castShadow = true; m.receiveShadow = true;
       parent.add(m);
     }
+  }
+
+  // ------------------------------------------------------------ Heli-Berg: Felswände
+  /**
+   * Felswand vor einer Klippe. Das Höhenfeld kann nur eine steile Rampe; davor steht dieses Mesh:
+   * kantiger, geschichteter Fels mit Pfeilern, Bändern (auf denen Schnee liegt), leicht überhängender Oberkante
+   * und einer Schneewechte. Seitenwände laufen bergauf aus, bis die Bank im Hang verschwindet.
+   */
+  buildWalls(walls, parent) {
+    if (!this.rockMat) {
+      this.rockMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95, metalness: 0, flatShading: true, side: THREE.DoubleSide });
+      this.iceMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.25, metalness: 0.05, flatShading: true, side: THREE.DoubleSide, emissive: new THREE.Color(0.02, 0.07, 0.12) });
+    }
+    const HB = C.HB;
+    const hash = (a, b, c) => { const t = Math.sin(a * 12.9898 + b * 78.233 + c * 37.719) * 43758.5453; return t - Math.floor(t); };
+    for (const c of walls) {
+      const pts = HB.wallLine(c), n = pts.length;
+      // Wandhöhe je Stützpunkt
+      let hMax = 0;
+      for (const p of pts) {
+        const hub = HB.hubX(p.d);
+        p.x = hub + p.u; p.z = -p.d; p.nx = p.nu; p.nz = -p.nd;
+        p.yT = C.height(p.x - p.nx * 3.0, p.z - p.nz * 3.0) + 0.3;
+        p.yB = C.height(p.x + p.nx * 3.3, p.z + p.nz * 3.3) - 1.3;
+        p.h = p.yT - p.yB;
+        hMax = Math.max(hMax, p.h);
+      }
+      const M = Math.max(7, Math.min(24, Math.round(hMax / 1.9) + 4));
+      const rows = M + 1, pos = new Float32Array(n * rows * 3), col = new Float32Array(n * rows * 3);
+      const sd = c.id * 7.3 + 1, R = M - 3;       // R = oberste Felsreihe; darüber Wechte (2 Reihen) und Schneekappe
+      for (let i = 0; i < n; i++) {
+        const p = pts[i], low = p.h < 1.8;
+        const ov = Math.min(2.6, 0.3 + p.h * 0.075);
+        // Pfeiler und Verschneidungen: zusammenhängende Formen statt Knitterfalten
+        const pil = (C.vnoise(i * 0.19 + sd, 3.1) - 0.5) * 3.4 + (C.vnoise(i * 0.6 + sd, 8.7) - 0.5) * 1.3;
+        const lip = 1.5 + ov * 0.55 + pil * 0.2;
+        for (let j = 0; j <= M; j++) {
+          const k = (i * rows + j) * 3;
+          let off, y, r, g, b;
+          if (low || j === M) {                       // Schneekappe, liegt auf dem Gelände
+            off = -3.0; y = p.yT;
+            r = 0.94; g = 0.96; b = 1.0;
+          } else if (j === M - 1) {                   // Oberkante der Wechte
+            off = lip; y = p.yT - 0.12 - 0.2 * C.vnoise(i * 0.4, sd);
+            r = 0.92; g = 0.95; b = 1.0;
+          } else if (j === M - 2) {                   // Unterseite der Wechte (im Schatten, bläulich)
+            off = lip - 0.15; y = p.yT - 0.75 - 0.5 * C.vnoise(i * 0.5, sd + 4);
+            r = 0.7; g = 0.78; b = 0.93;
+          } else {
+            const t = j / R;                          // 0 = Wandfuß, 1 = direkt unter der Wechte
+            const strat = hash(j, 9, sd);
+            const band = C.vnoise(i * 0.11 + sd, j * 0.55);                      // Bänder ziehen schräg durch die Wand
+            const ledge = j > 0 && j < R && band > 0.66 && hash(j, Math.floor(i / 5), sd) > 0.35;
+            off = 3.3 + (lip - 0.7 - 3.3) * t * t
+              - 1.1 * Math.sin(Math.PI * t) * (0.3 + 0.7 * C.vnoise(i * 0.13 + sd, j * 0.2))
+              + pil * (0.25 + 0.75 * Math.sin(Math.PI * Math.min(1, t * 1.15)))
+              + (C.vnoise(i * 0.8 + sd, j * 0.9) - 0.5) * 1.5 + (hash(i, j, sd) - 0.5) * 0.45;
+            off = Math.max(2.0, off + (ledge ? 0.9 : 0));
+            y = p.yB + (p.yT - 1.3 - p.yB) * t + (hash(i, j + 20, sd) - 0.5) * 0.5;
+            if (c.ice) {
+              const v = 0.75 + 0.5 * C.vnoise(i * 0.5 + sd, j * 0.7);
+              r = 0.4 * v + 0.32 * t; g = 0.66 * v + 0.22 * t; b = 0.9 * v + 0.1 * t;
+              if (ledge) { r = 0.9; g = 0.94; b = 1.0; }
+            } else {
+              // Gestein: Schichtung, senkrechte Wasserstreifen, warme und kühle Partien
+              const streak = 0.78 + 0.3 * C.vnoise(i * 1.3 + sd, j * 0.08), warm = (C.vnoise(i * 0.07 + sd, j * 0.12 + 9) - 0.5) * 0.09;
+              const v = (0.66 + 0.42 * strat) * streak * (0.82 + 0.36 * hash(i, j + 40, sd));
+              r = (0.33 + warm) * v; g = (0.31 + warm * 0.5) * v; b = (0.31 - warm * 0.4) * v;
+              if (ledge) { r = 0.9; g = 0.93; b = 1.0; }                        // Schnee auf Bändern
+              else if (t < 0.12) { r = r * 0.5 + 0.45; g = g * 0.5 + 0.47; b = b * 0.5 + 0.5; }   // angewehter Schnee am Wandfuß
+            }
+          }
+          pos[k] = p.x + p.nx * off; pos[k + 1] = y; pos[k + 2] = p.z + p.nz * off;
+          col[k] = r; col[k + 1] = g; col[k + 2] = b;
+        }
+      }
+      const idx = [];
+      for (let i = 0; i < n - 1; i++) for (let j = 0; j < M; j++) {
+        const a = i * rows + j, b2 = a + 1, c2 = a + rows, d2 = c2 + 1;
+        if ((i + j) & 1) idx.push(a, c2, b2, b2, c2, d2); else idx.push(a, c2, d2, a, d2, b2);
+      }
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+      g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+      g.setIndex(idx);
+      g.computeVertexNormals();
+      g.computeBoundingSphere();
+      const m = new THREE.Mesh(g, c.ice ? this.iceMat : this.rockMat);
+      m.castShadow = true; m.receiveShadow = true;
+      parent.add(m);
+    }
+  }
+
+  // ------------------------------------------------------------ Heli-Berg: Fernsicht
+  /** Grobes Mesh des ganzen Bergs samt Tal. Wo die feinen Geländestücke geladen sind, wird es im Shader ausgespart. */
+  buildFar() {
+    const HB = C.HB, s = HB.info();
+    if (this.far) { this.far.geometry.dispose(); this.scene.remove(this.far); }
+    const xs = [0];
+    for (let x = 0, st = 14; x < 3400;) { if (x > 420) st = Math.min(st * 1.16, 170); x += st; xs.push(x); }
+    const X = [...xs.slice(1).reverse().map((v) => -v), ...xs];
+    const D = [];
+    for (let d = -1500; d < -260; d += 110) D.push(d);
+    for (let d = -260; d < s.end + 320; d += 16) D.push(d);
+    for (let d = s.end + 320, st = 40; d < s.end + 3600; d += st, st = Math.min(st * 1.15, 180)) D.push(d);
+    const cols = X.length, rows = D.length, n = cols * rows;
+    const pos = new Float32Array(n * 3), col = new Float32Array(n * 3);
+    let k = 0;
+    for (let r = 0; r < rows; r++) {
+      const d = D[r], hub = HB.hubX(d);
+      for (let c = 0; c < cols; c++, k++) {
+        const u = X[c], y = HB.heightDU(d, u);
+        pos[k * 3] = hub + u; pos[k * 3 + 1] = y - 1.6; pos[k * 3 + 2] = -d;
+        // Farbe: Fels, wo es steil ist; Wald unter der Baumgrenze; sonst Schnee
+        const e = 5, sx = (HB.heightDU(d, u + e) - HB.heightDU(d, u - e)) / (2 * e), sz = (HB.heightDU(d + e, u) - HB.heightDU(d - e, u)) / (2 * e);
+        const ny = 1 / Math.sqrt(1 + sx * sx + sz * sz);
+        const nz = C.vnoise(u / 40 + 3, d / 40);
+        const rock = C.smoothstep(0.6, 0.44, ny + (nz - 0.5) * 0.22 + (C.vnoise(u / 150 + 5, d / 150) - 0.5) * 0.2);
+        const far = Math.abs(u) > 270 || d > s.end;
+        const treeY = HB.Hof(s.treeD + 200);
+        const fo = Math.max(HB.forestAt(d, u), far ? C.smoothstep(treeY + 90, treeY - 60, y + 90 * (C.fbm(u / 220 + 9, d / 220) - 0.5)) * (0.55 + 0.45 * C.smoothstep(0.3, 0.6, C.fbm(u / 70 + 2, d / 70))) : 0) * (1 - rock);
+        let cr = 0.95, cg = 0.97, cb = 1.0;
+        const rk = 0.36 + 0.14 * nz;
+        cr += (rk * 1.02 - cr) * rock * 0.9; cg += (rk - cg) * rock * 0.9; cb += (rk * 1.06 - cb) * rock * 0.9;
+        cr += (0.16 - cr) * fo * 0.8; cg += (0.24 - cg) * fo * 0.8; cb += (0.24 - cb) * fo * 0.8;
+        col[k * 3] = cr; col[k * 3 + 1] = cg; col[k * 3 + 2] = cb;
+      }
+    }
+    const idx = new Uint32Array((rows - 1) * (cols - 1) * 6);
+    let i = 0;
+    for (let r = 0; r < rows - 1; r++) for (let c = 0; c < cols - 1; c++) {
+      const a = r * cols + c, b = a + 1, c2 = a + cols, d2 = c2 + 1;
+      idx[i++] = a; idx[i++] = b; idx[i++] = c2; idx[i++] = b; idx[i++] = d2; idx[i++] = c2;
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    g.setIndex(new THREE.BufferAttribute(idx, 1));
+    g.computeVertexNormals();
+    if (!this.farMat) {
+      this.farU = { uHole: { value: new THREE.Vector2(1e9, 1e9) }, uHub: { value: new THREE.Vector3() } };
+      this.farMat = new THREE.MeshLambertMaterial({ vertexColors: true });
+      this.farMat.onBeforeCompile = (sh) => {
+        Object.assign(sh.uniforms, this.farU);
+        sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vFarW;').replace('#include <begin_vertex>', '#include <begin_vertex>\nvFarW = position;');
+        sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vFarW; uniform vec2 uHole; uniform vec3 uHub;')
+          .replace('#include <clipping_planes_fragment>', `#include <clipping_planes_fragment>
+          { float dd = -vFarW.z; float hub = uHub.x * sin(dd / uHub.y + uHub.z) * smoothstep(320.0, 950.0, dd);
+            if (dd > uHole.x && dd < uHole.y && abs(vFarW.x - hub) < 269.0) discard; }`);
+      };
+    }
+    this.farU.uHub.value.set(s.hubA, s.hubL, s.hubP);
+    this.far = new THREE.Mesh(g, this.farMat);
+    this.far.frustumCulled = false;
+    this.far.receiveShadow = false;
+    this.scene.add(this.far);
+  }
+  /** Aussparung im Fernsicht-Mesh: der zusammenhängend geladene Bereich um den Fahrer. */
+  updateFarHole(d) {
+    if (!this.far || !this.far.visible) return;
+    const here = Math.floor(d / C.CHUNK);
+    let lo = here, hi = here;
+    if (!this.chunks.has(here)) { this.farU.uHole.value.set(1e9, 1e9); return; }
+    while (this.chunks.has(lo - 1)) lo--;
+    while (this.chunks.has(hi + 1)) hi++;
+    this.farU.uHole.value.set(lo * C.CHUNK + 4, (hi + 1) * C.CHUNK - 4);
   }
 
   // ------------------------------------------------------------ Respawn-Fahne
@@ -833,7 +1014,8 @@ export class World {
     if (C.cfg.endless) {
       this.updateChunks(-playerPos.z);
       // Das Panorama wandert mit, sonst wäre es nach ein paar Kilometern weg
-      this.mountains.position.set(0, playerPos.y + 330, playerPos.z + 1200);
+      if (!C.cfg.heli) this.mountains.position.set(0, playerPos.y + 330, playerPos.z + 1200);
+      else this.updateFarHole(-playerPos.z);
     }
     this.updateLift(time);
     this.updateGates(dt, time, nextGate);

@@ -129,6 +129,8 @@ export class SkiPhysics {
     if (Math.abs(p.x - bd.c) > bd.u) {
       p.x = bd.c + Math.sign(p.x - bd.c) * bd.u;
       v.x *= 0.5;
+      // Heli-Berg, oberer Teil: die Flanken des Grats sind Absturzgelände. Wer sie bis zum Ende hinabrutscht, stürzt ab.
+      if (bd.fall && this.crashed <= 0) { this.events.push({ type: 'hit', what: 'flanke' }); this.crash(); }
     }
     if (d > MESH_D1 - 20) { p.z = -(MESH_D1 - 20); v.z = 0; }
     if (d < -40) { p.z = 40; v.z = Math.min(v.z, 0); }
@@ -174,6 +176,8 @@ export class SkiPhysics {
         this.airStart.copy(p);
       } else {
         p.y = hgt;
+        // Heli-Berg: wer mit Tempo gegen eine Felswand fährt (Seitenwand einer Rinne, Wandfuß), stürzt
+        if (cfg.heli && N2.y < 0.5 && vn < -7 && this.crashed <= 0) { this.events.push({ type: 'hit', what: 'wand' }); this.crash(); }
         if (vn < 0) v.addScaledVector(N2, -vn);
       }
     } else if (gap <= 0) {

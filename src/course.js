@@ -2,12 +2,14 @@
 import * as THREE from 'three';
 import { clamp, lerp, smoothstep, mulberry32, vnoise, fbm } from './mathutil.js';
 import * as P from './piste.js';
+import * as HB from './heliberg.js';
+export { HB };
 
 export { clamp, lerp, smoothstep, mulberry32, vnoise, fbm };
 export const G = 9.81;
 export const EDGE_U = 215;
 export const CHUNK = 100;
-export const cfg = { endless: false, seed: 1, treeMul: 1 };
+export const cfg = { endless: false, seed: 1, treeMul: 1, heli: false };
 export let FINISH_D = 2400;
 export let MESH_D0 = -60;
 export let MESH_D1 = 2760;
@@ -57,15 +59,16 @@ function baseHR(d) {
 }
 
 // ================================================================ Gemeinsame Funktionen
-export function centerX(d) { return cfg.endless ? P.hubX(d) : centerXR(d); }
-export function halfWidth(d) { return cfg.endless ? P.props(d).lw[0] : halfWidthR(d); }
+export function centerX(d) { return cfg.heli ? HB.hubX(d) : cfg.endless ? P.hubX(d) : centerXR(d); }
+export function halfWidth(d) { return cfg.heli ? 13 : cfg.endless ? P.props(d).lw[0] : halfWidthR(d); }
 export function axisX(d) { return centerX(d); }
 /** Seitliche Grenze des befahrbaren Geländes um die Mittellinie. */
 export function bounds(d) {
+  if (cfg.heli) return HB.boundAt(d);
   if (cfg.endless) return P.boundAt(d);
   return { c: centerXR(d), u: EDGE_U - 12 };
 }
-export function baseH(d) { return cfg.endless ? P.Hof(d) : baseHR(d); }
+export function baseH(d) { return cfg.heli ? HB.Hof(d) : cfg.endless ? P.Hof(d) : baseHR(d); }
 
 export const kickers = [];
 const RACE_KICKERS = [
@@ -100,6 +103,7 @@ function addPad(d, u, r) {
 }
 
 export function rawHeight(x, z) {
+  if (cfg.heli) return HB.heightH(x, z);
   if (cfg.endless) return P.heightP(x, z);
   const d = -z;
   const cx = centerXR(d);
@@ -121,6 +125,7 @@ export function rawHeight(x, z) {
 }
 
 export function height(x, z) {
+  if (cfg.heli) return HB.heightH(x, z);
   let y = rawHeight(x, z);
   for (let i = 0; i < pads.length; i++) {
     const p = pads[i];
@@ -142,6 +147,7 @@ export function terrainNormal(x, z, out) {
 /** Oberfläche an (x, z): Abstand zur Spur (edge < 0 = auf der Spur), Pflege-Grad, Pulverschnee, Wald. */
 export const SF = { edge: 0, groom: 0, pow: 0, forest: 0, u: 0 };
 export function surfaceAt(x, z) {
+  if (cfg.heli) return HB.surf(x, -z);
   if (cfg.endless) return P.surf(x, -z);
   const d = -z;
   const e = Math.abs(x - centerXR(d)) - halfWidthR(d);
@@ -173,7 +179,7 @@ function addCollider(x, z, r, type, lx = 0, lz = 0) {
 /** Rails und Boxen in der Nähe (Endlos-Welten): Geometrie wird beim ersten Abruf aus dem Gelände berechnet.
  *  g: Anfangspunkt (ax, ay, az) = Oberkante, Richtung (dx, dy, dz), Länge L, halbe Breite w. */
 export function nearRails(z, cb) {
-  if (!cfg.endless) return;
+  if (!cfg.endless || cfg.heli) return;
   const d = -z;
   for (const r of P.railsIn(d - 30, d + 30)) {
     if (!r.g) {
@@ -292,6 +298,7 @@ const ZONE_DECOR_CANNON = { cruise: 1, flat: 1, start: 1, bowl: 0.4 };
 
 /** Bäume, Felsen, Markierungen und Dekoration eines 100-m-Stücks (deterministisch aus Startwert + Index). */
 export function genChunk(i) {
+  if (cfg.heli) return HB.genChunk(i, CHUNK, cfg.treeMul, addCollider);
   const d0 = i * CHUNK, d1 = d0 + CHUNK;
   const R = mulberry32((Math.imul(cfg.seed, 2654435761) ^ Math.imul(i + 1000, 40503)) >>> 0);
   const out = { trees: [], rocks: [], markers: [], decor: [], caves: [] };
@@ -626,9 +633,15 @@ export function setMode(endless, seed = 1, style = 'freeride') {
   cfg.endless = endless;
   cfg.seed = seed;
   cfg.style = style;
+  cfg.heli = endless && style === 'heli';
   for (const a of [gates, trees, rocks, chalets, markers, kickers, pads, lift.pylons]) a.length = 0;
   colliders.clear();
-  if (endless) {
+  if (cfg.heli) {
+    const hb = HB.init(seed);
+    FINISH_D = hb.fin;
+    MESH_D1 = hb.end;
+    chalets.push(...HB.chalets());
+  } else if (endless) {
     P.pisteInit(seed, style);
     FINISH_D = Infinity;
     MESH_D1 = Infinity;
@@ -641,6 +654,6 @@ export function setMode(endless, seed = 1, style = 'freeride') {
 setMode(false);
 
 export const mapSlice = (d0, d1, step) => P.mapSlice(d0, d1, step);
-export const zoneAt = (d) => (cfg.endless ? P.zoneAtD(d) : null);
+export const zoneAt = (d) => (cfg.heli ? HB.zoneAt(d) : cfg.endless ? P.zoneAtD(d) : null);
 export const pisteReport = P.report;
 export const tmpV = new THREE.Vector3();

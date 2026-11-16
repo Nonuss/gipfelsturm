@@ -653,6 +653,8 @@ export function setMode(endless, seed = 1, style = 'freeride') {
 }
 setMode(false);
 
+export const laneX = (d, i = 0) => (cfg.endless && !cfg.heli ? P.props(d).lx[i] : centerX(d));
+export const featuresIn = (a, b) => (cfg.endless && !cfg.heli ? P.featuresIn(a, b) : []);
 export const mapSlice = (d0, d1, step) => P.mapSlice(d0, d1, step);
 export const zoneAt = (d) => (cfg.heli ? HB.zoneAt(d) : cfg.endless ? P.zoneAtD(d) : null);
 export const pisteReport = P.report;

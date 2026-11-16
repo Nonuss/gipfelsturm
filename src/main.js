@@ -14,7 +14,7 @@ import { Spray, DiamondDust } from './particles.js';
 import { GameAudio } from './audio.js';
 import { Q, setTier, ORDER } from './quality.js';
 import { PowderPatch } from './powder.js';
-import { setupTouch, updateTouch, touch, isTouch, viewSize } from './touch.js';
+import { setupTouch, updateTouch, touch, isTouch, viewSize, view } from './touch.js';
 import { Avalanche } from './avalanche.js';
 
 const { clamp, lerp, smoothstep, G } = C;
@@ -179,11 +179,43 @@ let swYaw = 0;
 const isSwitch = () => Math.abs(Math.sin(swYaw / 2)) > 0.7;
 // Kameraperspektive: false = Verfolger, true = Ego-Sicht (Helmkamera). Wird gemerkt.
 let firstPerson = localStorage.getItem('gipfelsturm_fpv') === '1';
-function toggleView() {
-  firstPerson = !firstPerson;
+function toggleView(set) {
+  firstPerson = set === undefined ? !firstPerson : set;
   try { localStorage.setItem('gipfelsturm_fpv', firstPerson ? '1' : '0'); } catch {}
-  showMsg(firstPerson ? 'Ego-Sicht' : 'Verfolger-Kamera', 'good');
+  if (set === undefined) showMsg(firstPerson ? 'Ego-Sicht' : 'Verfolger-Kamera', 'good');
+  syncOpts();
 }
+function setMuted(m) {
+  audio.setMuted(m);
+  try { localStorage.setItem('gipfelsturm_muted', m ? '1' : '0'); } catch {}
+  syncOpts();
+}
+function syncOpts() {
+  const sel = (id, v) => { const el = $(id); if (el) for (const b of el.children) b.classList.toggle('sel', b.dataset.v === v); };
+  sel('optSound', audio.muted ? '0' : '1');
+  sel('optCam', firstPerson ? '1' : '0');
+  sel('optFs', fsOn() ? '1' : '0');
+}
+
+// ---------------------------------------------------------------- Vollbild
+// Fullscreen-API mit WebKit-Fallback. Am iPhone gibt es kein Vollbild für Webseiten: Knopf und Einstellung entfallen.
+const fsEl = document.documentElement;
+const fsSupported = !!(fsEl.requestFullscreen || fsEl.webkitRequestFullscreen) && !/iPhone|iPod/.test(navigator.userAgent);
+if (!fsSupported) document.body.classList.add('nofs');
+function fsOn() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+function toggleFs(want) {
+  if (!fsSupported) return;
+  const on = fsOn();
+  if (want === undefined) want = !on;
+  if (want === on) return;
+  try {
+    const r = want ? (fsEl.requestFullscreen ? fsEl.requestFullscreen({ navigationUI: 'hide' }) : fsEl.webkitRequestFullscreen())
+      : (document.exitFullscreen ? document.exitFullscreen() : document.webkitExitFullscreen());
+    if (r && r.catch) r.catch(() => {});
+  } catch { /* vom Browser abgelehnt */ }
+}
+document.addEventListener('fullscreenchange', () => syncOpts());
+document.addEventListener('webkitfullscreenchange', () => syncOpts());
 const trick = { pitch: 0, yaw: 0, pv: 0, yv: 0, grab: 0, grabT: 0, wasAir: false, gs: 0, gT: { safety: 0, mute: 0, tail: 0 } };
 let jumpQueued = false;
 let quietCrash = false;
@@ -235,12 +267,131 @@ function buildMenuControls() {
     }
     $(SW_IDS[key][1]).addEventListener('input', (e) => { outfit[key] = e.target.value; applyOutfit(); });
   }
+  MODES.forEach((m, i) => {
+    const b = document.createElement('button');
+    b.setAttribute('aria-label', m.name);
+    b.addEventListener('click', () => selectMode(i));
+    $('mDots').appendChild(b);
+  });
+  for (const b of document.querySelectorAll('.mtools button')) {
+    b.setAttribute('aria-expanded', 'false');
+    b.addEventListener('click', () => {
+      const d = $(b.dataset.dlg), was = !d.classList.contains('hidden');
+      closeDlg();
+      if (!was) { d.classList.remove('hidden'); b.classList.add('on'); b.setAttribute('aria-expanded', 'true'); d.querySelector('.x').focus(); }
+    });
+  }
+  for (const x of document.querySelectorAll('.dlg .x')) x.addEventListener('click', () => { const id = x.closest('.dlg').id; closeDlg(); document.querySelector(`[data-dlg="${id}"]`).focus(); });
+  for (const b of $('optSound').children) b.addEventListener('click', () => setMuted(b.dataset.v === '0'));
+  for (const b of $('optCam').children) b.addEventListener('click', () => toggleView(b.dataset.v === '1'));
+  for (const b of $('optFs').children) b.addEventListener('click', () => toggleFs(b.dataset.v === '1'));
+  $('fsBtn').addEventListener('click', () => { toggleFs(); $('fsBtn').blur(); });
+  try { if (localStorage.getItem('gipfelsturm_muted') === '1') audio.setMuted(true); } catch {}
+  syncOpts();
   for (const b of $('quality').children) {
     b.addEventListener('click', () => {
       chooseQuality(b.dataset.q);
-      if (game.mode === 'menu' && game.kind === 'endless') setKind(game.style !== 'freeride' && game.style ? game.style : 'endless');
+      if (game.mode === 'menu' && game.kind === 'endless') selectMode(modeIdx, true);
       b.blur();
     });
+  }
+}
+
+// ---------------------------------------------------------------- Startbildschirm: Modi als Karussell
+// Jeder Modus hat eine eigene Szene im 3D-Hintergrund: Rennen am Start-Tor, Freeride als Drohnenflug über Wald und
+// Pulverhang, Freestyle mit einem Fahrer, der über die Kicker springt und greift, Heli-Skiing mit dem Helikopter am Grat.
+const MODES = [
+  { id: 'race', name: 'Rennen', kicker: 'Abfahrt · 2,4 km · 39 Tore', line: 'Durch die Tore auf Zeit ins Tal. Jedes verpasste Tor kostet zwei Sekunden.', acc: '#ff7a2e' },
+  { id: 'endless', name: 'Freeride', kicker: 'Endloser Berg · jedes Mal neu', line: 'Wald, Pulverhänge und Klippen. Punkte zählen erst nach sauberer Landung, ein Sturz kostet alle.', acc: '#63e6b0' },
+  { id: 'freestyle', name: 'Freestyle', kicker: 'Endlos · Kicker, Gaps, Rails', line: 'Riesige Sprünge und Rails. Grabs mit Pfeil links und rechts, auf der Rail hältst du die Balance.', acc: '#ffd23f' },
+  { id: 'heli', name: 'Heli-Skiing', kicker: 'Gipfel bis Tal · auf Zeit', line: 'Der Helikopter setzt dich am Grat ab. Keine Karte, keine Markierung: den Weg suchst du selbst.', acc: '#7cc8ff' },
+];
+const MODE_KEY = 'gipfelsturm_mode';
+let modeIdx = 0;
+try { modeIdx = Math.max(0, MODES.findIndex((m) => m.id === localStorage.getItem(MODE_KEY))); } catch {}
+const RM = !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+const demo = { on: false, t: 0, kind: '', lane: 0, d0: 0, v0: 0, inp: { steer: 0, tuck: 0, brake: 0, jump: false } };
+
+function bestText(id) {
+  const get = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
+  if (id === 'race') return ['Bestzeit', game.best ? fmt(game.best) : 'noch keine'];
+  if (id === 'heli') { const b = parseFloat(get(BEST_KEY + '_heli') || '0'); return ['Bestzeit', b ? fmt(b) : 'noch keine']; }
+  const p = parseInt(get(BEST_E_KEY + (id === 'freestyle' ? STYLE_SFX.freestyle : '')) || '0', 10) || 0;
+  return ['Rekord', p ? `${num(p)} Punkte` : 'noch keiner'];
+}
+function renderMode(anim) {
+  const m = MODES[modeIdx];
+  $('menu').style.setProperty('--acc', m.acc);
+  $('menuKicker').textContent = m.kicker;
+  const h = $('mName');
+  h.setAttribute('aria-label', m.name);
+  h.classList.toggle('anim', !!anim);
+  h.innerHTML = [...m.name].map((c, i) => `<span aria-hidden="true" style="--i:${i}">${c}</span>`).join('');
+  const l = $('mLine');
+  l.textContent = m.line;
+  l.classList.remove('anim'); void l.offsetWidth; l.classList.toggle('anim', !!anim);
+  const [bl, bv] = bestText(m.id);
+  $('mBestLbl').textContent = bl;
+  $('mBest').textContent = bv;
+  $('mIdx').textContent = String(modeIdx + 1).padStart(2, '0');
+  [...$('mDots').children].forEach((b, i) => { b.classList.toggle('sel', i === modeIdx); b.setAttribute('aria-pressed', String(i === modeIdx)); });
+}
+let switching = false;
+/** Modus wechseln: kurzer Weißblende-Übergang (wie Schneegestöber), dahinter wird die neue Welt gebaut. */
+function selectMode(i, instant) {
+  i = (i + MODES.length) % MODES.length;
+  if (!instant && (game.mode !== 'menu' || switching)) return;
+  modeIdx = i;
+  try { localStorage.setItem(MODE_KEY, MODES[i].id); } catch {}
+  renderMode(!instant);
+  if (instant) { setKind(MODES[i].id); demoStart(); return; }
+  switching = true;
+  $('wipe').classList.add('on');
+  setTimeout(() => {
+    setKind(MODES[modeIdx].id);
+    demoStart();
+    requestAnimationFrame(() => requestAnimationFrame(() => { $('wipe').classList.remove('on'); switching = false; }));
+  }, RM ? 130 : 220);
+}
+function closeDlg() {
+  for (const d of document.querySelectorAll('.dlg')) d.classList.add('hidden');
+  for (const b of document.querySelectorAll('.mtools button')) { b.classList.remove('on'); b.setAttribute('aria-expanded', 'false'); }
+}
+function demoStart() {
+  const id = MODES[modeIdx].id;
+  Object.assign(demo, { kind: id, t: 0, on: !RM && (id === 'endless' || id === 'freestyle') });
+  heliStart();   // nur im Heli-Modus sichtbar: schwebt am Grat, Fahrer auf der Kufe
+  if (demo.on) {
+    let d = 230, lane = 0, v = 9;
+    if (id === 'freestyle') {
+      const f = C.featuresIn(0, 1600).find((q) => q.kind === 'jump' && q.vDes > 12);
+      if (f) { d = Math.max(20, f.d - 95); lane = f.lane || 0; v = f.vDes * 0.8; }
+    }
+    Object.assign(demo, { d0: d, lane, v0: v });
+    demoReset();
+  }
+  camSnap = true;
+}
+function demoReset() {
+  const d = demo.d0, x = C.laneX(d, demo.lane);
+  teleport(x, -d);
+  phys.heading = Math.atan2(C.laneX(d + 8, demo.lane) - x, 8);
+  phys.vel.set(Math.sin(phys.heading) * demo.v0, 0, -Math.cos(phys.heading) * demo.v0);
+  demo.t = 0; demo.inp.steer = 0;
+}
+/** Demo-Fahrer im Menü: folgt der Spur, greift in der Luft. */
+function demoUpdate(dt) {
+  demo.t += dt;
+  const p = phys.pos, d = -p.z, sp = phys.speed, LA = 14 + sp * 0.8;
+  const e = Math.atan2(C.laneX(d + LA, demo.lane) - p.x, LA) - phys.heading;
+  demo.inp.steer += clamp(clamp(e * 3.2, -1, 1) - demo.inp.steer, -9 * dt, 9 * dt);
+  const vMax = demo.kind === 'freestyle' ? 32 : 19;
+  demo.inp.brake = sp > vMax ? clamp((sp - vMax) / 4, 0, 1) : 0;
+  airKey.space = demo.kind === 'freestyle' && !phys.grounded && phys.airTime > 0.12;
+  if (demo.t > (demo.kind === 'freestyle' ? 16 : 34) && !switching && phys.grounded) {
+    switching = true;
+    $('wipe').classList.add('on');
+    setTimeout(() => { demoReset(); requestAnimationFrame(() => requestAnimationFrame(() => { $('wipe').classList.remove('on'); switching = false; })); }, 220);
   }
 }
 
@@ -278,9 +429,6 @@ function setKind(kind, seed) {
   C.setMode(kind === 'endless', seed || 1 + Math.floor(Math.random() * 1e6), style);
   world.setMode();
   resetRunState();
-  const sel = kind === 'endless' && style !== 'freeride' ? style : kind;
-  for (const b of document.querySelectorAll('.mode')) b.classList.toggle('sel', b.dataset.mode === sel);
-  $('menuKicker').textContent = sel === 'heli' ? 'Heli-Skiing · Absprung am Gipfel, Gletscher und Tiefschnee' : sel === 'freestyle' ? 'Freestyle · riesige Sprünge, jedes Mal neu' : kind === 'endless' ? 'Freeride · jedes Mal ein neuer Berg' : 'Abfahrt · 2,4 km · 650 Höhenmeter';
   game.bestHeli = parseFloat(localStorage.getItem(BEST_KEY + '_heli') || '0') || 0;
   $('lblMain').textContent = kind === 'endless' && !C.cfg.heli ? 'Punkte' : 'Zeit';
   $('lblSide').textContent = C.cfg.heli ? 'Über Tal' : kind === 'endless' ? 'Respawn' : 'Tore';
@@ -288,10 +436,14 @@ function setKind(kind, seed) {
 }
 
 function startRun(same) {
+  const fromMenu = game.mode === 'menu';
+  closeDlg();
+  demo.on = false; airKey.space = false;
   audio.start();
   saveEndlessBest();
-  // Heli-Berg: nach einem Sturz geht es auf demselben Berg wieder ganz oben los (same), sonst gibt es einen neuen
-  if (C.cfg.heli && same === true) { resetRunState(); world.updateChunks(0, true); }
+  // Heli-Berg: nach einem Sturz geht es auf demselben Berg wieder ganz oben los (same), sonst gibt es einen neuen.
+  // Aus dem Menü heraus wird der Berg gefahren, der im Hintergrund zu sehen war.
+  if ((C.cfg.heli && same === true) || (game.kind === 'endless' && fromMenu)) { resetRunState(); world.updateChunks(0, true); }
   else if (game.kind === 'endless') setKind(game.style !== 'freeride' && game.style ? game.style : 'endless', game.forceSeed);   // jedes Mal ein neuer Berg (forceSeed nur für Tests)
   else { world.resetGates(); resetRunState(); }
   $('menu').classList.add('hidden');
@@ -380,7 +532,7 @@ function heliUpdate(dt) {
   heli.t += dt;
   heli.rotor.rotation.y += dt * 38;
   heli.tail.rotation.z += dt * 60;
-  if (game.mode === 'countdown') {
+  if (game.mode === 'countdown' || game.mode === 'menu') {
     // Schweben mit leichtem Wackeln; Fahrer bleibt in der Tür
     heli.group.position.set(heli.pos.x, heli.pos.y + Math.sin(heli.t * 1.7) * 0.12, heli.pos.z);
     heli.group.rotation.set(Math.sin(heli.t * 1.3) * 0.02, 0, Math.sin(heli.t * 0.9) * 0.025);
@@ -409,6 +561,7 @@ function toMenu() {
   $('finish').classList.add('hidden');
   $('hud').classList.add('hidden');
   $('count').innerHTML = '';
+  selectMode(modeIdx, true);   // frischer Berg im Hintergrund, Rekorde aktualisiert
 }
 
 const totalScore = () => Math.round(game.score);
@@ -502,6 +655,13 @@ window.addEventListener('keydown', (e) => {
   if (e.repeat) return;
   if (e.target instanceof HTMLInputElement) return;
   const k = e.code;
+  if (game.mode === 'menu') {
+    const open = document.querySelector('.dlg:not(.hidden)');
+    if (k === 'Escape' && open) { const id = open.id; closeDlg(); document.querySelector(`[data-dlg="${id}"]`)?.focus(); return; }
+    if (!open && (k === 'ArrowLeft' || k === 'KeyA' || k === 'ArrowRight' || k === 'KeyD')) { e.preventDefault(); selectMode(modeIdx + (k === 'ArrowLeft' || k === 'KeyA' ? -1 : 1)); return; }
+  }
+  // Enter/Leertaste auf einem Knopf: der Knopf selbst reagiert (sonst würde doppelt gestartet)
+  if ((k === 'Enter' || k === 'Space') && e.target instanceof HTMLButtonElement && game.mode !== 'run') return;
   let name = KEYMAP[k];
   // In der Luft: Pfeil links = Mute Grab (linke Hand), Pfeil rechts = Tail Grab (rechte Hand); A/D drehen weiter
   if ((k === 'ArrowLeft' || k === 'ArrowRight') && game.mode === 'run' && !phys.grounded) name = k === 'ArrowLeft' ? 'gl' : 'gr';
@@ -517,8 +677,9 @@ window.addEventListener('keydown', (e) => {
   else if (k === 'KeyF') setCheckpoint();
   else if (k === 'KeyT' || k === 'Backspace') toCheckpoint();
   else if (k === 'Escape') toMenu();
-  else if (k === 'KeyM') audio.setMuted(!audio.muted);
-  else if (k === 'KeyC' || k === 'KeyV') toggleView();
+  else if (k === 'KeyM') setMuted(!audio.muted);
+  else if (k === 'KeyC') toggleView();
+  else if (k === 'KeyV') toggleFs();
   if (k.startsWith('Arrow') || k === 'Space') e.preventDefault();
 });
 window.addEventListener('keyup', (e) => {
@@ -533,13 +694,24 @@ const touchCtl = setupTouch({ isAir: () => game.mode === 'run' && !phys.grounded
 $('startBtn').addEventListener('click', () => { if (touchCtl) touchCtl.onStart(); if (game.mode === 'menu') startRun(); });
 $('againBtn').addEventListener('click', () => { if (touchCtl) touchCtl.onStart(); startRun(); });
 $('menuBtn').addEventListener('click', () => toMenu());
-for (const b of document.querySelectorAll('.mode')) {
-  b.addEventListener('click', () => { const cur = game.kind === 'endless' && game.style && game.style !== 'freeride' ? game.style : game.kind; if (game.mode === 'menu' && cur !== b.dataset.mode) setKind(b.dataset.mode); b.blur(); });
-}
+$('mPrev').addEventListener('click', () => selectMode(modeIdx - 1));
+$('mNext').addEventListener('click', () => selectMode(modeIdx + 1));
+// Handy und Maus: im Menü seitlich wischen wechselt den Modus
+let swX = null, swY = 0;
+window.addEventListener('pointerdown', (e) => {
+  if (game.mode !== 'menu' || e.target.closest('button, input, .dlg')) return;
+  swX = view.rot ? e.clientY : e.clientX; swY = view.rot ? e.clientX : e.clientY;
+});
+window.addEventListener('pointerup', (e) => {
+  if (swX === null) return;
+  const dx = (view.rot ? e.clientY : e.clientX) - swX, dy = (view.rot ? e.clientX : e.clientY) - swY;
+  swX = null;
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.3) selectMode(modeIdx + (dx < 0 ? 1 : -1));
+});
 
 // ---------------------------------------------------------------- Tricks
 function updateTricks(dt) {
-  const inAir = !phys.grounded && phys.crashed <= 0 && game.mode === 'run';
+  const inAir = !phys.grounded && phys.crashed <= 0 && (game.mode === 'run' || (game.mode === 'menu' && demo.on));
   if (inAir && !trick.wasAir) { for (const k in airKey) airKey[k] = false; trick.grabT = 0; trick.gT.safety = trick.gT.mute = trick.gT.tail = 0; }
   trick.wasAir = inAir;
   if (inAir) {
@@ -653,12 +825,45 @@ let camSnap = true;
 
 function updateCamera(dt, time) {
   const p = phys.pos, sp = phys.speed;
-  if (game.mode === 'menu') {
-    const a = Math.sin(time * 0.16) * 0.9 + 0.5;
-    tV.set(p.x + Math.sin(a) * 2.1, 0, p.z - 3.3 - Math.cos(a) * 0.6);
-    tV.y = Math.max(C.height(tV.x, tV.z) + 1.3, p.y + 1.2 + Math.sin(time * 0.23) * 0.3);
+  if (game.mode === 'menu' && demo.kind === 'heli' && heli.group && heli.on) {
+    // Heli am Grat: Kamera kreist langsam, unten fällt der Berg ins Tal ab
+    // Kamera talseitig etwas unterhalb des Helikopters: oben der Heli mit dem Fahrer auf der Kufe, dahinter der Grat
+    // Kamera bergseitig hinter dem Helikopter: der Heli steht rechts im Bild, darunter fällt der Berg ins Tal ab
+    const c = heli.group.position, a = RM ? 0 : Math.sin(time * 0.06) * 0.35;
+    tV.set(c.x - 15 + Math.sin(a) * 8, c.y + 4.5, c.z + 24 + Math.cos(a) * 2);
+    tV.y = Math.max(tV.y, C.height(tV.x, tV.z) + 2.5);
     camPos.lerp(tV, camSnap ? 1 : 1 - Math.exp(-dt * 2));
-    lookSm.set(p.x - (camera.aspect > 1.2 ? 0.9 : 0), p.y + 1.0, p.z);
+    camera.position.copy(camPos);
+    lookSm.set(c.x - (camera.aspect > 1.2 ? 4 : 10), c.y - 22, c.z - 90);
+    camera.lookAt(lookSm);
+    if (camera.fov !== 52) { camera.fov = 52; camera.updateProjectionMatrix(); }
+    camSnap = false;
+    return;
+  }
+  if (game.mode === 'menu' && demo.on && demo.kind === 'endless') {
+    // Freeride: Drohnenflug schräg hinter dem Fahrer über Wald und Pulverhang
+    tV.set(phys.vel.x, 0, phys.vel.z);
+    if (tV.lengthSq() < 1) tV.set(Math.sin(phys.heading), 0, -Math.cos(phys.heading));
+    camDir.lerp(tV.normalize(), camSnap ? 1 : 1 - Math.exp(-dt * 1.2)).normalize();
+    tV2.copy(p).addScaledVector(camDir, -17);
+    tV2.x += -camDir.z * 9; tV2.z += camDir.x * 9;
+    tV2.y = Math.max(C.height(tV2.x, tV2.z) + 7, p.y + 8);
+    camPos.lerp(tV2, camSnap ? 1 : 1 - Math.exp(-dt * 2.5));
+    camera.position.copy(camPos);
+    tV3.copy(p).addScaledVector(camDir, 16); tV3.y = p.y + 0.5;
+    lookSm.lerp(tV3, camSnap ? 1 : 1 - Math.exp(-dt * 3));
+    camera.lookAt(lookSm);
+    if (camera.fov !== 58) { camera.fov = 58; camera.updateProjectionMatrix(); }
+    camSnap = false;
+    return;
+  }
+  if (game.mode === 'menu' && !demo.on) {
+    const a = RM ? 0.5 : Math.sin(time * 0.16) * 0.9 + 0.5;
+    // Rennen: vor dem Start-Tor, der Fahrer steht rechts im Bild, links bleibt Platz für die Schrift
+    tV.set(p.x + 1.2 + Math.sin(a) * 1.4, 0, p.z - 4.6 - Math.cos(a) * 0.5);
+    tV.y = Math.max(C.height(tV.x, tV.z) + 1.3, p.y + 1.35 + Math.sin(time * 0.23) * 0.2);
+    camPos.lerp(tV, camSnap ? 1 : 1 - Math.exp(-dt * 2));
+    lookSm.set(p.x - (camera.aspect > 1.2 ? 2.1 : 0.4), p.y + 1.25, p.z);
     camera.position.copy(camPos);
     camera.lookAt(lookSm);
     camera.fov = 42;
@@ -1207,12 +1412,14 @@ function tick(dt, render) {
     }
   }
 
+  if (game.mode === 'menu' && demo.on) demoUpdate(dt);
   if (game.mode !== 'loading') {
     acc += dt;
     while (acc >= H) {
       inp.jump = jumpQueued && game.mode === 'run';
       jumpQueued = false;
-      if (heli.on && game.mode === 'countdown') { /* hängt in der Heli-Tür */ }
+      if (heli.on && (game.mode === 'countdown' || game.mode === 'menu')) { /* hängt in der Heli-Tür */ }
+      else if (game.mode === 'menu' && demo.on) phys.step(H, demo.inp);
       else if (game.mode === 'menu' || game.mode === 'countdown') { phys.vel.set(0, 0, 0); phys.step(H, zeroInp); phys.vel.set(0, 0, 0); }
       else phys.step(H, stepInp);
       if (game.mode === 'run') { game.time += H; game.topSpeed = Math.max(game.topSpeed, phys.speed); }
@@ -1274,7 +1481,7 @@ function tick(dt, render) {
   aval = new Avalanche(scene);
   dust = new DiamondDust(scene);
   applyQuality();
-  setKind('race');
+  selectMode(modeIdx, true);
   applyOutfit();
   tracks.update(phys.pos.x, phys.pos.z);
   $('loading').classList.add('hidden');

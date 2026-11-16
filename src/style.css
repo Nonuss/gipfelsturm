@@ -174,3 +174,106 @@ html.rot body.touch .touchkeys { font-size: 12px; gap: 3px; margin-bottom: 10px;
 html.rot body.touch .kicker { font-size: 11px; }
 #zone small { display: block; font-size: 0.42em; letter-spacing: 0.18em; opacity: 0.8; margin-top: 4px; }
 
+
+/* ---------------------------------------------------------------- Startbildschirm (Karussell) */
+.menu { position: fixed; inset: 0; pointer-events: none; container-type: size; --acc: #ff6a13;
+  background: radial-gradient(90% 75% at 0% 100%, rgba(6, 16, 32, 0.62) 0%, rgba(6, 16, 32, 0.3) 45%, rgba(6, 16, 32, 0) 75%), linear-gradient(0deg, rgba(6, 16, 32, 0.6) 0%, rgba(6, 16, 32, 0.18) 34%, rgba(6, 16, 32, 0) 56%), linear-gradient(180deg, rgba(6, 16, 32, 0.4), rgba(6, 16, 32, 0) 20%); }
+.menu button, .menu input, .menu .dlg { pointer-events: auto; }
+.menu :focus-visible, #fsBtn:focus-visible, #finish :focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.mtop { position: absolute; top: calc(22px + env(safe-area-inset-top)); left: clamp(20px, 6vw, 96px); right: clamp(20px, 4vw, 60px); display: flex; justify-content: space-between; align-items: baseline; }
+.brand { font: italic 800 22px var(--font); letter-spacing: 0.3em; text-transform: uppercase; }
+.mcount { font: italic 800 22px var(--font); font-variant-numeric: tabular-nums; letter-spacing: 0.06em; }
+.mcount b { color: var(--acc); transition: color 0.4s; }
+.mcount span { opacity: 0.6; margin-left: 6px; }
+.mmain h1 { text-shadow: 0 2px 4px rgba(6, 16, 32, 0.35), 0 10px 50px rgba(6, 16, 32, 0.55); }
+.mmain { position: absolute; left: clamp(20px, 6vw, 96px); right: clamp(20px, 6vw, 96px); bottom: clamp(72px, 13vh, 140px); bottom: clamp(72px, 13cqh, 140px); text-shadow: 0 4px 24px rgba(6, 16, 32, 0.5); }
+.menu .kicker { color: var(--acc); font-size: 15px; transition: color 0.4s; text-shadow: 0 1px 2px rgba(6, 16, 32, 0.9), 0 0 18px rgba(6, 16, 32, 0.7); }
+#mName { margin: 4px 0 0 -0.04em; text-transform: uppercase; line-height: 0.84; letter-spacing: -0.02em; white-space: nowrap;
+  font-size: clamp(60px, 15vw, 220px); font-size: clamp(60px, min(15cqw, 36cqh), 220px); }
+#mName span { display: inline-block; }
+#mName.anim span { animation: letin 0.62s cubic-bezier(0.2, 0.8, 0.2, 1) both; animation-delay: calc(var(--i) * 34ms); }
+@keyframes letin { from { opacity: 0; transform: translateY(0.34em) skewX(-9deg); } }
+.mline { margin: 14px 0 0; max-width: 34em; font: 19px/1.35 "Avenir Next", "Helvetica Neue", Arial, sans-serif; opacity: 0.94; }
+.mline.anim { animation: linein 0.6s 0.18s ease-out both; }
+@keyframes linein { from { opacity: 0; transform: translateY(8px); } }
+.mrow { display: flex; align-items: center; gap: 26px; margin-top: 22px; flex-wrap: wrap; }
+.menu .cta { background: var(--acc); box-shadow: 0 10px 34px color-mix(in srgb, var(--acc) 50%, transparent); color: #0b1422; transition: transform 0.12s, background 0.4s, box-shadow 0.4s; }
+.menu .cta:hover { background: var(--acc); filter: brightness(1.08); }
+.menu .cta small { opacity: 0.7; }
+.mbest { display: grid; gap: 2px; }
+.mbest span { font-size: 12px; letter-spacing: 0.24em; text-transform: uppercase; opacity: 0.7; font-weight: 600; }
+.mbest b { font: italic 800 26px var(--font); font-variant-numeric: tabular-nums; letter-spacing: 0.02em; }
+.marrow { position: absolute; top: 44%; width: 58px; height: 58px; border-radius: 50%; background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.3); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); display: grid; place-items: center; transition: transform 0.15s, background 0.15s, border-color 0.15s; }
+.marrow.prev { left: clamp(10px, 2vw, 28px); } .marrow.next { right: clamp(10px, 2vw, 28px); }
+.marrow svg, #fsBtn svg { width: 24px; height: 24px; fill: none; stroke: #fff; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.marrow:hover { background: rgba(255, 255, 255, 0.22); border-color: #fff; }
+.marrow.prev:hover { transform: translateX(-3px); } .marrow.next:hover { transform: translateX(3px); }
+.marrow:active { transform: scale(0.94); }
+.mdots { position: absolute; left: clamp(20px, 6vw, 96px); bottom: calc(26px + env(safe-area-inset-bottom)); display: flex; gap: 8px; pointer-events: auto; }
+.mdots button { width: 34px; height: 22px; padding: 0; background: none; position: relative; }
+.mdots button::after { content: ""; position: absolute; left: 0; right: 0; top: 9px; height: 4px; border-radius: 2px; background: rgba(255, 255, 255, 0.35); transition: background 0.3s; }
+.mdots button.sel { width: 64px; transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.mdots button.sel::after { background: var(--acc); }
+.mtools { position: absolute; right: clamp(20px, 4vw, 60px); bottom: calc(22px + env(safe-area-inset-bottom)); display: flex; gap: 6px; }
+.mtools button, #fsBtn { background: none; padding: 8px 12px; border-radius: 10px; font: 600 14px var(--font); letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.85; transition: background 0.15s, opacity 0.15s; }
+.mtools button:hover, .mtools button.on { background: rgba(255, 255, 255, 0.16); opacity: 1; }
+.dlg { position: absolute; right: clamp(20px, 4vw, 60px); bottom: calc(70px + env(safe-area-inset-bottom)); width: min(430px, calc(100% - 40px)); max-height: 72%; overflow-y: auto; padding: 14px 16px 16px; border-radius: 14px;
+  background: rgba(10, 20, 36, 0.72); border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35); animation: dlgin 0.22s ease-out both; }
+.dlg.wide { width: min(600px, calc(100% - 40px)); }
+@keyframes dlgin { from { opacity: 0; transform: translateY(10px); } }
+.dlg header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.dlg header b { font: italic 800 22px var(--font); letter-spacing: 0.04em; }
+.dlg .x { width: 34px; height: 34px; border-radius: 50%; background: rgba(255, 255, 255, 0.12); font: 400 22px/1 Arial, sans-serif; }
+.dlg .outfit, .dlg .keys { margin-bottom: 0; }
+.dlg .outfit .row > span { width: 74px; }
+.dlg .keys { font-size: 15px; }
+.dlg .touchkeys { margin-bottom: 0; }
+body.touch .dlg .keys { display: none; }
+body.nofs .fsrow, body.nofs #fsBtn { display: none; }
+#wipe { position: fixed; inset: 0; pointer-events: none; opacity: 0; z-index: 20; transition: opacity 0.34s ease-out;
+  background: radial-gradient(120% 90% at 50% 60%, #ffffff 0%, #eef4ff 55%, #cfe0fb 100%); }
+#wipe.on { opacity: 1; transition: opacity 0.2s ease-in; }
+#fsBtn { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); padding: 8px; pointer-events: auto; background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.18); opacity: 0.55; line-height: 0; }
+#fsBtn:hover { opacity: 1; }
+#fsBtn svg { width: 20px; height: 20px; }
+body.touch #fsBtn { top: calc(58px + env(safe-area-inset-top)); z-index: 31; }
+#menu #loading { position: absolute; left: 0; bottom: -34px; margin: 0; }
+/* Kompaktes Menü: niedriges Querformat und gedrehte Handy-Ansicht */
+@media (max-height: 520px) {
+  .mmain { bottom: 58px; }
+  .mline { font-size: 14px; margin-top: 6px; }
+  .mrow { margin-top: 10px; gap: 16px; }
+  .menu .cta { padding: 9px 22px; font-size: 22px; }
+  .mbest b { font-size: 19px; }
+  .marrow { width: 44px; height: 44px; top: 48px; }
+  #mName { font-size: clamp(44px, min(13cqw, 26cqh), 120px); }
+  .brand { font-size: 15px; }
+  .mcount { font-size: 15px; }
+  .mtop { top: calc(10px + env(safe-area-inset-top)); }
+  .mdots { bottom: calc(12px + env(safe-area-inset-bottom)); }
+  .mtools { bottom: calc(8px + env(safe-area-inset-bottom)); }
+  .mtools button { font-size: 12px; padding: 7px 8px; letter-spacing: 0.14em; }
+  .dlg { bottom: calc(48px + env(safe-area-inset-bottom)); max-height: 78%; }
+}
+html.rot .mmain { bottom: 58px; }
+html.rot .mline { font-size: 14px; margin-top: 6px; }
+html.rot .mrow { margin-top: 10px; gap: 16px; }
+html.rot .menu .cta { padding: 9px 22px; font-size: 22px; }
+html.rot .mbest b { font-size: 19px; }
+html.rot .marrow { width: 44px; height: 44px; top: 48px; }
+html.rot #mName { font-size: clamp(44px, min(13cqw, 26cqh), 120px); }
+html.rot .brand { font-size: 15px; }
+html.rot .mcount { font-size: 15px; }
+html.rot .mtop { top: calc(10px + env(safe-area-inset-top)); }
+html.rot .mdots { bottom: calc(12px + env(safe-area-inset-bottom)); }
+html.rot .mtools { bottom: calc(8px + env(safe-area-inset-bottom)); }
+html.rot .mtools button { font-size: 12px; padding: 7px 8px; letter-spacing: 0.14em; }
+html.rot .dlg { bottom: calc(48px + env(safe-area-inset-bottom)); max-height: 78%; }
+@media (max-width: 720px) { .mline { font-size: 15px; } .mtools button { letter-spacing: 0.12em; padding: 8px 8px; } }
+@media (prefers-reduced-motion: reduce) {
+  #mName span, .mline, .dlg { animation: none; }
+  #wipe, #wipe.on { transition: opacity 0.12s linear; }
+  .marrow, .mdots button.sel { transition: none; }
+}
+body.touch #hud { z-index: 32; }   /* nur der Vollbild-Knopf im HUD fängt Tipps ab, der Rest lässt sie durch */
+.menu .seg button.sel { background: var(--acc); border-color: var(--acc); color: #0b1422; }

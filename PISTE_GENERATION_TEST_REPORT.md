@@ -195,3 +195,41 @@ node tools/savepng.mjs                     # (optional) Empfänger für Bilder d
 
 Im Spiel lassen sich Seeds für Tests festlegen: `window.__game.game.forceSeed = 15; window.__game.setKind('endless', 15)`.
 Blender-Modelle neu erzeugen: `tools/blender_build.py`, danach `blender_skier.py` und `blender_props.py` ausführen, dann `export(...)`.
+
+## Heli-Berg neu (2026-11-16)
+
+Der Heli-Modus ist kein Endlos-Generator mehr, sondern ein endlicher Berg vom Gipfel bis ins Tal (`src/heliberg.js`), jedes Mal aus einem Grund-Bauplan zufällig abgewandelt.
+
+### Vorbilder und übernommene Prinzipien
+
+| Vorbild | Übernommenes Prinzip |
+|---|---|
+| Haines, Alaska (Freeride World Tour, Haines Pro) | Gipfelflanke mit anhaltend rund 45 Grad, Spines und Felsbändern; Rinnen zwischen den Bändern als Durchschlupf |
+| Chugach | Spines als scharfe Grate in Falllinie, dazwischen Rinnen |
+| Tordrillo | Gletscherstufe im mittleren Berg (Eisbruch mit Séracs) |
+| British Columbia (Heli-Skiing) | unten Bergwald mit Lichtungen und Pillow-Feld |
+| Bec des Rosses (Verbier) | schmaler Gipfelgrat als Startplatz, links und rechts fällt es ab, Linie sucht man selbst |
+
+### Aufbau
+
+- Gipfel: Grat mit 43 bis 49 Grad Gefälle, Breite wächst nach unten; die Flanken links und rechts sind Absturzgelände (wer sie bis zum Rand abrutscht, stürzt).
+- Gipfelflanke: zwei bis drei Felsbänder mit Klippen von 10 bis 42 m, Spines auf einer Seite.
+- Mitte: Kessel, Gletscherstufen, Eisbruch, Pillow-Feld, einzelne Felsköpfe.
+- Unten: Baumgrenze mit unruhigem Rand, Bergwald mit Lichtungen, Talboden mit Ziel und Hütten.
+- Felswände: eigene Meshes vor jeder Klippenkante (`World.buildWalls`), geschichtetes Gestein, Pfeiler, Bänder mit Schnee, Wechte an der Oberkante.
+- Fernsicht: grobes Mesh des ganzen Bergs und Tals; Nachbargipfel stehen fest um den Berg.
+
+### Bot-Test `node tools/heli_validate.mjs 20`
+
+| Prüfung | Ergebnis |
+|---|---|
+| Hauptlinie Gipfel bis Tal, 20 Berge, je drei Tempi | 60 von 60 ohne Sturz, Zeiten 97 bis 112 s |
+| Klippensprünge (jede Klippe, vier Tempi, zwei Stellen) | 2264 Sprünge, 0 Stürze, höchster Aufprall 12,4 m/s (Sturzgrenze 23) |
+| Freie Linien (seitlich versetzt, pendelnd), 80 Fahrten | 78 enden an Bäumen oder Felsen, weil der Bot nicht ausweicht; 2 bleiben im Flachen stecken |
+| Andere Welten (`piste_validate.mjs` Freeride, Freestyle, abseits) | weiterhin 0 Stürze |
+
+### Nicht geprüft
+
+- Kein Mensch hat den neuen Berg gespielt.
+- Lawinen-Auslösung im echten Spiel nur per Testbefehl ausgelöst und im Bild angesehen, nicht beim Fahren.
+- Leistung auf schwachen Handys nicht gemessen (Fernsicht-Mesh und Felswände kommen dazu).

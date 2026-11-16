@@ -5,6 +5,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import * as C from './course.js';
 import { makeSnowMaterial, snowUniforms } from './snow.js';
 import { Q } from './quality.js';
+import { HeliWorld } from './heliworld.js';
 
 export async function loadModels() {
   const gltf = await new GLTFLoader().loadAsync('models/models.glb');
@@ -25,6 +26,7 @@ export async function loadModels() {
 }
 
 export const SUN_DIR = new THREE.Vector3(-0.52, 0.56, -0.64).normalize(); // Richtung ZUR Sonne
+const SUN_DEFAULT = SUN_DIR.clone();
 const HAZE = new THREE.Color().setRGB(0.62, 0.77, 0.95);
 const TREE_NAMES = ['TreeA', 'TreeB', 'TreeC'];
 const ROCK_NAMES = ['RockA', 'RockB', 'RockC', 'RockD', 'RockE', 'RockF'];
@@ -36,6 +38,8 @@ export class World {
     this.propMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85, metalness: 0 });
     this.glossMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.45, metalness: 0.1 });
     this.snowMat = makeSnowMaterial();
+    this.snowMatH = makeSnowMaterial();          // Heli-Kacheln: mit Gelände-Schatten und Kreis-Ausschnitt
+    this.snowMatH.defines = { HELISUN: 1 };
     this._o = new THREE.Object3D();
     this._col = new THREE.Color();
     this._shear = new THREE.Matrix4();
@@ -70,19 +74,21 @@ export class World {
     this.course = new THREE.Group();
     this.scene.add(this.course);
     this.grp = this.course;
-    if (this.far) this.far.visible = false;
-    if (C.cfg.heli) {
-      // Heli-Berg: klare Fernsicht bis ins Tal (nur leichter Dunst), Nachbargipfel stehen fest um den Berg
-      this.scene.fog.near = 700;
-      this.scene.fog.far = 11000;
-      this.job = null;
-      this.buildColumnsE(Q.grid);
-      this.buildFar();
-      // Nachbargipfel: niedriger als unser Gipfel, ihre Sockel verschwinden unter dem Talboden
-      this.mountains.scale.set(1, 0.62, 1);
-      this.mountains.position.set(0, C.HB.info().floorY - 450, -1500);
-      this.buildProps();
-      this.updateChunks(0, true);
+    if (this.heliW) { this.heliW.dispose(); this.heliW = null; }
+    snowUniforms.uClip.value.set(0, 0, 1e9);
+    const heli = C.cfg.heli;
+    // Heli-Gebirge: eigene Sonne (tiefer, seitlich), Dunst mit Tiefe statt fester Sichtgrenze, echte Nachbarberge
+    this.setSun(heli ? new THREE.Vector3(...C.HB.SUN) : SUN_DEFAULT);
+    if (heli !== this.fogExp) {
+      this.scene.fog = heli ? new THREE.FogExp2(HAZE, 0.000072) : new THREE.Fog(HAZE, 220, 2300);
+      this.fogExp = heli;
+    }
+    this.mountains.visible = !heli;
+    if (heli) {
+      this.heliW = new HeliWorld(this);
+      this.heliW.build();
+      const dp = C.HB.dropPoint();
+      this.heliW.updateTiles(dp.x, -dp.d, true);
     } else if (C.cfg.endless) {
       this.scene.fog.near = 230;   // weiter vorne klar sehen, Nebel erst in der Ferne
       this.scene.fog.far = Q.view - 30;
@@ -127,7 +133,16 @@ export class World {
     this._ly = new THREE.Vector3().crossVectors(SUN_DIR, this._lx).normalize();
   }
 
+  setSun(v) {
+    SUN_DIR.copy(v).normalize();
+    snowUniforms.uSunDir.value.copy(SUN_DIR);
+    this._lx.crossVectors(new THREE.Vector3(0, 1, 0), SUN_DIR).normalize();
+    this._ly.crossVectors(SUN_DIR, this._lx).normalize();
+  }
+
   setLowQuality(low) {
+    const mh = this.snowMatH;
+    if (mh && !!mh.defines.LOWQ !== low) { if (low) mh.defines.LOWQ = 1; else delete mh.defines.LOWQ; mh.needsUpdate = true; }
     const m = this.snowMat;
     if (!!m.defines.LOWQ === low) return;
     if (low) m.defines.LOWQ = 1; else delete m.defines.LOWQ;
@@ -354,7 +369,8 @@ export class World {
     this.chunks.set(job.i, grp);
   }
 
-  updateChunks(d, all = false) {
+  updateChunks(d, all = false, x = 0) {
+    if (this.heliW) { this.heliW.updateTiles(x, -d, all); return; }
     const i0 = Math.floor((d - 170) / C.CHUNK), i1 = Math.min(Math.floor((d + Q.view + 40) / C.CHUNK), isFinite(C.MESH_D1) ? Math.floor((C.MESH_D1 + 250) / C.CHUNK) : 1e9);
     for (const [i, g] of this.chunks) {
       if (i < i0 || i > i1) {
@@ -458,8 +474,6 @@ export class World {
       // Wandhöhe je Stützpunkt
       let hMax = 0;
       for (const p of pts) {
-        const hub = HB.hubX(p.d);
-        p.x = hub + p.u; p.z = -p.d; p.nx = p.nu; p.nz = -p.nd;
         p.yT = C.height(p.x - p.nx * 3.0, p.z - p.nz * 3.0) + 0.3;
         p.yB = C.height(p.x + p.nx * 3.3, p.z + p.nz * 3.3) - 1.3;
         p.h = p.yT - p.yB;
@@ -529,81 +543,6 @@ export class World {
       m.castShadow = true; m.receiveShadow = true;
       parent.add(m);
     }
-  }
-
-  // ------------------------------------------------------------ Heli-Berg: Fernsicht
-  /** Grobes Mesh des ganzen Bergs samt Tal. Wo die feinen Geländestücke geladen sind, wird es im Shader ausgespart. */
-  buildFar() {
-    const HB = C.HB, s = HB.info();
-    if (this.far) { this.far.geometry.dispose(); this.scene.remove(this.far); }
-    const xs = [0];
-    for (let x = 0, st = 14; x < 3400;) { if (x > 420) st = Math.min(st * 1.16, 170); x += st; xs.push(x); }
-    const X = [...xs.slice(1).reverse().map((v) => -v), ...xs];
-    const D = [];
-    for (let d = -1500; d < -260; d += 110) D.push(d);
-    for (let d = -260; d < s.end + 320; d += 16) D.push(d);
-    for (let d = s.end + 320, st = 40; d < s.end + 3600; d += st, st = Math.min(st * 1.15, 180)) D.push(d);
-    const cols = X.length, rows = D.length, n = cols * rows;
-    const pos = new Float32Array(n * 3), col = new Float32Array(n * 3);
-    let k = 0;
-    for (let r = 0; r < rows; r++) {
-      const d = D[r], hub = HB.hubX(d);
-      for (let c = 0; c < cols; c++, k++) {
-        const u = X[c], y = HB.heightDU(d, u);
-        pos[k * 3] = hub + u; pos[k * 3 + 1] = y - 1.6; pos[k * 3 + 2] = -d;
-        // Farbe: Fels, wo es steil ist; Wald unter der Baumgrenze; sonst Schnee
-        const e = 5, sx = (HB.heightDU(d, u + e) - HB.heightDU(d, u - e)) / (2 * e), sz = (HB.heightDU(d + e, u) - HB.heightDU(d - e, u)) / (2 * e);
-        const ny = 1 / Math.sqrt(1 + sx * sx + sz * sz);
-        const nz = C.vnoise(u / 40 + 3, d / 40);
-        const rock = C.smoothstep(0.6, 0.44, ny + (nz - 0.5) * 0.22 + (C.vnoise(u / 150 + 5, d / 150) - 0.5) * 0.2);
-        const far = Math.abs(u) > 270 || d > s.end;
-        const treeY = HB.Hof(s.treeD + 200);
-        const fo = Math.max(HB.forestAt(d, u), far ? C.smoothstep(treeY + 90, treeY - 60, y + 90 * (C.fbm(u / 220 + 9, d / 220) - 0.5)) * (0.55 + 0.45 * C.smoothstep(0.3, 0.6, C.fbm(u / 70 + 2, d / 70))) : 0) * (1 - rock);
-        let cr = 0.95, cg = 0.97, cb = 1.0;
-        const rk = 0.36 + 0.14 * nz;
-        cr += (rk * 1.02 - cr) * rock * 0.9; cg += (rk - cg) * rock * 0.9; cb += (rk * 1.06 - cb) * rock * 0.9;
-        cr += (0.16 - cr) * fo * 0.8; cg += (0.24 - cg) * fo * 0.8; cb += (0.24 - cb) * fo * 0.8;
-        col[k * 3] = cr; col[k * 3 + 1] = cg; col[k * 3 + 2] = cb;
-      }
-    }
-    const idx = new Uint32Array((rows - 1) * (cols - 1) * 6);
-    let i = 0;
-    for (let r = 0; r < rows - 1; r++) for (let c = 0; c < cols - 1; c++) {
-      const a = r * cols + c, b = a + 1, c2 = a + cols, d2 = c2 + 1;
-      idx[i++] = a; idx[i++] = b; idx[i++] = c2; idx[i++] = b; idx[i++] = d2; idx[i++] = c2;
-    }
-    const g = new THREE.BufferGeometry();
-    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    g.setAttribute('color', new THREE.BufferAttribute(col, 3));
-    g.setIndex(new THREE.BufferAttribute(idx, 1));
-    g.computeVertexNormals();
-    if (!this.farMat) {
-      this.farU = { uHole: { value: new THREE.Vector2(1e9, 1e9) }, uHub: { value: new THREE.Vector3() } };
-      this.farMat = new THREE.MeshLambertMaterial({ vertexColors: true });
-      this.farMat.onBeforeCompile = (sh) => {
-        Object.assign(sh.uniforms, this.farU);
-        sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vFarW;').replace('#include <begin_vertex>', '#include <begin_vertex>\nvFarW = position;');
-        sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vFarW; uniform vec2 uHole; uniform vec3 uHub;')
-          .replace('#include <clipping_planes_fragment>', `#include <clipping_planes_fragment>
-          { float dd = -vFarW.z; float hub = uHub.x * sin(dd / uHub.y + uHub.z) * smoothstep(320.0, 950.0, dd);
-            if (dd > uHole.x && dd < uHole.y && abs(vFarW.x - hub) < 269.0) discard; }`);
-      };
-    }
-    this.farU.uHub.value.set(s.hubA, s.hubL, s.hubP);
-    this.far = new THREE.Mesh(g, this.farMat);
-    this.far.frustumCulled = false;
-    this.far.receiveShadow = false;
-    this.scene.add(this.far);
-  }
-  /** Aussparung im Fernsicht-Mesh: der zusammenhängend geladene Bereich um den Fahrer. */
-  updateFarHole(d) {
-    if (!this.far || !this.far.visible) return;
-    const here = Math.floor(d / C.CHUNK);
-    let lo = here, hi = here;
-    if (!this.chunks.has(here)) { this.farU.uHole.value.set(1e9, 1e9); return; }
-    while (this.chunks.has(lo - 1)) lo--;
-    while (this.chunks.has(hi + 1)) hi++;
-    this.farU.uHole.value.set(lo * C.CHUNK + 4, (hi + 1) * C.CHUNK - 4);
   }
 
   // ------------------------------------------------------------ Respawn-Fahne
@@ -1011,11 +950,11 @@ export class World {
     this.sky.position.copy(camPos);
     this.sky.material.uniforms.uTime.value = time;
     this.updateSun(playerPos);
-    if (C.cfg.endless) {
+    if (this.heliW) this.heliW.update(playerPos);
+    else if (C.cfg.endless) {
       this.updateChunks(-playerPos.z);
       // Das Panorama wandert mit, sonst wäre es nach ein paar Kilometern weg
-      if (!C.cfg.heli) this.mountains.position.set(0, playerPos.y + 330, playerPos.z + 1200);
-      else this.updateFarHole(-playerPos.z);
+      this.mountains.position.set(0, playerPos.y + 330, playerPos.z + 1200);
     }
     this.updateLift(time);
     this.updateGates(dt, time, nextGate);

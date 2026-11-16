@@ -7,6 +7,7 @@ export const snowUniforms = {
   uTrackSize: { value: 96 },
   uTrackRes: { value: 2048 },
   uSunDir: { value: new THREE.Vector3(0, 1, 0) },
+  uClip: { value: new THREE.Vector3(0, 0, 1e9) },   // Heli-Berg: Kacheln nur innerhalb dieses Kreises (x, z, Radius)
 };
 
 const FRAG_HEAD = /* glsl */ `
@@ -15,6 +16,8 @@ uniform vec2 uTrackCenter;
 uniform float uTrackSize;
 uniform float uTrackRes;
 uniform vec3 uSunDir;
+uniform vec3 uClip;
+varying float vSunF;
 varying vec3 vSnowPos;
 varying float vPiste;
 varying float vU;
@@ -45,6 +48,9 @@ float glintLayer(vec2 p, float scale, vec3 V, vec3 L){
 `;
 
 const FRAG_NORMAL = /* glsl */ `
+#ifdef HELISUN
+if (distance(vSnowPos.xz, uClip.xy) > uClip.z) discard;
+#endif
 {
   vec3 Nw = inverseTransformDirection(normal, viewMatrix);
   vec3 toCam = cameraPosition - vSnowPos;
@@ -123,6 +129,8 @@ const FRAG_NORMAL = /* glsl */ `
 `;
 
 const FRAG_LIGHT = /* glsl */ `
+reflectedLight.directDiffuse *= vSunF;
+reflectedLight.directSpecular *= vSunF;
 reflectedLight.directSpecular += snowGlint * reflectedLight.directDiffuse * 22.0;
 {
   // weiches Streulicht an flachen Blickwinkeln
@@ -156,7 +164,8 @@ varying vec3 vSnowPos;
 varying float vPiste;
 varying float vU;
 varying float vPow;
-varying float vAO;`)
+varying float vAO;
+varying float vSunF;`)
       .replace('#include <begin_vertex>', `#include <begin_vertex>
 #ifdef PATCH
 {
@@ -168,6 +177,11 @@ varying float vAO;`)
 #endif
 vSnowPos = (modelMatrix * vec4(transformed, 1.0)).xyz;
 vPiste = aPiste;
+vSunF = 1.0;
+#ifdef HELISUN
+vSunF = aPiste;   // Heli-Berg: keine Pisten, der Kanal trägt den vorab berechneten Gelände-Schatten
+vPiste = 0.0;
+#endif
 vU = aU;
 vPow = aPow;
 vAO = aAO;`);
@@ -176,7 +190,7 @@ vAO = aAO;`);
       .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n' + FRAG_NORMAL)
       .replace('#include <lights_fragment_end>', '#include <lights_fragment_end>\n' + FRAG_LIGHT);
   };
-  mat.customProgramCacheKey = () => 'snow-v4-' + (opts.patch ? 'patch' : 'main') + (mat.defines && mat.defines.LOWQ ? 'low' : 'hi');
+  mat.customProgramCacheKey = () => 'snow-v5-' + (opts.patch ? 'patch' : 'main') + (mat.defines && mat.defines.LOWQ ? 'low' : 'hi') + (mat.defines && mat.defines.HELISUN ? 'sun' : '');
   return mat;
 }
 

@@ -83,6 +83,7 @@ export class PowderPatch {
         const edge = e >= 1 ? 1 : e * e * (3 - 2 * e);
         const wob = 0.85 + 0.15 * Math.sin(pos[k * 3] * 0.9 + pos[k * 3 + 2] * 0.7);
         this.aW[k] = pw;
+        this.aP[k] = C.cfg.heli ? C.HB.sunAt(pos[k * 3], -pos[k * 3 + 2]) : 0;
         // erst ab deutlichem Pulveranteil eine Schicht, sonst sieht man die Patch-Kante im präparierten Schnee
         const pk = Math.min(1, Math.max(0, (pw - 0.18) / 0.4));
         this.aL[k] = LAYER_MAX * (pk * pk * (3 - 2 * pk)) * edge * wob;
@@ -93,6 +94,6 @@ export class PowderPatch {
       }
     }
     const a = this.geo.attributes;
-    a.position.needsUpdate = true; a.normal.needsUpdate = true; a.aPow.needsUpdate = true; a.aLayer.needsUpdate = true;
+    a.position.needsUpdate = true; a.normal.needsUpdate = true; a.aPow.needsUpdate = true; a.aLayer.needsUpdate = true; a.aPiste.needsUpdate = true;
   }
 }

@@ -171,8 +171,9 @@ export const chalets = [];
 export const markers = [];
 export const colliders = new Map();
 
-function addCollider(x, z, r, type, lx = 0, lz = 0) {
-  const key = Math.floor(-z / 20);
+const hKey = (i, j) => (i + 1000) * 100000 + j + 1000;
+export function addCollider(x, z, r, type, lx = 0, lz = 0) {
+  const key = cfg.heli ? hKey(Math.floor(x / 20), Math.floor(-z / 20)) : Math.floor(-z / 20);
   if (!colliders.has(key)) colliders.set(key, []);
   colliders.get(key).push({ x, z, r, type, lx, lz });   // lx/lz: Richtung der Zaunlinie (Einheitsvektor)
 }
@@ -191,7 +192,12 @@ export function nearRails(z, cb) {
     cb(r.g);
   }
 }
-export function nearColliders(z, cb) {
+export function nearColliders(z, cb, x = 0) {
+  if (cfg.heli) {
+    const ci = Math.floor(x / 20), cj = Math.floor(-z / 20);
+    for (let i = ci - 1; i <= ci + 1; i++) for (let j = cj - 1; j <= cj + 1; j++) { const l = colliders.get(hKey(i, j)); if (l) for (let q = 0; q < l.length; q++) cb(l[q]); }
+    return;
+  }
   const k = Math.floor(-z / 20);
   for (let i = k - 1; i <= k + 1; i++) {
     const l = colliders.get(i);
@@ -624,6 +630,11 @@ export function genChunk(i) {
     else if (pick < 0.62) addD('DeadTree', x, dd, { rot: r3 * 6.28, scale: 0.8 + r2 * 0.6, r: 0.35, type: 'baum' });
   }
   return out;
+}
+/** Heli-Berg: Kollisionen einer Kachel (Kante T, Vielfaches von 20 m) entfernen. */
+export function dropTile(ti, tj, T) {
+  const n = T / 20;
+  for (let i = ti * n; i < (ti + 1) * n; i++) for (let j = tj * n; j < (tj + 1) * n; j++) colliders.delete(hKey(i, j));
 }
 export function dropChunk(i) {
   for (let k = i * 5; k < i * 5 + 5; k++) colliders.delete(k);

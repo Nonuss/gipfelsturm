@@ -233,3 +233,44 @@ Der Heli-Modus ist kein Endlos-Generator mehr, sondern ein endlicher Berg vom Gi
 - Kein Mensch hat den neuen Berg gespielt.
 - Lawinen-Auslösung im echten Spiel nur per Testbefehl ausgelöst und im Bild angesehen, nicht beim Fahren.
 - Leistung auf schwachen Handys nicht gemessen (Fernsicht-Mesh und Felswände kommen dazu).
+
+## Heli-Gebirge (2026-11-16, zweite Fassung)
+
+Die erste Fassung war ein einzelner Hang mit vorgegebener Linie. Jetzt erzeugt `src/heliberg.js` ein ganzes Gebirge, `src/heliworld.js` stellt es dar.
+
+### Was echte Berge ausmacht (angesehen: Matterhorn, Lauterbrunnental, Chugach) und wie es umgesetzt ist
+
+| Beobachtung | Umsetzung |
+|---|---|
+| Horn-Gipfel: Grate laufen nach allen Seiten, dazwischen konkave Flanken | Kegel mit Graten je Winkel, Grate biegen und haben Schultern |
+| Flanken sind von Rippen und Rinnen in Falllinie durchzogen | gestrecktes Grat-Rauschen in Polarkoordinaten um den Gipfel |
+| Wasser formt verzweigte Rinnen und Schwemmkegel | Tropfen-Erosion (160 000 Tropfen), Hangrutschung bis rund 48 Grad |
+| Ketten hängen zusammen, Täler dazwischen sind V-förmig | Ridged-Multifractal-Rauschen mit Verzerrung für die Umgebung |
+| Haupttal als Trog: flacher Boden, Fluss, Dörfer, Wald an den Hangfüßen | U-Trog, Fluss als Band (teils zugefroren), fünf Dörfer, Waldgürtel |
+| Wald endet unregelmäßig, Lawinenstriche bleiben frei | Baumgrenze mit Rauschen, keine Bäume in Mulden und auf Steilhängen |
+| Fels zeigt sich in Rippen, Schnee hält in Rinnen | Fels-Maske im Shader entlang der Falllinie gestreift |
+| Ferne Berge werden blasser und bläulich | exponentieller Dunst statt fester Sichtgrenze |
+| Grate werfen Schatten auf die Flanken | Gelände-Schatten vorab berechnet (Strahlen zur Sonne), tiefere, seitliche Sonne |
+
+### Spielbarkeit
+
+- Senken werden mit Mindestgefälle aufgefüllt (Priority-Flood), im Talboden nur minimal; so bleibt man nicht stecken, ohne dass das Tal zur Rampe wird.
+- Der Fluss trägt den Schutt ab: Ablagerungen der Erosion im Talboden werden zurückgenommen.
+- Klippen werden quer zur örtlichen Falllinie gesetzt, die Bank oberhalb nach dem örtlichen Gefälle ausgelegt und jede Landung mit der Flugbahn geprüft.
+- Endtempo im Tiefschnee rund 100 bis 120 km/h, Lawinen nur auf Hängen über etwa 31 Grad, seltener als vorher.
+- Lawine folgt der örtlichen Falllinie (eigener Rahmen je Abriss).
+
+### Bot-Test `node tools/heli_validate.mjs 8 ohne` (ohne Bäume und Felsen)
+
+| Prüfung | Ergebnis |
+|---|---|
+| Fahrten vom Gipfel ins Tal (8 Berge, je 5 Linien entlang der Falllinie) | 40 von 40 im Tal, 0 Geländestürze, 0 steckengeblieben, 4 bis 7 Minuten |
+| Klippensprünge (368 Klippen, je 4 Tempi an 2 Stellen) | 2944 Sprünge, 0 Stürze, höchster Aufprall 15,3 m/s (Grenze 23) |
+| Erzeugungszeit je Berg | rund 1,4 bis 1,6 s |
+| Mit Bäumen und Felsen (`node tools/heli_validate.mjs 4`) | alle 20 Fahrten enden an einem Baum oder Fels, der Bot weicht nicht aus |
+| Andere Welten | weiterhin 0 Stürze |
+
+### Nicht geprüft
+
+- Kein Mensch hat das Gebirge gespielt; ob der Wald mit rund 6 bis 7 m Baumabstand angenehm fahrbar ist, ist offen.
+- Bildrate nur auf diesem Rechner gemessen (60 Bilder/s), nicht auf Handys.

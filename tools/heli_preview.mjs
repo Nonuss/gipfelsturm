@@ -4,7 +4,7 @@ import zlib from 'node:zlib';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import * as HB from '../src/heliberg2.js';
+import * as HB from '../src/heliberg.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const seed = +(process.argv[2] || 77), mode = process.argv[3] || 'feld';

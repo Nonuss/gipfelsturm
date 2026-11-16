@@ -457,6 +457,8 @@ function setKind(kind, seed) {
   game.bestDist = parseInt(localStorage.getItem(BEST_D_KEY + sfx) || '0', 10) || 0;
   C.cfg.treeMul = Q.trees;
   C.setMode(kind === 'endless', seed || 1 + Math.floor(Math.random() * 1e6), style);
+  renderer.toneMappingExposure = C.cfg.heli ? 0.74 : 0.9;   // viel Schnee in der Fernsicht: etwas knapper belichten
+  if (patch) { const pm = patch.mesh.material, on = !!C.cfg.heli; if (!!pm.defines.HELISUN !== on) { if (on) pm.defines.HELISUN = 1; else delete pm.defines.HELISUN; pm.needsUpdate = true; } }
   world.setMode();
   resetRunState();
   game.bestHeli = parseFloat(localStorage.getItem(BEST_KEY + '_heli') || '0') || 0;
@@ -473,7 +475,7 @@ function startRun(same) {
   saveEndlessBest();
   // Heli-Berg: nach einem Sturz geht es auf demselben Berg wieder ganz oben los (same), sonst gibt es einen neuen.
   // Aus dem Menü heraus wird der Berg gefahren, der im Hintergrund zu sehen war.
-  if ((C.cfg.heli && same === true) || (game.kind === 'endless' && fromMenu)) { resetRunState(); world.updateChunks(0, true); }
+  if ((C.cfg.heli && same === true) || (game.kind === 'endless' && fromMenu)) { resetRunState(); if (C.cfg.heli) { const dp = C.HB.dropPoint(); world.updateChunks(dp.d, true, dp.x); } else world.updateChunks(0, true); }
   else if (game.kind === 'endless') setKind(game.style !== 'freeride' && game.style ? game.style : 'endless', game.forceSeed);   // jedes Mal ein neuer Berg (forceSeed nur für Tests)
   else { world.resetGates(); resetRunState(); }
   $('menu').classList.add('hidden');
@@ -511,7 +513,8 @@ function heliStart() {
   if (!heli.on) { audio.setHeli(0); return; }
   heli.t = 0;
   // Absprungpunkt: 4,5 m über dem Schnee am Gipfel, Helikopter quer zum Hang, Tür zum Fahrer
-  const d = C.cfg.heli ? 7 : 18, x = C.centerX(d), z = -d, gy = C.height(x, z);
+  const dp = C.cfg.heli ? C.HB.dropPoint() : null;
+  const d = dp ? dp.d : 18, x = dp ? dp.x : C.centerX(d), z = -d, gy = C.height(x, z);
   heli.drop.set(x, gy + 4.5, z);
   heli.pos.set(x + 0.3, gy + 4.5 + 2.7, z - 1.75);   // Fahrer steht außen auf der Kufe vor der offenen Tür
   heli.group.position.copy(heli.pos);
@@ -531,7 +534,7 @@ function avalancheUpdate(dt) {
   if (heliMode && game.mode === 'run' && !aval.active && aval.cool <= 0 && phys.grounded && phys.crashed <= 0) {
     const ny = Math.max(0.3, phys.normal.y), tanS = Math.sqrt(1 - ny * ny) / ny;
     // realistisch: nur steile (ab etwa 32 Grad), tief eingeschneite Hänge; scharfe Schwünge belasten die Schneedecke zusätzlich
-    if (tanS > 0.62 && phys.pow > 0.6 && phys.speed > 6 && -phys.pos.z > 60) avRisk += dt * (tanS - 0.55) * (0.1 + 0.16 * clamp(Math.abs(phys.aLat) / 9, 0, 1.5));
+    if (tanS > 0.62 && phys.pow > 0.6 && phys.speed > 6 && -phys.pos.z > 60) avRisk += dt * (tanS - 0.6) * (0.045 + 0.12 * clamp(Math.abs(phys.aLat) / 9, 0, 1.5));
     if (avRisk > 1 + Math.random() * 0.02) triggerAvalanche();
   }
   const r = aval.update(dt, C, phys.pos);
@@ -550,7 +553,12 @@ function avalancheUpdate(dt) {
 function triggerAvalanche(landing = false) {
   avRisk = 0;
   const d = -phys.pos.z, hub = C.centerX(d);
-  aval.start(d - (landing ? 7 : 16), phys.pos.x - hub + (Math.random() - 0.5) * 20, 70 + Math.random() * 60, C);
+  // Abriss oberhalb des Fahrers, quer zur örtlichen Falllinie
+  const px = phys.pos.x, pz = phys.pos.z, e = 4;
+  let gx = C.height(px + e, pz) - C.height(px - e, pz), gd = C.height(px, pz - e) - C.height(px, pz + e);
+  const gl = Math.hypot(gx, gd) || 1; gx /= gl; gd /= gl;
+  const back = landing ? 7 : 16, side = (Math.random() - 0.5) * 20;
+  aval.start({ x: px + gx * back + gd * side, d: d + gd * back - gx * side, fx: -gx, fd: -gd }, 70 + Math.random() * 60, C);
   audio.crack();
   avCam = 3.4;   // kurz seitlich zeigen, wie der Riss durch den Hang läuft und die Platte bricht
   vis.shake = 0.5;
@@ -656,7 +664,7 @@ function setCheckpoint() {
   showMsg('Respawn-Punkt gesetzt', 'good');
 }
 function teleport(x, z, heading) {
-  if (C.cfg.endless) world.updateChunks(-z, true);
+  if (C.cfg.endless) world.updateChunks(-z, true, x);
   phys.reset(-z, x);
   if (patch) patch.reset();
   if (heading !== undefined) phys.heading = heading;
@@ -1472,7 +1480,7 @@ function tick(dt, render) {
     updatePoints(dt);
     updateTricks(dt);
     if (game.mode === 'run' && game.kind === 'race') checkGates();
-    if (game.mode === 'run' && C.cfg.heli && -phys.pos.z >= C.FINISH_D) finishRun();
+    if (game.mode === 'run' && C.cfg.heli && C.HB.finished(phys.pos.x, -phys.pos.z)) finishRun();
     if (game.mode === 'finished' && game.finishT > 1.6) { $('finish').classList.remove('hidden'); $('hud').classList.add('hidden'); }
 
     updateSkier(dt);

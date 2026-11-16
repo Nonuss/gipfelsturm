@@ -83,8 +83,9 @@ export class SkiPhysics {
 
       // Reibung + Luftwiderstand
       const mu = lerp(0.04, cfg.endless ? 0.072 : 0.11, pw);
-      const k = lerp(0.0036, 0.0019, inp.tuck);
-      const dec = mu * G * N.y + k * speed * speed + (cfg.endless ? pw * (0.26 + 0.03 * speed) : pw * 0.05 * speed) + inp.brake * 4.6;
+      // Heli-Berg: tiefer Pulver bremst bei hohem Tempo stärker (Endtempo um 100 km/h auch in 45-Grad-Flanken)
+      const k = lerp(0.0036, 0.0019, inp.tuck) * (cfg.heli ? 1.45 : 1);
+      const dec = mu * G * N.y + k * speed * speed + (cfg.endless ? pw * (0.26 + (cfg.heli ? 0.05 : 0.03) * speed) : pw * 0.05 * speed) + inp.brake * 4.6;
       if (speed > 1e-4) v.multiplyScalar(Math.max(0, speed - dec * dt) / speed);
       v.y -= G * dt;
 
@@ -177,7 +178,7 @@ export class SkiPhysics {
       } else {
         p.y = hgt;
         // Heli-Berg: wer mit Tempo gegen eine Felswand fährt (Seitenwand einer Rinne, Wandfuß), stürzt
-        if (cfg.heli && N2.y < 0.5 && vn < -7 && this.crashed <= 0) { this.events.push({ type: 'hit', what: 'wand' }); this.crash(); }
+        if (cfg.heli && N2.y < 0.42 && vn < -8 && this.crashed <= 0) { this.events.push({ type: 'hit', what: 'wand' }); this.crash(); }
         if (vn < 0) v.addScaledVector(N2, -vn);
       }
     } else if (gap <= 0) {
@@ -227,7 +228,7 @@ export class SkiPhysics {
             v.multiplyScalar(1 - Math.min(0.25, into * 0.03));
           }
         }
-      });
+      }, p.x);
     }
 
     FH.set(Math.sin(this.heading), 0, -Math.cos(this.heading));

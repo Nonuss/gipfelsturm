@@ -45,15 +45,23 @@ export class Avalanche {
     this.phase = 'none';
   }
 
-  /** Abriss: Kante bei `d` (Meter talwärts), quer bei xRel (relativ zur Mittellinie), Breite w. */
-  start(d, xRel, w, C) {
-    Object.assign(this, { active: true, crown: d, front: d, xRel, w, speed: 7, t: 0, stopped: 0, travelled: 0, phase: 'crack', acc: 0 });
+  /** Abriss quer zur örtlichen Falllinie: fr = { x, d, fx, fd } (Mitte der Abrisskante, Falllinie als Einheitsvektor), Breite w.
+   *  Alle Längen der Lawine sind danach Koordinaten in diesem Rahmen: s entlang der Falllinie, u quer. */
+  start(fr, w, C) {
+    const l = Math.hypot(fr.fx, fr.fd) || 1, fx = fr.fx / l, fd = fr.fd / l;
+    Object.assign(this, { active: true, crown: 0, front: 0, xRel: 0, w, speed: 7, t: 0, stopped: 0, travelled: 0, phase: 'crack', acc: 0,
+      ox: fr.x, od: fr.d, fx, fd, ax: fd, ad: -fx });
     if (C) this.buildCracks(C);
   }
 
+  /** Rahmen -> Welt: [x, d] */
+  W(u, sv) { return [this.ox + this.fx * sv + this.ax * u, this.od + this.fd * sv + this.ad * u]; }
+  /** Welt -> Rahmen: [s, u] */
+  L(x, d) { const dx = x - this.ox, dd = d - this.od; return [dx * this.fx + dd * this.fd, dx * this.ax + dd * this.ad]; }
+
   /** Geometrie der Abrisskante und der Bruchlinien aus dem Gelände. */
   buildCracks(C) {
-    const w = this.w, hubAt = (d) => C.centerX(d);
+    const w = this.w;
     const quads = [], wallQ = [];
     // Bandstück von a nach b (Welt-xz) mit Breite, liegt auf dem Gelände
     const seg = (list, ax, az, bx, bz, wd, order, lift, drop = 0) => {
@@ -70,9 +78,9 @@ export class Avalanche {
     this.pts = pts;
     for (let i = 0; i < pts.length - 1; i++) {
       const a = pts[i], b = pts[i + 1], ord = Math.abs((a.u + b.u) / 2) / (w / 2);
-      const ax = hubAt(a.d) + this.xRel + a.u, bx = hubAt(b.d) + this.xRel + b.u;
-      seg(quads, ax, -a.d, bx, -b.d, 0.55 + Math.random() * 0.5, ord, 0.1);
-      seg(wallQ, ax, -a.d - 0.5, bx, -b.d - 0.5, 1.5, ord, 0.06, 0.55);
+      const [ax, ad] = this.W(a.u, a.d), [bx, bd] = this.W(b.u, b.d), [ax2, ad2] = this.W(a.u, a.d + 0.5), [bx2, bd2] = this.W(b.u, b.d + 0.5);
+      seg(quads, ax, -ad, bx, -bd, 0.55 + Math.random() * 0.5, ord, 0.1);
+      seg(wallQ, ax2, -ad2, bx2, -bd2, 1.5, ord, 0.06, 0.55);
     }
     // Bruchlinien: von der Kante hangabwärts, verzweigt
     const nL = 5 + Math.floor(w / 22);
@@ -82,7 +90,8 @@ export class Avalanche {
       const len = 14 + Math.random() * 34, ord0 = 0.25 + (Math.abs(p0.u) / (w / 2)) * 0.75;
       for (let l = 0; l < len;) {
         const st = 1.6 + Math.random() * 2.2, u2 = u + (Math.random() - 0.5) * 2.6, d2 = d + st;
-        seg(quads, hubAt(d) + this.xRel + u, -d, hubAt(d2) + this.xRel + u2, -d2, wd, ord0 + (l / len) * 0.9, 0.1);
+        const [qx, qd] = this.W(u, d), [rx, rd] = this.W(u2, d2);
+        seg(quads, qx, -qd, rx, -rd, wd, ord0 + (l / len) * 0.9, 0.1);
         u = u2; d = d2; l += st; wd = Math.max(0.14, wd * 0.93);
       }
     }
@@ -103,13 +112,13 @@ export class Avalanche {
     build(this.wall, wallQ);
     this.wallMat.opacity = 0;
     // Schollen: unregelmäßig über die Platte unterhalb der Kante verteilt, oben größer, unten schon zerbrochen
-    const L = 46, nBl = Math.min(NB, Math.round((w * L) / 8.5));
+    const L = 46, nBl = Math.min(NB, Math.round((w * L) / 5));
     this.bl.length = 0;
     for (let k = 0; k < nBl; k++) {
       const f = Math.random() * 2 - 1, r = Math.random(), u = f * w * 0.5;
       const d = this.crown + f * f * w * 0.16 + 2 + r * L, big = 1.25 - 0.6 * r;
       this.bl.push({
-        u, d, sx: (1.5 + Math.random() * 2.2) * big, sz: (1.5 + Math.random() * 2.2) * big, sy: 0.4 + Math.random() * 0.45, yaw: Math.random() * 6.28,
+        u, d, sx: (0.9 + Math.random() * 1.4) * big, sz: (0.9 + Math.random() * 1.4) * big, sy: 0.3 + Math.random() * 0.35, yaw: Math.random() * 6.28,
         rel: CRACK_T + (1 - r) * 0.5 + Math.random() * 0.15, k: 0.75 + Math.random() * 0.45, run: 0, rx: 0, rz: 0, wx: (Math.random() - 0.5) * 3.2, wz: (Math.random() - 0.5) * 2.4, life: 50 + Math.random() * 110,
       });
     }
@@ -151,8 +160,8 @@ export class Avalanche {
       if (this.phase === 'crack' && this.t >= CRACK_T) { this.phase = 'slide'; res.broke = true; }
       if (this.phase === 'slide') {
         this.wallMat.opacity = Math.min(0.9, this.wallMat.opacity + dt * 1.6);
-        const hub = C.centerX(this.front), x = hub + this.xRel;
-        const y0 = C.height(x, -this.front), y1 = C.height(x, -(this.front + 8));
+        const [x, fdw] = this.W(0, this.front), [x8, fd8] = this.W(0, this.front + 8);
+        const y0 = C.height(x, -fdw), y1 = C.height(x8, -fd8);
         const slope = (y0 - y1) / 8;
         const vmax = 6 + 28 * Math.min(1, Math.max(0, (slope - 0.15) / 0.45));
         this.speed += Math.max(-6, Math.min(5, (vmax - this.speed) * 0.8)) * dt;
@@ -162,18 +171,19 @@ export class Avalanche {
         this.acc += dt * (60 + this.w * 1.6) * Math.min(1, 0.4 + this.speed / 18) * Math.min(1, this.travelled / 30 + 0.25);
         while (this.acc >= 1) {
           this.acc -= 1;
-          const u = (Math.random() - 0.5) * this.w, ox = x + u + Math.sin(this.t * 1.7 + u * 0.13) * 3;
-          const dz = this.front + Math.random() * 5 - 2 * Math.cos(u * 0.09 + this.t);
-          this.puff(ox, C.height(ox, -dz) + Math.random() * 1.5, -dz, this.speed, Math.random() < 0.45);
+          const u = (Math.random() - 0.5) * this.w + Math.sin(this.t * 1.7) * 3;
+          const sv = this.front + Math.random() * 5 - 2 * Math.cos(u * 0.09 + this.t);
+          const [px, pdw] = this.W(u, sv);
+          this.puff(px, C.height(px, -pdw) + Math.random() * 1.5, -pdw, this.speed, Math.random() < 0.45);
         }
         // erfasst? Front ist am Fahrer vorbei und er steckt in der Breite
-        const pd = -player.z, pu = player.x - hub;
-        if (this.front > pd - 1.5 && this.front < pd + 25 && Math.abs(pu - this.xRel) < this.w / 2 + 2) res.caught = true;
+        const [pd, pu] = this.L(player.x, -player.z);
+        if (this.front > pd - 1.5 && this.front < pd + 25 && Math.abs(pu) < this.w / 2 + 2) res.caught = true;
         if (this.speed < 2.5 && this.t > 4) this.stopped += dt;
-        if (this.stopped > 1.5 || this.travelled > 900 || this.front > pd + 260 || (isFinite(C.MESH_D1) && this.front > C.FINISH_D - 260)) { this.active = false; res.ended = true; this.cool = 22; }
+        if (this.stopped > 1.5 || this.travelled > 900 || this.front > pd + 260) { this.active = false; res.ended = true; this.cool = 22; }
       }
-      const pd = -player.z, pu = player.x - C.centerX(pd);
-      res.near = Math.max(0, 1 - Math.hypot(pd - this.front, (pu - this.xRel) * 0.6) / 90);
+      const [pd, pu] = this.L(player.x, -player.z);
+      res.near = Math.max(0, 1 - Math.hypot(pd - this.front, pu * 0.6) / 90);
     } else this.cool = Math.max(0, this.cool - dt);
 
     // Schollen: rutschen mit der Lawine, kippen, zerfallen
@@ -189,8 +199,8 @@ export class Avalanche {
           b.rx += b.wx * tum * dt; b.rz += b.wz * tum * dt;
           if (b.run > b.life) b.life = 0;
         }
-        const x = C.centerX(b.d) + this.xRel + b.u, z = -b.d, sh = Math.max(0.05, 1 - Math.max(0, b.run - b.life * 0.6) / (b.life * 0.4));
-        const hy = C.height(x, z), hz = C.height(x, z - 1.5);
+        const [x, bd] = this.W(b.u, b.d), z = -bd, sh = Math.max(0.05, 1 - Math.max(0, b.run - b.life * 0.6) / (b.life * 0.4));
+        const [x2, bd2] = this.W(b.u, b.d + 1.5), hy = C.height(x, z), hz = C.height(x2, -bd2);
         tmpP.set(x, hy + b.sy * 0.32 * sh + 0.05, z);
         tmpE.set(Math.atan2(hy - hz, 1.5) * -1 + b.rx, b.yaw, b.rz);
         tmpQ.setFromEuler(tmpE);

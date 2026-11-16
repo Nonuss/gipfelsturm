@@ -215,7 +215,7 @@ export function init(seed, opts = {}) {
   s.fin = Math.round(valleyAxis(s, 0) - s.Wv - 60);
   s.end = s.DV + 650;
   s.valleyY = floorAt(s, 0, valleyAxis(s, 0));
-  s.treeY = s.valleyY + rr(820, 1020);
+  s.treeY = s.valleyY + rr(1100, 1300);   // Waldgrenze wie in den Alpen: gut 1100 bis 1300 m über dem Talboden
   S = s;
   // Gefälle-, Krümmungs- und Waldkarte
   buildMaps(s);
@@ -350,11 +350,11 @@ function buildMaps(s) {
     const fl = floorAt(s, x, d);
     // Baumgrenze: unregelmäßig, oben nur Baumgruppen
     const tl = s.treeY + 140 * (fbm(x / 600 + s.ns, d / 600) - 0.5);
-    let f = smoothstep(tl + 30, tl - 160, y);
-    f *= smoothstep(0.95, 0.55, s.slope[k]);                                             // zu steil für Wald
-    f *= 1 - smoothstep(0.0012, 0.006, s.curv[k]) * smoothstep(fl + 60, fl + 260, y);    // Lawinenrinnen bleiben frei
+    let f = smoothstep(tl + 40, tl - 110, y);
+    f *= smoothstep(1.3, 0.9, s.slope[k]);                                               // nur an Felswänden kein Wald
+    f *= 1 - 0.75 * smoothstep(0.003, 0.008, s.curv[k]) * smoothstep(fl + 60, fl + 260, y);   // große Lawinenstriche bleiben frei
     const cl = fbm(x / 95 + s.ns * 3, d / 95);
-    f *= lerp(smoothstep(0.32, 0.62, cl), 1, smoothstep(tl - 150, tl - 420, y) * 0.75);  // oben Baumgruppen, unten dichter
+    f *= lerp(smoothstep(0.32, 0.62, cl), 1, smoothstep(tl - 120, tl - 320, y) * 0.92);  // oben Baumgruppen, unten geschlossener Wald
     f *= smoothstep(fl + 28, fl + 70, y) * 0.97 + 0.03 * smoothstep(0.7, 0.78, cl);      // Talboden offen (Wiesen), nur vereinzelt Gehölze
     const q = d - valleyAxis(s, x) - riverOffset(s, x);
     f *= smoothstep(10, 26, Math.abs(q));                                                // nicht im Fluss
@@ -503,7 +503,7 @@ function placeVillages(s, R, rr) {
     const side = R() < 0.5 ? -1 : 1;
     const cx = vx, cd = valleyAxis(s, vx) + side * s.Wv * rr(0.3, 0.7);
     const houses = [];
-    const N = n === 0 ? 24 : 10 + Math.floor(R() * 16);
+    const N = n === 0 ? 34 : 18 + Math.floor(R() * 22);
     for (let h = 0; h < N; h++) {
       const a = R() * TAU, r = Math.sqrt(R()) * (n === 0 ? 170 : 130);
       const x = cx + Math.cos(a) * r * 1.6, d = cd + Math.sin(a) * r * 0.6;
@@ -513,6 +513,14 @@ function placeVillages(s, R, rr) {
     }
     out.push({ x: cx, d: cd, houses });
   });
+  // Heustadel verstreut im Talboden (die typischen kleinen Holzhütten auf den Wiesen)
+  const barns = [];
+  for (let t = 0; t < 600 && barns.length < 170; t++) {
+    const x = rr(-16000, 16000), q = rr(-1, 1) * s.Wv * 0.95, d = valleyAxis(s, x) + q;
+    if (Math.abs(d - valleyAxis(s, x) - riverOffset(s, x)) < 30 || Math.abs(q - s.Wv * 0.8) < 14) continue;
+    barns.push({ x, d, rot: rr(-0.3, 0.3) + (R() < 0.5 ? 0 : Math.PI / 2), sc: rr(0.45, 0.62), big: true });
+  }
+  out.barns = barns;
   return out;
 }
 
@@ -543,6 +551,7 @@ export function glacierAt(x, d) { const g = S.fg; return inGrid(g, x, d, 1) ? sa
 export function curvAt(x, d) { const g = S.fg; return inGrid(g, x, d, 1) ? sampleLin(g, S.curv, x, d) : 0; }
 export const floorY = (x, d) => floorAt(S, x, d);
 export const riverD = (x) => valleyAxis(S, x) + riverOffset(S, x);
+export const roadD = (x) => valleyAxis(S, x) + S.Wv * 0.8;
 export const valleyD = (x) => valleyAxis(S, x);
 /** Ziel erreicht: unten im Talboden angekommen. */
 export function finished(x, d) {
@@ -625,6 +634,7 @@ export function genTile(ti, tj, T, treeMul, addCollider, addRock) {
     }
   }
   // Häuser im Tal
+  for (const h of s.villages.barns || []) if (h.x >= x0 && h.x < x0 + T && h.d >= d0 && h.d < d0 + T) addCollider(h.x, -h.d, 3.6 * h.sc / 0.55, 'haus');
   for (const v of s.villages) for (const h of v.houses) {
     if (h.x < x0 || h.x >= x0 + T || h.d < d0 || h.d >= d0 + T) continue;
     out.houses.push(h);
@@ -803,7 +813,7 @@ export function pack(s, far) {
   for (const k of ['shF', 'shC']) transfer.push(s[k].data.buffer);
   if (far) {
     out.far = far;
-    for (const m of ['I', 'O', 'Hz']) for (const a of ['pos', 'nor', 'am', 'idx']) transfer.push(far[m][a].buffer);
+    for (const m of ['I', 'O', 'Hz']) for (const a of ['pos', 'nor', 'am', 'ao', 'idx']) transfer.push(far[m][a].buffer);
     transfer.push(far.trees.buffer);
   }
   return { data: out, transfer: [...new Set(transfer)] };

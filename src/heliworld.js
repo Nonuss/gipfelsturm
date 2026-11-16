@@ -55,10 +55,10 @@ export class HeliWorld {
     m.onBeforeCompile = (sh) => {
       Object.assign(sh.uniforms, this.uniforms);
       sh.vertexShader = sh.vertexShader
-        .replace('#include <common>', '#include <common>\nattribute vec4 aMat;\nvarying vec4 vMat;\nvarying vec3 vW;\nvarying vec3 vNW;')
-        .replace('#include <begin_vertex>', '#include <begin_vertex>\nvMat = aMat; vW = position; vNW = normal;');
+        .replace('#include <common>', '#include <common>\nattribute vec4 aMat;\nattribute float aAo;\nvarying vec4 vMat;\nvarying float vAo;\nvarying vec3 vW;\nvarying vec3 vNW;')
+        .replace('#include <begin_vertex>', '#include <begin_vertex>\nvMat = aMat; vAo = aAo; vW = position; vNW = normal;');
       sh.fragmentShader = sh.fragmentShader
-        .replace('#include <common>', '#include <common>\nvarying vec4 vMat;\nvarying vec3 vW;\nvarying vec3 vNW;\nuniform vec3 uHole;\n' + GLSL_NOISE)
+        .replace('#include <common>', '#include <common>\nvarying vec4 vMat;\nvarying float vAo;\nvarying vec3 vW;\nvarying vec3 vNW;\nuniform vec3 uHole;\n' + GLSL_NOISE)
         .replace('#include <clipping_planes_fragment>', `#include <clipping_planes_fragment>
           ${outer ? '' : 'if (distance(vW.xz, uHole.xy) < uHole.z - 2.0) discard;'}`)
         .replace('#include <color_fragment>', `#include <color_fragment>
@@ -70,15 +70,41 @@ export class HeliWorld {
           float al = dot(p, gd), ac = dot(p, vec2(-gd.y, gd.x));
           // Fels: Rippen und Rinnen entlang der Falllinie (Schnee hält in den Rinnen, die Rippen sind frei)
           float rib = vN(vec2(ac * 0.045, al * 0.006)) * 0.65 + vN(vec2(ac * 0.15, al * 0.02)) * 0.35 * (1.0 - smoothstep(4.0, 14.0, pw));
-          float rockM = smoothstep(0.42, 0.6, vMat.x + (rib - 0.5) * 0.7 + (fN(p * 0.01) - 0.5) * 0.25);
+          float sl = sqrt(max(0.0, 1.0 - nw.y * nw.y)) / max(nw.y, 0.2);
+          // Felsköpfe und Felsbänder auch in mittelsteilen Flanken (nicht nur an Wänden): Gelände zeigt Struktur
+          float outc = smoothstep(0.6, 0.7, fN(p * 0.011 + 3.0) + (rib - 0.5) * 0.25) * smoothstep(0.42, 0.75, sl) * (1.0 - vMat.y);
+          float rockM = smoothstep(0.34, 0.56, vMat.x + outc + (rib - 0.5) * 0.85 + (fN(p * 0.01) - 0.5) * 0.25);
           float strata = vN(vec2(p.x * 0.02, vW.y * 0.25)) * 0.5 + 0.5 * vN(vec2(p.y * 0.03, vW.y * 0.6));
           vec3 rockC = vec3(0.30, 0.285, 0.28) * (0.65 + 0.55 * strata) * (0.85 + 0.3 * fN(p * 0.004));
           rockC = mix(rockC, vec3(0.82, 0.86, 0.94), 0.35 * smoothstep(0.45, 0.8, nw.y));   // Schneestaub auf flacheren Felsen
           vec3 snowC = vec3(0.95, 0.965, 1.0) * (0.96 + 0.04 * fN(p * 0.02));
           vec3 col = mix(snowC, rockC, rockM);
           // Gletscher: bläulich, mit Spalten quer zur Falllinie
+          float glac = max(vMat.w, 0.0), floorM = max(-vMat.w, 0.0);
           float crev = smoothstep(0.88, 0.97, vN(vec2(al * 0.09, ac * 0.012))) * (1.0 - smoothstep(3.0, 8.0, pw));
-          col = mix(col, mix(vec3(0.78, 0.88, 0.98), vec3(0.32, 0.5, 0.66), crev), vMat.w * (1.0 - rockM));
+          col = mix(col, mix(vec3(0.78, 0.88, 0.98), vec3(0.32, 0.5, 0.66), crev), glac * (1.0 - rockM));
+          // Talboden: verschneite Felder mit leicht unterschiedlichem Ton, Hecken und Zäune an den Grenzen
+          if (floorM > 0.01) {
+            // unregelmäßige Flur: Streifen quer zum Tal mit wechselnder Breite, Grenzen leicht verzogen
+            vec2 fp = p + vec2(30.0 * vN(p * 0.004 + 5.0), 18.0 * sin(p.x * 0.003));
+            float colW = 140.0 + 60.0 * hN(vec2(floor(fp.y / 95.0), 1.7));
+            float row = floor(fp.y / 95.0);
+            vec2 cs = vec2(colW, 95.0);
+            vec2 q = fp / cs + vec2(hN(vec2(row, 3.1)), 0.0);
+            vec2 id = floor(q), fr = fract(q);
+            float edge = min(min(fr.x, 1.0 - fr.x) * cs.x, min(fr.y, 1.0 - fr.y) * cs.y);
+            float tone = hN(id);
+            vec3 fieldC = mix(vec3(0.95, 0.965, 1.0), vec3(0.88, 0.9, 0.95), tone * 0.6);
+            float near = 1.0 - smoothstep(5.0, 16.0, pw);
+            // nur manche Grenzen tragen eine Hecke (unterbrochen), manche einen Zaun
+            float hedge = (1.0 - smoothstep(1.5, 4.0 + pw * 0.5, edge)) * step(0.72, hN(id + 7.3)) * smoothstep(0.35, 0.6, vN(p * 0.03));
+            float fence = (1.0 - smoothstep(0.12, 0.4 + pw * 0.3, edge)) * step(0.55, hN(id + 2.9)) * near;
+            fieldC = mix(fieldC, vec3(0.22, 0.27, 0.24) * (0.8 + 0.4 * vN(p * 0.5)), hedge * 0.75);
+            fieldC = mix(fieldC, vec3(0.4, 0.34, 0.28), fence * 0.35);
+            col = mix(col, fieldC, floorM * (1.0 - rockM));
+          }
+          // Schnee: Windstrukturen und Mulden-Schattierung
+          col *= (0.965 + 0.05 * fN(p * 0.025)) * vAo;
           // Wald: Baumgruppen (dunkel, mit Schnee auf den Kronen), in der Ferne als ruhige Fläche
           float speck = mix(vN(p * 0.22), 0.5, smoothstep(3.0, 12.0, pw));
           float fm = smoothstep(0.12, 0.45, vMat.y + (speck - 0.5) * 0.55);
@@ -92,37 +118,6 @@ export class HeliWorld {
     return m;
   }
 
-  /** Gitter-Mesh aus Höhen-Abfragen. pts: Funktion(i, j) -> [x, d]; mat(x, d, y, slope, nyApprox) -> [rock, forest, sun, glacier]. */
-  gridMesh(nx, nd, P, H, matFn, skip) {
-    const n = nx * nd, pos = new Float32Array(n * 3), nor = new Float32Array(n * 3), am = new Float32Array(n * 4);
-    const Y = new Float32Array(n), X = new Float32Array(n), Dd = new Float32Array(n);
-    for (let j = 0; j < nd; j++) for (let i = 0; i < nx; i++) { const k = j * nx + i, [x, d] = P(i, j); X[k] = x; Dd[k] = d; Y[k] = H(x, d); }
-    for (let j = 0; j < nd; j++) for (let i = 0; i < nx; i++) {
-      const k = j * nx + i;
-      const i0 = Math.max(0, i - 1), i1 = Math.min(nx - 1, i + 1), j0 = Math.max(0, j - 1), j1 = Math.min(nd - 1, j + 1);
-      const hx = (Y[j * nx + i1] - Y[j * nx + i0]) / (X[j * nx + i1] - X[j * nx + i0]);
-      const hd = (Y[j1 * nx + i] - Y[j0 * nx + i]) / (Dd[j1 * nx + i] - Dd[j0 * nx + i]);
-      const inv = 1 / Math.sqrt(hx * hx + 1 + hd * hd);
-      pos[k * 3] = X[k]; pos[k * 3 + 1] = Y[k]; pos[k * 3 + 2] = -Dd[k];
-      nor[k * 3] = -hx * inv; nor[k * 3 + 1] = inv; nor[k * 3 + 2] = hd * inv;
-      const mm = matFn(X[k], Dd[k], Y[k], Math.hypot(hx, hd));
-      am.set(mm, k * 4);
-    }
-    const idx = [];
-    for (let j = 0; j < nd - 1; j++) for (let i = 0; i < nx - 1; i++) {
-      if (skip && skip(X[j * nx + i], Dd[j * nx + i], X[(j + 1) * nx + i + 1], Dd[(j + 1) * nx + i + 1])) continue;
-      const a = j * nx + i, b = a + 1, c = a + nx, d = c + 1;
-      idx.push(a, c, b, b, c, d);
-    }
-    const g = new THREE.BufferGeometry();
-    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    g.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
-    g.setAttribute('aMat', new THREE.BufferAttribute(am, 4));
-    g.setIndex(n > 65535 ? new THREE.Uint32BufferAttribute(idx, 1) : new THREE.Uint16BufferAttribute(idx, 1));
-    g.computeBoundingSphere();
-    return g;
-  }
-
   /** Fernsicht aus den (im Worker vorbereiteten) Zahlenfeldern. */
   farData() {
     const s = this.s, tier = Q.tier;
@@ -134,6 +129,7 @@ export class HeliWorld {
     g.setAttribute('position', new THREE.BufferAttribute(a.pos, 3));
     g.setAttribute('normal', new THREE.BufferAttribute(a.nor, 3));
     g.setAttribute('aMat', new THREE.BufferAttribute(a.am, 4));
+    g.setAttribute('aAo', new THREE.BufferAttribute(a.ao, 1));
     g.setIndex(new THREE.BufferAttribute(a.idx, 1));
     g.computeBoundingSphere();
     return g;
@@ -155,12 +151,12 @@ export class HeliWorld {
     const s = this.s, HB = C.HB, fg = s.fg;
     // Fichte aus drei Kegeln, Schnee auf den oberen Flächen (Farbe je Ecke)
     const parts = [];
-    for (const [y0, h, r] of [[0.0, 0.55, 0.36], [0.33, 0.45, 0.28], [0.6, 0.4, 0.18]]) {
-      const c = new THREE.ConeGeometry(r, h, 7, 1, true);
+    for (const [y0, h, r] of [[0.04, 0.6, 0.34], [0.42, 0.58, 0.22]]) {
+      const c = new THREE.ConeGeometry(r, h, 6, 1, true);
       c.translate(0, y0 + h / 2, 0);
       parts.push(c);
     }
-    const trunk = new THREE.CylinderGeometry(0.03, 0.04, 0.12, 5); trunk.translate(0, 0.06, 0); parts.push(trunk);
+    const trunk = new THREE.CylinderGeometry(0.03, 0.04, 0.1, 4, 1, true); trunk.translate(0, 0.05, 0); parts.push(trunk);
     const geo = mergeGeos(parts);
     const col = new Float32Array(geo.attributes.position.count * 3);
     for (let i = 0; i < geo.attributes.position.count; i++) {
@@ -222,7 +218,7 @@ export class HeliWorld {
     rg.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
     rg.setIndex(idx);
     rg.computeVertexNormals();
-    const river = new THREE.Mesh(rg, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.18, metalness: 0.05, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 }));
+    const river = new THREE.Mesh(rg, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.18, metalness: 0.05, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 }));
     river.frustumCulled = false;
     river.receiveShadow = true;
     this.group.add(river);
@@ -243,6 +239,36 @@ export class HeliWorld {
       });
       im.castShadow = true; im.receiveShadow = true; im.frustumCulled = false;
       this.group.add(im);
+    }
+    // Heustadel auf den Wiesen
+    if (s.villages.barns && w.models.MountainHut) {
+      const b = s.villages.barns, im = new THREE.InstancedMesh(w.models.MountainHut, w.propMat, b.length), o = new THREE.Object3D();
+      b.forEach((h, i) => { o.position.set(h.x, HB.heightCoarse(h.x, h.d) - 0.3, -h.d); o.rotation.set(0, h.rot, 0); o.scale.setScalar(h.sc); o.updateMatrix(); im.setMatrixAt(i, o.matrix); });
+      im.castShadow = true; im.receiveShadow = true; im.frustumCulled = false;
+      this.group.add(im);
+    }
+    // Straße im Talboden: geräumt, gräulich, mit Schneewällen
+    {
+      const pos = [], col = [], idx = [];
+      let k = 0;
+      for (let x = -20500; x <= 20500; x += 16) {
+        const d = HB.roadD(x), dd = (HB.roadD(x + 4) - HB.roadD(x - 4)) / 8, l = Math.hypot(1, dd), nx = -dd / l, nd = 1 / l;
+        for (const [o, c] of [[-4.6, 0.93], [-2.8, 0.56], [2.8, 0.56], [4.6, 0.93]]) {
+          const px = x + nx * o, pd = d + nd * o;
+          pos.push(px, HB.heightCoarse(px, pd) + (Math.abs(o) > 4 ? 0.25 : 0.06), -pd);
+          col.push(c * 0.98, c * 0.97, c * (Math.abs(o) > 4 ? 1.02 : 0.95));
+        }
+        if (k > 0) { const a = (k - 1) * 4; for (let q = 0; q < 3; q++) idx.push(a + q, a + q + 4, a + q + 1, a + q + 1, a + q + 4, a + q + 5); }
+        k++;
+      }
+      const rg = new THREE.BufferGeometry();
+      rg.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+      rg.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+      rg.setIndex(idx);
+      rg.computeVertexNormals();
+      const road = new THREE.Mesh(rg, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 }));
+      road.frustumCulled = false; road.receiveShadow = true;
+      this.group.add(road);
     }
     // Zielbogen: dort, wo die Fallinie vom Gipfel den Talboden erreicht
     let fd = s.DV - 1500;
@@ -275,7 +301,7 @@ export class HeliWorld {
       aU[k] = x;
       aW[k] = sf.pow;
       const cv = HB.curvAt(x, d);
-      aA[k] = C.clamp(1 - cv * 70, 0.72, 1.1) * (1 - 0.18 * sf.forest);
+      aA[k] = C.clamp(1 - cv * 70, 0.72, 1.1) * (1 - 0.42 * sf.forest);   // Waldboden im Schatten der Kronen: passt zur Fernsicht
     }
     const idx = new Uint16Array((n - 1) * (n - 1) * 6);
     let q = 0;

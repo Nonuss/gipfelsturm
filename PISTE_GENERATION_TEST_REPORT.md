@@ -303,3 +303,11 @@ Rückmeldung nach dem ersten Spieltest: Tiefschnee zu langsam, durch Felsen durc
 - Moduswechsel-Flüssigkeit und Handy-Knöpfe nur bei ausgeblendetem Browserfenster geprüft (Animationen liefen dort nicht); im sichtbaren Fenster nicht gemessen.
 - Snowboard nur im Standbild angesehen, Tricks nicht von Hand gespielt; Bot-Test fährt nur Ski.
 - Ob der Zustand „Tal am Anfang nicht sichtbar“ damit behoben ist, ist nicht sicher belegt: ich konnte den Fehler nicht nachstellen.
+
+## Fernsicht repariert: Tal war durchsichtig (2026-11-17)
+
+- Ursache: Die Dreiecke der Fernsicht waren falsch herum gewickelt. Von oben zeigten sie ihre Rückseite und wurden nicht gezeichnet; vom Tal aus sah man die abgewandten Hänge von innen. Darum war der Blick hinunter ins Tal leer, nur Bäume, Fluss und Straße schwebten. Gefunden, indem die Fernsicht testweise ausgeblendet wurde: das Bild blieb gleich.
+- Waldgrenze rund 1100 bis 1300 m über dem Talboden (vorher 900, Wald erst ab 600). Wald steht auch an steilen Hängen, frei bleiben nur große Lawinenstriche: unterhalb der Waldgrenze 65 Prozent bewaldet statt 32.
+- Talboden: unregelmäßige Flur mit einzelnen Hecken und Zäunen, geräumte Straße, 170 Heustadel, größere Dörfer, Ufergehölz und Feldgehölze, rund 75 000 Fichten in der Ferne.
+- Fernsicht: Felsköpfe auch in mittelsteilen Flanken, Mulden-Schattierung, Windstrukturen; Waldboden im Nahbereich dunkler, damit der Übergang zur Fernsicht nicht als heller Kreis auffällt.
+- Bot-Test ohne Hindernisse weiterhin alle Fahrten im Tal, Klippensprünge ohne Sturz.

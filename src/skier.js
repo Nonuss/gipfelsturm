@@ -250,7 +250,7 @@ export class Skier {
         f.rotation.set(0.6 * Math.sin(ca * 1.5 + side), side * 0.5, 0.4 * Math.sin(ca * 2 + side));
       } else if (this.gear === 'board') {
         // Bindungen: Füße 52 cm auseinander, Duck-Stellung (vorne +15, hinten -15 Grad), Brett hebt sich beim Grab
-        f.position.set(side * 0.26, 0.05 + grab * 0.22 + tuck * 0.14, 0);
+        f.position.set(side * 0.26, 0.032 + grab * 0.22 + tuck * 0.14, 0);
         f.rotation.set(grab * 0.25 + tuck * 0.1, side * 0.26, 0);
       } else {
         const stance = 0.17 + 0.07 * Math.abs(lean) + 0.13 * plow + air * 0.03 + grab * 0.03;
@@ -311,7 +311,7 @@ export class Skier {
 
       if (i === 1 && this.gear === 'board') {
         const a = this.sides[0].foot, b2 = this.sides[1].foot;
-        this.board.position.set(0, (a.position.y + b2.position.y) / 2 - 0.03, 0);
+        this.board.position.set(0, (a.position.y + b2.position.y) / 2 - 0.03, 0);   // Stiefel stehen auf dem Brett
         this.board.rotation.set(0, 0, (a.rotation.x + b2.rotation.x) / 2 * 0);
         this.board.rotation.x = (a.rotation.x + b2.rotation.x) / 2;
       }

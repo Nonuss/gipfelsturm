@@ -1302,6 +1302,7 @@ function checkGates() {
 
 // ---------------------------------------------------------------- Figur ausrichten
 const mBasis = new THREE.Matrix4(), vF = new THREE.Vector3(), vR = new THREE.Vector3(), vB = new THREE.Vector3();
+const bdTmp = new THREE.Vector3(), BOARD_Y = -0.85 + 0.002 * 0.94;   // Brettmitte im Drehpunkt-System (Körper 0,85 m tiefer, Maßstab 0,94)
 function updateSkier(dt) {
   const k = (r) => 1 - Math.exp(-dt * r);
   const crashed = phys.crashed > 0;
@@ -1345,7 +1346,15 @@ function updateSkier(dt) {
     const bLean = BOARD() ? -vis.lean * 0.8 * bs : 0, bSkid = BOARD() ? vis.plow * 1.05 : 0;
     pv.rotation.set(trick.pitch, -(trick.yaw + swYaw) + vis.slide * 1.45 + bSkid, vis.spin * 0.18 + balTilt + bLean);
     vis.look += ((BOARD() ? (phys.grind ? 0 : 0.72 * bs) : isSwitch() && !phys.grind ? 1 : 0) - vis.look) * k(6);
-    pv.position.y = 0.85;
+    pv.position.set(0, 0.85, 0);
+    if (BOARD()) {
+      // Das Brett kippt um seine Kante im Schnee, nicht um die Hüfte: Drehpunkt so verschieben, dass die Brettmitte
+      // auf halber Brettbreite über dem Schnee bleibt (sonst hebt es in Schräglage seitlich ab und schwebt)
+      const roll = bLean, g = 1 - vis.air;
+      bdTmp.set(0, BOARD_Y, 0).applyQuaternion(pv.quaternion.setFromEuler(pv.rotation));
+      const ty = 0.0 + 0.135 * Math.abs(Math.sin(roll));   // Brettmitte auf Schneehöhe: Belag knapp 1 cm eingesunken
+      pv.position.set(-bdTmp.x * g, 0.85 + (ty - bdTmp.y - 0.85) * g, -bdTmp.z * g);
+    }
   }
   // Rückwärts (Switch) ist der Körper um 180° gedreht: Neigung und Lenkdrehung müssen im Körper gespiegelt werden,
   // sonst lehnt er sich aus der Kurve heraus statt hinein.
@@ -1356,15 +1365,16 @@ function updateSkier(dt) {
   }, dt);
   skier.updateLoose(dt, C.height);
   if (blob) {
-    blob.visible = !renderer.shadowMap.enabled && phys.crashed <= 0;
+    // Kontaktschatten: ohne Echtzeit-Schatten immer, mit Schatten beim Snowboard (klebt das Brett optisch an den Schnee)
+    blob.visible = (!renderer.shadowMap.enabled || BOARD()) && phys.crashed <= 0;
     if (blob.visible) {
       const gy = C.height(phys.pos.x, phys.pos.z), hgt = Math.max(0, phys.pos.y - gy);
       blob.position.set(phys.pos.x, gy + 0.04, phys.pos.z);
       blob.quaternion.setFromUnitVectors(tV.set(0, 0, 1), phys.normal);
       blob.rotateZ(-phys.heading);
       const k = 1 / (1 + hgt * 0.25);
-      blob.scale.setScalar(0.8 + 0.6 * (1 - k));
-      blob.material.opacity = k;
+      if (BOARD() && renderer.shadowMap.enabled) { blob.scale.set(0.62 + 0.5 * (1 - k), 0.34 + 0.3 * (1 - k), 1); blob.material.opacity = k * 0.8; blob.rotateZ(-vis.plow * 1.05); }
+      else { blob.scale.setScalar(0.8 + 0.6 * (1 - k)); blob.material.opacity = k; }
     }
   }
 }

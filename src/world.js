@@ -124,7 +124,7 @@ export class World {
     Object.assign(sun.shadow.camera, { left: -S, right: S, top: S, bottom: -S, near: 10, far: 700 });
     sun.shadow.camera.updateProjectionMatrix();
     sun.shadow.bias = -0.0004;
-    sun.shadow.normalBias = 0.06;
+    sun.shadow.normalBias = 0.035;   // kleiner: Schatten löst sich weniger von Brett und Ski (wirkte sonst schwebend)
     sun.shadow.radius = 2.5;
     s.add(sun, sun.target);
     this.sun = sun;

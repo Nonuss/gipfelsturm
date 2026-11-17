@@ -659,8 +659,96 @@ export function wallLine(c) {
   for (let t = 3.2; t < Math.min(c.Lup * 0.85, 76); t += 3.2) push(edgeA(c, c.u1) - t, sideHi(c, -t), 0, 1);
   return pts;
 }
-/** Absprungpunkt des Helikopters: knapp unter dem Gipfel auf der Talseite. */
-export function dropPoint() { const d = 34, x = 0; return { x, d, y: heightDU(d, x) }; }
+/** Absprungpunkt des Helikopters: der gewählte aus dropPoints(), sonst knapp unter dem Gipfel auf der Talseite. */
+export function dropPoint() {
+  const l = dropPoints(), p = l[Math.min(S.dropIdx || 0, l.length - 1)];
+  return { x: p.x, d: p.d, y: heightDU(p.d, p.x), fx: p.fx, fd: p.fd, name: p.name };
+}
+export function setDrop(i) { S.dropIdx = Math.max(0, Math.min(dropPoints().length - 1, i)); }
+export const dropIndex = () => S.dropIdx || 0;
+/** Falllinie (Einheitsvektor talwärts) an (x, d). */
+export function fallDir(x, d) { const f = fallAt(S, x, d); return [f.fx, f.fd]; }
+
+/**
+ * Absprungpunkte wie bei der Freeride World Tour: Gipfel, die beiden Hauptgrate, der Einstieg ins längste Couloir und
+ * eine Stelle über dem höchsten Klippenband. Schwierigkeit 1 bis 5 aus Steilheit und Features unterhalb.
+ */
+export function dropPoints() {
+  if (S._drops) return S._drops;
+  const out = [];
+  const meanSlope = (x, d) => {
+    let sum = 0, n = 0, px = x, pd = d;
+    for (let k = 0; k < 30; k++) { const f = fallAt(S, px, pd); sum += f.sl; n++; px += f.fx * 12; pd += f.fd * 12; }
+    return sum / n;
+  };
+  const featsBelow = (x, d) => {
+    let c = 0;
+    for (const q of S.cliffs) { const dx = q.x - x, dd = q.d - d; if (dd > 0 && dd < 600 && Math.abs(dx) < 250) c++; }
+    return c;
+  };
+  // Weg ins Tal prüfen: der Falllinie folgen (fein gemittelt, wie ein Fahrer, der laufen lässt); sie darf nicht auf die
+  // Rückseite oder in eine Seitenmulde führen
+  const reachesValley = (x, d) => {
+    let px = x, pd = d;
+    for (let k = 0; k < 420; k++) {
+      let gx = 0, gd = 0;
+      for (const [ox, od] of [[0, 0], [25, 0], [-25, 0], [0, 25], [0, -25]]) {
+        gx += heightDU(pd + od, px + ox + 6) - heightDU(pd + od, px + ox - 6);
+        gd += heightDU(pd + od + 6, px + ox) - heightDU(pd + od - 6, px + ox);
+      }
+      const l = Math.hypot(gx, gd) || 1;
+      px -= (gx / l) * 10; pd -= (gd / l) * 10;
+      if (pd < d - 60) return false;
+      if (pd > S.DV - S.Wv - 600) return true;
+    }
+    return false;
+  };
+  const make = (name, note, x, d) => {
+    if (out.length && !reachesValley(x, d)) return false;
+    const [fx, fd] = fallDir(x, d), sl = meanSlope(x, d), nc = featsBelow(x, d);
+    const diff = Math.max(1, Math.min(5, Math.round(1 + ((sl - 0.6) / 0.33) * 3 + Math.min(1, nc * 0.15))));
+    out.push({ name, note, x, d, fx, fd, diff, slope: +sl.toFixed(2), cliffs: nc });
+    return true;
+  };
+  make('Gipfel', 'breite Flanke unter dem Gipfel', 0, 34);
+  // Grate: Kämme (höher als die Nachbarn quer zur Falllinie) links und rechts in der oberen Flanke
+  const crest = (side) => {
+    const cand = [];
+    for (let d = 140; d <= 760; d += 20) for (let x = side * 160; Math.abs(x) <= 1100; x += side * 20) {
+      const f = fallAt(S, x, d);
+      if (f.sl < 0.45 || f.sl > 0.85 || f.fd < 0.55 || nearCliff(x, d, 70) || forestAt(x, d) > 0.05) continue;
+      // die Falllinie muss auch weiter unten talwärts führen (nicht auf die Rückseite des Gipfels)
+      let px = x, pd = d, ok = true;
+      for (let k = 0; k < 140 && ok; k++) { const g = fallAt(S, px, pd); if (g.fd < 0.05 && k < 40) ok = false; px += g.fx * 15; pd += g.fd * 15; }
+      if (!ok || pd < d + 1200) continue;
+      const h = heightDU(d, x), ax = f.fd, ad = -f.fx;
+      const crestness = h - (heightDU(d + ad * 45, x + ax * 45) + heightDU(d - ad * 45, x - ax * 45)) / 2;
+      if (crestness < 4) continue;
+      cand.push({ x, d, sc: h + crestness * 6 });
+    }
+    return cand.sort((a, b) => b.sc - a.sc);
+  };
+  for (const c of crest(-1).slice(0, 12)) if (make('Westgrat', 'luftiger Grat, links und rechts steile Rinnen', c.x, c.d)) break;
+  for (const c of crest(1).slice(0, 12)) if (make('Ostgrat', 'langer Grat mit Blick ins Tal', c.x, c.d)) break;
+  // Couloir: Einstieg des höchstgelegenen Couloirs (ein Stück unterhalb des Anfangs, im Rinnenboden)
+  const cbs = [];
+  for (const c of S.couloirs || []) {
+    if (c.path.length < 12) continue;
+    const [x, d] = c.path[4];
+    if (nearCliff(x, d, 30)) continue;
+    cbs.push({ x, d, h: heightDU(d, x) });
+  }
+  cbs.sort((a, b) => b.h - a.h);
+  for (const c of cbs) if (make('Couloir', 'schmale Rinne zwischen Felswänden', c.x, c.d)) break;
+  // Klippen: oberhalb des höchsten großen Klippenbands, mit Anlauf auf der Bank
+  const kbs = S.cliffs.filter((c) => c.h >= 14 && !c.ice).map((c) => ({ c, h: heightDU(c.d, c.x) })).sort((a, b) => b.h - a.h);
+  for (const { c } of kbs) {
+    const back = c.Lup + 45, x = c.x - c.fx * back, d = c.d - c.fd * back;
+    if (!nearCliff(x, d, 6) && forestAt(x, d) < 0.05 && make(`Klippe ${Math.round(c.h)} m`, 'Klippenband direkt unter dem Absprung', x, d)) break;
+  }
+  S._drops = out;
+  return out;
+}
 
 // ------------------------------------------------------------------ Couloirs
 // Rinnen zwischen Felswänden: von einem Startpunkt im oberen Berg der steilsten Richtung folgen (mit etwas Trägheit),

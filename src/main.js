@@ -324,7 +324,7 @@ const MODES = [
   { id: 'race', name: 'Rennen', kicker: '', line: '', acc: '#ff7a2e' },
   { id: 'endless', name: 'Freeride', kicker: 'Endloser Berg · jedes Mal neu', line: 'Wald, Pulverhänge und Klippen. Punkte zählen erst nach sauberer Landung, ein Sturz kostet alle.', acc: '#63e6b0' },
   { id: 'freestyle', name: 'Freestyle', kicker: 'Endlos · Kicker, Gaps, Rails', line: 'Riesige Sprünge und Rails. Grabs mit Pfeil links und rechts, auf der Rail hältst du die Balance.', acc: '#ffd23f' },
-  { id: 'heli', name: 'Heli-Skiing', kicker: 'Gipfel bis Tal · auf Zeit', line: 'Der Helikopter setzt dich am Grat ab. Keine Karte, keine Markierung: den Weg suchst du selbst.', acc: '#7cc8ff' },
+  { id: 'heli', name: 'Heli-Skiing', kicker: 'Gipfel bis Tal · Wertung wie im Freeride-Contest', line: 'Der Helikopter setzt dich ab, wo du willst. Bewertet werden Linie, Flüssigkeit, Kontrolle und Sprünge.', acc: '#7cc8ff' },
 ];
 const MODE_KEY = 'gipfelsturm_mode';
 let modeIdx = 0;
@@ -338,6 +338,59 @@ const DISC_LINE = {
   sg: 'Lange, schnelle Bögen und zwei Sprünge. Die Linie halten bei über 100 km/h.',
   dh: 'Die ganze Piste von ganz oben, wenige Tore, drei Sprünge. In der Hocke über 130 km/h.',
 };
+// Heli: gewählter Absprungpunkt (wird nach Name gemerkt, jeder Berg hat eigene Punkte)
+let dropPref = 'Gipfel';
+try { dropPref = localStorage.getItem('gipfelsturm_drop') || 'Gipfel'; } catch {}
+function applyDropPref() {
+  if (!C.cfg.heli) return;
+  const l = C.HB.dropPoints(), i = l.findIndex((q) => q.name.split(' ')[0] === dropPref.split(' ')[0]);
+  C.HB.setDrop(i < 0 ? 0 : i);
+}
+function heliInfo() {
+  if (!C.cfg.heli) return null;
+  const l = C.HB.dropPoints(), q = l[C.HB.dropIndex()];
+  return { kicker: `Absprung ${q.name} · Schwierigkeit ${q.diff} von 5`, line: `${q.note[0].toUpperCase() + q.note.slice(1)}. Bewertet werden Linie, Flüssigkeit, Kontrolle und Sprünge, dazu zählt die Zeit.`, list: l, idx: C.HB.dropIndex() };
+}
+function renderDrops() {
+  const el = $('optDrop'), hi = MODES[modeIdx].id === 'heli' ? heliInfo() : null;
+  el.classList.toggle('hidden', !hi);
+  if (!hi) return;
+  const sig = hi.list.map((q) => q.name).join('|');
+  if (el.dataset.sig !== sig) {
+    el.dataset.sig = sig;
+    el.innerHTML = '';
+    hi.list.forEach((q, i) => {
+      const b = document.createElement('button');
+      b.dataset.i = String(i);
+      b.innerHTML = `${q.name} <i aria-hidden="true">${'●'.repeat(q.diff)}${'○'.repeat(5 - q.diff)}</i>`;
+      b.setAttribute('aria-label', `${q.name}, Schwierigkeit ${q.diff} von 5`);
+      b.addEventListener('click', () => { selectDrop(i); b.blur(); });
+      el.appendChild(b);
+    });
+  }
+  [...el.children].forEach((b, i) => { b.classList.toggle('sel', i === hi.idx); b.setAttribute('aria-pressed', String(i === hi.idx)); });
+}
+/** Absprungpunkt wählen: Helikopter fliegt hin (weicher Übergang), Kacheln bauen sich dort auf. */
+function selectDrop(i) {
+  if (!C.cfg.heli || game.mode !== 'menu' || switching) return;
+  const l = C.HB.dropPoints();
+  i = (i + l.length) % l.length;
+  if (i === C.HB.dropIndex()) return;
+  dropPref = l[i].name;
+  try { localStorage.setItem('gipfelsturm_drop', dropPref); } catch {}
+  switching = true;
+  freezeFrame();
+  requestAnimationFrame(() => setTimeout(() => {
+    C.HB.setDrop(i);
+    const dp = C.HB.dropPoint();
+    world.updateChunks(dp.d, true, dp.x);
+    demoStart();
+    menuIntro = RM ? 0 : 1;
+    renderMode(true);
+    switching = false;
+    releaseFrame();
+  }, 16));
+}
 function raceInfo() {
   const D = C.DISCIPLINES[disc], len = C.RACE_FINISH - D.start, n = C.cfg.disc === disc && !C.cfg.endless ? C.gates.length : 0;
   return { kicker: `${D.name} · ${len >= 1000 ? (len / 1000).toFixed(1).replace('.', ',') + ' km' : len + ' m'}${n ? ` · ${n} Tore` : ''}`, line: DISC_LINE[disc] + ' Jedes verpasste Tor kostet zwei Sekunden.' };
@@ -345,17 +398,18 @@ function raceInfo() {
 function bestText(id) {
   const get = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
   if (id === 'race') { const b = parseFloat(get(raceBestKey()) || '0'); return ['Bestzeit ' + C.DISCIPLINES[disc].short, b ? fmt(b) : 'noch keine']; }
-  if (id === 'heli') { const b = parseFloat(get(BEST_KEY + '_heli') || '0'); return ['Bestzeit', b ? fmt(b) : 'noch keine']; }
+  if (id === 'heli') { const sc = parseFloat(get('gipfelsturm_heli_score') || '0'), b = parseFloat(get(BEST_KEY + '_heli') || '0'); return ['Beste Wertung', sc ? `${sc.toFixed(1).replace('.', ',')} · ${b ? fmt(b) : ''}` : 'noch keine']; }
   const p = parseInt(get(BEST_E_KEY + (id === 'freestyle' ? STYLE_SFX.freestyle : '')) || '0', 10) || 0;
   return ['Rekord', p ? `${num(p)} Punkte` : 'noch keiner'];
 }
 function renderMode(anim) {
   const m = MODES[modeIdx];
-  const ri = m.id === 'race' ? raceInfo() : null;
+  const ri = m.id === 'race' ? raceInfo() : m.id === 'heli' ? heliInfo() : null;
   $('menu').style.setProperty('--acc', m.acc);
   $('menuKicker').textContent = ri ? ri.kicker : m.kicker;
   $('optDisc').classList.toggle('hidden', m.id !== 'race');
   for (const b of $('optDisc').children) { const on = b.dataset.v === disc; b.classList.toggle('sel', on); b.setAttribute('aria-pressed', String(on)); }
+  renderDrops();
   const h = $('mName');
   h.setAttribute('aria-label', m.name);
   h.classList.toggle('anim', !!anim);
@@ -406,6 +460,7 @@ async function buildMode() {
     HG.use(seed);
   }
   setKind(id, seed);
+  if (id === 'heli') { applyDropPref(); const dp = C.HB.dropPoint(); world.updateChunks(dp.d, false, dp.x); renderMode(); }
   if (id === 'race') $('menuKicker').textContent = raceInfo().kicker;   // Toranzahl steht erst nach dem Aufbau fest
   demoStart();
   builtIdx = modeIdx;
@@ -546,7 +601,7 @@ function startRun(same) {
   if ((C.cfg.heli && same === true) || (game.kind === 'endless' && fromMenu)) { resetRunState(); if (C.cfg.heli) { const dp = C.HB.dropPoint(); world.updateChunks(dp.d, true, dp.x); } else world.updateChunks(0, true); }
   else if (C.cfg.heli && !game.forceSeed) {
     // neuer Berg, wenn der vorab erzeugte fertig ist; sonst derselbe Berg noch einmal (kein Warten)
-    if (heliNext && HG.isReady(heliNext)) { const sd = heliNext; HG.use(sd); setKind('heli', sd); prefetchHeli(); }
+    if (heliNext && HG.isReady(heliNext)) { const sd = heliNext; HG.use(sd); setKind('heli', sd); applyDropPref(); const dp = C.HB.dropPoint(); world.updateChunks(dp.d, true, dp.x); prefetchHeli(); }
     else { resetRunState(); const dp = C.HB.dropPoint(); world.updateChunks(dp.d, true, dp.x); }
   }
   else if (game.kind === 'endless') setKind(game.style !== 'freeride' && game.style ? game.style : 'endless', game.forceSeed);   // jedes Mal ein neuer Berg (forceSeed nur für Tests)
@@ -563,6 +618,7 @@ function startRun(same) {
   $('penalty').textContent = '';
   $('hint').textContent = C.cfg.heli ? HINT_HELI : HINT_STD;
   heliStart();
+  fwtReset();
   if (aval) { aval.stop(); aval.cool = 6; } avRisk = 0;
 }
 
@@ -588,15 +644,114 @@ function heliStart() {
   // Absprungpunkt: 4,5 m über dem Schnee am Gipfel, Helikopter quer zum Hang, Tür zum Fahrer
   const dp = C.cfg.heli ? C.HB.dropPoint() : null;
   const d = dp ? dp.d : 18, x = dp ? dp.x : C.centerX(d), z = -d, gy = C.height(x, z);
+  // Blick talwärts in die Falllinie des gewählten Absprungpunkts; der Helikopter steht quer zum Hang
+  const hd = dp && dp.fx !== undefined ? Math.atan2(dp.fx, dp.fd) : 0;
+  heli.yaw = -hd;
   heli.drop.set(x, gy + 4.5, z);
-  heli.pos.set(x + 0.3, gy + 4.5 + 2.7, z - 1.75);   // Fahrer steht außen auf der Kufe vor der offenen Tür
+  const cy = Math.cos(heli.yaw), sy = Math.sin(heli.yaw), ox = 0.3, oz = -1.75;   // Fahrer steht außen auf der Kufe vor der offenen Tür
+  heli.pos.set(x + ox * cy + oz * sy, gy + 4.5 + 2.7, z - ox * sy + oz * cy);
   heli.group.position.copy(heli.pos);
-  heli.group.rotation.set(0, 0, 0);
+  heli.group.rotation.set(0, heli.yaw, 0);
   heli.vel.set(0, 0, 0);
   phys.reset(d, x);
+  phys.heading = hd;
   phys.pos.copy(heli.drop);
   phys.grounded = false;
 }
+// ---------------------------------------------------------------- Heli: Wertung wie bei der Freeride World Tour
+// Bewertet werden Linie (Steilheit, genutzte Features, Schwierigkeit des Absprungs), Flüssigkeit (kein Stehen, kein
+// Bremsen, lange Flow-Ketten), Kontrolle (weiche Landungen, wenig Rutschen) und Sprünge (Drop-Höhe, Luftzeit, Tricks).
+// Gesamtwertung 0 bis 100. Flow: jeder saubere Sprung, Drop oder Trick erhöht die Kette; stehen bleiben oder hartes
+// Bremsen bricht sie, ohne neues Feature sinkt sie langsam.
+const fwt = { t: 0, steep: 0, slowT: 0, brake: 0, skid: 0, airs: [], tricks: 0, maxDrop: 0, flow: 0, flowMax: 0, flowT: 0, couloirT: 0, inCou: false, hinted: new Set(), hintT: 0, diff: 1, brakeT: 0 };
+const flowMult = () => 1 + Math.min(2, fwt.flow * 0.25);
+function fwtReset() {
+  Object.assign(fwt, { t: 0, steep: 0, slowT: 0, brake: 0, skid: 0, airs: [], tricks: 0, maxDrop: 0, flow: 0, flowMax: 0, flowT: 0, couloirT: 0, inCou: false, hintT: 0, brakeT: 0 });
+  fwt.hinted = new Set();
+  fwt.diff = C.cfg.heli ? C.HB.dropPoints()[C.HB.dropIndex()].diff : 1;
+}
+function flowBreak(why) {
+  if (fwt.flow >= 2) showMsg(`Flow gerissen (${why})`, 'bad');
+  fwt.flow = 0; fwt.flowT = 0;
+}
+function flowUp(n, what) {
+  fwt.flow += n; fwt.flowT = 0;
+  fwt.flowMax = Math.max(fwt.flowMax, fwt.flow);
+  return `${what}${fwt.flow >= 2 ? `  ·  Flow ×${flowMult().toFixed(2).replace(/0$/, '').replace('.', ',')}` : ''}`;
+}
+function fwtUpdate(dt) {
+  if (!C.cfg.heli || game.mode !== 'run' || phys.crashed > 0) return;
+  fwt.t += dt;
+  const sp = phys.speed;
+  if (phys.grounded && sp > 4) { const ny = Math.max(0.3, phys.normal.y); fwt.steep += (Math.sqrt(1 - ny * ny) / ny) * dt; }
+  if (fwt.t > 4 && sp < 4 && phys.grounded) { fwt.slowT += dt; if (fwt.flow > 0 && sp < 2) flowBreak('angehalten'); }
+  fwt.brake += inp.brake * dt;
+  fwt.brakeT = inp.brake > 0.6 ? fwt.brakeT + dt : 0;
+  if (fwt.brakeT > 1.2 && fwt.flow > 0) flowBreak('gebremst');
+  fwt.skid += Math.min(phys.skid, 6) * dt;
+  fwt.flowT += dt;
+  if (fwt.flowT > 8 && fwt.flow > 0) { fwt.flow = Math.max(0, fwt.flow - 1); fwt.flowT = 4; }
+  // Couloir und Hinweise auf Features voraus (alle 0,25 s): man liest den Berg selbst, bekommt aber eine Vorwarnung
+  fwt.hintT -= dt;
+  if (fwt.hintT > 0) return;
+  fwt.hintT = 0.25;
+  const S = C.HB.info(), px = phys.pos.x, pd = -phys.pos.z;
+  let inC = false;
+  for (const c of S.couloirs || []) {
+    const w2 = (c.W + 4) * (c.W + 4);
+    for (let k = 0; k < c.path.length; k += 2) { const dx = c.path[k][0] - px, dd = c.path[k][1] - pd; if (dx * dx + dd * dd < w2) { inC = true; break; } }
+    if (inC) break;
+  }
+  if (inC) fwt.couloirT += 0.25;
+  if (inC && !fwt.inCou) { hint('Couloir', 'Felswände links und rechts'); flowUp(1, ''); }
+  fwt.inCou = inC;
+  const vx = phys.vel.x, vd = -phys.vel.z;
+  for (const c of S.cliffs) {
+    if (fwt.hinted.has(c)) continue;
+    const rx = px - c.x, rd = pd - c.d, al = rx * c.fx + rd * c.fd, u = rx * c.ax + rd * c.ad;
+    if (al < -95 || al > -12 || u < c.u0 - 6 || u > c.u1 + 6 || vx * c.fx + vd * c.fd < 3) continue;
+    fwt.hinted.add(c);
+    hint(`Klippe ${Math.round(c.h)} m`, 'voraus, Kante nach rechts und links absuchen');
+  }
+  for (const f of S.feats || []) {
+    if (f.k !== 'kick' || fwt.hinted.has(f)) continue;
+    const rx = px - f.x, rd = pd - f.d, al = rx * f.fx + rd * f.fd, u = rx * f.ax + rd * f.ad;
+    if (al < -60 || al > -f.L || Math.abs(u) > f.w || vx * f.fx + vd * f.fd < 3) continue;
+    fwt.hinted.add(f);
+    hint('Windlippe', 'natürlicher Kicker voraus');
+  }
+}
+function hint(title, sub) {
+  const el = $('zone');
+  el.innerHTML = `${title}<small>${sub}</small>`;
+  el.className = ''; void el.offsetWidth; el.className = 'show';
+}
+/** Landung im Heli-Berg: Luftzeit, Drop-Höhe und Aufprall merken, Flow erhöhen. Gibt einen Text für die Anzeige zurück. */
+function fwtLand(e) {
+  if (!C.cfg.heli || game.mode !== 'run' || e.airTime < 0.6) return null;
+  const drop = Math.max(0, phys.airStart.y - phys.pos.y);
+  fwt.airs.push({ air: e.airTime, drop, impact: e.impact, mult: flowMult() });
+  fwt.maxDrop = Math.max(fwt.maxDrop, drop);
+  if (phys.crashed > 0 || e.impact > 16) return null;
+  if (drop > 6) return flowUp(drop > 15 ? 2 : 1, `Drop ${Math.round(drop)} m`);
+  if (e.airTime > 0.9) return flowUp(1, `${e.dist.toFixed(0)} m Sprung`);
+  return null;
+}
+function fwtScore() {
+  const T = Math.max(20, fwt.t), cl = (v) => clamp(v, 0, 1);
+  const steepS = cl((fwt.steep / T - 0.3) / 0.45);
+  let dropS = 0, airSum = 0, q = 0;
+  for (const a of fwt.airs) { if (a.drop > 5) dropS += Math.min(1, a.drop / 25) * a.mult; airSum += a.air * a.mult; q += cl(1 - (a.impact - 5) / 12); }
+  const featS = cl(dropS * 0.3 + fwt.airs.length * 0.05 + fwt.couloirT / 15);
+  const line = 10 * (0.5 * steepS + 0.35 * featS + 0.15 * (fwt.diff - 1) / 4);
+  const flow = 10 * (cl(0.85 - (3 * fwt.slowT) / T - fwt.brake / T) + 0.15 * cl(fwt.flowMax / 5));
+  const control = 10 * (0.7 * (fwt.airs.length ? q / fwt.airs.length : 0.75) + 0.3 * (1 - cl(fwt.skid / T / 2.5)));
+  const air = 10 * (0.45 * cl(fwt.maxDrop / 28) + 0.25 * cl(airSum / 12) + 0.3 * cl(fwt.tricks / 4000));
+  const total = 10 * (0.3 * line + 0.25 * flow + 0.2 * control + 0.25 * air);
+  return { line, flow, control, air, total: Math.round(total * 10) / 10 };
+}
+const dec1 = (v) => v.toFixed(1).replace('.', ',');
+
 // ---------------------------------------------------------------- Lawinen (Heli-Berg)
 // Steile, tiefverschneite Hänge können abreißen: je steiler, schneller und härter (Landungen), desto eher.
 // Das Brett reißt oberhalb ab, die Front rollt hinab – wer schnell genug ist oder seitlich rausfährt, entkommt.
@@ -646,15 +801,16 @@ function heliUpdate(dt) {
   if (game.mode === 'countdown' || game.mode === 'menu') {
     // Schweben mit leichtem Wackeln; Fahrer bleibt in der Tür
     heli.group.position.set(heli.pos.x, heli.pos.y + Math.sin(heli.t * 1.7) * 0.12, heli.pos.z);
-    heli.group.rotation.set(Math.sin(heli.t * 1.3) * 0.02, 0, Math.sin(heli.t * 0.9) * 0.025);
+    heli.group.rotation.set(Math.sin(heli.t * 1.3) * 0.02, heli.yaw || 0, Math.sin(heli.t * 0.9) * 0.025);
     phys.pos.copy(heli.drop); phys.pos.y += Math.sin(heli.t * 1.7) * 0.12;
     phys.vel.set(0, 0, 0); phys.grounded = false;
   } else {
     // Abdrehen: Nase runter, beschleunigen, steigen, Kurve weg vom Hang
     const k = Math.min(1, heli.t * 0.3);
-    heli.vel.x += dt * 7; heli.vel.y += dt * 3.2; heli.vel.z += dt * -1.5;
+    const cy = Math.cos(heli.yaw || 0), sy = Math.sin(heli.yaw || 0);
+    heli.vel.x += dt * (7 * cy - 1.5 * sy); heli.vel.y += dt * 3.2; heli.vel.z += dt * (-7 * sy - 1.5 * cy);
     heli.group.position.addScaledVector(heli.vel, dt);
-    heli.group.rotation.set(0.08 * k, 0.35 * k, -0.22 * k);
+    heli.group.rotation.set(0.08 * k, (heli.yaw || 0) + 0.35 * k, -0.22 * k);
     if (heli.t > 16) heli.group.visible = false;
   }
   const dist = heli.group.position.distanceTo(camera.position);
@@ -724,6 +880,21 @@ function finishRun() {
   audio.finish();
   $('finTitle').textContent = (isBest ? 'Neue Bestzeit!' : hk ? 'Im Tal' : 'Im Ziel') + (hk ? '' : ` · ${C.DISCIPLINES[disc].name}`);
   $('finTime').textContent = fmt(total);
+  if (hk) {
+    // Freeride-Wertung: Gesamtnote groß, Teilnoten als Zeilen; Rekord wird gemerkt
+    const sc = fwtScore();
+    let bestSc = 0;
+    try { bestSc = parseFloat(localStorage.getItem('gipfelsturm_heli_score') || '0') || 0; } catch {}
+    const newBest = sc.total > bestSc;
+    if (newBest) { bestSc = sc.total; try { localStorage.setItem('gipfelsturm_heli_score', String(sc.total)); } catch {} }
+    game.lastScore = sc;
+    $('finTitle').textContent = newBest ? 'Neue Bestwertung!' : isBest ? 'Neue Bestzeit!' : 'Im Tal';
+    $('finTime').innerHTML = `${dec1(sc.total)}<small> / 100</small>`;
+    const rowsH = [['Linie', dec1(sc.line)], ['Flüssigkeit', dec1(sc.flow)], ['Kontrolle', dec1(sc.control)], ['Sprünge', dec1(sc.air)],
+      ['Zeit', fmt(total)], ['Größter Drop', `${Math.round(fwt.maxDrop)} m`], ['Längste Flow-Kette', `×${(1 + Math.min(2, fwt.flowMax * 0.25)).toFixed(2).replace(/0$/, '').replace('.', ',')}`], ['Beste Wertung', dec1(bestSc)]];
+    $('finStats').innerHTML = rowsH.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
+    return;
+  }
   const rows = hk ? [['Höhenmeter', `${num(-C.baseH(C.FINISH_D))} m`], ['Höchsttempo', `${Math.round(game.topSpeed * 3.6)} km/h`], ['Weitester Sprung', `${game.bestJump.toFixed(1)} m`], ['Bestzeit', fmt(game.bestHeli)]] : [['Tore', `${game.passed}/${C.gates.length}`], ['Strafzeit', `+${game.penalty.toFixed(0)} s`], ['Trickpunkte', num(game.score)],
     ['Höchsttempo', `${Math.round(game.topSpeed * 3.6)} km/h`], ['Weitester Sprung', `${game.bestJump.toFixed(1)} m`], ['Bestzeit', fmt(game.best)]];
   $('finStats').innerHTML = rows.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
@@ -772,6 +943,11 @@ window.addEventListener('keydown', (e) => {
     const open = document.querySelector('.dlg:not(.hidden)');
     if (k === 'Escape' && open) { const id = open.id; closeDlg(); document.querySelector(`[data-dlg="${id}"]`)?.focus(); return; }
     if (!open && k === 'KeyB') { setGear(BOARD() ? 'ski' : 'board'); return; }
+    if (!open && MODES[modeIdx].id === 'heli' && C.cfg.heli) {
+      const i = C.HB.dropIndex();
+      if (k === 'ArrowUp' || k === 'KeyW' || k === 'ArrowDown' || k === 'KeyS') { e.preventDefault(); selectDrop(i + (k === 'ArrowUp' || k === 'KeyW' ? -1 : 1)); return; }
+      if (/^Digit[1-9]$/.test(k)) { selectDrop(+k.slice(5) - 1); return; }
+    }
     if (!open && MODES[modeIdx].id === 'race') {
       const i = C.DISC_ORDER.indexOf(disc);
       if (k === 'ArrowUp' || k === 'KeyW' || k === 'ArrowDown' || k === 'KeyS') { e.preventDefault(); selectDisc(C.DISC_ORDER[(i + (k === 'ArrowUp' || k === 'KeyW' ? -1 : 1) + 4) % 4]); return; }
@@ -927,11 +1103,14 @@ function scoreLanding(e) {
     pts += airPts;
     const name = parts.join(' + ');
     const comboNow = game.combo;
+    if (C.cfg.heli) { fwt.tricks += pts * flowMult(); flowUp(1, ''); }
     pts = addPending(pts, true);
     game.tricks++;
     if (pts > game.bestTrickPts) { game.bestTrickPts = pts; game.bestTrick = name; }
-    showMsg(C.cfg.heli ? name : `${name}  +${num(pts)}${game.kind === 'endless' && comboNow > 1 ? `  (×${comboNow.toFixed(1).replace('.0', '')})` : ''}`, 'gold');
+    showMsg(C.cfg.heli ? `${name}${fwt.flow >= 2 ? `  ·  Flow ×${flowMult().toFixed(2).replace(/0$/, '').replace('.', ',')}` : ''}` : `${name}  +${num(pts)}${game.kind === 'endless' && comboNow > 1 ? `  (×${comboNow.toFixed(1).replace('.0', '')})` : ''}`, 'gold');
     audio.gate();
+  } else if (C.cfg.heli && e.fwtText) {
+    showMsg(e.fwtText, 'gold');
   } else if (e.airTime > 0.55 && e.dist > 3) {   // Hüpfer auf der Stelle zählen nicht als Sprung
     const p = addPending(airPts, false);
     showMsg(`${e.dist.toFixed(1)} m Sprung${game.kind === 'endless' && !C.cfg.heli ? `  +${p}` : ''}`, 'gold');
@@ -1260,6 +1439,7 @@ function handleEvents() {
       tracks.blob(phys.pos.x, phys.pos.z, 0.55 + e.impact * 0.04, 0.8, 0.7);
       if (game.mode === 'run') {
         if (e.airTime > 0.55) game.bestJump = Math.max(game.bestJump, e.dist);
+        e.fwtText = fwtLand(e);
         scoreLanding(e);
       }
     } else if (e.type === 'grindStart') {
@@ -1516,7 +1696,7 @@ function updateHud(dt) {
   $('speedfill').style.width = `${clamp(phys.speed / 42, 0, 1) * 100}%`;
   if (C.cfg.heli) {
     $('time').textContent = fmt(game.time);
-    $('best').textContent = game.bestHeli ? `Bestzeit ${fmt(game.bestHeli)}` : 'Bestzeit –';
+    $('best').textContent = (fwt.flow >= 1 ? `Flow ×${flowMult().toFixed(2).replace(/0$/, '').replace('.', ',')} · ` : '') + (game.bestHeli ? `Bestzeit ${fmt(game.bestHeli)}` : 'Bestzeit –');
     $('gates').innerHTML = `${num(Math.max(0, phys.pos.y - C.baseH(C.FINISH_D)))}<span> m</span>`;
     $('penalty').textContent = '';
   } else if (game.kind === 'endless') {
@@ -1599,6 +1779,7 @@ function tick(dt, render) {
     }
     if (game.mode === 'run') game.maxD = Math.max(game.maxD, -phys.pos.z);
     handleEvents();
+    fwtUpdate(dt);
     updatePoints(dt);
     updateTricks(dt);
     if (game.mode === 'run' && game.kind === 'race') checkGates();
@@ -1667,7 +1848,7 @@ function tick(dt, render) {
     tp: (d, lane = 0, speed = 0) => { const L = C.cfg.heli ? { x: C.centerX(d) + lane } : C.mapSlice(d, d + 1, 1).rows[0].lanes[lane]; teleport(L.x, -d); const x0 = C.centerX(d + 6) - C.centerX(d); phys.heading = Math.atan2(x0, 6); phys.vel.set(Math.sin(phys.heading) * speed, 0, -Math.cos(phys.heading) * speed); if (game.mode === 'menu') { game.mode = 'run'; } },
     // Testhilfe: freie Kamera für Standbilder (Position, Blickpunkt), rendert genau ein Bild
     shot: (px, py, pz, lx, ly, lz, fov = 55) => { camera.position.set(px, py, pz); camera.fov = fov; camera.near = 0.3; camera.updateProjectionMatrix(); camera.lookAt(lx, ly, lz); world.sky.position.copy(camera.position); composer.render(); },
-    restartHeli: () => startRun(true), setGear, edge: () => boardEdge,
+    restartHeli: () => startRun(true), setGear, edge: () => boardEdge, finishRun, fwt, fwtScore, applyDropPref, renderMode, heliStart, flowUp,
         advance: (sec, noRender) => { const n = Math.round(sec * 60); for (let i = 0; i < n; i++) tick(1 / 60, !noRender && i === n - 1); },
   };
   requestAnimationFrame((t) => { last = t; frame(t); });

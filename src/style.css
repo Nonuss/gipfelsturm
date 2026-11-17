@@ -199,6 +199,7 @@ html.rot body.touch .kicker { font-size: 11px; }
 .seg.disc { margin-top: 16px; gap: 4px; }
 .menu .seg.disc button { padding: 7px 13px; font-size: 14px; letter-spacing: 0.06em; background: rgba(8, 18, 34, 0.42); border-color: rgba(255, 255, 255, 0.22); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .menu .seg.disc button.sel { background: var(--acc); border-color: var(--acc); color: #0b1422; }
+.menu .seg.drops button i { font-style: normal; font-size: 9px; letter-spacing: 1px; margin-left: 5px; opacity: 0.8; vertical-align: 1px; }
 .mrow { display: flex; align-items: center; gap: 26px; margin-top: 22px; flex-wrap: wrap; }
 .menu .cta { background: var(--acc); box-shadow: 0 10px 34px color-mix(in srgb, var(--acc) 50%, transparent); color: #0b1422; transition: transform 0.12s, background 0.4s, box-shadow 0.4s; }
 .menu .cta:hover { background: var(--acc); filter: brightness(1.08); }
@@ -310,3 +311,4 @@ body.touch #minimap { left: calc(12px + env(safe-area-inset-left)); right: auto;
 html.rot .menu .seg.gear button { padding: 6px 10px; font-size: 12px; }
 
 .brand small { font: 600 11px var(--font); letter-spacing: 0.12em; opacity: 0.55; margin-left: 8px; }
+#finTime small { font-size: 0.38em; opacity: 0.7; margin-left: 4px; }

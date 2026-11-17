@@ -95,6 +95,20 @@ for (let k = 0; k < NSEEDS; k++) {
     if (obst.length) console.log('hindernis', seed, name, JSON.stringify(obst));
     if (!r.finished && !r.stuck && !r.crashes.length) console.log('ZEIT', seed, name, 'bei', Math.round(phys.pos.x), Math.round(-phys.pos.z), 'Höhe über Tal', Math.round(phys.pos.y - HB.floorY(phys.pos.x, -phys.pos.z)), 'v', phys.speed.toFixed(1));
   }
+  // Von jedem wählbaren Absprungpunkt (Grate, Couloir, Klippenband) ins Tal
+  for (const dp of HB.dropPoints().slice(1)) {
+    for (const [name, o] of [['gerade', { vMax: 28 }], ['leicht pendelnd', { vMax: 24, bias: (t) => 0.25 * Math.sin(t / 6) }]]) {
+      built = new Set();
+      const r = run(seed, { ...o, start: { x: dp.x, d: dp.d }, v0: 3 });
+      sum.fahrten++; sum.absprung = (sum.absprung || 0) + 1;
+      const terr = r.crashes.filter((c) => !c.hit);
+      if (r.finished && !r.crashes.length) { sum.ziel++; sum.zeiten.push(Math.round(r.time)); }
+      if (terr.length) { sum.geländeStürze += terr.length; fail++; console.log('ABSPRUNG-STURZ', seed, dp.name, name, JSON.stringify(terr), JSON.stringify(r.lands.slice(-3))); }
+      if (r.stuck) { sum.stecken++; fail++; console.log('ABSPRUNG-STECKT', seed, dp.name, name, JSON.stringify(r.stuck)); }
+      if (!r.finished && !r.stuck && !r.crashes.length) console.log('ABSPRUNG-ZEIT', seed, dp.name, name);
+    }
+  }
+  console.log('Absprungpunkte', seed, HB.dropPoints().map((q) => `${q.name} (${Math.round(q.x)}/${Math.round(q.d)}, Schwierigkeit ${q.diff}, Gefälle ${q.slope}, Klippen ${q.cliffs})`).join(' | '));
   // Klippen einzeln
   for (const c of s.cliffs) {
     sum.klippen++;

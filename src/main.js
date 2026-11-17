@@ -176,7 +176,7 @@ const vis = {
   camSide: 1, flipCam: 0, bigAir: 0, dip: 0, fpv: 0, slide: 0, grindSide: 1, look: 0,
 };
 // Ausrüstung: Ski oder Snowboard (gleiche Tasten, eigene Haltung und Tricknamen). Wird gemerkt.
-let gear = 'ski';
+let gear = 'ski', boardEdge = 0;
 try { gear = localStorage.getItem('gipfelsturm_gear') === 'board' ? 'board' : 'ski'; } catch {}
 const BOARD = () => gear === 'board';
 function setGear(g) {
@@ -1075,7 +1075,7 @@ function stampTracks() {
     const a = vis.plow * 1.05, ca = Math.cos(a), sa = Math.sin(a);
     const fx = f.x * ca + r.x * sa, fz = f.z * ca + r.z * sa, rx = r.x * ca - f.x * sa, rz = r.z * ca - f.z * sa;
     const bw = 0.15 + phys.pow * 0.08, hx = p.x + fx * 0.78, hz = p.z + fz * 0.78, tx = p.x - fx * 0.78, tz = p.z - fz * 0.78;
-    tracks.quad(tx - rx * bw, tz - rz * bw, -1, tx + rx * bw, tz + rz * bw, 1, hx + rx * bw, hz + rz * bw, 1, hx - rx * bw, hz - rz * bw, -1, depth, skidG * 0.6);
+    tracks.quad(tx - rx * bw, tz - rz * bw, -1, tx + rx * bw, tz + rz * bw, 1, hx + rx * bw, hz + rz * bw, 1, hx - rx * bw, hz - rz * bw, -1, depth * (0.12 + 0.88 * boardEdge), skidG * 0.6);
     const q = prevSki[0];
     if (hasPrevSki && (skidG > 0.12 || phys.off > 0.3)) tracks.quad(q.tx, q.tz, 0, q.hx, q.hz, 0, hx, hz, 0, tx, tz, 0, 0.25 + skidG * 0.35, Math.max(skidG, phys.off * 0.6));
     q.tx = tx; q.tz = tz; q.hx = hx; q.hz = hz;
@@ -1315,6 +1315,7 @@ function updateSkier(dt) {
   vis.crashCam += ((crashed ? 1 : 0) - vis.crashCam) * k(3);
   vis.plow += (inp.brake * (1 - Math.abs(inp.steer)) * clamp(phys.speed / 2, 0, 1) - vis.plow) * k(8);
   vis.air += ((phys.grounded ? 0 : 1) - vis.air) * k(phys.grounded ? 14 : 6);
+  boardEdge += (clamp(Math.abs(vis.lean) * 2.4 + vis.plow * 1.2 + phys.skid * 0.15, 0, 1) - boardEdge) * k(6);
 
   if (phys.grounded) tV.copy(phys.normal);
   else tV.set(0, 1, 0).lerp(phys.normal, 0.55).normalize();
@@ -1326,7 +1327,13 @@ function updateSkier(dt) {
   mBasis.makeBasis(vR, vis.up, vB);
   skier.root.quaternion.setFromRotationMatrix(mBasis);
   skier.root.position.copy(phys.pos);
-  skier.root.position.y -= phys.sink * (Q.patch > 0 ? 0.12 : 0.8);
+  if (BOARD()) {
+    // Snowboard im Pulver: geradeaus gleitet das breite Brett obenauf (Auftrieb), in der Kurve und beim Bremsen
+    // gräbt sich die Kante ein. boardEdge: 0 = flach, 1 = voll auf der Kante
+    const pk = clamp((phys.pow - 0.18) / 0.4, 0, 1), layer = 0.3 * pk * pk * (3 - 2 * pk);
+    if (Q.patch > 0) skier.root.position.y += phys.grounded ? layer * (1 - boardEdge) * 0.9 - 0.02 * boardEdge : 0;
+    else skier.root.position.y -= phys.sink * 0.8 * (0.2 + 0.8 * boardEdge);
+  } else skier.root.position.y -= phys.sink * (Q.patch > 0 ? 0.12 : 0.8);
 
   const pv = skier.pivot;
   if (crashed) {

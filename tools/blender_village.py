@@ -306,7 +306,63 @@ def make_park_hut():
     mb.build("ParkHut")
 
 
-NEW = ["VillageHouseA", "VillageHouseB", "Chapel", "Hayloft", "ParkHut"]
+# ------------------------------------------------------------------ Holzhackerhütte (Freeride, Sprung über das Dach)
+# Maße passen zum Spiel (piste.js WOOD_HUT): 5,6 m breit (X, First), 4,6 m tief (Y), Traufe 2,0 m, First 1,0 m höher,
+# Überstand 0,5 m (Y) und 0,4 m (X), Schnee auf dem Dach 0,12 m. Bergseite (-Y) liegt im Schnee, Tür talwärts (+Y).
+def make_wood_hut():
+    mb = MB()
+    hw, hd, E, rise = 2.8, 2.3, 2.0, 1.0
+    wood1, wood2, dark = srgb('#6a4a30'), srgb('#5a3d26'), srgb('#3a2818')
+    # Trockenmauer aus Steinlagen (reicht tief in den Hang, talseitig sichtbar)
+    rnd = random.Random(11)
+    STONES = [srgb('#8a857e'), srgb('#6f6a64'), srgb('#9b958c'), srgb('#5f5b56'), srgb('#7d786f')]
+    z = -2.1
+    while z < 0.1:
+        hz = 0.22 + rnd.random() * 0.1
+        x = -hw - 0.1
+        while x < hw + 0.1:
+            w = 0.35 + rnd.random() * 0.5
+            w = min(w, hw + 0.1 - x)
+            for sy in (1,):   # nur talseitig sichtbar, die Bergseite steckt im Schnee
+                v, f = box(w - 0.03, 0.22, hz - 0.03, (x + w / 2, sy * (hd + 0.02 + rnd.random() * 0.03), z + hz / 2)); mb.add(v, f, STONES[rnd.randrange(5)])
+            x += w
+        y = -0.4
+        while y < hd + 0.1 and z > -1.4:   # Seiten: nur die talseitige Hälfte, wo der Hang den Sockel freigibt
+            w = 0.35 + rnd.random() * 0.5
+            w = min(w, hd + 0.1 - y)
+            for sx in (-1, 1):
+                v, f = box(0.22, w - 0.03, hz - 0.03, (sx * (hw + 0.02 + rnd.random() * 0.03), y + w / 2, z + hz / 2)); mb.add(v, f, STONES[rnd.randrange(5)])
+            y += w
+        z += hz
+    v, f = box(2 * hw + 0.1, 2 * hd + 0.1, 2.2, (0, 0, -1.0)); mb.add(v, f, srgb('#4a4744'))   # Füllung hinter den Steinen
+    log_walls(mb, hw, hd, 0.1, E, c1=wood1, c2=wood2, step=0.26)
+    SW = Matrix(((0, 1, 0, 0), (1, 0, 0, 0), (0, 0, 1, 0), (0, 0, 0, 1)))   # Profil quer, First entlang X
+    for sy in (-1, 1):
+        ov = 0.5
+        pts = [(sy * (hd + ov), E - ov * rise / hd - 0.16), (0, E + rise - 0.16), (0, E + rise - 0.02), (sy * (hd + ov), E - ov * rise / hd - 0.02)]
+        v, f = extrude_xz(pts, -hw - 0.4, hw + 0.4); mb.add(v, f, srgb('#4b3826'), M=SW)          # Schindeln
+        pts = [(sy * (hd + ov + 0.04), E - ov * rise / hd - 0.03), (0, E + rise - 0.02), (0, E + rise + 0.12), (sy * (hd + ov - 0.05), E - ov * rise / hd + 0.11), (sy * (hd + ov + 0.08), E - ov * rise / hd + 0.03)]
+        v, f = extrude_xz(pts, -hw - 0.45, hw + 0.45); mb.add(v, f, SNOW, M=SW)
+    for sx in (-1, 1):
+        v, f = extrude_xz([(-hd, E), (hd, E), (0, E + rise - 0.16)], sx * hw - 0.05, sx * hw + 0.05); mb.add(v, f, dark, M=SW)
+    # Talseite: Brettertür, kleines Fenster, Laterne
+    v, f = box(0.9, 0.1, 1.75, (-0.7, hd + 0.03, 0.95)); mb.add(v, f, srgb('#4a3220'))
+    for k in range(5):
+        v, f = box(0.03, 0.12, 1.7, (-1.1 + k * 0.2, hd + 0.05, 0.95)); mb.add(v, f, dark)
+    window(mb, 1.25, hd, 1.25, 0.6, 0.55, 1, shutters=srgb('#7d2a1e'))
+    v, f = box(0.14, 0.14, 0.24, (0.15, hd + 0.12, 1.85)); mb.add(v, f, srgb('#ffcf7a'))
+    # Ofenrohr mit Hut
+    v, f, _ = lathe([(E + 0.3, 0.09), (E + rise + 0.9, 0.09)], seg=10); mb.add(v, f, srgb('#2b2c30'), M=Matrix.Translation((1.6, 0.9, 0)))
+    v, f, _ = lathe([(E + rise + 0.9, 0.2), (E + rise + 1.05, 0.02)], seg=10); mb.add(v, f, srgb('#2b2c30'), M=Matrix.Translation((1.6, 0.9, 0)))
+    # Holzstoß an der Seite, Hackstock mit Axt
+    woodpile(mb, hw + 0.5, 0.4, 0.0, 3.0, along_x=False)
+    v, f, _ = lathe([(0, 0.24), (0.55, 0.24)], seg=10); mb.add(v, f, srgb('#8f6a44'), M=Matrix.Translation((-hw - 0.9, hd + 0.6, 0)))
+    v, f = box(0.05, 0.05, 0.75, (0, 0, 0)); mb.add(v, f, srgb('#a07b52'), M=Matrix.Translation((-hw - 0.9, hd + 0.6, 0.85)) @ Matrix.Rotation(math.radians(25), 4, 'X'))
+    v, f = box(0.04, 0.22, 0.14, (0, 0, 0)); mb.add(v, f, srgb('#9aa0a8'), M=Matrix.Translation((-hw - 0.9, hd + 0.5, 0.58)))
+    mb.build("WoodHut")
+
+
+NEW = ["VillageHouseA", "VillageHouseB", "Chapel", "Hayloft", "ParkHut", "WoodHut"]
 for nm in NEW:
     o = bpy.data.objects.get(nm)
     if o:
@@ -314,7 +370,7 @@ for nm in NEW:
         bpy.data.objects.remove(o, do_unlink=True)
         if me and me.users == 0:
             bpy.data.meshes.remove(me)
-make_house_a(); make_house_b(); make_chapel(); make_hayloft(); make_park_hut()
+make_house_a(); make_house_b(); make_chapel(); make_hayloft(); make_wood_hut()   # ParkHut wird nicht mehr gebraucht (Hütten stehen nicht mehr in Park-Sprüngen)
 ROOT = os.path.dirname(HERE)
 print('EXPORT', export(os.path.join(ROOT, 'public', 'models', 'models.glb')))
 bpy.ops.wm.save_mainfile(filepath=os.path.join(HERE, 'models.blend'))

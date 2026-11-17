@@ -230,3 +230,51 @@ export function makeHeadItem(kind) {
   grp.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.renderOrder = 10; } });
   return grp;
 }
+
+// ------------------------------------------------------------------ Ausrüstung am Körper (Becken- und Brustknochen, Ruhehaltung)
+// Maße aus dem Rumpf in tools/blender_skier.py (TORSO): Hüfte 1,0 m (halbe Breite 0,21, halbe Tiefe 0,16), Brust 1,33 m
+// (0,23 / 0,17), Hals 1,55 m. Vorne ist -z.
+function numberTex(num, col) {
+  const c = document.createElement('canvas'); c.width = 128; c.height = 112;
+  const g = c.getContext('2d');
+  g.fillStyle = '#f4f4f2'; g.fillRect(0, 0, 128, 112);
+  g.fillStyle = col; g.fillRect(0, 0, 128, 18); g.fillRect(0, 94, 128, 18);
+  g.fillStyle = '#16171b'; g.font = '900 64px Arial, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillText(String(num), 64, 58);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+  return t;
+}
+export function makeBodyItems(kind) {
+  const pel = new THREE.Group(), ch = new THREE.Group();
+  const mat = (c, r = 0.7, m = 0) => new THREE.MeshStandardMaterial({ color: c, roughness: r, metalness: m });
+  const band = (y, rx, rz, h, m, parent) => { const b = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, h, 28, 1, true), m); b.scale.set(rx, 1, rz); b.position.y = y; m.side = THREE.DoubleSide; parent.add(b); return b; };
+  if (kind === 'santa') {
+    band(1.0, 0.222, 0.178, 0.085, mat('#121214', 0.45), pel);                                    // breiter schwarzer Gürtel
+    const buckle = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.1, 0.02), mat('#e2b53a', 0.3, 0.8)); buckle.position.set(0, 1.0, -0.182); pel.add(buckle);
+    const inner = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.05, 0.025), mat('#121214', 0.45)); inner.position.set(0, 1.0, -0.184); pel.add(inner);
+    for (const y of [1.18, 1.3, 1.42]) { const b = new THREE.Mesh(new THREE.SphereGeometry(0.018, 8, 6), mat('#121214', 0.4)); b.position.set(0, y, -0.172); ch.add(b); }
+  } else if (kind === 'racer') {
+    const n = 1 + Math.floor(Math.random() * 30);
+    for (const s of [-1, 1]) {
+      const bib = new THREE.Mesh(new THREE.PlaneGeometry(0.27, 0.24), new THREE.MeshStandardMaterial({ map: numberTex(n, '#d7141a'), roughness: 0.8, side: THREE.DoubleSide }));
+      bib.position.set(0, 1.31, s * 0.176); if (s > 0) bib.rotation.y = Math.PI; ch.add(bib);
+    }
+  } else if (kind === 'guide') {
+    const pack = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.44, 0.16), mat('#23262d', 0.85)); pack.position.set(0, 1.3, 0.25); ch.add(pack);
+    const lid = new THREE.Mesh(new THREE.BoxGeometry(0.31, 0.08, 0.17), mat('#ff6a13', 0.8)); lid.position.set(0, 1.54, 0.25); ch.add(lid);
+    const shovel = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.26, 0.02), mat('#c9ced6', 0.4, 0.6)); shovel.position.set(0, 1.28, 0.338); ch.add(shovel);
+    for (const sx of [-1, 1]) { const st = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.42, 0.02), mat('#16171b', 0.8)); st.position.set(sx * 0.1, 1.33, -0.168); ch.add(st); }
+  } else if (kind === 'snowman') {
+    band(1.53, 0.135, 0.13, 0.07, mat('#d7141a', 0.9), ch);                                       // Schal
+    const end = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.24, 0.025), mat('#d7141a', 0.9)); end.position.set(0.06, 1.4, -0.16); end.rotation.z = 0.15; ch.add(end);
+    for (const y of [1.42, 1.3]) { const b = new THREE.Mesh(new THREE.SphereGeometry(0.024, 8, 6), mat('#121214', 0.6)); b.position.set(0, y, -0.175); ch.add(b); }
+    const b3 = new THREE.Mesh(new THREE.SphereGeometry(0.024, 8, 6), mat('#121214', 0.6)); b3.position.set(0, 1.1, -0.172); pel.add(b3);
+  } else if (kind === 'gold') {
+    const medal = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.012, 20), mat('#e2b53a', 0.25, 0.9)); medal.rotation.x = Math.PI / 2; medal.position.set(0, 1.25, -0.185); ch.add(medal);
+    for (const sx of [-1, 1]) { const r = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.26, 0.008), mat('#d7141a', 0.7)); r.position.set(sx * 0.05, 1.37, -0.175); r.rotation.z = -sx * 0.35; ch.add(r); }
+  } else if (kind === 'retro') {
+    const pack = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.1, 0.08), mat('#27c3ff', 0.7)); pack.position.set(0, 0.98, -0.2); pel.add(pack);   // Bauchtasche
+  }
+  for (const g of [pel, ch]) g.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.renderOrder = 10; } });
+  return { pel, ch };
+}

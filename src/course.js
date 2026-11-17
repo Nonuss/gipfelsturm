@@ -152,6 +152,35 @@ export function height(x, z) {
   return y;
 }
 
+// ---------------------------------------------------------------- Fahrflächen über dem Gelände (Hüttendächer)
+// Das Höhenfeld kann kein Dach über einem Hohlraum: Dächer sind eigene Flächen, die nur die Physik kennt. Sie zählen erst,
+// wenn man schon fast auf Dachhöhe ist (sonst würde man von der Seite auf das Dach gehoben); von der Seite halten Kreise.
+export const decks = new Map();
+export function addDeck(k) {
+  const z0 = Math.floor(-(k.z + k.hd + k.ov) / 20), z1 = Math.floor(-(k.z - k.hd - k.ov) / 20);
+  for (let i = Math.min(z0, z1); i <= Math.max(z0, z1); i++) { if (!decks.has(i)) decks.set(i, []); decks.get(i).push(k); }
+}
+function deckAt(x, z, py) {
+  const l = decks.get(Math.floor(-z / 20));
+  if (!l) return -Infinity;
+  let best = -Infinity;
+  for (let i = 0; i < l.length; i++) {
+    const k = l[i], dx = Math.abs(x - k.x), dz = Math.abs(z - k.z);
+    if (dx > k.hw || dz > k.hd + k.ov) continue;
+    const r = k.y + k.E + k.rise * (1 - dz / k.hd) + k.snow;
+    if (py === undefined || py > r - 0.7) best = Math.max(best, r);
+  }
+  return best;
+}
+/** Boden für die Physik: Gelände oder Hüttendach (py = aktuelle Höhe des Fahrers). */
+export function groundAt(x, z, py) { const y = height(x, z); return decks.size ? Math.max(y, deckAt(x, z, py)) : y; }
+export function groundNormal(x, z, py, out) {
+  if (!decks.size) return terrainNormal(x, z, out);
+  const e = 0.3;
+  const hx = groundAt(x + e, z, py) - groundAt(x - e, z, py), hz = groundAt(x, z + e, py) - groundAt(x, z - e, py);
+  return out.set(-hx, 2 * e, -hz).normalize();
+}
+
 export function terrainNormal(x, z, out) {
   const e = 0.6;
   const hx = height(x + e, z) - height(x - e, z);
@@ -560,20 +589,6 @@ export function genChunk(i) {
     const az = -(r.d0 + 0.6);
     for (const sg of [-1, 1]) out.markers.push({ x: r.x0 + sg * 3.2, z: az + 6, y: P.heightP(r.x0 + sg * 3.2, az + 6), kicker: true });
   }
-  // ---- Park-Hütten in Sprüngen: Dach als Schanze (First = Kante) oder Hütte in der Lücke eines großen Tisches
-  for (const f of P.featuresIn(d0, d1)) {
-    if (f.kind !== 'jump' || !f.hut) continue;
-    const H = P.PARK_HUT, dh = f.d + f.hut.xx, roof = f.hut.kind === 'roof';
-    const x = f.x, z = -dh;
-    // Boden der Hütte: natürlicher Hang (beim Dach liegt dort die Kante: Profilhöhe abziehen)
-    const y = P.heightP(x, z) - (roof ? f.J.h : 0);
-    const psi = Math.atan2(P.props(dh + 6).lx[f.lane] - P.props(dh - 6).lx[f.lane], 12), rot = -psi;
-    decor.push({ m: 'ParkHut', x, z, y, rot, scale: 1 });
-    // Kollision nur, wo man die Hütte von der Seite oder von unten treffen kann; darüber fliegt man frei
-    const ca = Math.cos(rot), sa = Math.sin(rot);
-    const pts = roof ? [[-3, -3.2], [0, -3.2], [3, -3.2], [-3.4, -1], [3.4, -1]] : [[-3, -2.6], [0, -2.6], [3, -2.6], [-3, 2.6], [0, 2.6], [3, 2.6]];
-    for (const [lx, lz] of pts) addCollider(x + lx * ca + lz * sa, z - lx * sa + lz * ca, 1.6, 'haus', 0, 0, y + (roof ? H.E : H.E + H.rise) + 0.1);
-  }
   // Gaps: rote Stangen an beiden Grabenkanten
   for (const f of P.featuresIn(d0, d1)) {
     if (f.kind !== 'jump' || !f.gap) continue;
@@ -701,6 +716,14 @@ export function genChunk(i) {
       addCollider(h.x + tx * ca + tz * sa, -h.d - tx * sa + tz * ca, r, 'haus', 0, 0, h.y + 6);
     }
   }
+  // ---- Holzhackerhütten: Modell, befahrbares Dach, Kreise an Talseite und Flanken (oben fliegt man frei darüber)
+  for (const h of P.hutsIn(d0, d1)) {
+    const H = P.WOOD_HUT, z = -h.d;
+    decor.push({ m: 'WoodHut', x: h.x, z, y: h.y, rot: 0, scale: 1 });
+    addDeck({ x: h.x, z, y: h.y, hw: H.hw + H.ovX, hd: H.hd, ov: H.ovY, E: H.E, rise: H.rise, snow: H.snow });
+    for (const lx of [-1.8, 0, 1.8]) addCollider(h.x + lx, z - 1.6, 1.25, 'haus', 0, 0, h.y + H.E);                  // Talseite
+    for (const sx of [-1, 1]) for (const lz of [-1.3, 1.3]) addCollider(h.x + sx * 2.4, z + lz, 0.95, 'haus', 0, 0, h.y + 1.2);   // Seiten (nur Wandfuß: wer von der Wechte kommt, ist darüber)
+  }
   // ---- Totholz, Bäume und Büsche in Wald und Lichtungen
   const nDec = Math.round(70 * cfg.treeMul);
   for (let n = 0; n < nDec; n++) {
@@ -726,7 +749,7 @@ export function dropTile(ti, tj, T) {
   for (let i = ti * n; i < (ti + 1) * n; i++) for (let j = tj * n; j < (tj + 1) * n; j++) colliders.delete(hKey(i, j));
 }
 export function dropChunk(i) {
-  for (let k = i * 5; k < i * 5 + 5; k++) colliders.delete(k);
+  for (let k = i * 5; k < i * 5 + 5; k++) { colliders.delete(k); decks.delete(k); }
 }
 
 export function setMode(endless, seed = 1, style = 'freeride', disc) {
@@ -738,6 +761,7 @@ export function setMode(endless, seed = 1, style = 'freeride', disc) {
   cfg.heli = endless && style === 'heli';
   for (const a of [gates, trees, rocks, chalets, markers, kickers, pads, lift.pylons]) a.length = 0;
   colliders.clear();
+  decks.clear();
   if (cfg.heli) {
     const hb = HB.initOrAdopt(seed);
     FINISH_D = hb.fin;

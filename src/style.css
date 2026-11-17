@@ -332,3 +332,11 @@ html.rot .menu .seg.gear button { padding: 6px 10px; font-size: 12px; }
 .shopdlg .sw.board { height: 22px; border-radius: 14px; margin: 2px 0; }
 .shopdlg .sw.outfit { border-radius: 8px; }
 .shopdlg .shopnote { margin: 12px 0 0; font-size: 12px; opacity: 0.6; line-height: 1.4; }
+
+/* Outfit-Fenster: gekaufte Outfits */
+.dlg .owned { margin-bottom: 10px; gap: 6px; }
+.dlg .owned button { display: inline-flex; align-items: center; gap: 8px; padding: 7px 11px; letter-spacing: 0.02em; text-transform: none; font-size: 13px; }
+.dlg .owned .ow { display: inline-flex; border-radius: 5px; overflow: hidden; }
+.dlg .owned .ow i { width: 10px; height: 16px; display: block; }
+.dlg .ownedhint { margin: 0 0 10px; font-size: 12px; opacity: 0.65; }
+.dlg .ownedhint:empty { display: none; }

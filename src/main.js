@@ -270,8 +270,27 @@ function applyEquip() {
   skier.setSkiDesign(shop.equip.ski);
   skier.setBoardDesign(shop.equip.board);
   const o = OUTFITS[shop.equip.outfit];
-  if (o && o.jacket) { skier.setColors(o.jacket, o.accent, o.pants); skier.setHead(o.head || null); }
-  else { skier.setColors(outfit.jacket, outfit.accent, outfit.pants); skier.setHead(null); }
+  if (o && o.jacket) { skier.setColors(o.jacket, o.accent, o.pants); skier.setHead(o.head || null); skier.setBody(shop.equip.outfit); }
+  else { skier.setColors(outfit.jacket, outfit.accent, outfit.pants); skier.setHead(null); skier.setBody(null); }
+  renderOwnedOutfits();
+}
+/** Im Fenster „Outfit“: gekaufte Outfits als Knöpfe (anlegen per Klick), dazu wie bisher eigene Farben. */
+function renderOwnedOutfits() {
+  const el = $('ownedOutfits');
+  if (!el) return;
+  el.innerHTML = '';
+  for (const id of Object.keys(OUTFITS)) {
+    if (!shop.has('outfit', id)) continue;
+    const o = OUTFITS[id], b = document.createElement('button');
+    const cols = o.jacket ? [o.jacket, o.accent, o.pants] : [outfit.jacket, outfit.accent, outfit.pants];
+    b.innerHTML = `<span class="ow">${cols.map((c) => `<i style="background:${c}"></i>`).join('')}</span>${o.name}`;
+    b.classList.toggle('sel', shop.equip.outfit === id);
+    b.setAttribute('aria-pressed', String(shop.equip.outfit === id));
+    b.addEventListener('click', () => { shop.wear('outfit', id); applyEquip(); if (shopUI) shopUI.render(); b.blur(); });
+    el.appendChild(b);
+  }
+  const hint = $('ownedHint');
+  if (hint) hint.textContent = Object.keys(OUTFITS).some((id) => id !== 'custom' && shop.has('outfit', id)) ? '' : 'Weitere Outfits gibt es im Shop.';
 }
 function updateWallet() { const b = $('shopBtn'); if (b) b.textContent = `Shop · ${num(shop.wallet)}`; }
 /** Punkte eines Laufs in den Shop: gibt die gutgeschriebene Zahl zurück. */
@@ -1624,15 +1643,17 @@ function updateSkier(dt) {
     // auf der Rail: Körper quer zur Rail, Balance als leichte Neigung sichtbar
     const balTilt = phys.grind ? -phys.grind.bal * 0.35 : 0;
     const bs = Math.cos(trick.yaw + swYaw) < 0 ? -1 : 1;
-    // Snowboard: der ganze Fahrer kippt mit dem Brett auf die Kante (in die Kurve), Bremsen = Brett quer stellen
-    const bLean = BOARD() ? -vis.lean * 0.8 * bs : 0, bSkid = BOARD() ? vis.plow * 1.05 : 0;
+    // Snowboard: das Brett geht stärker auf die Kante als der Körper. Der Körper neigt sich nur halb so weit in die Kurve,
+    // den Rest fangen Knie und Hüfte ab (Angulation, wie bei echten Fahrern); Bremsen = Brett quer stellen.
+    const bEdge = BOARD() ? -vis.lean * 0.85 * bs : 0, bLean = bEdge * 0.55, bSkid = BOARD() ? vis.plow * 1.05 : 0;
+    vis.bEdgeExtra = bEdge - bLean;
     pv.rotation.set(trick.pitch, -(trick.yaw + swYaw) + vis.slide * 1.45 + bSkid, vis.spin * 0.18 + balTilt + bLean);
     vis.look += ((BOARD() ? (phys.grind ? 0 : 0.72 * bs) : isSwitch() && !phys.grind ? 1 : 0) - vis.look) * k(6);
     pv.position.set(0, 0.85, 0);
     if (BOARD()) {
       // Das Brett kippt um seine Kante im Schnee, nicht um die Hüfte: Drehpunkt so verschieben, dass die Brettmitte
       // auf halber Brettbreite über dem Schnee bleibt (sonst hebt es in Schräglage seitlich ab und schwebt)
-      const roll = bLean, g = 1 - vis.air;
+      const roll = bEdge, g = 1 - vis.air;   // die Kante im Schnee bestimmt die Höhe: halbe Brettbreite mal Kantenwinkel
       bdTmp.set(0, BOARD_Y, 0).applyQuaternion(pv.quaternion.setFromEuler(pv.rotation));
       // im Pulver gut 2 cm eingesunken (liegt sichtbar im Schnee), auf präpariertem Schnee obenauf
       const pkB = clamp((phys.pow - 0.18) / 0.4, 0, 1);
@@ -1644,7 +1665,7 @@ function updateSkier(dt) {
   // sonst lehnt er sich aus der Kurve heraus statt hinein.
   const bodySign = Math.cos(trick.yaw + swYaw);
   skier.update({
-    lean: BOARD() ? 0 : vis.lean * bodySign, crouch: vis.crouch, steer: phys.grounded && !BOARD() ? inp.steer * bodySign : 0, plow: BOARD() ? 0 : vis.plow, plowDir: bodySign < 0 ? -1 : 1, air: vis.air, compress: vis.compress,
+    lean: BOARD() ? 0 : vis.lean * bodySign, crouch: BOARD() ? Math.min(1, vis.crouch + 0.32 * Math.abs(vis.lean)) : vis.crouch, edge: BOARD() && !crashed ? vis.bEdgeExtra || 0 : 0, steer: phys.grounded && !BOARD() ? inp.steer * bodySign : 0, plow: BOARD() ? 0 : vis.plow, plowDir: bodySign < 0 ? -1 : 1, air: vis.air, compress: vis.compress,
     speed: phys.speed, grab: trick.grab, grabSide: trick.gs, look: vis.look, tuck: vis.tuck, spin: vis.spin, extend: vis.extend, crash: crashed ? 1 : 0, crashA: vis.crashAngle,
   }, dt);
   skier.updateLoose(dt, C.height);

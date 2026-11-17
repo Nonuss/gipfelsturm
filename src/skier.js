@@ -2,7 +2,7 @@
 // Die Haltung wird prozedural berechnet: Becken/Oberkörper aus Fahrzustand, Beine und Arme per Zwei-Gelenk-IK.
 import * as THREE from 'three';
 import { clamp, lerp } from './course.js';
-import { SKIS, BOARDS, makeSki, makeBoardGeo, makeHeadItem } from './gear.js';
+import { SKIS, BOARDS, makeSki, makeBoardGeo, makeHeadItem, makeBodyItems } from './gear.js';
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 const PIVOT_Y = 0.85;
@@ -156,6 +156,20 @@ export class Skier {
     this.board.geometry = g;
     this.board.material.side = THREE.DoubleSide;
   }
+  /** Ausrüstung am Körper zum Outfit (Gürtel, Startnummer, Rucksack, Schal, Medaille). */
+  setBody(kind) {
+    if (this.bodyKind === kind) return;
+    this.bodyKind = kind;
+    if (this.bodyItems) {
+      for (const [i, g] of [[PEL, this.bodyItems.pel], [CH, this.bodyItems.ch]]) { this.bones[i].remove(g); g.traverse((o) => { if (o.isMesh) { o.geometry.dispose(); if (o.material.map) o.material.map.dispose(); o.material.dispose(); } }); }
+      this.bodyItems = null;
+    }
+    if (!kind) return;
+    this.bodyItems = makeBodyItems(kind);
+    this.bones[PEL].add(this.bodyItems.pel);
+    this.bones[CH].add(this.bodyItems.ch);
+    this.bodyItems.pel.visible = this.bodyItems.ch.visible = !this.fpv;
+  }
   /** Kopfteil zum Outfit (Weihnachtsmütze mit Bart, Zylinder, Stirnband, Krone) am Kopfknochen. */
   setHead(kind) {
     if (this.headKind === kind) return;
@@ -182,6 +196,7 @@ export class Skier {
     this.fpv = on;
     for (const m of this.fpvMats) { m.colorWrite = !on; m.depthWrite = !on; }
     if (this.head) this.head.visible = !on;
+    if (this.bodyItems) this.bodyItems.pel.visible = this.bodyItems.ch.visible = !on;
   }
 
   setColors(jacket, accent, pants) {
@@ -286,7 +301,8 @@ export class Skier {
       } else if (this.gear === 'board') {
         // Bindungen: Füße 52 cm auseinander, Duck-Stellung (vorne +15, hinten -15 Grad), Brett hebt sich beim Grab
         f.position.set(side * 0.26, 0.032 + grab * 0.22 + tuck * 0.14, 0);
-        f.rotation.set(grab * 0.25 + tuck * 0.1, side * 0.26, 0);
+        // Kantenwinkel des Bretts über den Körper hinaus (Angulation): Füße und Brett kippen um die Brett-Längsachse
+        f.rotation.set(grab * 0.25 + tuck * 0.1 + (s.edge || 0), side * 0.26, 0);
       } else {
         const stance = 0.17 + 0.07 * Math.abs(lean) + 0.13 * plow + air * 0.03 + grab * 0.03;
         f.position.set(side * stance, Math.abs(Math.sin(edge)) * 0.03 + grab * 0.2 + tuck * 0.16, -0.09 * lean * side - grab * 0.06);

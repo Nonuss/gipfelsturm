@@ -619,17 +619,20 @@ export function genTile(ti, tj, T, treeMul, addCollider, addRock) {
   for (const c of s.cliffs) {
     if (c.x < x0 || c.x >= x0 + T || c.d < d0 || c.d >= d0 + T) continue;
     out.walls.push(c);
-    const nB = c.ice ? 0 : 1 + Math.floor(R() * 2.4);
+    const nB = 0;   // keine Blöcke neben dem Wandfuß: dort führt die Umfahrung der Klippe vorbei
     for (let k = 0; k < nB; k++) {
       const u = R() < 0.5 ? c.u0 - 3 - R() * 5 : c.u1 + 3 + R() * 5, p = cliffPoint(c, 4 + R() * 7, u), sc = 1.7 + R() * 2.3;
       const rot = R() * TAU, vr = Math.floor(R() * 6), y = heightH(p.x, -p.d) - 0.35 * sc;
       out.rocks.push({ x: p.x, z: -p.d, y, scale: sc, rot, variant: vr });
       addRock(p.x, -p.d, y, sc, rot, vr);
     }
-    // Felswand: Kreise am Wandfuß, Oberkante knapp unter der Bank (wer oben auf der Bank fährt, fliegt darüber)
+    // Felswand: Kreise am Wandfuß der Stirnseite, Oberkante knapp unter der Bank (wer oben auf der Bank fährt, fliegt
+    // darüber). Die Seiten der Bank bekommen keine Kreise: dort fährt man seitlich hinauf, das Gelände bremst und lenkt ab
+    // (vorher stürzte man dort an unsichtbaren Kreisen, sobald man die Seite hinauffuhr)
     for (const q of wallLine(c)) {
+      if (q.nx * c.fx - q.nz * c.fd < 0.9) continue;   // nur die Stirnseite, keine Ecken
       const yT = heightH(q.x - q.nx * 3, q.z - q.nz * 3), yB = heightH(q.x + q.nx * 3.3, q.z + q.nz * 3.3);
-      if (yT - yB < 1.8) continue;
+      if (yT - yB < 4) continue;                         // niedrige Stellen: das Gelände reicht
       addCollider(q.x + q.nx * 2.3, q.z + q.nz * 2.3, 1.35, 'fels', 0, 0, yT - 1.5);
     }
   }

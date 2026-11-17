@@ -1,7 +1,7 @@
 // Fahrphysik: Schwerkraft am Hang, Gleitreibung, Luftwiderstand, Kantengriff (Carven) und Rutschen (Driften).
 // Kurvenradius ergibt sich aus der maximalen Querbeschleunigung, die die Kante hält – wer zu hart einlenkt, rutscht.
 import * as THREE from 'three';
-import { G, height, terrainNormal, surfaceAt, centerX, bounds, cfg, nearColliders, nearRails, clamp, lerp, smoothstep, MESH_D1 } from './course.js';
+import { G, height, terrainNormal, groundAt, groundNormal, surfaceAt, centerX, bounds, cfg, nearColliders, nearRails, clamp, lerp, smoothstep, MESH_D1 } from './course.js';
 
 const N = new THREE.Vector3(), N2 = new THREE.Vector3();
 const F = new THREE.Vector3(), Rv = new THREE.Vector3(), FH = new THREE.Vector3();
@@ -45,11 +45,11 @@ export class SkiPhysics {
     if (this.grind) { this.stepGrind(dt, inp); return; }
     this.grindCool = Math.max(0, this.grindCool - dt);
     const p = this.pos, v = this.vel;
-    terrainNormal(p.x, p.z, N);
+    groundNormal(p.x, p.z, p.y, N);
     // Tiefschnee: im Rennen bremst das Gelände neben der Piste, im Freeride-Berg gibt es echten Pulverschnee mit Tiefe
     const sf = surfaceAt(p.x, p.z);
     this.off = smoothstep(-0.5, 4, sf.edge);
-    this.pow = cfg.endless ? sf.pow : 0;
+    this.pow = cfg.endless && !this.onDeck ? sf.pow : 0;   // auf einem Dach liegt fester Schnee
     const pw = cfg.endless ? this.pow : this.off;
     let speed = v.length();
     this.sink += ((this.grounded ? this.pow * clamp(0.5 + speed / 25, 0.5, 1.2) * 0.34 : 0) - this.sink) * Math.min(1, dt * 6);
@@ -165,8 +165,9 @@ export class SkiPhysics {
       if (this.grind) { this.normal.set(0, 1, 0); this.speed = v.length(); return; }
     }
 
-    const hgt = height(p.x, p.z);
-    terrainNormal(p.x, p.z, N2);
+    const hgt = groundAt(p.x, p.z, p.y);
+    this.onDeck = hgt > height(p.x, p.z) + 0.05;
+    groundNormal(p.x, p.z, p.y, N2);
     const gap = p.y - hgt;
     const vn = v.dot(N2);
     this.gap = gap;

@@ -1352,7 +1352,7 @@ function updateSkier(dt) {
       // auf halber Brettbreite über dem Schnee bleibt (sonst hebt es in Schräglage seitlich ab und schwebt)
       const roll = bLean, g = 1 - vis.air;
       bdTmp.set(0, BOARD_Y, 0).applyQuaternion(pv.quaternion.setFromEuler(pv.rotation));
-      const ty = 0.0 + 0.135 * Math.abs(Math.sin(roll));   // Brettmitte auf Schneehöhe: Belag knapp 1 cm eingesunken
+      const ty = -0.028 + 0.135 * Math.abs(Math.sin(roll));   // Belag gut 2 cm eingesunken: liegt sichtbar im Schnee (auch wo das Gelände-Gitter etwas tiefer liegt)
       pv.position.set(-bdTmp.x * g, 0.85 + (ty - bdTmp.y - 0.85) * g, -bdTmp.z * g);
     }
   }
@@ -1593,6 +1593,7 @@ function tick(dt, render) {
   aval = new Avalanche(scene);
   dust = new DiamondDust(scene);
   applyQuality();
+  $('ver').textContent = 'v' + __GAME_VERSION__;   // zeigt, welche Fassung der Browser gerade lädt
   await selectMode(modeIdx, true);
   applyOutfit();
   tracks.update(phys.pos.x, phys.pos.z);

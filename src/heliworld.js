@@ -105,6 +105,11 @@ export class HeliWorld {
           }
           // Schnee: Windstrukturen und Mulden-Schattierung
           col *= (0.965 + 0.05 * fN(p * 0.025)) * vAo;
+          // Luftperspektive wie auf Panoramafotos: ferne Hänge werden kühler und flauer, Schnee nie reinweiß
+          float dist = length(vW - cameraPosition);
+          float ap = smoothstep(1500.0, 14000.0, dist);
+          col = mix(col, vec3(0.74, 0.8, 0.9) * (0.88 + 0.12 * nw.y), ap * 0.45);
+          col *= mix(1.0, 0.9, ap);
           // Wald: Baumgruppen (dunkel, mit Schnee auf den Kronen), in der Ferne als ruhige Fläche
           float speck = mix(vN(p * 0.22), 0.5, smoothstep(3.0, 12.0, pw));
           float fm = smoothstep(0.12, 0.45, vMat.y + (speck - 0.5) * 0.55);

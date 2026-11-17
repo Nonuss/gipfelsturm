@@ -327,13 +327,13 @@ export class Skier {
 
 /** Snowboard: Taillierung, aufgebogene Nose und Tail, Belag dunkel, Oberseite mit Streifen. Länge entlang X. */
 function makeBoard() {
-  const L = 1.56, W = 0.27, geo = new THREE.BoxGeometry(L, 0.022, W, 32, 1, 4);
+  const L = 1.56, W = 0.27, geo = new THREE.BoxGeometry(L, 0.018, W, 32, 1, 4);
   const p = geo.attributes.position, col = new Float32Array(p.count * 3);
   for (let i = 0; i < p.count; i++) {
     const x = p.getX(i), y = p.getY(i), z = p.getZ(i), t = Math.abs(x) / (L / 2);
     const side = 1 - 0.07 * Math.cos(Math.min(1, t / 0.8) * Math.PI / 2) - (t > 0.82 ? (1 - Math.sqrt(Math.max(0, 1 - ((t - 0.82) / 0.18) ** 2))) * 0.75 : 0);
     p.setZ(i, z * side);
-    p.setY(i, y + (t > 0.72 ? 0.14 * ((t - 0.72) / 0.28) ** 2 : 0));
+    p.setY(i, y + (t > 0.88 ? 0.028 * ((t - 0.88) / 0.12) ** 2 : 0));   // Nose und Tail nur ganz leicht aufgebogen: von hinten liegt das Ende sichtbar auf
     const top = y > 0, stripe = Math.abs(Math.sin(x * 7.5)) > 0.85;
     const c = top ? (stripe ? [1.0, 0.42, 0.08] : [0.12, 0.14, 0.18]) : [0.05, 0.05, 0.06];
     col.set(c, i * 3);

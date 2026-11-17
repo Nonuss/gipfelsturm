@@ -55,7 +55,7 @@ export function farArrays(s, tier) {
   // Horizont: ein sehr grober Ring bis 70 km, damit man nirgends ins Leere schaut (Höhe aus der Makroform)
   const Hz = horizon(s);
   // Fichten in der Ferne, in Gruppen (Bestände mit Lücken)
-  const N = low ? 22000 : tier === 'mid' ? 45000 : 75000;
+  const N = low ? 34000 : tier === 'mid' ? 70000 : 120000;
   const tr = new Float32Array(N * 7);
   const R = mulberry32(s.seed * 31 + 5);
   let n = 0, tries = 0;
@@ -66,7 +66,7 @@ export function farArrays(s, tier) {
     let x, d, f;
     if (n < nIn) { x = x0 + R() * (x1 - x0); d = d0 + R() * (d1 - d0); f = HB.forestAt(x, d); }
     else {
-      x = (R() * 2 - 1) * 9000; d = s.DV + (R() * 2 - 1) * 4500;
+      x = (R() * 2 - 1) * 11000; d = s.DV + (R() * 2 - 1) * 5000;
       if (x > x0 && x < x1 && d > d0 && d < d1) continue;
       const e = 30, y = HB.heightCoarse(x, d), sl = Math.hypot(HB.heightCoarse(x + e, d) - HB.heightCoarse(x - e, d), HB.heightCoarse(x, d + e) - HB.heightCoarse(x, d - e)) / (2 * e);
       f = coarseForest(x, d, y, sl);

@@ -303,3 +303,5 @@ body.touch #minimap { left: calc(12px + env(safe-area-inset-left)); right: auto;
 .menu .seg.gear button { padding: 8px 14px; font-size: 15px; letter-spacing: 0.1em; text-transform: uppercase; }
 @media (max-height: 520px) { .menu .seg.gear button { padding: 6px 10px; font-size: 12px; } }
 html.rot .menu .seg.gear button { padding: 6px 10px; font-size: 12px; }
+
+.brand small { font: 600 11px var(--font); letter-spacing: 0.12em; opacity: 0.55; margin-left: 8px; }

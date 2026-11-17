@@ -80,7 +80,7 @@ export class World {
     // Heli-Gebirge: eigene Sonne (tiefer, seitlich), Dunst mit Tiefe statt fester Sichtgrenze, echte Nachbarberge
     this.setSun(heli ? new THREE.Vector3(...C.HB.SUN) : SUN_DEFAULT);
     if (heli !== this.fogExp) {
-      this.scene.fog = heli ? new THREE.FogExp2(HAZE, 0.000072) : new THREE.Fog(HAZE, 220, 2300);
+      this.scene.fog = heli ? new THREE.FogExp2(new THREE.Color().setRGB(0.6, 0.71, 0.88), 0.000088) : new THREE.Fog(HAZE, 220, 2300);
       this.fogExp = heli;
     }
     this.mountains.visible = !heli;

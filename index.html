@@ -68,9 +68,17 @@
     <div class="mdots" id="mDots" role="group" aria-label="Modus wählen"></div>
 
     <div class="mtools">
+      <button data-dlg="dlgShop" aria-haspopup="dialog" id="shopBtn">Shop</button>
       <button data-dlg="dlgOutfit" aria-haspopup="dialog">Outfit</button>
       <button data-dlg="dlgSettings" aria-haspopup="dialog">Einstellungen</button>
       <button data-dlg="dlgKeys" aria-haspopup="dialog">Steuerung</button>
+    </div>
+
+    <div class="dlg hidden wide shopdlg" id="dlgShop" role="dialog" aria-label="Shop">
+      <header><b>Shop</b><span class="wallet">Guthaben <b>0 Punkte</b></span><button class="x" aria-label="Schließen">×</button></header>
+      <div class="tabs seg" role="tablist"><button data-t="ski" role="tab">Ski</button><button data-t="board" role="tab">Snowboard</button><button data-t="outfit" role="tab">Outfit</button></div>
+      <div class="cards"></div>
+      <p class="shopnote">Punkte gibt es für jeden Lauf: Rennen nach Toren und Bestzeit, Freeride und Freestyle für gesicherte Punkte, Heli-Skiing nach der Wertung. Nur Spielpunkte, kein echtes Geld.</p>
     </div>
 
     <div class="dlg hidden" id="dlgOutfit" role="dialog" aria-label="Outfit">

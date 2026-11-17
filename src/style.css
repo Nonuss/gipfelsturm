@@ -312,3 +312,23 @@ html.rot .menu .seg.gear button { padding: 6px 10px; font-size: 12px; }
 
 .brand small { font: 600 11px var(--font); letter-spacing: 0.12em; opacity: 0.55; margin-left: 8px; }
 #finTime small { font-size: 0.38em; opacity: 0.7; margin-left: 4px; }
+
+/* Shop */
+.shopdlg { width: min(720px, calc(100% - 40px)); }
+.shopdlg header { gap: 12px; }
+.shopdlg .wallet { margin-left: auto; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.85; }
+.shopdlg .wallet b { font: italic 800 18px var(--font); letter-spacing: 0.02em; text-transform: none; color: var(--acc); margin-left: 6px; }
+.shopdlg .tabs { margin-bottom: 12px; }
+.shopdlg .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.shopdlg .card { display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 12px; background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.12); }
+.shopdlg .card.on { border-color: var(--acc); background: color-mix(in srgb, var(--acc) 14%, transparent); }
+.shopdlg .card b { font: italic 800 16px var(--font); letter-spacing: 0.02em; }
+.shopdlg .card p { margin: 0; font-size: 12.5px; line-height: 1.35; opacity: 0.82; flex: 1; }
+.shopdlg .card small { font-size: 11px; opacity: 0.65; }
+.shopdlg .card button { padding: 7px 10px; border-radius: 9px; background: var(--acc); color: #0b1422; font: 700 13px var(--font); letter-spacing: 0.04em; }
+.shopdlg .card button:disabled { background: rgba(255, 255, 255, 0.14); color: rgba(255, 255, 255, 0.75); cursor: default; }
+.shopdlg .sw { display: flex; height: 26px; border-radius: 6px; overflow: hidden; }
+.shopdlg .sw.ski { height: 14px; border-radius: 10px 4px 4px 10px; margin: 6px 0; transform: skewX(-12deg); }
+.shopdlg .sw.board { height: 22px; border-radius: 14px; margin: 2px 0; }
+.shopdlg .sw.outfit { border-radius: 8px; }
+.shopdlg .shopnote { margin: 12px 0 0; font-size: 12px; opacity: 0.6; line-height: 1.4; }

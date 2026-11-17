@@ -861,6 +861,7 @@ export class World {
           const t = k / 10;
           const q = A.clone().lerp(B, t);
           q.y -= span * 0.018 * 4 * t * (1 - t);
+          q.y = Math.max(q.y, C.height(q.x, q.z) + 6.5);   // über Kuppen zwischen zwei Stützen nicht durch den Schnee
           pts.push(q);
         }
       }

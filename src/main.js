@@ -17,6 +17,7 @@ import { PowderPatch } from './powder.js';
 import { setupTouch, updateTouch, touch, isTouch, viewSize, view } from './touch.js';
 import { Avalanche } from './avalanche.js';
 import * as HG from './heligen.js';
+import { shop, buildShopUI, OUTFITS } from './shop.js';
 
 const { clamp, lerp, smoothstep, G } = C;
 const $ = (id) => document.getElementById(id);
@@ -263,9 +264,37 @@ const outfit = { jacket: SW.jacket[0], accent: SW.accent[0], pants: SW.pants[0] 
 try { Object.assign(outfit, JSON.parse(localStorage.getItem(OUTFIT_KEY) || '{}')); } catch { /* Standardfarben */ }
 const SW_IDS = { jacket: ['swJacket', 'colJacket'], accent: ['swAccent', 'colAccent'], pants: ['swPants', 'colPants'] };
 
+/** Ausrüstung aus dem Shop am Fahrer anlegen (Ski, Brett, Outfit mit Kopfteil). */
+function applyEquip() {
+  if (!skier) return;
+  skier.setSkiDesign(shop.equip.ski);
+  skier.setBoardDesign(shop.equip.board);
+  const o = OUTFITS[shop.equip.outfit];
+  if (o && o.jacket) { skier.setColors(o.jacket, o.accent, o.pants); skier.setHead(o.head || null); }
+  else { skier.setColors(outfit.jacket, outfit.accent, outfit.pants); skier.setHead(null); }
+}
+function updateWallet() { const b = $('shopBtn'); if (b) b.textContent = `Shop · ${num(shop.wallet)}`; }
+/** Punkte eines Laufs in den Shop: gibt die gutgeschriebene Zahl zurück. */
+function earn(n, why) {
+  const got = shop.earn(n);
+  if (got) { updateWallet(); if (why) showMsg(`+${num(got)} Shop-Punkte · ${why}`, 'good'); }
+  return got;
+}
+/** Freeride und Freestyle: gesicherte Punkte am Ende eines Laufs (Menü oder neuer Lauf), ein Zehntel davon. */
+function payEndless() {
+  if (C.cfg.heli || game.kind !== 'endless' || game.paid || !(game.mode === 'run' || game.mode === 'countdown')) return 0;
+  game.paid = true;
+  return earn(Math.floor(game.score / 10));
+}
+let shopUI = null;
+/** Eigene Farben gewählt: Outfit „Eigene Farben“ anlegen. */
 function applyOutfit() {
-  if (skier) skier.setColors(outfit.jacket, outfit.accent, outfit.pants);
-  localStorage.setItem(OUTFIT_KEY, JSON.stringify(outfit));
+  if (shop.equip.outfit !== 'custom') shop.wear('outfit', 'custom');
+  applyEquip();
+  applyOutfitUI();
+}
+function applyOutfitUI() {
+  try { localStorage.setItem(OUTFIT_KEY, JSON.stringify(outfit)); } catch {}
   for (const key in SW_IDS) {
     for (const b of $(SW_IDS[key][0]).children) b.classList.toggle('sel', b.dataset.c === outfit[key]);
     $(SW_IDS[key][1]).value = outfit[key];
@@ -306,6 +335,10 @@ function buildMenuControls() {
   for (const b of $('optDisc').children) b.addEventListener('click', () => { selectDisc(b.dataset.v); b.blur(); });
   for (const b of $('optSteer').children) b.addEventListener('click', async () => { if (touchCtl) await touchCtl.setTilt(b.dataset.v === '1'); syncOpts(); });
   $('fsBtn').addEventListener('click', () => { toggleFs(); $('fsBtn').blur(); });
+  shopUI = buildShopUI($('dlgShop'), () => { applyEquip(); applyOutfitUI(); });
+  shop.onChange = () => { updateWallet(); if (shopUI) shopUI.render(); };
+  $('shopBtn').addEventListener('click', () => { if (shopUI) shopUI.render(); });
+  updateWallet();
   try { if (localStorage.getItem('gipfelsturm_muted') === '1') audio.setMuted(true); } catch {}
   syncOpts();
   for (const b of $('quality').children) {
@@ -596,6 +629,7 @@ function startRun(same) {
   demo.on = false; airKey.space = false;
   audio.start();
   saveEndlessBest();
+  payEndless();
   // Heli-Berg: nach einem Sturz geht es auf demselben Berg wieder ganz oben los (same), sonst gibt es einen neuen.
   // Aus dem Menü heraus wird der Berg gefahren, der im Hintergrund zu sehen war.
   if ((C.cfg.heli && same === true) || (game.kind === 'endless' && fromMenu)) { resetRunState(); if (C.cfg.heli) { const dp = C.HB.dropPoint(); world.updateChunks(dp.d, true, dp.x); } else world.updateChunks(0, true); }
@@ -613,7 +647,7 @@ function startRun(same) {
   setTimeout(() => $('hint').classList.add('fade'), 14000);
   Object.assign(game, {
     mode: 'countdown', time: 0, penalty: 0, passed: 0, gateIdx: 0, topSpeed: 0, bestJump: 0, countdown: same === true ? 2.0 : 3.0, lastCount: 4, finishT: 0,
-    score: 0, maxD: 0, bestTrick: '', bestTrickPts: 0, tricks: 0, pend: 0, pendT: 0, combo: 1, comboT: 0,
+    score: 0, maxD: 0, bestTrick: '', bestTrickPts: 0, tricks: 0, pend: 0, pendT: 0, combo: 1, comboT: 0, paid: false,
   });
   $('penalty').textContent = '';
   $('hint').textContent = C.cfg.heli ? HINT_HELI : HINT_STD;
@@ -820,6 +854,7 @@ function heliUpdate(dt) {
 function toMenu() {
   if (game.mode === 'loading') return;
   saveEndlessBest();
+  payEndless();
   game.mode = 'menu';
   resetRunState();
   heli.on = false; if (heli.group) heli.group.visible = false; audio.setHeli(0);
@@ -892,11 +927,17 @@ function finishRun() {
     $('finTime').innerHTML = `${dec1(sc.total)}<small> / 100</small>`;
     const rowsH = [['Linie', dec1(sc.line)], ['Flüssigkeit', dec1(sc.flow)], ['Kontrolle', dec1(sc.control)], ['Sprünge', dec1(sc.air)],
       ['Zeit', fmt(total)], ['Größter Drop', `${Math.round(fwt.maxDrop)} m`], ['Längste Flow-Kette', `×${(1 + Math.min(2, fwt.flowMax * 0.25)).toFixed(2).replace(/0$/, '').replace('.', ',')}`], ['Beste Wertung', dec1(bestSc)]];
+    const gotH = earn(sc.total * 8 + 50);
+    rowsH.push(['Shop-Punkte', `+${num(gotH)}`]);
     $('finStats').innerHTML = rowsH.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
     return;
   }
   const rows = hk ? [['Höhenmeter', `${num(-C.baseH(C.FINISH_D))} m`], ['Höchsttempo', `${Math.round(game.topSpeed * 3.6)} km/h`], ['Weitester Sprung', `${game.bestJump.toFixed(1)} m`], ['Bestzeit', fmt(game.bestHeli)]] : [['Tore', `${game.passed}/${C.gates.length}`], ['Strafzeit', `+${game.penalty.toFixed(0)} s`], ['Trickpunkte', num(game.score)],
     ['Höchsttempo', `${Math.round(game.topSpeed * 3.6)} km/h`], ['Weitester Sprung', `${game.bestJump.toFixed(1)} m`], ['Bestzeit', fmt(game.best)]];
+  // Shop-Punkte: getroffene Tore, Länge der Disziplin, Bonus für eine neue Bestzeit
+  const lenF = { sl: 1, gs: 1.3, sg: 1.7, dh: 2.1 }[disc] || 1;
+  const missed = C.gates.length - game.passed;
+  rows.push(['Shop-Punkte', `+${num(earn((30 + game.passed * 5 - missed * 3) * lenF + (isBest ? 80 : 0)))}`]);
   $('finStats').innerHTML = rows.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
 }
 
@@ -1593,7 +1634,9 @@ function updateSkier(dt) {
       // auf halber Brettbreite über dem Schnee bleibt (sonst hebt es in Schräglage seitlich ab und schwebt)
       const roll = bLean, g = 1 - vis.air;
       bdTmp.set(0, BOARD_Y, 0).applyQuaternion(pv.quaternion.setFromEuler(pv.rotation));
-      const ty = -0.028 + 0.135 * Math.abs(Math.sin(roll));   // Belag gut 2 cm eingesunken: liegt sichtbar im Schnee (auch wo das Gelände-Gitter etwas tiefer liegt)
+      // im Pulver gut 2 cm eingesunken (liegt sichtbar im Schnee), auf präpariertem Schnee obenauf
+      const pkB = clamp((phys.pow - 0.18) / 0.4, 0, 1);
+      const ty = -0.002 - 0.026 * pkB + 0.135 * Math.abs(Math.sin(roll));
       pv.position.set(-bdTmp.x * g, 0.85 + (ty - bdTmp.y - 0.85) * g, -bdTmp.z * g);
     }
   }
@@ -1837,7 +1880,8 @@ function tick(dt, render) {
   applyQuality();
   $('ver').textContent = 'v' + __GAME_VERSION__;   // zeigt, welche Fassung der Browser gerade lädt
   await selectMode(modeIdx, true);
-  applyOutfit();
+  applyOutfitUI();
+  applyEquip();
   tracks.update(phys.pos.x, phys.pos.z);
   $('loading').classList.add('hidden');
   game.mode = 'menu';
@@ -1848,7 +1892,7 @@ function tick(dt, render) {
     tp: (d, lane = 0, speed = 0) => { const L = C.cfg.heli ? { x: C.centerX(d) + lane } : C.mapSlice(d, d + 1, 1).rows[0].lanes[lane]; teleport(L.x, -d); const x0 = C.centerX(d + 6) - C.centerX(d); phys.heading = Math.atan2(x0, 6); phys.vel.set(Math.sin(phys.heading) * speed, 0, -Math.cos(phys.heading) * speed); if (game.mode === 'menu') { game.mode = 'run'; } },
     // Testhilfe: freie Kamera für Standbilder (Position, Blickpunkt), rendert genau ein Bild
     shot: (px, py, pz, lx, ly, lz, fov = 55) => { camera.position.set(px, py, pz); camera.fov = fov; camera.near = 0.3; camera.updateProjectionMatrix(); camera.lookAt(lx, ly, lz); world.sky.position.copy(camera.position); composer.render(); },
-    restartHeli: () => startRun(true), setGear, edge: () => boardEdge, finishRun, fwt, fwtScore, applyDropPref, renderMode, heliStart, flowUp,
+    restartHeli: () => startRun(true), setGear, edge: () => boardEdge, finishRun, fwt, fwtScore, applyDropPref, renderMode, heliStart, flowUp, shop, applyEquip,
         advance: (sec, noRender) => { const n = Math.round(sec * 60); for (let i = 0; i < n; i++) tick(1 / 60, !noRender && i === n - 1); },
   };
   requestAnimationFrame((t) => { last = t; frame(t); });

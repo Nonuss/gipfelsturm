@@ -2,6 +2,7 @@
 // Die Haltung wird prozedural berechnet: Becken/Oberkörper aus Fahrzustand, Beine und Arme per Zwei-Gelenk-IK.
 import * as THREE from 'three';
 import { clamp, lerp } from './course.js';
+import { SKIS, BOARDS, makeSki, makeBoardGeo, makeHeadItem } from './gear.js';
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 const PIVOT_Y = 0.85;
@@ -131,6 +132,39 @@ export class Skier {
     this.board.renderOrder = 10;
     this.body.add(this.board);
     this.gear = 'ski';
+    this.skiMat = skiMat;
+    this.head = null;
+  }
+
+  /** Ski-Modell aus dem Shop (gear.js); beide Ski teilen sich eine Geometrie. */
+  setSkiDesign(id) {
+    const d = SKIS[id] || SKIS.allround;
+    if (this.skiId === id) return;
+    this.skiId = id;
+    const g = makeSki(d);
+    this.skiMat.side = THREE.DoubleSide;
+    this.skiMat.roughness = 0.32;
+    for (const k of this.sides) { const old = k.ski.geometry; k.ski.geometry = g; if (old && !old.userData.shared && old !== g && !this.sides.some((q) => q.ski.geometry === old)) old.dispose(); }
+  }
+  setBoardDesign(id) {
+    const d = BOARDS[id] || BOARDS.classic;
+    if (this.boardId === id) return;
+    this.boardId = id;
+    const g = makeBoardGeo(d);
+    g.translate(0, -0.006, 0);   // Belag wie beim alten Brett knapp unter der Brettmitte
+    this.board.geometry.dispose();
+    this.board.geometry = g;
+    this.board.material.side = THREE.DoubleSide;
+  }
+  /** Kopfteil zum Outfit (Weihnachtsmütze mit Bart, Zylinder, Stirnband, Krone) am Kopfknochen. */
+  setHead(kind) {
+    if (this.headKind === kind) return;
+    this.headKind = kind;
+    if (this.head) { this.bones[HD].remove(this.head); this.head.traverse((o) => { if (o.isMesh) { o.geometry.dispose(); o.material.dispose(); } }); this.head = null; }
+    if (!kind) return;
+    this.head = makeHeadItem(kind);
+    this.head.visible = !this.fpv;
+    this.bones[HD].add(this.head);
   }
 
   /** 'ski' oder 'board' */
@@ -147,6 +181,7 @@ export class Skier {
     if (this.fpv === on) return;
     this.fpv = on;
     for (const m of this.fpvMats) { m.colorWrite = !on; m.depthWrite = !on; }
+    if (this.head) this.head.visible = !on;
   }
 
   setColors(jacket, accent, pants) {

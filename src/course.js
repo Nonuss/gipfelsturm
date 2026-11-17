@@ -448,7 +448,8 @@ export function genChunk(i) {
     else x = c.hub + ur * Math.min(c.valley + 40, 200);
     const z = -dd;
     const sf = P.surf(x, dd);
-    if (dd < 25 || sf.edge < 3.5 || P.inFeatureZone(x, dd, 3)) continue;
+    // keine Brocken auf oder direkt neben der Strecke (Felswände an den Talflanken bleiben)
+    if (dd < 25 || sf.edge < (wall ? 3.5 : 12) || P.inFeatureZone(x, dd, 6)) continue;
     const hh = P.heightP(x, z);
     const steep = Math.abs(P.heightP(x + 2, z) - P.heightP(x - 2, z)) / 4;
     if (wall && steep < 0.5) continue;
@@ -463,11 +464,11 @@ export function genChunk(i) {
       const nG = Math.round(3 + 4 * zr.mods.rocks.amt * cfg.treeMul);
       for (let g = 0; g < nG; g++) {
         const dd = d0 + R() * CHUNK, c = P.props(dd), gx = c.hub + (R() * 2 - 1) * Math.min(c.valley + 20, 200);
-        if (P.surf(gx, dd).edge < 9 || P.inFeatureZone(gx, dd, 8)) continue;
+        if (P.surf(gx, dd).edge < 18 || P.inFeatureZone(gx, dd, 10)) continue;
         const n = 2 + Math.floor(R() * 4), big = 1.2 + R() * 1.8;
         for (let k = 0; k < n; k++) {
           const x = gx + (R() - 0.5) * 7, z = -(dd + (R() - 0.5) * 7), sc = big * (k ? 0.45 + R() * 0.5 : 1);
-          if (P.surf(x, -z).edge < 4) continue;
+          if (P.surf(x, -z).edge < 13) continue;
           out.rocks.push({ x, z, y: rockY(x, z, sc), scale: sc, rot: R() * 6.283, variant: Math.floor(R() * 6) });
           addCollider(x, z, 1.05 * sc, 'fels');
         }
@@ -665,7 +666,7 @@ export function genChunk(i) {
     const k = Math.floor(dm / 30);
     const h = ((Math.imul(k, 2654435761) ^ Math.imul(cfg.seed, 40503)) >>> 0) / 4294967296;
     const side = (k & 1) ? 1 : -1;
-    if (ZONE_DECOR_CANNON[type] && h < 0.34 * ZONE_DECOR_CANNON[type] && c.lw[0] > 5) addD('SnowCannon', c.lx[0] + side * (c.lw[0] + 3.2), dm, { rot: R() * 6.28, r: 0.6, type: 'haus' });
+    if (ZONE_DECOR_CANNON[type] && h < 0.34 * ZONE_DECOR_CANNON[type] && c.lw[0] > 5) addD('SnowCannon', c.lx[0] + side * (c.lw[0] + 6.5), dm, { rot: R() * 6.28, r: 0.6, type: 'haus' });
     if (type === 'park') {
       if (dm - z.d0 < 36) addD('Banner', c.lx[0], dm + 10);
     }
@@ -674,19 +675,29 @@ export function genChunk(i) {
       const sx = c.hub + side * c.valley * 0.58;
       addD('MountainHut', sx, dm, { rot: side > 0 ? -Math.PI / 2 : Math.PI / 2, scale: 1.1, dy: -0.15, r: 5.2, type: 'haus' });
     }
-    if ((type === 'cruise' || type === 'flat' || type === 'bowl') && h > 0.93) addD('Snowman', c.lx[0] + side * (c.lw[0] + 4), dm, { rot: R() * 0.6 - 0.3 + (side > 0 ? 0.4 : -0.4) });
+    if ((type === 'cruise' || type === 'flat' || type === 'bowl') && h > 0.93) addD('Snowman', c.lx[0] + side * (c.lw[0] + 8), dm, { rot: R() * 0.6 - 0.3 + (side > 0 ? 0.4 : -0.4) });
+  }
+  // ---- Dörfer (Freeride): Häuser auf ihren Terrassen, Kollision über ein bis zwei Kreise je Haus
+  for (const h of P.housesIn(d0, d1)) {
+    decor.push({ m: h.m, x: h.x, z: -h.d, y: h.y - 0.05, rot: h.rot, scale: 1 });
+    const ca = Math.cos(h.rot), sa = Math.sin(h.rot);
+    for (const [lx, ly, r] of P.HOUSES[h.m].col) {
+      // Modell: Blender-Y zeigt im Spiel nach -Z; Drehung um die Hochachse
+      const tx = lx, tz = -ly;
+      addCollider(h.x + tx * ca + tz * sa, -h.d - tx * sa + tz * ca, r, 'haus', 0, 0, h.y + 6);
+    }
   }
   // ---- Totholz, Bäume und Büsche in Wald und Lichtungen
   const nDec = Math.round(70 * cfg.treeMul);
   for (let n = 0; n < nDec; n++) {
-    const dd = d0 + R() * CHUNK, pick = R(), sx = R() < 0.5 ? -1 : 1, off = 1.8 + R() * 16, r1 = R(), r2 = R(), r3 = R();
+    const dd = d0 + R() * CHUNK, pick = R(), sx = R() < 0.5 ? -1 : 1, off = 10 + R() * 22, r1 = R(), r2 = R(), r3 = R();
     const c = P.props(dd);
     const act = [];
     for (let q = 0; q < NL; q++) if (c.lw[q] >= 2.5) act.push(q);
     const li = act[Math.floor(r1 * act.length)];
     const x = c.lx[li] + sx * (c.lw[li] + off);
     const sf = P.surf(x, dd);
-    if (sf.edge < 1.6 || P.inFeatureZone(x, dd, 3)) continue;
+    if (sf.edge < 10 || P.inFeatureZone(x, dd, 6)) continue;   // keine kleinen Hindernisse neben der Strecke
     const forestOk = sf.forest > 0.2 || (r2 < 0.3 && (!heli || c.forest > 0.05));   // Heli: kein Totholz über der Baumgrenze
     if (!forestOk) continue;
     if (pick < 0.3) addD('Bush', x, dd, { rot: r3 * 6.28, scale: 0.8 + r2 * 0.8 });

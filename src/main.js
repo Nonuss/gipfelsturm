@@ -176,7 +176,7 @@ const vis = {
   camSide: 1, flipCam: 0, bigAir: 0, dip: 0, fpv: 0, slide: 0, grindSide: 1, look: 0,
 };
 // Ausrüstung: Ski oder Snowboard (gleiche Tasten, eigene Haltung und Tricknamen). Wird gemerkt.
-let gear = 'ski', boardEdge = 0;
+let gear = 'ski', boardEdge = 0, boardLift = 0;
 try { gear = localStorage.getItem('gipfelsturm_gear') === 'board' ? 'board' : 'ski'; } catch {}
 const BOARD = () => gear === 'board';
 function setGear(g) {
@@ -1095,9 +1095,12 @@ function stampTracks() {
     q.tx = tx; q.tz = tz; q.hx = hx; q.hz = hz;
   }
   if (phys.off > 0.2 || phys.pow > 0.2) {
-    const w = 0.42 + phys.pow * 0.25;
+    // Snowboard: geradeaus drückt das breite Brett den Pulver nur leicht zusammen (es gleitet obenauf); erst auf der
+    // Kante schneidet es eine tiefe Rinne. Ski schneiden immer die volle Rinne.
+    const bk = BOARD() ? 0.22 + 0.78 * boardEdge : 1;
+    const w = (0.42 + phys.pow * 0.25) * (BOARD() ? 0.75 + 0.25 * boardEdge : 1);
     tracks.quad(p.x - r.x * w - f.x * 0.9, p.z - r.z * w - f.z * 0.9, -1, p.x + r.x * w - f.x * 0.9, p.z + r.z * w - f.z * 0.9, 1,
-      p.x + r.x * w + f.x * 0.9, p.z + r.z * w + f.z * 0.9, 1, p.x - r.x * w + f.x * 0.9, p.z - r.z * w + f.z * 0.9, -1, 0.7 * Math.max(phys.off, phys.pow), 0.8 * phys.off);
+      p.x + r.x * w + f.x * 0.9, p.z + r.z * w + f.z * 0.9, 1, p.x - r.x * w + f.x * 0.9, p.z - r.z * w + f.z * 0.9, -1, 0.7 * Math.max(phys.off, phys.pow) * bk, 0.8 * phys.off);
   }
   hasPrevSki = true;
 }
@@ -1330,8 +1333,15 @@ function updateSkier(dt) {
   if (BOARD()) {
     // Snowboard im Pulver: geradeaus gleitet das breite Brett obenauf (Auftrieb), in der Kurve und beim Bremsen
     // gräbt sich die Kante ein. boardEdge: 0 = flach, 1 = voll auf der Kante
-    const pk = clamp((phys.pow - 0.18) / 0.4, 0, 1), layer = 0.3 * pk * pk * (3 - 2 * pk);
-    if (Q.patch > 0) skier.root.position.y += phys.grounded ? layer * (1 - boardEdge) * 0.9 - 0.02 * boardEdge : 0;
+    // Die Höhe folgt genau der Pulverschicht, wie sie die Spur (stampTracks) übrig lässt: gleiche Schichtdicke wie
+    // powder.js (0,3 m, im Mittel 93 % durch die Wellung) und gleiche Rinnentiefe wie im Schnee-Shader.
+    const pp = phys.pos, wob = 0.85 + 0.15 * Math.sin(pp.x * 0.9 + pp.z * 0.7);
+    const pk = clamp((phys.pow - 0.18) / 0.4, 0, 1), layer = 0.3 * wob * pk * pk * (3 - 2 * pk);
+    const trD = 0.7 * phys.pow * (0.22 + 0.78 * boardEdge), keep = 1 - smoothstep(0.08, 0.5, trD);
+    // + 2,7 cm: Schicht liegt 1,2 cm über dem Gelände, dazu ein Teil der Brett-Einsinktiefe (BOARD_Y) – der Belag liegt
+    // dann gut 1 cm im Pulver, die Oberseite bleibt sichtbar
+    boardLift += ((phys.grounded && Q.patch > 0 && pk > 0 ? layer * keep + 0.027 * pk : 0) - boardLift) * k(14);
+    if (Q.patch > 0) skier.root.position.y += boardLift;
     else skier.root.position.y -= phys.sink * 0.8 * (0.2 + 0.8 * boardEdge);
   } else skier.root.position.y -= phys.sink * (Q.patch > 0 ? 0.12 : 0.8);
 
@@ -1613,7 +1623,7 @@ function tick(dt, render) {
     tp: (d, lane = 0, speed = 0) => { const L = C.cfg.heli ? { x: C.centerX(d) + lane } : C.mapSlice(d, d + 1, 1).rows[0].lanes[lane]; teleport(L.x, -d); const x0 = C.centerX(d + 6) - C.centerX(d); phys.heading = Math.atan2(x0, 6); phys.vel.set(Math.sin(phys.heading) * speed, 0, -Math.cos(phys.heading) * speed); if (game.mode === 'menu') { game.mode = 'run'; } },
     // Testhilfe: freie Kamera für Standbilder (Position, Blickpunkt), rendert genau ein Bild
     shot: (px, py, pz, lx, ly, lz, fov = 55) => { camera.position.set(px, py, pz); camera.fov = fov; camera.near = 0.3; camera.updateProjectionMatrix(); camera.lookAt(lx, ly, lz); world.sky.position.copy(camera.position); composer.render(); },
-    restartHeli: () => startRun(true),
+    restartHeli: () => startRun(true), setGear, edge: () => boardEdge,
         advance: (sec, noRender) => { const n = Math.round(sec * 60); for (let i = 0; i < n; i++) tick(1 / 60, !noRender && i === n - 1); },
   };
   requestAnimationFrame((t) => { last = t; frame(t); });

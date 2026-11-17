@@ -218,15 +218,17 @@ export function addRockCollider(add, x, z, y, scale, rot, variant) {
 export function nearRails(z, cb) {
   if (!cfg.endless || cfg.heli) return;
   const d = -z;
-  for (const r of P.railsIn(d - 30, d + 30)) {
-    if (!r.g) {
-      const ya = P.heightP(r.x0, -(r.d0 + 0.6)) + r.h, yb = P.heightP(r.x1, -(r.d0 + r.len)) + r.h;
-      const ax = r.x0, az = -r.d0, bx = r.x1, bz = -(r.d0 + r.len);
-      const L = Math.hypot(bx - ax, yb - ya, bz - az);
-      r.g = { ax, ay: ya, az, dx: (bx - ax) / L, dy: (yb - ya) / L, dz: (bz - az) / L, L, w: r.w, h: r.h, kind: r.kind, name: r.name };
-    }
-    cb(r.g);
+  for (const r of P.railsIn(d - 30, d + 30)) cb(railGeom(r));
+}
+/** Gerade Oberkante einer Rail oder Box (Anfangspunkt, Richtung, Länge): Physik und Darstellung nutzen dieselben Werte. */
+export function railGeom(r) {
+  if (!r.g) {
+    const ya = P.heightP(r.x0, -(r.d0 + 0.6)) + r.h, yb = P.heightP(r.x1, -(r.d0 + r.len)) + r.h;
+    const ax = r.x0, az = -r.d0, bx = r.x1, bz = -(r.d0 + r.len);
+    const L = Math.hypot(bx - ax, yb - ya, bz - az);
+    r.g = { ax, ay: ya, az, dx: (bx - ax) / L, dy: (yb - ya) / L, dz: (bz - az) / L, L, w: r.w, h: r.h, kind: r.kind, name: r.name };
   }
+  return r.g;
 }
 export function nearColliders(z, cb, x = 0) {
   if (cfg.heli) {
@@ -551,14 +553,26 @@ export function genChunk(i) {
     }
   }
   // ---- Rails und Boxen (Freestyle): Modell auf Länge und Höhe skaliert, folgt dem Hang
+  out.rails = [];
   for (const r of P.railsIn(d0, d1)) {
     if (r.d0 < d0 || r.d0 >= d1) continue;
-    const isBox = r.kind === 'box', Lm = isBox ? 4.6 : 7, Hm = isBox ? 0.5 : 0.66;
-    const ax = r.x0, az = -(r.d0 + 0.6), bx = r.x1, bz = -(r.d0 + r.len);
-    const ga = P.heightP(ax, az), gb = P.heightP(bx, bz);
-    const len = Math.hypot(bx - ax, bz - az), sy = r.h / Hm;
-    decor.push({ m: isBox ? 'ParkBox' : 'Rail', x: (ax + bx) / 2, z: (az + bz) / 2, y: (ga + gb) / 2, rot: Math.atan2(-(bz - az), bx - ax), scale: 1, sx: len / Lm, sy, sl: (gb - ga) / (Lm * sy), col: isBox ? null : [1, 1, 1] });
-    for (const sg of [-1, 1]) out.markers.push({ x: ax + sg * 3.2, z: az + 6, y: P.heightP(ax + sg * 3.2, az + 6), kicker: true });
+    out.rails.push({ ...railGeom(r), seed: Math.floor(r.d0 * 7 + r.x0) });   // eigenes Modell in world.buildRails (Länge beliebig)
+    const az = -(r.d0 + 0.6);
+    for (const sg of [-1, 1]) out.markers.push({ x: r.x0 + sg * 3.2, z: az + 6, y: P.heightP(r.x0 + sg * 3.2, az + 6), kicker: true });
+  }
+  // ---- Park-Hütten in Sprüngen: Dach als Schanze (First = Kante) oder Hütte in der Lücke eines großen Tisches
+  for (const f of P.featuresIn(d0, d1)) {
+    if (f.kind !== 'jump' || !f.hut) continue;
+    const H = P.PARK_HUT, dh = f.d + f.hut.xx, roof = f.hut.kind === 'roof';
+    const x = f.x, z = -dh;
+    // Boden der Hütte: natürlicher Hang (beim Dach liegt dort die Kante: Profilhöhe abziehen)
+    const y = P.heightP(x, z) - (roof ? f.J.h : 0);
+    const psi = Math.atan2(P.props(dh + 6).lx[f.lane] - P.props(dh - 6).lx[f.lane], 12), rot = -psi;
+    decor.push({ m: 'ParkHut', x, z, y, rot, scale: 1 });
+    // Kollision nur, wo man die Hütte von der Seite oder von unten treffen kann; darüber fliegt man frei
+    const ca = Math.cos(rot), sa = Math.sin(rot);
+    const pts = roof ? [[-3, -3.2], [0, -3.2], [3, -3.2], [-3.4, -1], [3.4, -1]] : [[-3, -2.6], [0, -2.6], [3, -2.6], [-3, 2.6], [0, 2.6], [3, 2.6]];
+    for (const [lx, lz] of pts) addCollider(x + lx * ca + lz * sa, z - lx * sa + lz * ca, 1.6, 'haus', 0, 0, y + (roof ? H.E : H.E + H.rise) + 0.1);
   }
   // Gaps: rote Stangen an beiden Grabenkanten
   for (const f of P.featuresIn(d0, d1)) {

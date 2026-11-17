@@ -365,6 +365,7 @@ export class World {
     this.addInstances(data.trees, data.rocks, data.markers, grp, 0, data.decor);
     if (data.caves && data.caves.length) this.buildCaves(data.caves, grp);
     if (data.walls && data.walls.length) this.buildWalls(data.walls, grp);
+    if (data.rails && data.rails.length) this.buildRails(data.rails, grp);
     this.course.add(grp);
     this.chunks.set(job.i, grp);
   }
@@ -454,6 +455,59 @@ export class World {
       m.castShadow = true; m.receiveShadow = true;
       parent.add(m);
     }
+  }
+
+  // ------------------------------------------------------------ Rails und Boxen (Freestyle)
+  /**
+   * Eigenes Modell für jede Länge: Rail = Stahlrohr auf Stützen über einem Bodenträger, Box = breite Gleitfläche mit
+   * Seitenwänden in Parkfarben. Oberkante liegt genau auf der Linie der Physik (course.railGeom).
+   */
+  buildRails(list, parent) {
+    if (!this.railMat) this.railMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.38, metalness: 0.35 });
+    const pos = [], col = [], idx = [];
+    const RAILC = [[0.95, 0.72, 0.08], [0.82, 0.84, 0.88], [0.9, 0.16, 0.12], [0.1, 0.55, 0.95]];
+    const BOXC = [[0.95, 0.42, 0.06], [0.12, 0.42, 0.9], [0.13, 0.14, 0.17], [0.15, 0.7, 0.45]];
+    for (const g of list) {
+      const hn = Math.hypot(g.dx, g.dz) || 1, sx = g.dz / hn, sz = -g.dx / hn;   // seitliche Richtung
+      const P = (s, u, v) => [g.ax + g.dx * s + sx * u, g.ay + g.dy * s + v, g.az + g.dz * s + sz * u];
+      // Profil (u, v relativ zur Oberkante) entlang [s0, s1] ziehen; geschlossene Querschnitte mit Deckeln
+      const sweep = (s0, s1, sec, c) => {
+        const o = pos.length / 3, n = sec.length;
+        for (const s of [s0, s1]) for (const [u, v] of sec) { pos.push(...P(s, u, v)); col.push(...c); }
+        for (let i = 0; i < n; i++) { const j = (i + 1) % n; idx.push(o + i, o + j, o + n + j, o + i, o + n + j, o + n + i); }
+        for (let i = 1; i < n - 1; i++) { idx.push(o, o + i + 1, o + i); idx.push(o + n, o + n + i, o + n + i + 1); }
+      };
+      // senkrechter Quader (Stütze) an der Stelle s
+      const post = (s, u, hw, v0, v1, c) => {
+        const o = pos.length / 3;
+        for (const v of [v0, v1]) for (const [du, ds] of [[-hw, -hw], [hw, -hw], [hw, hw], [-hw, hw]]) { pos.push(...P(s + ds, u + du, v + g.dy * -ds)); col.push(...c); }
+        for (let i = 0; i < 4; i++) { const j = (i + 1) % 4; idx.push(o + i, o + 4 + i, o + 4 + j, o + i, o + 4 + j, o + j); }
+        idx.push(o + 4, o + 5, o + 6, o + 4, o + 6, o + 7);
+      };
+      const h = g.h, L = g.L, k = g.seed >>> 0;
+      if (g.kind === 'rail') {
+        const c = RAILC[k % RAILC.length], dark = [0.16, 0.17, 0.2];
+        const ring = []; for (let i = 0; i < 10; i++) { const a = (i / 10) * Math.PI * 2; ring.push([Math.cos(a) * 0.05, -0.05 + Math.sin(a) * 0.05]); }
+        sweep(0, L, ring, c);
+        sweep(0.2, L - 0.2, [[-0.16, -h], [0.16, -h], [0.16, -h + 0.1], [-0.16, -h + 0.1]], dark);       // Bodenträger
+        const n = Math.max(2, Math.round(L / 2.6));
+        for (let i = 0; i <= n; i++) post(0.3 + (i / n) * (L - 0.6), 0, 0.035, -h + 0.08, -0.08, dark);
+      } else {
+        const c = BOXC[k % BOXC.length], w = g.w;
+        sweep(0, L, [[-w, -0.07], [w, -0.07], [w, 0], [-w, 0]], [0.93, 0.94, 0.96]);                     // Gleitfläche (Kunststoff)
+        sweep(0.05, L - 0.05, [[-w + 0.03, -h], [w - 0.03, -h], [w - 0.03, -0.07], [-w + 0.03, -0.07]], c);
+        sweep(0.05, L - 0.05, [[-w + 0.025, -h * 0.55], [w - 0.025, -h * 0.55], [w - 0.025, -h * 0.45], [-w + 0.025, -h * 0.45]], [0.95, 0.95, 0.95]);   // Zierstreifen
+      }
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    geo.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+    geo.setIndex(idx);
+    const flat = geo.toNonIndexed();   // kantige Boxen: Flächennormalen statt gemittelter Ecken
+    flat.computeVertexNormals();
+    const m = new THREE.Mesh(flat, this.railMat);
+    m.castShadow = true; m.receiveShadow = true;
+    parent.add(m);
   }
 
   // ------------------------------------------------------------ Heli-Berg: Felswände

@@ -772,6 +772,11 @@ export function heightP(x, z) {
   // Nach einem Klippenband bleibt die Absenkung bestehen (die Zone danach beginnt auf tieferem Niveau)
   const ec = Math.abs(x) - 1e9;
   void ec;
+  // Schneebett unter Rails und Boxen: das Gelände folgt dort genau der geraden Linie der Rail (gleiche Höhe überall)
+  if (!BED_OFF) for (let zj = Math.max(0, c.zi - 1); zj <= c.zi + 1 && zj < S.Z.length; zj++) {
+    const rl = S.Z[zj].rails;
+    for (let k = 0; k < rl.length; k++) { const r = rl[k]; if (dc > r.d0 && dc < r.d0 + r.len + 4) y = railBed(r, x, dc, y); }
+  }
   // Dörfer: jedes Haus steht auf einer ebenen Terrasse, die weich in den Hang übergeht
   if (!PAD_OFF) y = villagePads(x, dc, c.zi, y);
   // Außenrand der Welt: Gelände steigt hinter dem befahrbaren Bereich sanft an (Wald am Hang), kein abrupter Rand
@@ -826,8 +831,17 @@ export function speedAfter(v0, slopeT, dist, tuck = 1) {
   return Math.sqrt(v2);
 }
 
+// Park-Hütte (tools/blender_village.py, ParkHut): Traufe 2,6 m, First 1,5 m höher, 8 m tief, 9 m breit
+export const PARK_HUT = { E: 2.6, rise: 1.5, hd: 4.0, hw: 4.5 };
 function addJump(z, R, o) {
   const d = o.exactD !== undefined ? o.exactD : snapStraight(z, o.d, 40);
+  // Hüttendach als Schanze: die bergseitige Dachhälfte liegt unter dem Schnee der Rampe, der First ist die Absprungkante.
+  // Rampe so ausgelegt, dass ihre Neigung an der Kante genau der Dachneigung entspricht (Abflugwinkel = Dachneigung).
+  if (o.hut === 'roof') {
+    const tp = PARK_HUT.rise / PARK_HUT.hd, h = PARK_HUT.E + PARK_HUT.rise, sH = zoneSlopeAt(z, d);
+    // hinter der Hütte ein niedriger Tisch (2,2 m, Step-down), dann die Landung: wer langsam ist, landet auf dem Tisch
+    o = { ...o, phi: (Math.atan(tp) * 180) / Math.PI, hMax: h, Lr: (1.7 * h) / (tp + sH), wT: Math.max(o.wT || 0, 5.6), gap: true, sd: h - 2.2 };
+  }
   const x = laneX(z, o.lane, d) + (o.dx || 0);
   // Keine Steilstufe im Anlauf, über dem Sprung oder in der Landung: sonst stimmt weder der gerade Anlauf noch die Landung
   const w0 = d - (o.Lr || 14) - 165, w1 = d + 140;
@@ -849,14 +863,34 @@ function addJump(z, R, o) {
   if (d + des.ext1 > z.d1 - PCFG.transition - 8) { report.skipped = (report.skipped || 0) + 1; return null; }
   // Gap: statt Tisch ein Graben zwischen Absprung und Landung. Nur, wenn auch das langsame Ende des Tempobereichs
   // sicher hinter dem Knick landet – wer zu langsam ist, fällt hinein.
-  let gap = null;
+  let gap = null, hut = null;
   if (o.gap) {
-    const gb = des.J.xk - 2.4;                       // Graben endet 2,4 m vor dem Knick (fester Rand zum Aufsetzen)
-    if (des.xLow < gb + 0.6 || gb < 6) return addJump(z, R, { ...o, gap: false, name: (o.name || '').replace('Gap', 'Tisch') });
-    gap = { a: 2.2, b: gb, dep: 2.2 + R() * 0.8 };
+    // Graben endet 2,4 m vor dem Knick (fester Rand zum Aufsetzen); beim Hüttendach dort, wo der niedrige Tisch beginnt
+    // Hüttensprung: Lücke nur so lang wie die Hütte (plus Rand), danach geht der Tisch weiter
+    const gb = o.hut === 'roof' ? Math.min(des.J.xk - 2.4, des.J.T + 3) : o.hut === 'over' ? Math.min(des.J.xk - 2.4, 2.2 + 2 * (PARK_HUT.hd + 1.4)) : des.J.xk - 2.4;
+    const ga = o.hut === 'roof' ? 0.3 : 2.2;
+    if (des.xLow < gb + 0.6 || gb < 6) {
+      if (o.hut === 'roof') { issue(`Zone ${z.idx}: Hüttendach bei ${Math.round(d)} m verworfen`); return null; }
+      return addJump(z, R, { ...o, gap: false, hut: null, name: (o.name || '').replace('Gap', 'Tisch').replace('Hüttensprung', 'Großer Tisch') });
+    }
+    gap = { a: ga, b: gb, dep: o.hut ? 0 : 2.2 + R() * 0.8 };   // mit Hütte: Grabenboden = natürlicher Hang, darauf steht sie
+    if (o.hut === 'roof') hut = { kind: 'roof', xx: 0 };
+    else if (o.hut === 'over') {
+      // Hütte mitten in der Lücke; die langsamste Flugbahn muss mindestens 0,9 m über dem First bleiben
+      const xc = (ga + gb) / 2, tS = Math.tan(Math.atan(sHere)), ph = (o.phi * Math.PI) / 180;
+      const vx = vRange[0] * Math.cos(ph), k = 9.81 / (2 * vx * vx), top = PARK_HUT.E + PARK_HUT.rise + 0.15;
+      let ok = gb - ga >= 2 * (PARK_HUT.hd + 1.2);
+      for (let s = -PARK_HUT.hd - 0.9; s <= PARK_HUT.hd + 0.9 && ok; s += 0.5) {
+        const xr = xc + s, yT = des.J.h + (Math.tan(ph) + tS) * xr - k * xr * xr;
+        const roofRel = top - (PARK_HUT.rise / PARK_HUT.hd) * Math.min(PARK_HUT.hd, Math.abs(s)) + tS * s;
+        if (yT < roofRel + 0.9) ok = false;
+      }
+      if (ok) hut = { kind: 'over', xx: xc };
+      else { issue(`Zone ${z.idx}: Hüttensprung bei ${Math.round(d)} m zu flach (h ${des.J.h.toFixed(1)}, Lücke ${(gb - ga).toFixed(0)} m)`); return addJump(z, R, { ...o, hut: null, name: 'Gap XL' }); }
+    }
   }
   const wT = o.wT, wL = wT * 1.7;
-  z.feats.push({ kind: 'jump', d, x, J: des.J, wT, wL: o.wL || wT * 1.7, ext0: des.ext0, ext1: des.ext1, s0: d - des.J.Lr - 10, s1: d + des.ext1 + 10, lane: o.lane, name: o.name || o.kind, gap, vDes: v });
+  z.feats.push({ kind: 'jump', d, x, J: des.J, wT, wL: o.wL || wT * 1.7, ext0: des.ext0, ext1: des.ext1, s0: d - des.J.Lr - 10, s1: d + des.ext1 + 10, lane: o.lane, name: o.name || o.kind, gap, vDes: v, hut });
   if (steep) z.pitches.push({ d: d + 4, amt: o.steep - sHere, len: des.ext1 + 40, e: 14, own: true });
   Object.assign(rec, {
     flight: +des.flight.toFixed(1), airT: +des.airT.toFixed(2), height: +des.J.h.toFixed(1), vn: +des.vn.toFixed(1),
@@ -869,7 +903,8 @@ function addJump(z, R, o) {
 
 /** Rail oder Box auf Spur `lane` ab Position d. kind: 'rail' (rund, schmal) | 'box' (breit). Mit Auffahrrampe. */
 function addRail(z, R, o) {
-  const d = snapStraight(z, o.d, 20), len = o.len;
+  // Rails und Boxen gut doppelt so lang wie früher (echte Park-Rails 10 bis 30 m); darunter ein ebenes Schneebett
+  const d = snapStraight(z, o.d, 20), len = o.len * 2.1;
   if (d + len > z.d1 - PCFG.transition - 8 || d - 6 < z.d0 + PCFG.transition) return null;
   const x0 = laneX(z, o.lane, d) + (o.dx || 0), x1 = laneX(z, o.lane, d + len) + (o.dx || 0);
   const h = o.h, w = o.kind === 'box' ? 0.42 : 0.08;
@@ -1065,8 +1100,11 @@ function genFeatures(z, R) {
       for (let k = 0; k < 8 && dd < b - 60; k++) {
         const vTake = Math.min(vMax, speedAfter(v, z.slope, dd - dPrev));
         const spec = big[Math.floor(R() * big.length)];
-        const isGap = !spec.sd && R() < 0.38;
-        const j = addJump(z, R, { d: dd, lane: 0, kind: 'table', ...spec, name: isGap ? 'Gap ' + (spec.hMax >= 9 ? 'XL' : '') : spec.name, gap: isGap, vDes: vTake * 0.97 });
+        const isGap = !spec.sd && R() < 0.38, rh = R();
+        // Hütten im Park: übers Dach fahren (der First ist die Kante) oder über die ganze Hütte springen
+        const hut = !spec.sd && rh < 0.3 && vTake < 19.5 ? 'roof' : !spec.sd && spec.hMax >= 8 && rh < 0.55 ? 'over' : null;
+        const nm = hut === 'roof' ? 'Hüttendach' : hut === 'over' ? 'Hüttensprung' : isGap ? 'Gap ' + (spec.hMax >= 9 ? 'XL' : '') : spec.name;
+        const j = addJump(z, R, { d: dd, lane: 0, kind: 'table', ...spec, name: nm, gap: isGap || !!hut, hut, vDes: hut === 'roof' ? Math.min(vTake * 0.97, 18) : vTake * 0.97 });
         if (!j) { dd += 35; continue; }
         v = j.v * 0.85;                                   // Tempo nach der Landung
         dPrev = j.d + j.des.flight;
@@ -1116,7 +1154,8 @@ function genFeatures(z, R) {
         const r = R();
         if (r < 0.32) items.push({ t: 'rail', kind: 'box', len: rr(7, 12), h: 0.5, name: 'Box', big: rr(38, 55) });
         else if (r < 0.68) items.push({ t: 'rail', kind: 'rail', len: rr(9, 16), h: rr(0.65, 1.0), name: 'Rail', big: rr(38, 55) });
-        else items.push({ t: 'jump', kind: 'table', name: 'Gap', gap: true, phi: 10, Lr: 13, hMax: 4.2, wT: 4.5, vDes: speedAfter(14, z.slope, 45) * 0.95, big: rr(45, 60) });
+        else if (r < 0.82) items.push({ t: 'jump', kind: 'table', name: 'Gap', gap: true, phi: 10, Lr: 13, hMax: 4.2, wT: 4.5, vDes: speedAfter(14, z.slope, 45) * 0.95, big: rr(45, 60) });
+        else items.push({ t: 'jump', kind: 'table', name: 'Hüttendach', hut: 'roof', wT: 5.6, vDes: Math.min(17.5, speedAfter(14, z.slope, 50) * 0.95), big: rr(60, 80) });
       }
       chain(items);
       for (const li of [1, 2]) sideLine(li, rr(30, 60), [0, 1, 2, 3, 4, 5].map((k) => (k % 2 ? { t: 'rail', kind: 'rail', len: rr(8, 12), h: rr(0.6, 0.8), name: 'Rail', big: rr(45, 60) } : { t: 'rail', kind: 'box', len: rr(6, 10), h: 0.5, name: 'Box', big: rr(45, 60) })));
@@ -1141,8 +1180,9 @@ function genFeatures(z, R) {
         { t: 'rail', kind: 'rail', len: rr(10, 15), h: rr(0.7, 0.95), name: 'Rail', big: rr(60, 80) },
         { t: 'jump', kind: 'table', name: 'Gap', gap: true, phi: 10, Lr: 16, hMax: 6, wT: 5.5, big: rr(80, 110) },
         { t: 'spine', gap: 60 },
+        { t: 'jump', kind: 'table', name: 'Hüttendach', hut: 'roof', wT: 5.6, vDes: Math.min(17, speedAfter(13, z.slope, 70) * 0.95), big: rr(90, 120) },
         { t: 'jump', kind: 'stepup', su: 2, name: 'Step-up', phi: 12, Lr: 18, hMax: 7, wT: 5.5, big: rr(90, 120) },
-        { t: 'jump', kind: 'table', name: 'Großer Tisch', phi: 14, Lr: 22, hMax: 10, wT: 6, big: rr(100, 130) },
+        { t: 'jump', kind: 'table', name: 'Hüttensprung', gap: true, hut: 'over', phi: 14, Lr: 22, hMax: 10, wT: 6, big: rr(100, 130) },
         { t: 'jump', kind: 'table', sd: 3, name: 'Step-down XL', phi: 12, Lr: 20, hMax: 8, wT: 6, big: rr(90, 120) },
       ]);
       for (const li of [1, 2]) sideLine(li, 60, [0, 1, 2, 3].map(() => ({ t: 'jump', kind: 'table', name: 'Kicker (Seitenlinie)', phi: 8, Lr: 12, hMax: 4, wT: 3.2, big: rr(70, 100) })));
@@ -1245,7 +1285,17 @@ function planVillage(z, R) {
   S.lastVillage = z.idx;
   report.features.push({ zone: z.idx, kind: 'Dorf', d: Math.round(dc), u: Math.round(uc), houses: houses.length });
 }
-let PAD_OFF = false;
+let PAD_OFF = false, BED_OFF = false;
+function railBed(r, x, d, y) {
+  if (!r.bed) {
+    BED_OFF = true;
+    r.bed = { ya: heightP(r.x0, -(r.d0 + 0.6)), yb: heightP(r.x1, -(r.d0 + r.len)) };
+    BED_OFF = false;
+  }
+  const t = clamp((d - r.d0 - 0.6) / (r.len - 0.6), 0, 1), xr = r.x0 + (r.x1 - r.x0) * clamp((d - r.d0) / r.len, 0, 1);
+  const m = (1 - smoothstep(r.w + 1.2, r.w + 6, Math.abs(x - xr))) * smoothstep(r.d0 + 0.1, r.d0 + 1.2, d) * (1 - smoothstep(r.d0 + r.len, r.d0 + r.len + 4, d));
+  return m > 0 ? y + (r.bed.ya + (r.bed.yb - r.bed.ya) * t - y) * m : y;
+}
 function villagePads(x, d, zi, y) {
   for (let zj = Math.max(0, zi - 1); zj <= zi + 1 && zj < S.Z.length; zj++) {
     const v = S.Z[zj].village;

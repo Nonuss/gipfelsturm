@@ -311,3 +311,56 @@ Rückmeldung nach dem ersten Spieltest: Tiefschnee zu langsam, durch Felsen durc
 - Talboden: unregelmäßige Flur mit einzelnen Hecken und Zäunen, geräumte Straße, 170 Heustadel, größere Dörfer, Ufergehölz und Feldgehölze, rund 75 000 Fichten in der Ferne.
 - Fernsicht: Felsköpfe auch in mittelsteilen Flanken, Mulden-Schattierung, Windstrukturen; Waldboden im Nahbereich dunkler, damit der Übergang zur Fernsicht nicht als heller Kreis auffällt.
 - Bot-Test ohne Hindernisse weiterhin alle Fahrten im Tal, Klippensprünge ohne Sturz.
+
+## Großes Update (2026-11-17, abends): Snowboard, Renn-Disziplinen, glatter Freeride, Hütten, Heli-Wertung, Shop
+
+Stand Cache `gipfelsturm-v26`, jeder Block einzeln gebaut, gepusht und mit grüner GitHub Action online.
+
+### Snowboard im Pulver (v21)
+- Fehler: Geradeaus schwebte das Brett über einer ausgeschnittenen Rinne (die breite Körperspur schnitt den ganzen Pulver weg), in der Variante davor lag es 5 bis 10 cm unter der Pulverschicht.
+- Jetzt: Die Spur schneidet beim Snowboard nur so tief, wie die Kante eingreift; die Brett-Höhe folgt genau der übrig gebliebenen Schicht (gleiche Formel wie `powder.js` und der Schnee-Shader). Geradeaus liegt der Belag gut 1 cm im Pulver, auf der Kante gräbt sich das Brett in die Rinne. Auf präpariertem Schnee liegt das Brett obenauf (vorher 2 cm darunter).
+- Geprüft per Standbild in Freeride (gerade und Kurve) und Heli.
+
+### Rennen: vier Disziplinen (v22)
+| Disziplin | Start | Länge | Höhenmeter | Tore | Torbreite | Abstand |
+|---|---|---|---|---|---|---|
+| Slalom | 1960 m | 440 m | 94 | 35 (Kippstangen, Vertikalen) | 5 m | 10,5 bis 12,5 m |
+| Riesentorlauf | 1480 m | 920 m | 284 | 26 | 6,4 m | 28 bis 34 m |
+| Super-G | 700 m | 1700 m | 491 | 29, 2 Sprünge | 8 m | 48 bis 62 m |
+| Abfahrt | 0 m | 2400 m | 706 | 22, 3 Sprünge | 11 m | 90 bis 125 m |
+
+- Bot-Test `node tools/race_validate.mjs` (neu): je Disziplin drei Fahrstile. Vorsichtig und mittel: alle Tore, 0 Stürze. Schnell: im Slalom werden bei 47 km/h Tore verpasst (gewollt: Tempo dosieren), sonst alle Tore. Riesentorlauf und Super-G waren zuerst zu eng gesteckt (Kurvenradius verlangte über 2 g bei 1,5 g Kantengriff) und wurden entsprechend ausgelegt.
+- Eigene Bestzeit je Disziplin, Auswahl im Menü (Knöpfe, Pfeil hoch/runter, Tasten 1 bis 4).
+
+### Freeride glatt (v23)
+- Neuer Flächenscan `node tools/terrain_scan2.mjs [seeds] [m] [stil]`: Krümmung in alle Richtungen im ganzen Tal, eingeteilt in Kreuzung, Pistenrand, Spur, frei.
+- Gefunden und behoben: (1) Features wurden nur aus der eigenen Zone gerechnet und an Zonengrenzen abgeschnitten (Stufen bis 0,75 m); (2) überlappende Sprung-Anläufe sprangen zwischen zwei Bezugslinien (0,85 m Stufe); (3) Zonen kürzer als 160 m wurden zweimal überblendet (Spuren sprangen 14 m); (4) Querneigung wurde am Pistenrand auf 3,7 m ausgeglichen (jetzt 14 m), Rauigkeit auf 8 m; (5) im Anlauf wurden Koordinaten statt Höhenwerte gemischt (Böschungen).
+- Ergebnis Flächenscan Freeride 6 Berge x 3 km: **425 auffällige Stellen vorher, 0 danach** (Kreuzung 27 auf 0, Pistenrand 249 auf 0); mit den neuen Sprüngen 4 Stellen an den Flanken großer Sprungtische (gewollt). Spur-Scan `terrain_scan.mjs`: 29 Knicke auf 1.
+- Keine Felsbrocken, Büsche, Totholz und Kanonen direkt an der Strecke (Abstand 10 bis 18 m), Freeride ohne Buckelpisten und Felsengstellen. Sprünge in vier Größen, rund 15 je 4 km (vorher 9, fast nur kleine), Höhen 1,6 bis 7,1 m.
+- Bergdörfer aus Blender (`tools/blender_village.py`: Bauernhaus mit Balkon, Holzhaus, Kapelle mit Zwiebelturm, Heustadel), etwa eines je 2,4 km, mindestens 26 m neben den Spuren, jedes Haus auf einer ebenen Terrasse.
+
+### Freestyle (v24)
+- Hüttendach als Schanze: bergseitige Dachhälfte unter dem Schnee, der First ist die Kante (Abflugwinkel = Dachneigung 20,6 Grad), dahinter ein Step-down-Tisch. Nur wo das Anlauftempo passt (Rail-Park, Slopestyle).
+- Hüttensprung: Hütte in einer 10 m langen Lücke eines großen Tisches; die langsamste Flugbahn bleibt mindestens 0,9 m über dem First.
+- Im Spiel mit Kollision gefahren: über das Dach 20 bis 27 m weit, über die Hütte 21 bis 23 m, kein Sturz.
+- Rails und Boxen 2,1-mal so lang (bis 30 m), eigenes Modell (Rohr auf Stützen, Box mit Seitenwänden), ebenes Schneebett darunter. 30-m-Rail und 25-m-Box im Spiel ganz durchgefahren.
+
+### Heli-Skiing (v25)
+- Absprungpunkte wählbar: Gipfel, Westgrat, Ostgrat, Couloir, über dem höchsten Klippenband; Schwierigkeit 1 bis 5; jeder Punkt wird mit einer fein gemittelten Falllinie bis ins Tal geprüft (Grate sind instabil, ein Punkt führte zuerst auf die Rückseite).
+- Wertung wie bei der Freeride World Tour: Linie, Flüssigkeit, Kontrolle, Sprünge, Gesamt 0 bis 100; Flow-Kette (saubere Drops, Sprünge, Tricks, Couloir), die durch Anhalten oder langes Bremsen reißt; Hinweise auf Klippen, Couloirs und Windlippen voraus.
+- Bot-Test `node tools/heli_validate.mjs 6 ohne`: **72 von 72 Fahrten im Tal** (30 vom Gipfel, 42 von den neuen Absprungpunkten), 0 Geländestürze, 0 steckengeblieben, 3840 Klippensprünge ohne Sturz, höchster Aufprall 15,5 m/s.
+
+### Shop (v26)
+- Punkte aus Läufen (Rennen nach Toren und Bestzeit, Freeride und Freestyle ein Zehntel der gesicherten Punkte, Heli nach Wertung), Startguthaben 300.
+- 8 Ski (Taillierung, Rocker, Vorspannung, Stahlkanten, Belag, Bindung mit Stopper, Grafik), 6 Snowboards (Twin, Directional, Swallowtail, mit Bindungen), 7 Outfits, davon 4 mit Kopfteil (Weihnachtsmann mit Mütze und Bart, Schneemann, Retro, Gipfelkönig).
+- Kauf, Anlegen und Abbuchen per Klick getestet; Ski, Brett und Kopfteile im Standbild angesehen.
+- Nebenbei behoben: Das Liftseil der Rennpiste hing bei 2300 m bis 7,8 m im Schnee.
+
+### Andere Welten
+- `piste_validate.mjs` Freeride, Freestyle und abseits: jeweils 0 Stürze. Abseits bleiben wie vorher 12 freie Linien bei ±85 m stecken (vor und nach diesem Update gleich).
+
+### Nicht geprüft
+- Kein Mensch hat die neuen Teile gespielt (Slalom-Gefühl, Hüttendach, lange Rails mit Tastatur, Heli-Wertung über eine ganze Abfahrt).
+- Der Browser in der App war ausgeblendet: Bilder per Canvas-Export, Animationen und Moduswechsel per Testaufruf statt per Klick geprüft. Shop-Fenster nur als Inhalt geprüft, nicht im Bild.
+- Leistung auf Handys mit den Dörfern (Bauernhaus rund 12.700 Punkte) und der größeren Modelldatei (2,1 MB statt 1,2 MB) nicht gemessen.
+- Die Heli-Wertung ist selbst gewichtet und nicht mit echten Contest-Noten abgeglichen.

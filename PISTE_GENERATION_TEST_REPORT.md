@@ -364,3 +364,19 @@ Stand Cache `gipfelsturm-v26`, jeder Block einzeln gebaut, gepusht und mit grün
 - Der Browser in der App war ausgeblendet: Bilder per Canvas-Export, Animationen und Moduswechsel per Testaufruf statt per Klick geprüft. Shop-Fenster nur als Inhalt geprüft, nicht im Bild.
 - Leistung auf Handys mit den Dörfern (Bauernhaus rund 12.700 Punkte) und der größeren Modelldatei (2,1 MB statt 1,2 MB) nicht gemessen.
 - Die Heli-Wertung ist selbst gewichtet und nicht mit echten Contest-Noten abgeglichen.
+
+## Rückmeldung nach dem Spieltest (2026-11-17, v27)
+
+| Punkt | Befund | Änderung | Prüfung |
+|---|---|---|---|
+| „Dinger am Berg, man stürzt darauf“ (Heli) | Das sind die Klippen-Bänke (erhöhte Bank mit Felswand davor). An ihren **Seiten** standen unsichtbare Fels-Kreise; wer die steile Seite hinauffuhr, stürzte. Dazu Felsblöcke genau in der Umfahrung | Kreise nur noch an der Stirnseite (ohne Ecken, nur wo die Wand mindestens 4 m hoch ist), keine Blöcke neben dem Wandfuß | Seitliche Anfahrten (1920 Fahrten, 3 Berge, mit Hindernissen): Stürze 1446 auf 287, davon 109 Bäume, der Rest frontal gegen den Wandfuß. `heli_validate.mjs 4 ohne`: 46 von 46 im Tal |
+| Freeride zu viele Sprünge | | Keine gebauten Sprünge mehr in Piste, Waldbahn, Pulverhang, Steilhang, Auslauf; kein Ski-Cross-Park im Freeride; Big Air bleibt selten (etwa einer je 6 km) | Zählung 8 Berge x 4 km: 5 Big Airs |
+| Freestyle abwechslungsreicher | | Sprunglinie mischt Kicker, Tisch, Großer Tisch, Riesen-Tisch, Kicker XL, Step-up, Step-down, Step-down XL, nie zweimal dieselbe Art hintereinander | `piste_validate.mjs freestyle`: 0 Stürze |
+| Hütten nicht in Sprüngen, sondern eigene Hindernisse | | Hütten aus den Park-Sprüngen entfernt. Neu: Holzhackerhütten abseits der Pisten im Freeride (eine je etwa 1,4 km, nur auf Hängen ab 30 Prozent), bergseitig eingeschneit bis zur Traufe; das Dach ist eine eigene Fahrfläche der Physik (`course.js` addDeck), der First die Absprungkante. Neues Blender-Modell `WoodHut` (Blockhütte, Trockenmauer, Holzstoß, Hackstock mit Axt) | Node-Test 22 Hütten x 7 Tempi x 3 Linien: 0 Stürze an der Hütte, höchster Aufprall 16 m/s; Stürze nur jenseits des 75 m freien Auslaufs (Wald, der Testfahrer lenkt nicht) |
+| Gekaufte Outfits wählen, cool aussehen | Das Fenster „Outfit“ kannte nur Farben | Gekaufte Outfits dort als Knöpfe; jedes Outfit mit Ausrüstung (Weihnachtsmann: Gürtel mit Goldschnalle und Knöpfe; Rennanzug: Startnummer vorn und hinten; Bergführer: Rucksack mit Schaufel; Schneemann: Schal, Kohleknöpfe; Gipfelkönig: Medaille; Retro: Bauchtasche) | Kauf, Auswahl im Fenster und Anlegen per Klick getestet, Standbilder vorn und hinten |
+| Snowboard lehnt unrealistisch zur Seite | Der ganze Körper kippte starr mit dem Brett | Brett geht weiter auf die Kante als der Körper (Körper etwa 55 Prozent), Knie und Hüfte beugen sich in der Kurve (Angulation) | Standbilder Fersen- und Zehenkante auf der Rennpiste |
+
+### Nicht geprüft
+- Kein Mensch hat die Holzhackerhütten, die neue Snowboard-Haltung und die geänderten Klippen gespielt.
+- Die Holzhackerhütten-Physik (Dach als Fahrfläche) nur mit geradem Testfahrer; schräges Anfahren der Dachkante von der Seite nicht systematisch geprüft.
+- Modelldatei jetzt 2,26 MB.

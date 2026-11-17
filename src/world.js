@@ -671,20 +671,24 @@ export class World {
   }
 
   buildStart() {
+    // Rennen: Start je nach Disziplin weiter unten am Hang; Starthaus steht dann am Pistenrand
+    const S = C.cfg.endless ? 0 : C.START_D, cx = C.centerX(S);
     const hut = this.mesh('StartHut');
-    hut.position.set(-6.2, C.height(-6.2, 4) - 0.2, 4);
-    hut.rotation.y = -0.55;
-    const sy = C.height(0, -1.2);
+    if (S > 0) { const hx = cx - C.halfWidth(S) - 1.5; hut.position.set(hx, C.height(hx, -S + 5) - 0.2, -S + 5); hut.rotation.y = -0.35; }
+    else { hut.position.set(-6.2, C.height(-6.2, 4) - 0.2, 4); hut.rotation.y = -0.55; }
+    const sz = -S - 1.2, sy = C.height(cx, sz), hd = Math.atan2(C.centerX(S + 6) - cx, 6), ca = Math.cos(hd), sa = Math.sin(hd);
     const postMat = new THREE.MeshStandardMaterial({ color: 0xff6a13, roughness: 0.5 });
     for (const sx of [-2.5, 2.5]) {
       const post = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 3.6, 10), postMat);
-      post.position.set(sx, sy + 1.6, -1.2);
+      const px = cx + sx * ca, pz = sz + sx * sa;
+      post.position.set(px, C.height(px, pz) + 1.6, pz);
       post.castShadow = true;
       this.grp.add(post);
     }
     if (!this.startTex) this.startTex = this.bannerTexture('START', '#ff6a13', '#ffffff');
     const sb = new THREE.Mesh(new THREE.PlaneGeometry(5.0, 0.94), new THREE.MeshStandardMaterial({ map: this.startTex, roughness: 0.7, side: THREE.DoubleSide }));
-    sb.position.set(0, sy + 2.9, -1.2);
+    sb.position.set(cx, sy + 2.9, sz);
+    sb.rotation.y = Math.PI - hd;   // Schrift zur Talseite (Kamera, Zuschauer)
     sb.castShadow = true;
     this.grp.add(sb);
   }
@@ -843,13 +847,45 @@ export class World {
 
   // ------------------------------------------------------------ Tore
   buildGates() {
+    // Slalom: Kippstangen (rot oder blau, 1,8 m über dem Schnee, schwarzes Gelenk am Fuß); sonst Torflaggen
+    if (!this.poleGeo) {
+      const pole = new THREE.CylinderGeometry(0.02, 0.02, 1.8, 8, 1);
+      pole.translate(0, 0.9 + 0.12, 0);
+      const hinge = new THREE.CylinderGeometry(0.03, 0.035, 0.28, 8, 1);
+      hinge.translate(0, 0.0, 0);
+      const cap = new THREE.SphereGeometry(0.024, 8, 6);
+      cap.translate(0, 1.82 + 0.12, 0);
+      const parts = [[pole, 1], [hinge, 0], [cap, 1]];
+      const pos = [], col = [], idx = [];
+      for (const [g, colored] of parts) {
+        const o = pos.length / 3, p = g.attributes.position;
+        for (let i = 0; i < p.count; i++) { pos.push(p.getX(i), p.getY(i), p.getZ(i)); const c = colored ? 1 : 0.06; col.push(c, c, c); }
+        const ix = g.index; for (let i = 0; i < ix.count; i++) idx.push(ix.getX(i) + o);
+      }
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+      geo.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+      geo.setIndex(idx);
+      geo.computeVertexNormals();
+      geo.userData.shared = true;
+      this.poleGeo = geo;
+      this.poleMats = { red: new THREE.MeshStandardMaterial({ vertexColors: true, color: 0xd8202a, roughness: 0.35, metalness: 0.05 }), blue: new THREE.MeshStandardMaterial({ vertexColors: true, color: 0x1f4fd6, roughness: 0.35, metalness: 0.05 }) };
+    }
     for (const g of C.gates) {
       g.flags = [];
       for (const s of [-1, 1]) {
-        const m = this.mesh(g.color === 'red' ? 'GateRed' : 'GateBlue', this.glossMat);
         const x = g.x + s * g.half;
-        m.position.set(x, C.height(x, g.z), g.z);
-        m.scale.setScalar(1.35);
+        let m;
+        if (g.pole) {
+          m = new THREE.Mesh(this.poleGeo, this.poleMats[g.color]);
+          m.castShadow = true;
+          this.grp.add(m);
+          m.position.set(x, C.height(x, g.z) - 0.12, g.z);
+        } else {
+          m = this.mesh(g.color === 'red' ? 'GateRed' : 'GateBlue', this.glossMat);
+          m.position.set(x, C.height(x, g.z), g.z);
+          m.scale.setScalar(1.35);
+        }
         m.userData = { knock: 0, vel: 0, x, z: g.z };
         g.flags.push(m);
       }

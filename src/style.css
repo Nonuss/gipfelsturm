@@ -196,6 +196,9 @@ html.rot body.touch .kicker { font-size: 11px; }
 .mline { margin: 14px 0 0; max-width: 34em; font: 19px/1.35 "Avenir Next", "Helvetica Neue", Arial, sans-serif; opacity: 0.94; }
 .mline.anim { animation: linein 0.6s 0.18s ease-out both; }
 @keyframes linein { from { opacity: 0; transform: translateY(8px); } }
+.seg.disc { margin-top: 16px; gap: 4px; }
+.menu .seg.disc button { padding: 7px 13px; font-size: 14px; letter-spacing: 0.06em; background: rgba(8, 18, 34, 0.42); border-color: rgba(255, 255, 255, 0.22); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.menu .seg.disc button.sel { background: var(--acc); border-color: var(--acc); color: #0b1422; }
 .mrow { display: flex; align-items: center; gap: 26px; margin-top: 22px; flex-wrap: wrap; }
 .menu .cta { background: var(--acc); box-shadow: 0 10px 34px color-mix(in srgb, var(--acc) 50%, transparent); color: #0b1422; transition: transform 0.12s, background 0.4s, box-shadow 0.4s; }
 .menu .cta:hover { background: var(--acc); filter: brightness(1.08); }
@@ -243,6 +246,7 @@ body.touch #fsBtn { top: calc(58px + env(safe-area-inset-top)); z-index: 31; }
   .mmain { bottom: 58px; }
   .mline { font-size: 14px; margin-top: 6px; }
   .mrow { margin-top: 10px; gap: 16px; }
+  .seg.disc { margin-top: 8px; } .menu .seg.disc button { padding: 5px 9px; font-size: 12px; }
   .menu .cta { padding: 9px 22px; font-size: 22px; }
   .mbest b { font-size: 19px; }
   .marrow { width: 44px; height: 44px; top: 48px; }
@@ -258,6 +262,7 @@ body.touch #fsBtn { top: calc(58px + env(safe-area-inset-top)); z-index: 31; }
 html.rot .mmain { bottom: 58px; }
 html.rot .mline { font-size: 14px; margin-top: 6px; }
 html.rot .mrow { margin-top: 10px; gap: 16px; }
+html.rot .seg.disc { margin-top: 8px; } html.rot .menu .seg.disc button { padding: 5px 9px; font-size: 12px; }
 html.rot .menu .cta { padding: 9px 22px; font-size: 22px; }
 html.rot .mbest b { font-size: 19px; }
 html.rot .marrow { width: 44px; height: 44px; top: 48px; }

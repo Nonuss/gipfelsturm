@@ -175,6 +175,10 @@ const vis = {
   tuck: 0, spin: 0, extend: 0, zoom: 0, shake: 0, crashCam: 0,
   camSide: 1, flipCam: 0, bigAir: 0, dip: 0, fpv: 0, slide: 0, grindSide: 1, look: 0,
 };
+// Renn-Disziplin (Slalom, Riesentorlauf, Super-G, Abfahrt). Wird gemerkt.
+let disc = 'sg';
+try { const v = localStorage.getItem('gipfelsturm_disc'); if (v && C.DISCIPLINES[v]) disc = v; } catch {}
+const raceBestKey = () => BEST_KEY + '_' + disc;
 // Ausrüstung: Ski oder Snowboard (gleiche Tasten, eigene Haltung und Tricknamen). Wird gemerkt.
 let gear = 'ski', boardEdge = 0, boardLift = 0;
 try { gear = localStorage.getItem('gipfelsturm_gear') === 'board' ? 'board' : 'ski'; } catch {}
@@ -299,6 +303,7 @@ function buildMenuControls() {
   for (const b of $('optCam').children) b.addEventListener('click', () => toggleView(b.dataset.v === '1'));
   for (const b of $('optFs').children) b.addEventListener('click', () => toggleFs(b.dataset.v === '1'));
   for (const b of $('optGear').children) b.addEventListener('click', () => { setGear(b.dataset.v); b.blur(); });
+  for (const b of $('optDisc').children) b.addEventListener('click', () => { selectDisc(b.dataset.v); b.blur(); });
   for (const b of $('optSteer').children) b.addEventListener('click', async () => { if (touchCtl) await touchCtl.setTilt(b.dataset.v === '1'); syncOpts(); });
   $('fsBtn').addEventListener('click', () => { toggleFs(); $('fsBtn').blur(); });
   try { if (localStorage.getItem('gipfelsturm_muted') === '1') audio.setMuted(true); } catch {}
@@ -316,7 +321,7 @@ function buildMenuControls() {
 // Jeder Modus hat eine eigene Szene im 3D-Hintergrund: Rennen am Start-Tor, Freeride als Drohnenflug über Wald und
 // Pulverhang, Freestyle mit einem Fahrer, der über die Kicker springt und greift, Heli-Skiing mit dem Helikopter am Grat.
 const MODES = [
-  { id: 'race', name: 'Rennen', kicker: 'Abfahrt · 2,4 km · 39 Tore', line: 'Durch die Tore auf Zeit ins Tal. Jedes verpasste Tor kostet zwei Sekunden.', acc: '#ff7a2e' },
+  { id: 'race', name: 'Rennen', kicker: '', line: '', acc: '#ff7a2e' },
   { id: 'endless', name: 'Freeride', kicker: 'Endloser Berg · jedes Mal neu', line: 'Wald, Pulverhänge und Klippen. Punkte zählen erst nach sauberer Landung, ein Sturz kostet alle.', acc: '#63e6b0' },
   { id: 'freestyle', name: 'Freestyle', kicker: 'Endlos · Kicker, Gaps, Rails', line: 'Riesige Sprünge und Rails. Grabs mit Pfeil links und rechts, auf der Rail hältst du die Balance.', acc: '#ffd23f' },
   { id: 'heli', name: 'Heli-Skiing', kicker: 'Gipfel bis Tal · auf Zeit', line: 'Der Helikopter setzt dich am Grat ab. Keine Karte, keine Markierung: den Weg suchst du selbst.', acc: '#7cc8ff' },
@@ -327,23 +332,36 @@ try { modeIdx = Math.max(0, MODES.findIndex((m) => m.id === localStorage.getItem
 const RM = !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 const demo = { on: false, t: 0, kind: '', lane: 0, d0: 0, v0: 0, inp: { steer: 0, tuck: 0, brake: 0, jump: false } };
 
+const DISC_LINE = {
+  sl: 'Enge Tore, schnelle Richtungswechsel. Tempo dosieren, sonst rauschst du am nächsten Tor vorbei.',
+  gs: 'Weite, runde Schwünge durch offene Tore. Wer früh andreht, bleibt schnell.',
+  sg: 'Lange, schnelle Bögen und zwei Sprünge. Die Linie halten bei über 100 km/h.',
+  dh: 'Die ganze Piste von ganz oben, wenige Tore, drei Sprünge. In der Hocke über 130 km/h.',
+};
+function raceInfo() {
+  const D = C.DISCIPLINES[disc], len = C.RACE_FINISH - D.start, n = C.cfg.disc === disc && !C.cfg.endless ? C.gates.length : 0;
+  return { kicker: `${D.name} · ${len >= 1000 ? (len / 1000).toFixed(1).replace('.', ',') + ' km' : len + ' m'}${n ? ` · ${n} Tore` : ''}`, line: DISC_LINE[disc] + ' Jedes verpasste Tor kostet zwei Sekunden.' };
+}
 function bestText(id) {
   const get = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
-  if (id === 'race') return ['Bestzeit', game.best ? fmt(game.best) : 'noch keine'];
+  if (id === 'race') { const b = parseFloat(get(raceBestKey()) || '0'); return ['Bestzeit ' + C.DISCIPLINES[disc].short, b ? fmt(b) : 'noch keine']; }
   if (id === 'heli') { const b = parseFloat(get(BEST_KEY + '_heli') || '0'); return ['Bestzeit', b ? fmt(b) : 'noch keine']; }
   const p = parseInt(get(BEST_E_KEY + (id === 'freestyle' ? STYLE_SFX.freestyle : '')) || '0', 10) || 0;
   return ['Rekord', p ? `${num(p)} Punkte` : 'noch keiner'];
 }
 function renderMode(anim) {
   const m = MODES[modeIdx];
+  const ri = m.id === 'race' ? raceInfo() : null;
   $('menu').style.setProperty('--acc', m.acc);
-  $('menuKicker').textContent = m.kicker;
+  $('menuKicker').textContent = ri ? ri.kicker : m.kicker;
+  $('optDisc').classList.toggle('hidden', m.id !== 'race');
+  for (const b of $('optDisc').children) { const on = b.dataset.v === disc; b.classList.toggle('sel', on); b.setAttribute('aria-pressed', String(on)); }
   const h = $('mName');
   h.setAttribute('aria-label', m.name);
   h.classList.toggle('anim', !!anim);
   h.innerHTML = [...m.name].map((c, i) => `<span aria-hidden="true" style="--i:${i}">${c}</span>`).join('');
   const l = $('mLine');
-  l.textContent = m.line;
+  l.textContent = ri ? ri.line : m.line;
   l.classList.remove('anim'); void l.offsetWidth; l.classList.toggle('anim', !!anim);
   const [bl, bv] = bestText(m.id);
   $('mBestLbl').textContent = bl;
@@ -388,6 +406,7 @@ async function buildMode() {
     HG.use(seed);
   }
   setKind(id, seed);
+  if (id === 'race') $('menuKicker').textContent = raceInfo().kicker;   // Toranzahl steht erst nach dem Aufbau fest
   demoStart();
   builtIdx = modeIdx;
   menuIntro = RM ? 0 : 1;
@@ -407,6 +426,25 @@ function selectMode(i, instant) {
   // erst das eingefrorene Bild zeigen lassen, dann die neue Welt bauen (Heli: im Worker, das Menü bleibt bedienbar)
   requestAnimationFrame(() => setTimeout(async () => {
     while (builtIdx !== modeIdx) await buildMode();
+    switching = false;
+    releaseFrame();
+  }, 16));
+}
+/** Renn-Disziplin wechseln: Rennpiste mit neuen Toren und neuem Start, weicher Übergang wie beim Moduswechsel. */
+function selectDisc(id) {
+  if (!C.DISCIPLINES[id] || game.mode !== 'menu') return;
+  if (id === disc && C.cfg.disc === id) return;
+  disc = id;
+  try { localStorage.setItem('gipfelsturm_disc', id); } catch {}
+  if (MODES[modeIdx].id !== 'race') { renderMode(); return; }
+  if (switching) return;
+  switching = true;
+  freezeFrame();
+  requestAnimationFrame(() => setTimeout(() => {
+    setKind('race');
+    demoStart();
+    menuIntro = RM ? 0 : 1;
+    renderMode(true);
     switching = false;
     releaseFrame();
   }, 16));
@@ -467,7 +505,7 @@ function resetVisuals() {
 }
 function resetRunState() {
   if (patch) patch.reset();
-  phys.reset(-1);
+  phys.reset(C.cfg.endless ? -1 : C.START_D - 1);
   phys.events.length = 0;
   tracks.clear();
   game.cp = null;
@@ -485,12 +523,13 @@ function setKind(kind, seed) {
   game.bestEndless = parseInt(localStorage.getItem(BEST_E_KEY + sfx) || '0', 10) || 0;
   game.bestDist = parseInt(localStorage.getItem(BEST_D_KEY + sfx) || '0', 10) || 0;
   C.cfg.treeMul = Q.trees;
-  C.setMode(kind === 'endless', seed || 1 + Math.floor(Math.random() * 1e6), style);
+  C.setMode(kind === 'endless', seed || 1 + Math.floor(Math.random() * 1e6), style, disc);
   renderer.toneMappingExposure = C.cfg.heli ? 0.74 : 0.9;   // viel Schnee in der Fernsicht: etwas knapper belichten
   if (patch) { const pm = patch.mesh.material, on = !!C.cfg.heli; if (!!pm.defines.HELISUN !== on) { if (on) pm.defines.HELISUN = 1; else delete pm.defines.HELISUN; pm.needsUpdate = true; } }
   world.setMode();
   resetRunState();
   game.bestHeli = parseFloat(localStorage.getItem(BEST_KEY + '_heli') || '0') || 0;
+  game.best = parseFloat(localStorage.getItem(raceBestKey()) || '0') || 0;
   $('lblMain').textContent = kind === 'endless' && !C.cfg.heli ? 'Punkte' : 'Zeit';
   $('lblSide').textContent = C.cfg.heli ? 'Über Tal' : kind === 'endless' ? 'Respawn' : 'Tore';
   $('progress').classList.toggle('off', kind === 'endless');
@@ -681,9 +720,9 @@ function finishRun() {
   const total = game.time + game.penalty;
   const hk = C.cfg.heli, bk = hk ? 'bestHeli' : 'best';
   const isBest = !game[bk] || total < game[bk];
-  if (isBest) { game[bk] = total; localStorage.setItem(BEST_KEY + (hk ? '_heli' : ''), String(total)); }
+  if (isBest) { game[bk] = total; localStorage.setItem(hk ? BEST_KEY + '_heli' : raceBestKey(), String(total)); }
   audio.finish();
-  $('finTitle').textContent = isBest ? 'Neue Bestzeit!' : hk ? 'Im Tal' : 'Im Ziel';
+  $('finTitle').textContent = (isBest ? 'Neue Bestzeit!' : hk ? 'Im Tal' : 'Im Ziel') + (hk ? '' : ` · ${C.DISCIPLINES[disc].name}`);
   $('finTime').textContent = fmt(total);
   const rows = hk ? [['Höhenmeter', `${num(-C.baseH(C.FINISH_D))} m`], ['Höchsttempo', `${Math.round(game.topSpeed * 3.6)} km/h`], ['Weitester Sprung', `${game.bestJump.toFixed(1)} m`], ['Bestzeit', fmt(game.bestHeli)]] : [['Tore', `${game.passed}/${C.gates.length}`], ['Strafzeit', `+${game.penalty.toFixed(0)} s`], ['Trickpunkte', num(game.score)],
     ['Höchsttempo', `${Math.round(game.topSpeed * 3.6)} km/h`], ['Weitester Sprung', `${game.bestJump.toFixed(1)} m`], ['Bestzeit', fmt(game.best)]];
@@ -733,6 +772,11 @@ window.addEventListener('keydown', (e) => {
     const open = document.querySelector('.dlg:not(.hidden)');
     if (k === 'Escape' && open) { const id = open.id; closeDlg(); document.querySelector(`[data-dlg="${id}"]`)?.focus(); return; }
     if (!open && k === 'KeyB') { setGear(BOARD() ? 'ski' : 'board'); return; }
+    if (!open && MODES[modeIdx].id === 'race') {
+      const i = C.DISC_ORDER.indexOf(disc);
+      if (k === 'ArrowUp' || k === 'KeyW' || k === 'ArrowDown' || k === 'KeyS') { e.preventDefault(); selectDisc(C.DISC_ORDER[(i + (k === 'ArrowUp' || k === 'KeyW' ? -1 : 1) + 4) % 4]); return; }
+      if (/^Digit[1-4]$/.test(k)) { selectDisc(C.DISC_ORDER[+k.slice(5) - 1]); return; }
+    }
     if (!open && (k === 'ArrowLeft' || k === 'KeyA' || k === 'ArrowRight' || k === 'KeyD')) { e.preventDefault(); selectMode(modeIdx + (k === 'ArrowLeft' || k === 'KeyA' ? -1 : 1)); return; }
   }
   // Enter/Leertaste auf einem Knopf: der Knopf selbst reagiert (sonst würde doppelt gestartet)
@@ -1284,7 +1328,7 @@ function checkGates() {
       audio.gate();
       showMsg(game.passed % 5 === 0 ? `${game.passed} Tore!` : 'Tor ✓', 'good');
     } else {
-      g.state = -1; game.penalty += 2;
+      g.state = -1; game.penalty += C.DISCIPLINES[disc].penalty;
       audio.miss();
       showMsg('Tor verpasst  +2 s', 'bad');
       $('penalty').textContent = `Strafe +${game.penalty.toFixed(0)} s`;
@@ -1483,7 +1527,7 @@ function updateHud(dt) {
   } else {
     $('time').textContent = fmt(game.time + game.penalty);
     $('gates').innerHTML = `${game.passed}<span>/${C.gates.length}</span>`;
-    const pr = clamp(-phys.pos.z / C.FINISH_D, 0, 1) * 100;
+    const pr = clamp((-phys.pos.z - C.START_D) / (C.FINISH_D - C.START_D), 0, 1) * 100;
     $('progfill').style.height = `${pr}%`;
     $('progdot').style.top = `${pr}%`;
     $('best').textContent = (game.best ? `Bestzeit ${fmt(game.best)}` : 'Bestzeit –') + (game.score ? ` · ${num(game.score)} P` : '');

@@ -9,8 +9,23 @@ export { clamp, lerp, smoothstep, mulberry32, vnoise, fbm };
 export const G = 9.81;
 export const EDGE_U = 215;
 export const CHUNK = 100;
-export const cfg = { endless: false, seed: 1, treeMul: 1, heli: false };
+export const cfg = { endless: false, seed: 1, treeMul: 1, heli: false, disc: 'sg' };
 export let FINISH_D = 2400;
+/** Startpunkt des Rennens (Meter ab Bergstation). Die Disziplinen teilen sich die Rennpiste, starten aber verschieden hoch. */
+export let START_D = 0;
+export const RACE_FINISH = 2400;
+
+// ================================================================ Renn-Disziplinen
+// Werte angelehnt an die FIS-Regeln (Torbreite, Abstand der Drehstangen), Längen und Höhenmeter für das Spiel gekürzt.
+// start: Startpunkt auf der Rennpiste, sp: Abstand der Tore entlang der Falllinie (m), amp: seitlicher Versatz der Tore
+// (m bzw. Anteil der Pistenbreite bei rel), half: halbe Torbreite, kick: welche Sprünge stehen, pole: Kippstangen statt Torflaggen
+export const DISCIPLINES = {
+  sl: { id: 'sl', name: 'Slalom', short: 'SL', start: 1960, sp: [10.5, 12.5], amp: [3.0, 4.0], half: 2.5, kick: [], pole: true, combos: true, penalty: 2 },
+  gs: { id: 'gs', name: 'Riesentorlauf', short: 'RS', start: 1480, sp: [28, 34], amp: [5, 6.5], half: 3.2, kick: [], penalty: 2 },
+  sg: { id: 'sg', name: 'Super-G', short: 'SG', start: 700, sp: [48, 62], amp: [0.28, 0.4], rel: true, half: 4.0, kick: [1265, 2015], penalty: 2 },
+  dh: { id: 'dh', name: 'Abfahrt', short: 'AB', start: 0, sp: [90, 125], amp: [0.12, 0.28], rel: true, half: 5.5, kick: [640, 1265, 2015], allRed: true, penalty: 2 },
+};
+export const DISC_ORDER = ['sl', 'gs', 'sg', 'dh'];
 export let MESH_D0 = -60;
 export let MESH_D1 = 2760;
 
@@ -266,9 +281,46 @@ function genRocksRace(R, d0, d1, count, out) {
   }
 }
 
+/** Tore einer Disziplin: abwechselnd links und rechts der Mittellinie, Versatz und Abstand leicht unregelmäßig
+ *  (Rhythmuswechsel), im Slalom gelegentlich eine Vertikale (drei Tore fast in Falllinie). Vor und nach Sprüngen gerade. */
+function genGates(D) {
+  const R = mulberry32(9157 + D.id.charCodeAt(0) * 31 + D.id.charCodeAt(1));
+  const rr = (a, b) => a + (b - a) * R();
+  let side = R() < 0.5 ? 1 : -1, idx = 0, d = D.start + (D.pole ? 24 : 45);
+  const end = FINISH_D - (D.pole ? 28 : 45);
+  let nextCombo = D.combos ? 7 + Math.floor(R() * 4) : Infinity;
+  const push = (dd, u, half, kind) => {
+    const col = D.allRed ? 'red' : idx % 2 ? 'blue' : 'red';
+    gates.push({ d: dd, u, x: centerXR(dd) + u, z: -dd, half, color: col, state: 0, pole: !!D.pole, kind });
+    idx++;
+  };
+  while (d < end) {
+    const w = halfWidthR(d);
+    if (idx >= nextCombo && d + 30 < end) {
+      // Vertikale: drei enge Tore beinahe in Falllinie, danach geht es normal weiter
+      const n = R() < 0.5 ? 2 : 3;
+      for (let k = 0; k < n; k++) push(d + k * 7, (k % 2 ? 1 : -1) * side * 0.9, 2.3, 'vert');
+      d += (n - 1) * 7 + rr(D.sp[0], D.sp[1]) + 2;
+      nextCombo = idx + 8 + Math.floor(R() * 5);
+      continue;
+    }
+    const lim = Math.max(0, w - D.half - 3);
+    let amp = D.rel ? w * rr(D.amp[0], D.amp[1]) : rr(D.amp[0], D.amp[1]);
+    let sp = rr(D.sp[0], D.sp[1]);
+    if (!D.pole && R() < 0.14) { amp *= 1.22; sp *= 1.25; }   // verzögertes Tor: weiter versetzt, mehr Abstand
+    let u = side * Math.min(lim, amp);
+    for (const k of kickers) if (d > k.d - 75 && d < k.d + 95) u = side * Math.min(u * side, 2);
+    push(d, u, D.half, 'open');
+    side = -side;
+    d += sp;
+  }
+}
+
 function genRace() {
   const R = mulberry32(4711);
-  kickers.push(...RACE_KICKERS);
+  const D = DISCIPLINES[cfg.disc] || DISCIPLINES.sg;
+  START_D = D.start;
+  kickers.push(...RACE_KICKERS.filter((k) => D.kick.includes(k.d)));
   const chaletDefs = [
     { d: 2590, u: -56, rot: Math.PI / 2 }, { d: 2640, u: 52, rot: -Math.PI / 2 }, { d: 2565, u: 64, rot: -Math.PI / 2 },
     { d: 2700, u: -34, rot: 0.3 }, { d: 2715, u: 22, rot: -0.25 }, { d: 1105, u: 0, side: 1, e: 15, rot: -Math.PI / 2 },
@@ -292,16 +344,7 @@ function genRace() {
     lift.pylons.push({ x, z, y: height(x, z), d: best });
     addCollider(x, z, 1.1, 'stuetze');
   }
-  let side = 1, idx = 0;
-  for (let d = 150; d < 2360; d += 58) {
-    const w = halfWidthR(d);
-    let u = side * w * (0.36 + 0.14 * R());
-    for (const k of kickers) if (d > k.d - 75 && d < k.d + 95) u = 0;
-    const x = centerXR(d) + u;
-    gates.push({ d, u, x, z: -d, half: 4.3, color: idx % 2 ? 'blue' : 'red', state: 0 });
-    side = -side;
-    idx++;
-  }
+  genGates(D);
   genTreesRace(R, MESH_D0 + 4, MESH_D1 - 6, trees);
   genRocksRace(R, 20, 2700, 300, rocks);
   for (let d = 30; d < 2440; d += 36) {
@@ -661,7 +704,9 @@ export function dropChunk(i) {
   for (let k = i * 5; k < i * 5 + 5; k++) colliders.delete(k);
 }
 
-export function setMode(endless, seed = 1, style = 'freeride') {
+export function setMode(endless, seed = 1, style = 'freeride', disc) {
+  if (disc && DISCIPLINES[disc]) cfg.disc = disc;
+  START_D = 0;
   cfg.endless = endless;
   cfg.seed = seed;
   cfg.style = style;
@@ -678,7 +723,7 @@ export function setMode(endless, seed = 1, style = 'freeride') {
     FINISH_D = Infinity;
     MESH_D1 = Infinity;
   } else {
-    FINISH_D = 2400;
+    FINISH_D = RACE_FINISH;
     MESH_D1 = 2760;
     genRace();
   }

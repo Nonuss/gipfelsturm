@@ -380,3 +380,16 @@ Stand Cache `gipfelsturm-v26`, jeder Block einzeln gebaut, gepusht und mit grün
 - Kein Mensch hat die Holzhackerhütten, die neue Snowboard-Haltung und die geänderten Klippen gespielt.
 - Die Holzhackerhütten-Physik (Dach als Fahrfläche) nur mit geradem Testfahrer; schräges Anfahren der Dachkante von der Seite nicht systematisch geprüft.
 - Modelldatei jetzt 2,26 MB.
+
+## Zweite Rückmeldung nach dem Spieltest (v28, 2026-11-18)
+
+| Rückmeldung | Ursache | Änderung | Prüfung |
+|---|---|---|---|
+| Freeride: wieder dicke Hügel mitten in der Piste | Steilstufen (`addPitches`) bildeten Kuppen; vorher lagen sie unter den 150 m langen Sprung-Anläufen, die das Gelände glätteten. Dazu Zonen-Wellen bis 2 m, der Mittelrücken und Pulverkissen auf den Spuren, Steilkurven bis 2,3 m | Steilstufen mit Übergang 40 m und kleinerem Gefälle-Sprung, Wellen auf den Spuren um 60 % flacher, Rücken und Kuppen auf den Spuren fast weg (weiche Vereinigung aller Spurmasken, kein Knick an Kreuzungen), Kissen nur neben den Spuren, Steilkurven 1,0 bis 1,5 m, Roller 0,35 bis 0,55 m | Hügel über 1,2 m (20-m-Sehne, 8 Berge): 132 auf 51, Rest Klippen und Big Air. `terrain_scan2`: 4 auffällige Stellen, alle über 120 m neben der Piste (vorher 2) |
+| Zu viele Pistenstangen | alle 22 m ein Paar je Spur, 8 Paare an jeder Abzweigung | alle 50 m, an Abzweigungen 3 Paare | Standbild |
+| Dörfer und Hütten zu selten | Dorf-Wahrscheinlichkeit 0,42 mit 3 Zonen Abstand, Hütten 0,55 | 0,75 und 2 Zonen Abstand, Hütten 0,85 (zwei mit 45 %), etwas weitere Gefälle | Dörfer 0,36 auf 0,75 pro km (Abstand im Mittel 855 m), Hütten 0,81 auf 1,39 pro km |
+| Heli: Boden zu uneben | feines Rauschen 0,9 m auf 19 m und 0,3 m auf 6,5 m | 0,45 m auf 24 m und 0,08 m auf 7 m | `heli_validate.mjs 6 ohne`: 75 von 76 im Tal, 0 Geländestürze; eine langsame Bot-Linie bleibt in einer engen Rinne stecken (der Bot lenkt dort in die Wand, die Rinne fällt weiter ab) |
+| Lenkung am Fahrer schlecht sichtbar | Neigung nur aus der Querbeschleunigung, die im Pulver klein ist | Antizipation: Neigung folgt schon der Lenkeingabe (Heli stärker), Einfedern beim Kurvenwechsel, Oberkörper dreht mit | Standbild: Neigung 0,92 bei voller Lenkung |
+| Coole Spezialtricks mit eigener Kamera | neu | Tasten 1 bis 5: Cork 720 (Kreisfahrt), Rodeo 540 (Profil), Superman bzw. Method Air (Heldenkamera von vorne), Iron Cross bzw. Stalefish (Froschperspektive), Bullet Time Doppel-Backflip (ganze Kreisfahrt); Zeitlupe 0,4 bis 0,6; Start nur bei genug Flugzeit; Handy: Stern-Knopf in der Luft | alle fünf mit Ski und zwei mit Snowboard sauber gelandet, Kamerabilder geprüft |
+
+Weitere Bots: `piste_validate.mjs` Freeride 30 von 30 ohne Sturz; Freestyle, abseits und `race_validate.mjs` mit genau denselben Ergebnissen wie v27 (ein bekannter Freestyle-Sturz bei Seed 57, 20 freie Linien bei ±85 m stecken, ein knappes Tor im Super-G Stil 2).

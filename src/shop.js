@@ -19,7 +19,7 @@ const SKI_INFO = {
   allround: ['Taillierter Allround-Ski mit leichtem Rocker an der Schaufel', 0],
   slalom: ['Kurzer Rennski mit schmaler Mitte (66 mm) und Rennplatte: enge Bögen, beißt auf Eis', 300],
   giant: ['Langer Riesentorlauf-Ski für weite, schnelle Bögen, Tempo statt Tricks', 600],
-  park: ['Twin-Tip mit Rocker vorne und hinten. Der Trick-Ski: dreht schneller, buttert leicht, bringt bis 30 % mehr Trickpunkte', 700],
+  park: ['Twin-Tip mit Rocker vorne und hinten. Der Trick-Ski: dreht schneller, hält die Balance im Tiefschnee-Manual leichter, bis 30 % mehr Trickpunkte', 700],
   powder: ['118 mm breit, viel Rocker: schwimmt im Tiefschnee obenauf, auf Eis wenig Halt', 900],
   wood: ['Echtholz-Optik mit hellen Seitenwangen', 1000],
   carbon: ['Carbon-Gewebe, blaue Akzente, leichte Bindung', 1400],
@@ -27,7 +27,7 @@ const SKI_INFO = {
 };
 const BOARD_INFO = {
   classic: ['Twin-Board mit Streifen, das Brett vom Start', 0],
-  freestyle: ['Weiches Park-Board mit Schachbrett-Grafik. Das Trick-Brett: dreht schneller, buttert leicht, mehr Trickpunkte', 300],
+  freestyle: ['Weiches Park-Board mit Schachbrett-Grafik. Das Trick-Brett: dreht schneller, ruhiger im Powder Wheelie, mehr Trickpunkte', 300],
   freeride: ['Directional mit langer Nase und Wellen-Grafik', 800],
   powder: ['Swallowtail: Schwalbenschwanz hinten, Nase hoch, für tiefen Pulver', 1100],
   aurora: ['Nachtblau mit Polarlicht-Verlauf', 1300],

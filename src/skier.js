@@ -260,24 +260,26 @@ export class Skier {
     const air = s.air, grab = s.grab || 0, tuck = s.tuck || 0, spin = s.spin || 0, ext = (s.extend || 0) * air;
     const crash = s.crash || 0, ca = s.crashA || 0;
     const sup = s.sup || 0, cross = s.cross || 0;   // Spezialtricks: Superman (gestreckt), Iron Cross (Ski gekreuzt)
+    // Tiefschnee-Manual: Spitzen hoch, Gesäß zurück und tief, Oberkörper aufrecht, Arme nach vorn zum Ausbalancieren
+    const man = this.gear === 'board' ? 0 : clamp(s.man || 0, 0, 1), manA = man * 0.42;
     let c = clamp(Math.max(s.crouch + s.compress * 0.7 + air * 0.25, tuck * 0.9, grab * 0.75, cross * 0.7), 0, 1);
     c = lerp(c, 0.08, Math.max(ext, sup));
     if (crash) c = 0.35;
     const plow = s.plow;
     const idle = 1 - clamp(s.speed / 3, 0, 1);
     const bob = Math.sin(this.t * 2.2) * 0.012 * idle + Math.sin(this.t * 31) * 0.004 * clamp(s.speed / 30, 0, 1);
-    const hipH = lerp(1.0, 0.70, c) - 0.09 * Math.abs(lean);
+    const hipH = lerp(1.0, 0.70, c) - 0.09 * Math.abs(lean) - 0.1 * man;
     const edge = clamp(lean * 1.2, -1.05, 1.05);
     const spinAbs = Math.abs(spin) * (1 - grab) * (1 - tuck);
 
     // Becken
-    tC.set(Math.sin(lean) * hipH * 0.88, Math.cos(lean) * hipH + bob, 0.05 + 0.10 * c);
-    eA.set(-(0.10 + 0.30 * c), s.steer * 0.10 + spin * 0.15, -lean * 0.55);
+    tC.set(Math.sin(lean) * hipH * 0.88, Math.cos(lean) * hipH + bob, 0.05 + 0.10 * c + 0.2 * man);
+    eA.set(-(0.10 + 0.30 * c) + 0.12 * man, s.steer * 0.10 + spin * 0.15, -lean * 0.55);
     mR.makeRotationFromEuler(eA);
     this.mPel.copy(this.setBone(PEL, tC, mR, P0));
 
     // Oberkörper
-    const bend = 0.34 + 0.70 * c - air * 0.12 * (1 - grab) * (1 - tuck);
+    const bend = 0.34 + 0.70 * c - air * 0.12 * (1 - grab) * (1 - tuck) - 0.42 * man;
     tC.copy(W0).applyMatrix4(this.mPel);
     const look = s.look || 0;   // rückwärts fahren: Oberkörper dreht mit, Kopf schaut über die Schulter in Fahrtrichtung
     eA.set(-bend, s.steer * 0.18 + spin * 0.45 + grab * 0.2 + look * 0.55 + (crash ? Math.sin(ca * 1.3) * 0.5 : 0), -lean * 0.18);
@@ -306,9 +308,10 @@ export class Skier {
         f.rotation.set(grab * 0.25 + tuck * 0.1 + (s.edge || 0), side * 0.26, 0);
       } else {
         const stance = 0.17 + 0.07 * Math.abs(lean) + 0.13 * plow + air * 0.03 + grab * 0.03;
-        f.position.set(side * stance * (1 - 0.25 * cross), Math.abs(Math.sin(edge)) * 0.03 + grab * 0.2 + tuck * 0.16 + cross * 0.22 + sup * 0.1, -0.09 * lean * side - grab * 0.06 + cross * 0.12 + sup * 0.32);
+        // Manual: der Ski dreht um sein Ende (0,8 m hinter dem Schuh), deshalb hebt sich der Schuh um 0,8 · sin(Winkel)
+        f.position.set(side * stance * (1 - 0.25 * cross), Math.abs(Math.sin(edge)) * 0.03 + grab * 0.2 + tuck * 0.16 + cross * 0.22 + sup * 0.1 + 0.8 * Math.sin(manA), -0.09 * lean * side - grab * 0.06 + cross * 0.12 + sup * 0.32 + 0.8 * (1 - Math.cos(manA)));
         // Pflug: vorwärts Spitzen zusammen, rückwärts Enden zusammen (plowDir = -1) – der Keil öffnet sich immer in Fahrtrichtung
-        f.rotation.set(air * 0.1 * (1 - ext) + grab * 0.32 + tuck * 0.12 - sup * 0.35, side * (plow * 0.33 * (s.plowDir || 1) + grab * 0.22 + cross * 0.75), -(edge - side * plow * 0.28) - side * cross * 0.35);
+        f.rotation.set(air * 0.1 * (1 - ext) + grab * 0.32 + tuck * 0.12 - sup * 0.35 + manA, side * (plow * 0.33 * (s.plowDir || 1) + grab * 0.22 + cross * 0.75), -(edge - side * plow * 0.28) - side * cross * 0.35);
       }
       f.updateMatrix();
       if (!k.loose) {
@@ -350,6 +353,7 @@ export class Skier {
         // Superman: Arme gestreckt nach vorne oben; Iron Cross: Arme weit zur Seite
         if (sup > 0.01) k.hand.lerp(tD.set(side * 0.2, 1.62, -0.62).applyMatrix4(this.mCh), sup);
         if (cross > 0.01) k.hand.lerp(tD.copy(k.shoulder).add(tC.set(side * 0.62, 0.12, -0.12)), cross);
+        if (man > 0.01) k.hand.lerp(tD.set(side * 0.34, 1.2, -0.58).applyMatrix4(this.mCh), man * 0.85);
       }
       if (this.gear === 'board' && !crash && grab < 0.01) {
         // ohne Stöcke: Arme locker seitlich, leicht vor dem Körper, zum Ausbalancieren

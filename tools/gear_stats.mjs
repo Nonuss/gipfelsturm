@@ -3,7 +3,6 @@
 //  - Wendigkeit und Kante: kleinster Kurvenradius bei 54 km/h auf hartem Schnee (volle Lenkung, 3 s)
 //  - Pulver: Bremswirkung im Tiefschnee bei 72 km/h (m/s², kleiner = gleitet besser); Heli-Berg, mit POW=freeride
 //    im Freeride-Pulver neben der Piste
-//  - Butter: Tempoverlust bei einer Butter-Drehung über 1 s (quer zur Fahrt, 54 km/h)
 // Aufruf: node tools/gear_stats.mjs
 import * as C from '../src/course.js';
 import { SkiPhysics } from '../src/physics.js';
@@ -61,19 +60,6 @@ function powderSpeed() {
   }
   return sum / n;
 }
-function butterLoss() {
-  C.setMode(false, 1, 'race', 'sg');
-  phys.reset(C.START_D + 40);
-  const n = phys.normal; C.terrainNormal(phys.pos.x, phys.pos.z, n);
-  phys.vel.set(Math.sin(phys.heading), 0, -Math.cos(phys.heading)); phys.vel.addScaledVector(n, -phys.vel.dot(n)).normalize().multiplyScalar(15);
-  const ref = { steer: 0, tuck: 0, brake: 0, jump: false, butter: 0, press: 0.8 };
-  const p0 = phys.pos.clone(), v0 = phys.vel.clone(), h0 = phys.heading;
-  for (let t = 0; t < 1; t += dt) { phys.step(dt, ref); phys.events.length = 0; }
-  const vRef = phys.speed;
-  phys.pos.copy(p0); phys.vel.copy(v0); phys.heading = h0; phys.grounded = true;
-  for (let t = 0; t < 1; t += dt) { ref.butter = Math.abs(Math.sin(Math.PI * 2 * t)); phys.step(dt, ref); phys.events.length = 0; }
-  return (vRef - phys.speed) * 3.6;
-}
 
 const rows = [];
 const parts = [];
@@ -81,8 +67,8 @@ for (const [cat, list] of [['Ski', SKIS], ['Brett', BOARDS]]) for (const id in l
 // erst alles auf der Rennpiste, dann alles am Heli-Berg (der Berg wird nur einmal erzeugt)
 for (const [cat, d] of parts) {
   phys.setGearStats(statMul(d.st));
-  rows.push({ teil: `${cat} ${d.name}`, werte: Object.values(d.st).join('/'), endtempo: topSpeed().toFixed(0), radius: turnRadius().toFixed(1), butterVerlust: butterLoss().toFixed(1) });
+  rows.push({ teil: `${cat} ${d.name}`, werte: Object.values(d.st).join('/'), endtempo: topSpeed().toFixed(0), radius: turnRadius().toFixed(1) });
 }
 parts.forEach(([, d], i) => { phys.setGearStats(statMul(d.st)); rows[i].pulver = powderSpeed().toFixed(2); });
-console.log('Werte = Tempo/Wendigkeit/Pulver/Tricks/Kante | Endtempo km/h | Kurvenradius m bei 54 km/h | Bremswirkung Pulver m/s² | Tempoverlust Butter km/h');
-for (const r of rows) console.log(`${r.teil.padEnd(30)} ${r.werte.padEnd(12)} ${r.endtempo.padStart(4)} km/h | ${r.radius.padStart(5)} m | ${r.pulver.padStart(5)} m/s² | ${r.butterVerlust.padStart(4)} km/h`);
+console.log('Werte = Tempo/Wendigkeit/Pulver/Tricks/Kante | Endtempo km/h | Kurvenradius m bei 54 km/h | Bremswirkung Pulver m/s²');
+for (const r of rows) console.log(`${r.teil.padEnd(30)} ${r.werte.padEnd(12)} ${r.endtempo.padStart(4)} km/h | ${r.radius.padStart(5)} m | ${r.pulver.padStart(5)} m/s²`);

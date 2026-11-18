@@ -34,7 +34,7 @@ class Builder {
 // ------------------------------------------------------------------ Eigenschaften (v29)
 // Jeder Ski und jedes Brett hat Werte von 1 bis 10, die der Shop als Balken zeigt und die Physik umsetzt. 5 ist neutral
 // (der Allround-Ski vom Start fährt genau wie vorher). tempo: Gleiten und Luftwiderstand, turn: Wendigkeit (Drehrate),
-// pow: Auftrieb im Tiefschnee, trick: Dreh-Tempo in der Luft und am Boden, leichter buttern, mehr Trickpunkte,
+// pow: Auftrieb im Tiefschnee, trick: Dreh-Tempo in der Luft, ruhigere Balance im Tiefschnee-Manual, mehr Trickpunkte,
 // grip: Kantengriff auf hartem Schnee.
 export const STAT_NAMES = [['tempo', 'Tempo'], ['turn', 'Wendigkeit'], ['pow', 'Pulver'], ['trick', 'Tricks'], ['grip', 'Kantengriff']];
 /** Multiplikatoren aus den Werten: 1 bei Wert 5. */
@@ -272,10 +272,16 @@ export function makeBodyItems(kind) {
       bib.position.set(0, 1.31, s * 0.176); if (s > 0) bib.rotation.y = Math.PI; ch.add(bib);
     }
   } else if (kind === 'guide') {
-    const pack = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.44, 0.16), mat('#23262d', 0.85)); pack.position.set(0, 1.3, 0.25); ch.add(pack);
-    const lid = new THREE.Mesh(new THREE.BoxGeometry(0.31, 0.08, 0.17), mat('#ff6a13', 0.8)); lid.position.set(0, 1.54, 0.25); ch.add(lid);
-    const shovel = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.26, 0.02), mat('#c9ced6', 0.4, 0.6)); shovel.position.set(0, 1.28, 0.338); ch.add(shovel);
-    for (const sx of [-1, 1]) { const st = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.42, 0.02), mat('#16171b', 0.8)); st.position.set(sx * 0.1, 1.33, -0.168); ch.add(st); }
+    // Lawinen-Rucksack (v29b): flach und abgerundet direkt am Rücken (vorher eine dicke Kiste mit Abstand zum Rücken),
+    // Deckel in Orange, Schaufelblatt außen, Träger über die Schultern bis vorne
+    const packMat = mat('#2a2d35', 0.85);
+    const pack = new THREE.Mesh(new THREE.CapsuleGeometry(0.12, 0.2, 4, 12), packMat); pack.scale.set(1.08, 1, 0.5); pack.position.set(0, 1.27, 0.175); ch.add(pack);
+    const lid = new THREE.Mesh(new THREE.SphereGeometry(0.125, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), mat('#ff6a13', 0.8)); lid.scale.set(1.06, 0.45, 0.52); lid.position.set(0, 1.4, 0.175); ch.add(lid);
+    const shovel = new THREE.Mesh(new THREE.BoxGeometry(0.17, 0.22, 0.012), mat('#c9ced6', 0.4, 0.6)); shovel.position.set(0, 1.25, 0.24); ch.add(shovel);
+    for (const sx of [-1, 1]) {
+      const top = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.02, 0.3), mat('#16171b', 0.8)); top.position.set(sx * 0.1, 1.47, 0.02); ch.add(top);
+      const st = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.34, 0.02), mat('#16171b', 0.8)); st.position.set(sx * 0.1, 1.31, -0.166); ch.add(st);
+    }
   } else if (kind === 'snowman') {
     band(1.53, 0.135, 0.13, 0.07, mat('#d7141a', 0.9), ch);                                       // Schal
     const end = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.24, 0.025), mat('#d7141a', 0.9)); end.position.set(0.06, 1.4, -0.16); end.rotation.z = 0.15; ch.add(end);

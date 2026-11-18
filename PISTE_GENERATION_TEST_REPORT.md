@@ -462,3 +462,14 @@ Freestyle-Teile (Tricks 10): Luft-Drehungen 18 % schneller, Butter-Drehungen 42 
 - Handy-Knopf und Wischen für den Press nur in der Handy-Ansicht des Browsers geprüft, nicht auf einem echten Telefon.
 - Die Heli-Wand-Regel kann an engen Couloir-Wänden bei Vollgas frontal stürzen lassen; ob das fair wirkt, muss ein Spieltest zeigen.
 - In `heli_edges.mjs` gerät der Fahrer in 3 von 12.300 Fahrten kurz mehr als 0,3 m unter die Oberfläche (nicht weiter untersucht).
+
+## Rückmeldung zu den Bodentricks (v30, 2026-11-18)
+
+| Rückmeldung | Änderung | Prüfung |
+|---|---|---|
+| „Was ist das auf dem Rücken?“ | Der Rucksack des Outfits „Bergführer“ war eine dicke schwarze Kiste mit Abstand zum Rücken. Neu: flacher, abgerundeter Lawinen-Rucksack direkt am Rücken, orangener Deckel, Schaufelblatt außen, Träger über die Schultern | Standbilder von der Seite, von hinten und von vorn |
+| Neue Tricks sehen schlecht aus, man schwebt, zu leicht | Butter-Drehungen, Nose-Press und Tail-Press entfernt. Statt den ganzen Körper starr um das Ski-Ende zu kippen, eigene Haltung: Ski drehen um ihr Ende (Spitzen hoch), Gesäß zurück und tief, Oberkörper aufrecht, Arme nach vorn | Standbild seitlich am Heli-Steilhang |
+| Nur Zurücklehnen, nur im Tiefschnee, schwer, mit Q und E balancieren | Tiefschnee-Manual: Q startet ihn (nur im Pulver und ab rund 30 km/h, sonst Hinweis), danach Q zurück, E (oder W) nach vorn. Die Balance kippt von selbst weg, schneller bei Tempo und auf welligem Boden; Freestyle-Teile sind ruhiger. Zu weit hinten heißt Sturz („Nach hinten gekippt!“), nach vorne tauchen die Spitzen ein und der Manual wird gewertet (ab 1 s, 90 + 210 · s^1,25). Leertaste aus dem Manual: Ollie. Balken mit Marke und Sekunden unter dem Fahrer. Handy: Zurücklehnen-Knopf, Hocke-Knopf lehnt nach vorn | Simulierter Spieler im Heli-Pulver bei 104 bis 128 km/h: ohne Ausgleich Sturz nach 0,5 s; mit 0,12 s Reaktionszeit 2 bis 5 s gehalten, mit 0,25 s rund 1 s oder Sturz. Auf der Piste kommt der Hinweis „nur im Tiefschnee“ |
+| Kurz weiß nach einem Trick | nicht nachgestellt: Bildhelligkeit Bild für Bild nach Backflips, allen fünf Spezialtricks, in der Ego-Sicht und mit Lawine gemessen, kein Aufblitzen | offen, braucht Angabe, wann genau |
+
+Bots: Freeride, Freestyle und Rennen unverändert (Ausgaben identisch), Heli-Lenkung unverändert.

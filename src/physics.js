@@ -68,8 +68,8 @@ export class SkiPhysics {
     } else if (this.grounded) {
       // Heli-Pulver (v29): mehr Griff als im Freeride-Pulver, die breiten Ski stützen sich im tiefen Schnee ab
       const gs = this.gs, press = inp.press || 0;
-      // Kantengriff: auf hartem Schnee nach dem Kantengriff-Wert, im Pulver nach dem Pulver-Wert; im Press (nur Enden
-      // oder Spitzen auf dem Schnee) greift die Kante weniger
+      // Kantengriff: auf hartem Schnee nach dem Kantengriff-Wert, im Pulver nach dem Pulver-Wert; im Tiefschnee-Manual
+      // (nur die Skienden im Schnee) greift die Kante weniger
       const gripG = lerp(1.5, 0.72, inp.brake) * lerp(gs.grip, (cfg.heli ? 0.92 : cfg.endless ? 0.7 : 0.62) * Math.sqrt(gs.pow), pw) * (1 - 0.22 * press);
       const maxLat = gripG * G;
       const wCarve = (maxLat * 0.9) / Math.max(speed, 2.5) * gs.turn;
@@ -96,9 +96,7 @@ export class SkiPhysics {
       // Heli-Berg: tiefer, leichter Pulver trägt – man schwebt darüber und wird kaum gebremst (wie echter Powder)
       const k = lerp(0.0036, 0.0019, inp.tuck) / (1 + (gs.glide - 1) * 0.6);
       const powDrag = (cfg.heli ? pw * (0.08 + 0.012 * speed) : cfg.endless ? pw * (0.26 + 0.03 * speed) : pw * 0.05 * speed) / gs.pow;
-      // Butter-Drehung: quer zur Fahrt schiebt der Ski Schnee vor sich her (mit Freestyle-Ski weniger)
-      const butterDrag = (inp.butter || 0) * (0.5 + 0.035 * speed) / gs.trick;
-      const dec = mu * G * N.y + k * speed * speed + powDrag + butterDrag + inp.brake * 4.6;
+      const dec = mu * G * N.y + k * speed * speed + powDrag + inp.brake * 4.6;
       if (speed > 1e-4) v.multiplyScalar(Math.max(0, speed - dec * dt) / speed);
       v.y -= G * dt;
 
@@ -115,7 +113,7 @@ export class SkiPhysics {
       this.pressure = clamp(0.6 + Math.abs(a) / (1.2 * G), 0.5, 1.6);
 
       if (inp.jump) {
-        v.addScaledVector(N, 4.3 + (inp.pop || 0));   // aus dem Press (Ollie/Nollie) springt man höher
+        v.addScaledVector(N, 4.3 + (inp.pop || 0));   // aus dem Manual (Ollie) springt man höher
         this.grounded = false;
         this.airTime = 0;
         this.airStart.copy(p);

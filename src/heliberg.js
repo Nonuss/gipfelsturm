@@ -693,7 +693,9 @@ export function genTile(ti, tj, T, treeMul, addCollider, addRock) {
       if (q.nx * c.fx - q.nz * c.fd < 0.9) continue;   // nur die Stirnseite, keine Ecken
       const yT = heightH(q.x - q.nx * 3, q.z - q.nz * 3), yB = heightH(q.x + q.nx * 3.3, q.z + q.nz * 3.3);
       if (yT - yB < 4) continue;                         // niedrige Stellen: das Gelände reicht
-      addCollider(q.x + q.nx * 2.3, q.z + q.nz * 2.3, 1.35, 'fels', 0, 0, yT - 1.5);
+      // v32: Typ „felswand“ mit Richtung (nach außen): hält nur auf, wer auf die Wand zufährt. Wer von der Bank über die
+      // Kante springt, fliegt von ihr weg und wird nicht mehr von diesen Kreisen abgefangen (vorher Sturz im Flug)
+      addCollider(q.x + q.nx * 2.3, q.z + q.nz * 2.3, 1.35, 'felswand', q.nx, q.nz, yT - 1.5);
     }
   }
   // Häuser im Tal

@@ -245,6 +245,8 @@ export class SkiPhysics {
     {
       nearColliders(p.z, (c) => {
         if (c.top !== undefined ? p.y > c.top + 0.2 : gap >= 2.5) return;   // über das Hindernis hinweg geflogen
+        // Felswand vor einer Klippen-Bank: nur wer auf die Wand zufährt, prallt an ihr ab (lx/lz = Normale nach außen)
+        if (c.type === 'felswand' && v.x * c.lx + v.z * c.lz >= 0) return;
         const dx = p.x - c.x, dz = p.z - c.z;
         const rr = c.r + 0.2;
         const d2 = dx * dx + dz * dz;
@@ -265,7 +267,7 @@ export class SkiPhysics {
             v.multiplyScalar(0.8);
           } else if (this.crashed > 0) {
             v.multiplyScalar(0.3);
-          } else if (c.type === 'fels' && this.noRockCrash && into > 0) {
+          } else if ((c.type === 'fels' || c.type === 'felswand') && this.noRockCrash && into > 0) {
             // Lawinen-Sicht: am Felsen vorbeigleiten statt hängenzubleiben (Tempo bleibt weitgehend, Richtung seitlich vorbei)
             const sp0 = Math.hypot(v.x, v.z), tx = -nz, tz = nx, vt = v.x * tx + v.z * tz;
             const sg = Math.abs(vt) > 0.5 ? Math.sign(vt) : (dx * tx + dz * tz >= 0 ? 1 : -1);
@@ -276,7 +278,7 @@ export class SkiPhysics {
             const ul = Math.hypot(ux, uz) || 1; ux /= ul; uz /= ul;
             v.x = ux * keep; v.z = uz * keep;
             this.heading = Math.atan2(v.x, -v.z);   // Ski drehen mit, sonst bremst die Kante das seitliche Tempo weg
-          } else if (into > (c.type === 'fels' ? (this.noRockCrash ? 1e9 : 2.2) : c.type === 'baum' ? 5.5 : 7)) {   // Felsen sind hart: schon bei Schritttempo-Aufprall Sturz (nicht in der Lawinen-Sicht)
+          } else if (into > (c.type === 'fels' || c.type === 'felswand' ? (this.noRockCrash ? 1e9 : 2.2) : c.type === 'baum' ? 5.5 : 7)) {   // Felsen sind hart: schon bei Schritttempo-Aufprall Sturz (nicht in der Lawinen-Sicht)
             this.events.push({ type: 'hit', what: c.type });
             this.crash();
             v.multiplyScalar(0.4);

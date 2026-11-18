@@ -490,3 +490,10 @@ Bots: Freeride, Freestyle und Rennen unverändert (Ausgaben identisch), Heli-Len
 - Der Spendenlink steht an einer Stelle: `DONATE_URL` in `src/donate.js`. Solange er leer ist, ist alles ausgeblendet; nur echte https-Links werden gezeigt. Der Anbieter wird aus dem Link erkannt (Ko-fi, PayPal, Buy Me a Coffee, Patreon, GitHub Sponsors).
 - Geprüft im Browser: leer = ausgeblendet, `javascript:`-Link abgelehnt, mit Test-Link Knopf, Fenster und Zielhinweis sichtbar; Menüleiste passt auch in der Handy-Ansicht.
 - Offen: Noahs echter Link fehlt noch, deshalb ist der Knopf online noch nicht zu sehen. Vor dem Freischalten ein Impressum auf der Seite ergänzen (siehe Vault-Notiz zum Geldverdienen).
+
+## Sturz beim Sprung über die Klippen-Bänke (v33, 2026-11-18)
+
+- Rückmeldung: Wer gerade über die riesigen Sprünge im Heli-Berg fährt, stürzt an der weißen Fläche.
+- Ursache: Vor jeder Felswand standen unsichtbare Kollisionskreise (bis 4 m vor der Kante, Oberkante 1,5 m unter der Bank). Sie sollten verhindern, dass man von unten in den Fels fährt, fingen aber auch jeden ab, der von der Bank über die Kante sprang und im Flug unter ihre Oberkante fiel. Die Physik-Tests liefen bisher ohne die Kollisionen der Kacheln und sahen das nicht.
+- Änderung: Die Kreise sind jetzt eine Felswand mit Richtung (Typ `felswand`, Normale nach außen): Sie halten nur auf, wer auf die Wand zufährt; wer von ihr wegfliegt, wird nicht mehr abgefangen.
+- Neuer Test `node tools/heli_jumps.mjs 3 mit`: gerade und 17 Grad schräg über alle Windlippen und Klippen-Bänke, Mitte und Rand, 36 bis 151 km/h, mit allen Kollisionen der Kacheln. Klippen-Bänke: Felsstürze 4811 von 14.400 auf 59; die restlichen 59 liegen 90 bis 105 m unterhalb an anderen Felsen (der Testfahrer weicht nicht aus). Dazu Baumstürze weiter unten aus demselben Grund. Windlippen: 0 Felsstürze am Sprung. Ohne Kacheln (`node tools/heli_jumps.mjs 3`): wie vorher fast keine Stürze.

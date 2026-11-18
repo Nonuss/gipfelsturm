@@ -1,6 +1,6 @@
 // Shop im Startmenü: Punkte aus den Läufen sammeln (im Browser gespeichert) und dafür Ski, Snowboards und Outfits kaufen.
 // Gekauftes bleibt gekauft; angelegt wird mit einem Klick. Die Punkte gibt es nur im Spiel, kein echtes Geld.
-import { SKIS, BOARDS, STAT_NAMES } from './gear.js';
+import { SKIS, BOARDS } from './gear.js';
 
 const KEY = { wallet: 'gipfelsturm_wallet', owned: 'gipfelsturm_owned', equip: 'gipfelsturm_equip', earned: 'gipfelsturm_earned' };
 const START_POINTS = 300;   // Startguthaben: das erste Teil ist gleich erreichbar
@@ -78,38 +78,3 @@ export const shop = {
     return true;
   },
 };
-
-const num = (n) => Math.round(n).toLocaleString('de-DE');
-/** Fenster mit Reitern (Ski, Snowboard, Outfit) und Karten. apply() legt die Auswahl am Fahrer an. */
-export function buildShopUI(root, apply) {
-  let tab = 'ski';
-  const render = () => {
-    root.querySelector('.wallet b').textContent = `${num(shop.wallet)} Punkte`;
-    for (const b of root.querySelectorAll('.tabs button')) { const on = b.dataset.t === tab; b.classList.toggle('sel', on); b.setAttribute('aria-selected', String(on)); }
-    const grid = root.querySelector('.cards');
-    grid.innerHTML = '';
-    for (const it of CATALOG[tab]) {
-      const own = shop.has(tab, it.id), on = shop.equip[tab] === it.id, afford = shop.wallet >= it.price;
-      const card = document.createElement('div');
-      card.className = 'card' + (on ? ' on' : '');
-      const sw = it.colors.map((c, i) => `<span style="background:${c};flex:${i ? 1 : 2.2}"></span>`).join('');
-      const label = on ? 'Angelegt' : own ? 'Anlegen' : `Kaufen · ${num(it.price)}`;
-      // Eigenschaften als Balken (1 bis 10); der Vergleich zum angelegten Teil steht als Pfeil daneben
-      const cur = tab !== 'outfit' && CATALOG[tab].find((q) => q.id === shop.equip[tab]);
-      const stats = it.st ? `<ul class="gstats">${STAT_NAMES.map(([k, nm]) => {
-        const v = it.st[k], dv = cur && cur.st && !on ? v - cur.st[k] : 0;
-        return `<li><span>${nm}</span><i style="--v:${v * 10}%" role="img" aria-label="${nm} ${v} von 10"></i><em class="${dv > 0 ? 'up' : dv < 0 ? 'dn' : ''}">${dv > 0 ? '+' + dv : dv < 0 ? String(dv).replace('-', '−') : ''}</em></li>`;
-      }).join('')}</ul>` : '';
-      card.innerHTML = `<div class="sw ${tab}">${sw}</div><b>${it.name}</b><p>${it.text}</p>${stats}<button ${on || (!own && !afford) ? 'disabled' : ''}>${label}</button>${!own && !afford ? `<small>noch ${num(it.price - shop.wallet)} Punkte</small>` : ''}`;
-      card.querySelector('button').addEventListener('click', () => {
-        if (own) shop.wear(tab, it.id); else shop.buy(tab, it.id);
-        apply();
-        render();
-      });
-      grid.appendChild(card);
-    }
-  };
-  for (const b of root.querySelectorAll('.tabs button')) b.addEventListener('click', () => { tab = b.dataset.t; render(); });
-  render();
-  return { render, setTab: (t) => { tab = t; render(); } };
-}

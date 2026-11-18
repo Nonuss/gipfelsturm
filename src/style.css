@@ -314,32 +314,14 @@ html.rot .menu .seg.gear button { padding: 6px 10px; font-size: 12px; }
 #finTime small { font-size: 0.38em; opacity: 0.7; margin-left: 4px; }
 
 /* Shop */
-.shopdlg { width: min(720px, calc(100% - 40px)); }
-.shopdlg header { gap: 12px; }
-.shopdlg .wallet { margin-left: auto; font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.85; }
-.shopdlg .wallet b { font: italic 800 18px var(--font); letter-spacing: 0.02em; text-transform: none; color: var(--acc); margin-left: 6px; }
-.shopdlg .tabs { margin-bottom: 12px; }
-.shopdlg .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 10px; }
-.shopdlg .card { display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 12px; background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.12); }
-.shopdlg .card.on { border-color: var(--acc); background: color-mix(in srgb, var(--acc) 14%, transparent); }
-.shopdlg .card b { font: italic 800 16px var(--font); letter-spacing: 0.02em; }
-.shopdlg .card p { margin: 0; font-size: 12.5px; line-height: 1.35; opacity: 0.82; flex: 1; }
-.shopdlg .card small { font-size: 11px; opacity: 0.65; }
-.shopdlg .card button { padding: 7px 10px; border-radius: 9px; background: var(--acc); color: #0b1422; font: 700 13px var(--font); letter-spacing: 0.04em; }
-.shopdlg .card button:disabled { background: rgba(255, 255, 255, 0.14); color: rgba(255, 255, 255, 0.75); cursor: default; }
-.shopdlg .sw { display: flex; height: 26px; border-radius: 6px; overflow: hidden; }
 /* Eigenschaften der Ski und Bretter (v29) */
-.shopdlg .gstats { list-style: none; margin: 2px 0 4px; padding: 0; display: grid; gap: 3px; }
-.shopdlg .gstats li { display: grid; grid-template-columns: 66px 1fr 16px; align-items: center; gap: 6px; font-size: 10.5px; letter-spacing: 0.03em; }
-.shopdlg .gstats span { opacity: 0.72; white-space: nowrap; }
-.shopdlg .gstats i { height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--acc) var(--v), rgba(255, 255, 255, 0.12) var(--v)); }
-.shopdlg .gstats em { font-style: normal; font-weight: 700; font-size: 10px; text-align: right; }
-.shopdlg .gstats em.up { color: #7ee08a; }
-.shopdlg .gstats em.dn { color: #ff8a7a; }
-.shopdlg .sw.ski { height: 14px; border-radius: 10px 4px 4px 10px; margin: 6px 0; transform: skewX(-12deg); }
-.shopdlg .sw.board { height: 22px; border-radius: 14px; margin: 2px 0; }
-.shopdlg .sw.outfit { border-radius: 8px; }
-.shopdlg .shopnote { margin: 12px 0 0; font-size: 12px; opacity: 0.6; line-height: 1.4; }
+.gstats { list-style: none; margin: 2px 0 4px; padding: 0; display: grid; gap: 3px; }
+.gstats li { display: grid; grid-template-columns: 66px 1fr 16px; align-items: center; gap: 6px; font-size: 10.5px; letter-spacing: 0.03em; }
+.gstats span { opacity: 0.72; white-space: nowrap; }
+.gstats i { height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--acc) var(--v), rgba(255, 255, 255, 0.12) var(--v)); }
+.gstats em { font-style: normal; font-weight: 700; font-size: 10px; text-align: right; }
+.gstats em.up { color: #7ee08a; }
+.gstats em.dn { color: #ff8a7a; }
 
 /* Outfit-Fenster: gekaufte Outfits */
 .dlg .owned { margin-bottom: 10px; gap: 6px; }
@@ -361,3 +343,57 @@ html.rot .menu .seg.gear button { padding: 6px 10px; font-size: 12px; }
 .dlg .donatecta { display: inline-block; margin-top: 4px; color: #fff; text-decoration: none; font-size: 18px; padding: 12px 20px; }
 .findonate { display: block; margin-top: 16px; font-size: 14px; letter-spacing: 0.04em; color: #fff; opacity: 0.8; text-decoration: underline; text-underline-offset: 3px; }
 .findonate:hover, .findonate:focus-visible { opacity: 1; }
+
+/* 3D-Shop (v34): Laden mit Regal und Puppe. Liste links, Details rechts, in der Mitte frei zum Drehen */
+body.shopopen #menu, body.shopopen #hud { display: none !important; }
+#shop3d { position: fixed; inset: 0; z-index: 40; pointer-events: none; color: #fff; font-family: var(--font); --acc: #ff8a3c; }
+html.rot #shop3d { position: absolute; }
+#shop3d.hidden { display: none; }
+#shop3d > * { pointer-events: auto; }
+#shop3d button { color: #fff; }
+#shop3d .s3-top { position: absolute; top: calc(14px + env(safe-area-inset-top)); left: clamp(16px, 3vw, 40px); right: clamp(16px, 3vw, 40px); display: flex; align-items: center; gap: 16px; pointer-events: none; }
+#shop3d .s3-top > * { pointer-events: auto; }
+#shop3d .s3-top > b { font: italic 800 30px var(--font); letter-spacing: 0.02em; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); }
+#shop3d .s3-wallet { margin-left: auto; padding: 8px 14px; border-radius: 12px; background: rgba(10, 14, 20, 0.62); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; }
+#shop3d .s3-wallet b { font: italic 800 18px var(--font); letter-spacing: 0.02em; text-transform: none; color: #ffb37a; margin-left: 6px; }
+#shop3d .s3-x { width: 42px; height: 42px; border-radius: 50%; background: rgba(10, 14, 20, 0.62); font: 400 26px/1 Arial, sans-serif; }
+#shop3d .s3-left, #shop3d .s3-detail { position: absolute; top: calc(76px + env(safe-area-inset-top)); bottom: calc(40px + env(safe-area-inset-bottom)); width: clamp(220px, 24vw, 300px); padding: 12px; border-radius: 16px; background: rgba(12, 16, 23, 0.72); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; overflow: hidden; }
+#shop3d .s3-left { left: clamp(16px, 3vw, 40px); }
+#shop3d .s3-detail { right: clamp(16px, 3vw, 40px); gap: 8px; overflow-y: auto; }
+#shop3d .s3-tabs { display: flex; gap: 4px; margin-bottom: 10px; }
+#shop3d .s3-tabs button { flex: 1; padding: 8px 4px; border-radius: 10px; font: 700 12px var(--font); letter-spacing: 0.08em; text-transform: uppercase; background: rgba(255, 255, 255, 0.08); }
+#shop3d .s3-tabs button.sel { background: #ff6a13; color: #10161f; }
+#shop3d .s3-list { list-style: none; margin: 0; padding: 0; overflow-y: auto; display: grid; gap: 4px; }
+#shop3d .s3-list button { width: 100%; display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.04); border: 1px solid transparent; text-align: left; font: 600 14px var(--font); }
+#shop3d .s3-list button:hover { background: rgba(255, 255, 255, 0.1); }
+#shop3d .s3-list button.sel { border-color: #ff8a3c; background: rgba(255, 106, 19, 0.16); }
+#shop3d .s3-sw { display: flex; height: 22px; border-radius: 6px; overflow: hidden; transform: skewX(-12deg); }
+#shop3d .s3-sw i { flex: 1; }
+#shop3d .s3-list em { font-style: normal; font-size: 12px; opacity: 0.7; }
+#shop3d .s3-list em.on { color: #7ee08a; opacity: 1; }
+#shop3d .s3-list em.price { color: #ffb37a; opacity: 1; font-weight: 700; }
+#shop3d .s3-kicker { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.7; }
+#shop3d .s3-detail h2 { margin: 0; font: italic 800 28px/1.05 var(--font); }
+#shop3d .s3-detail p { margin: 0; font-size: 14px; line-height: 1.4; opacity: 0.85; }
+#shop3d .gstats { margin: 4px 0; gap: 6px; }
+#shop3d .gstats li { grid-template-columns: 86px 1fr 20px; font-size: 12px; }
+#shop3d .gstats i { height: 8px; border-radius: 4px; }
+#shop3d .s3-buy { margin-top: auto; font-size: 20px; padding: 12px 16px; }
+#shop3d .s3-buy:disabled { background: rgba(255, 255, 255, 0.16); box-shadow: none; color: rgba(255, 255, 255, 0.8); cursor: default; transform: none; }
+#shop3d small { font-size: 12px; opacity: 0.7; }
+#shop3d .s3-stage { position: absolute; inset: 70px 0 0 0; z-index: -1; cursor: grab; touch-action: none; }
+#shop3d .s3-stage:active { cursor: grabbing; }
+#shop3d .s3-hint { position: absolute; left: 0; right: 0; bottom: calc(10px + env(safe-area-inset-bottom)); margin: 0; text-align: center; font-size: 12px; letter-spacing: 0.06em; opacity: 0.6; pointer-events: none; }
+body.touch #shop3d .s3-hint { display: none; }
+@media (max-height: 520px) {
+  #shop3d .s3-top { top: 8px; } #shop3d .s3-top > b { font-size: 22px; }
+  #shop3d .s3-left, #shop3d .s3-detail { top: 58px; bottom: 10px; width: 210px; padding: 8px; }
+  #shop3d .s3-list button { padding: 6px 8px; font-size: 13px; }
+  #shop3d .s3-detail h2 { font-size: 20px; } #shop3d .s3-detail p { font-size: 12px; }
+  #shop3d .gstats { gap: 3px; } #shop3d .s3-buy { font-size: 16px; padding: 9px 12px; }
+}
+html.rot #shop3d .s3-top { top: 8px; } html.rot #shop3d .s3-top > b { font-size: 22px; }
+html.rot #shop3d .s3-left, html.rot #shop3d .s3-detail { top: 58px; bottom: 10px; width: 200px; padding: 8px; }
+html.rot #shop3d .s3-list button { padding: 6px 8px; font-size: 13px; }
+html.rot #shop3d .s3-detail h2 { font-size: 20px; } html.rot #shop3d .s3-detail p { font-size: 12px; }
+html.rot #shop3d .s3-buy { font-size: 16px; padding: 9px 12px; }

@@ -18,7 +18,8 @@ import { PowderPatch } from './powder.js';
 import { setupTouch, updateTouch, touch, isTouch, viewSize, view } from './touch.js';
 import { Avalanche } from './avalanche.js';
 import * as HG from './heligen.js';
-import { shop, buildShopUI, OUTFITS } from './shop.js';
+import { shop, OUTFITS } from './shop.js';
+import { Shop3D } from './shop3d.js';
 import { SKIS, BOARDS, statMul } from './gear.js';
 import { setupDonate } from './donate.js';
 
@@ -387,7 +388,7 @@ function renderOwnedOutfits() {
     b.innerHTML = `<span class="ow">${cols.map((c) => `<i style="background:${c}"></i>`).join('')}</span>${o.name}`;
     b.classList.toggle('sel', shop.equip.outfit === id);
     b.setAttribute('aria-pressed', String(shop.equip.outfit === id));
-    b.addEventListener('click', () => { shop.wear('outfit', id); applyEquip(); if (shopUI) shopUI.render(); b.blur(); });
+    b.addEventListener('click', () => { shop.wear('outfit', id); applyEquip(); if (shop3d) shop3d.refresh(); b.blur(); });
     el.appendChild(b);
   }
   const hint = $('ownedHint');
@@ -406,7 +407,7 @@ function payEndless() {
   game.paid = true;
   return earn(Math.floor(game.score / 40));
 }
-let shopUI = null;
+let shop3d = null;   // 3D-Shop (Laden mit Regal und Puppe), entsteht nach dem Laden der Modelle
 /** Eigene Farben gewählt: Outfit „Eigene Farben“ anlegen. */
 function applyOutfit() {
   if (shop.equip.outfit !== 'custom') shop.wear('outfit', 'custom');
@@ -439,7 +440,7 @@ function buildMenuControls() {
     b.addEventListener('click', () => selectMode(i));
     $('mDots').appendChild(b);
   });
-  for (const b of document.querySelectorAll('.mtools button')) {
+  for (const b of document.querySelectorAll('.mtools button[data-dlg]')) {
     b.setAttribute('aria-expanded', 'false');
     b.addEventListener('click', () => {
       const d = $(b.dataset.dlg), was = !d.classList.contains('hidden');
@@ -455,9 +456,8 @@ function buildMenuControls() {
   for (const b of $('optDisc').children) b.addEventListener('click', () => { selectDisc(b.dataset.v); b.blur(); });
   for (const b of $('optSteer').children) b.addEventListener('click', async () => { if (touchCtl) await touchCtl.setTilt(b.dataset.v === '1'); syncOpts(); });
   $('fsBtn').addEventListener('click', () => { toggleFs(); $('fsBtn').blur(); });
-  shopUI = buildShopUI($('dlgShop'), () => { applyEquip(); applyOutfitUI(); });
-  shop.onChange = () => { updateWallet(); if (shopUI) shopUI.render(); };
-  $('shopBtn').addEventListener('click', () => { if (shopUI) shopUI.render(); });
+  shop.onChange = () => { updateWallet(); if (shop3d) shop3d.refresh(); };
+  $('shopBtn').addEventListener('click', () => { if (!shop3d || game.mode !== 'menu') return; closeDlg(); shop3d.open(); });
   updateWallet();
   try { if (localStorage.getItem('gipfelsturm_muted') === '1') audio.setMuted(true); } catch {}
   syncOpts();
@@ -2021,7 +2021,7 @@ function tick(dt, render) {
     patch.update(phys.pos.x, phys.pos.z, C.cfg.endless && Q.patch > 0 && phys.pow > 0.18 && game.mode !== 'menu');
     tracks.update(phys.pos.x, phys.pos.z);
   }
-  if (render) composer.render();
+  if (render) { if (shop3d && shop3d.isOpen) shop3d.render(dt); else composer.render(); }
 }
 
 // ---------------------------------------------------------------- Start
@@ -2035,7 +2035,13 @@ function tick(dt, render) {
   skier = new Skier(models);
   scene.add(skier.root);
   // Spiegelung nur für Metallteile (Gold-Ski, Krone, Medaille): eine kleine vorberechnete Umgebung
-  { const pm = new THREE.PMREMGenerator(renderer); skier.setEnv(pm.fromScene(new RoomEnvironment(), 0.04).texture); pm.dispose(); }
+  let envTex;
+  { const pm = new THREE.PMREMGenerator(renderer); envTex = pm.fromScene(new RoomEnvironment(), 0.04).texture; skier.setEnv(envTex); pm.dispose(); }
+  shop3d = new Shop3D(renderer, models, envTex, {
+    onEquip: () => { applyEquip(); applyOutfitUI(); updateWallet(); },
+    setGear, getGear: () => gear, customColors: () => outfit, isRot: () => view.rot,
+    onClose: () => { $('shopBtn').focus(); },
+  });
   skier.setGear(gear);
   // Ohne Echtzeit-Schatten (niedrige Stufe): weicher Kontaktschatten unter dem Fahrer, damit man Höhe und Landung abschätzen kann
   {
@@ -2068,7 +2074,7 @@ function tick(dt, render) {
     tp: (d, lane = 0, speed = 0) => { const L = C.cfg.heli ? { x: C.centerX(d) + lane } : C.mapSlice(d, d + 1, 1).rows[0].lanes[lane]; teleport(L.x, -d); const x0 = C.centerX(d + 6) - C.centerX(d); phys.heading = Math.atan2(x0, 6); phys.vel.set(Math.sin(phys.heading) * speed, 0, -Math.cos(phys.heading) * speed); if (game.mode === 'menu') { game.mode = 'run'; } },
     // Testhilfe: freie Kamera für Standbilder (Position, Blickpunkt), rendert genau ein Bild
     shot: (px, py, pz, lx, ly, lz, fov = 55) => { camera.position.set(px, py, pz); camera.fov = fov; camera.near = 0.3; camera.updateProjectionMatrix(); camera.lookAt(lx, ly, lz); world.sky.position.copy(camera.position); composer.render(); },
-    restartHeli: () => startRun(true), setGear, setupDonate, SPECIALS, startSpecial, special: () => special, airLeft, timeScale: () => timeScale, specCam, edge: () => boardEdge, finishRun, fwt, fwtScore, applyDropPref, renderMode, heliStart, flowUp, shop, applyEquip,
+    restartHeli: () => startRun(true), setGear, setupDonate, shop3d: () => shop3d, SPECIALS, startSpecial, special: () => special, airLeft, timeScale: () => timeScale, specCam, edge: () => boardEdge, finishRun, fwt, fwtScore, applyDropPref, renderMode, heliStart, flowUp, shop, applyEquip,
         advance: (sec, noRender) => { const n = Math.round(sec * 60); for (let i = 0; i < n; i++) tick(1 / 60, !noRender && i === n - 1); },
   };
   requestAnimationFrame((t) => { last = t; frame(t); });

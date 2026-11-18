@@ -531,7 +531,7 @@ export function heightDU(d, x, s = S) {
   if (!inGrid(fg, x, d)) return sampleCubic(s.cg, x, d);
   let y = sampleCubic(fg, x, d);
   // feine Unruhe im Schnee (das Raster hat 10 m)
-  y += 0.9 * (vnoise(x / 19 + 3, d / 19 + s.ns) - 0.5) + 0.3 * (vnoise(x / 6.5, d / 6.5) - 0.5);
+  y += 0.45 * (vnoise(x / 24 + 3, d / 24 + s.ns) - 0.5) + 0.08 * (vnoise(x / 7, d / 7) - 0.5);   // nur leichte Unruhe, der Hang soll glatt fahrbar sein
   const key = bucketKey(x, d);
   const l = s.cliffBuckets && s.cliffBuckets.get(key);
   if (l) for (let i = 0; i < l.length; i++) y += cliffDelta(l[i], x, d);

@@ -347,17 +347,17 @@ function varyZone(z, R, rr, ph) {
 }
 
 /** Glatte Gelände-Formen einer Zone (Höhe relativ zum Grundgelände). u = Abstand zur Mittellinie. */
-function modHeight(z, x, d, u, run) {
+function modHeight(z, x, d, u, run, lm = 0) {
   const m = z.mods;
   if (!m) return 0;
   let y = 0;
   const fade = smoothstep(z.d0 - 70, z.d0 + 50, d) * (1 - smoothstep(z.d1 - 50, z.d1 + 70, d));
   if (fade <= 0) return 0;
-  if (m.waves) y += m.waves.a * Math.sin(TAU * d / m.waves.lam + m.waves.ph + m.waves.sk * u / 20) * (1 - run);
+  if (m.waves) y += m.waves.a * Math.sin(TAU * d / m.waves.lam + m.waves.ph + m.waves.sk * u / 20) * (1 - run) * (1 - 0.6 * lm);   // auf den Spuren nur flache Wellen
   if (m.gully) { const g = m.gully; const uu = Math.min(Math.abs(u), g.w); y += g.k * uu * uu + g.k * 2 * g.w * Math.max(0, Math.abs(u) - g.w); }
-  if (m.ridge) { const r = m.ridge; y += r.h * Math.exp(-(u * u) / (r.w * r.w)) * (1 - run); }
+  if (m.ridge) { const r = m.ridge; y += r.h * Math.exp(-(u * u) / (r.w * r.w)) * (1 - run) * (1 - 0.95 * lm); }   // der Rücken liegt zwischen den Spuren, nie auf ihnen
   if (m.spines) { const sp = m.spines, sv = u / sp.lam + 0.35 * snoise(d / 90, sp.sd, S.seed); y += sp.A * (1 - Math.abs(Math.sin(Math.PI * sv))) * (1 - run); }   // scharfe Grate, runde Rinnen
-  if (m.knolls) { const k = m.knolls; y += k.a * (vnoise(x / k.s + k.sd, d / k.s) - 0.5) * 2 * (1 - run); }
+  if (m.knolls) { const k = m.knolls; y += k.a * (vnoise(x / k.s + k.sd, d / k.s) - 0.5) * 2 * (1 - run) * (1 - 0.7 * lm); }
   return y * fade;
 }
 
@@ -715,7 +715,7 @@ export function heightP(x, z) {
   // Spuren: Pflege-Grad glättet das Gelände, Waldbahnen liegen in einer flachen Rinne
   // Zwei weiche Masken statt der schmalen Pflege-Maske (3,7 m): Querneigung gleicht über 14 m aus, Rauigkeit und
   // Pulverwellen über 8 m. Der schmale Übergang machte an Pistenrändern und Kreuzungen spürbare Kanten.
-  let groom = 0, chan = 0, bestM = 0, sumM = 0, sumMU = 0;
+  let groom = 0, chan = 0, bestM = 0, sumM = 0, sumMU = 0, offM = 1;
   for (let i = 0; i < NL; i++) {
     const w = c.lw[i];
     if (w < 0.3) continue;
@@ -724,6 +724,7 @@ export function heightP(x, z) {
     const m = (1 - smoothstep(-0.5, 14, e2)) * c.lg[i];
     if (mR > groom) groom = mR;
     if (m > bestM) bestM = m;
+    offM *= 1 - m;   // weiche Vereinigung aller Spuren: kein Knick, wo sich zwei Spuren kreuzen (anders als das Maximum)
     sumM += m; sumMU += m * (c.lx[i] - hub);   // gewichteter Mittelwert statt harter Auswahl: keine Stufe, wenn die stärkste Spur wechselt
     if (c.lkw[i] > 0.001) chan = Math.max(chan, (1 - smoothstep(0, w * 1.2, Math.abs(x - c.lx[i]))) * c.lg[i] * c.lkw[i]);
   }
@@ -735,9 +736,9 @@ export function heightP(x, z) {
     // seitlicher Anstieg wird weich begrenzt: offene Panoramen statt Schlucht (nur die Rinne darf hoch aufragen)
     r += c.cap * Math.tanh(l2 / c.cap);
     // Zonen-Formen (Wellen, Mulde, Rücken, Kuppen) – im Übergang beide Zonen gewichtet
-    r += modHeight(Za, x, dc, ue, runM);
-    if (Za.idx > 0 && dc < Za.d0 + 70) r += modHeight(S.Z[Za.idx - 1], x, dc, ue, runM);
-    else if (dc > Za.d1 - 70 && S.Z[Za.idx + 1]) r += modHeight(S.Z[Za.idx + 1], x, dc, ue, runM);
+    r += modHeight(Za, x, dc, ue, runM, 1 - offM);
+    if (Za.idx > 0 && dc < Za.d0 + 70) r += modHeight(S.Z[Za.idx - 1], x, dc, ue, runM, 1 - offM);
+    else if (dc > Za.d1 - 70 && S.Z[Za.idx + 1]) r += modHeight(S.Z[Za.idx + 1], x, dc, ue, runM, 1 - offM);
     return r;
   };
   // Mehrere Anläufe überlappen: jeder bekommt das Gewicht a²/Σa (Summe höchstens max a), alles stetig
@@ -952,6 +953,8 @@ function addBerm(z, o) {
 
 function addPillow(z, R, d, x, big) {
   const rx = big ? 9 + R() * 5 : 4.5 + R() * 3, rz = big ? 14 + R() * 6 : 7 + R() * 4, h = big ? 1.3 + R() * 1 : 0.4 + R() * 0.5;
+  // Pulverkissen liegen neben den Spuren, nie mitten drauf
+  for (let i = 0; i < NL; i++) { const L = z.lanes[i]; if (L.w > 0 && Math.abs(x - laneX(z, i, d)) < L.w + L.wob * 0 + rx + 6) return; }
   z.feats.push({ kind: 'pillow', d, x, rx, rz, h, s0: d - rz, s1: d + rz });
 }
 
@@ -960,9 +963,10 @@ function addPitches(z, R, n) {
   const T = PCFG.transition;
   for (let k = 0; k < n; k++) {
     const d = z.d0 + T + 30 + R() * Math.max(10, z.len - 2 * T - 140);
-    const amt = 0.16 + R() * 0.16, len = 45 + R() * 50;
-    z.pitches.push({ d, amt, len, e: 18 });
-    z.pitches.push({ d: d + len + 28, amt: -0.07, len: 36, e: 14 });
+    // weiche Übergänge (e 40 m): ein Steilstück beginnt mit einer langen Rundung, nicht mit einer Kuppe
+    const amt = 0.09 + R() * 0.09, len = 60 + R() * 50;
+    z.pitches.push({ d, amt, len, e: 40 });
+    z.pitches.push({ d: d + len + 50, amt: -0.05, len: 40, e: 30 });
   }
 }
 
@@ -976,8 +980,8 @@ function genFeatures(z, R) {
     for (const it of list) {
       if (cur > b - 30) break;
       let end = null;
-      if (it.t === 'roller') end = addRoller(z, { d: cur, lane: it.lane || 0, n: it.n, spacing: Math.max(17, (it.sp || rr(9, 12)) * 1.75), h: Math.min(0.7, it.h || rr(0.45, 0.7)),   /* lange, flache Wellen: man kann sie wegdrücken, statt ausgehebelt zu werden */ w: it.w || z.lanes[it.lane || 0].w * 0.85 });
-      else if (it.t === 'berm') end = addBerm(z, { d: cur + 20, lane: it.lane || 0, h: it.h || rr(1.5, 2.3), w: z.lanes[it.lane || 0].w, len: it.len });
+      if (it.t === 'roller') end = addRoller(z, { d: cur, lane: it.lane || 0, n: it.n, spacing: Math.max(17, (it.sp || rr(9, 12)) * 1.75), h: Math.min(0.55, it.h || rr(0.35, 0.55)),   /* lange, flache Wellen: man kann sie wegdrücken, statt ausgehebelt zu werden */ w: it.w || z.lanes[it.lane || 0].w * 0.85 });
+      else if (it.t === 'berm') end = addBerm(z, { d: cur + 20, lane: it.lane || 0, h: it.h || rr(1.0, 1.5), w: z.lanes[it.lane || 0].w, len: it.len });
       else if (it.t === 'spine') {
         const d = snapStraight(z, cur + 25, 40);
         const a1 = addJump(z, R, { d, exactD: d, lane: 0, kind: 'table', name: 'Spine (links)', phi: 8, Lr: 13, hMax: 4.4, wT: 3.1, wL: 4.6, dx: -6.4 });
@@ -1012,12 +1016,12 @@ function genFeatures(z, R) {
       for (const li of [2, 1, 3, 4]) {
         if (z.lanes[li].w <= 0) continue;
         cur = a + 15 + li * 12;
-        chain([{ t: 'berm', lane: li, h: rr(1.1, 1.7), len: 36, gap: 14 }, { t: 'berm', lane: li, h: rr(1.1, 1.7), len: 36, gap: 14 }, { t: 'berm', lane: li, h: 1.3, len: 36 }]);
+        chain([{ t: 'berm', lane: li, h: rr(0.8, 1.2), len: 40, gap: 14 }, { t: 'berm', lane: li, h: rr(0.8, 1.2), len: 40, gap: 14 }, { t: 'berm', lane: li, h: 1.0, len: 40 }]);
       }
       break;
     }
     case 'bowl': {
-      z.pitches.push({ d: z.d0 + z.len * 0.36, amt: 0.13, len: 60, e: 22 }, { d: z.d0 + z.len * 0.7, amt: -0.1, len: 50, e: 22 });
+      z.pitches.push({ d: z.d0 + z.len * 0.36, amt: 0.11, len: 60, e: 36 }, { d: z.d0 + z.len * 0.7, amt: -0.08, len: 50, e: 34 });
       for (let k = 0; k < 9; k++) {
         const dd = rr(a + 15, b - 15);
         const sd = R() < 0.5 ? -1 : 1;
@@ -1029,12 +1033,12 @@ function genFeatures(z, R) {
     }
     case 'steep': {
       // Steilhang: Roll-over, dann Mogelpiste und Pulverrinnen
-      z.pitches.push({ d: z.d0 + T + 20, amt: 0.1, len: 50, e: 20 });
+      z.pitches.push({ d: z.d0 + T + 30, amt: 0.09, len: 50, e: 34 });
       for (let k = 0; k < 7; k++) {
         const dd = rr(a + 10, b - 10), sd = R() < 0.5 ? -1 : 1;
         addPillow(z, R, dd, hubX(dd) + sd * rr(20, z.valley * 0.85), k % 2 === 0);
       }
-      chain([{ t: 'berm', lane: 0, h: 1.6, len: 40 }]);
+      chain([{ t: 'berm', lane: 0, h: 1.2, len: 44 }]);
       break;
     }
     case 'park': {
@@ -1214,13 +1218,13 @@ function genFeatures(z, R) {
 
 // ------------------------------------------------------------------ Dörfer (Freeride)
 // Selten, abseits der Pisten (mindestens rund 30 m), nur in sanften Zonen: Bauernhäuser, Holzhäuser, Kapelle, Heustadel.
-const VILLAGE_TYPES = { cruise: 1, glade: 0.8, flat: 1.2, park: 0.7, bowl: 0.6 };
+const VILLAGE_TYPES = { cruise: 1, glade: 0.9, flat: 1.2, park: 0.8, bowl: 0.8 };
 const HOUSE = { VillageHouseA: { r: 7.5, col: [[0, -2.8, 4.6], [0, 2.8, 4.6]] }, VillageHouseB: { r: 5.6, col: [[0, 0, 4.6]] }, Chapel: { r: 7.2, col: [[0, -0.5, 4.6], [0, 5.6, 2.2]] }, Hayloft: { r: 4.6, col: [[0, 0, 3.6]] } };
 export const HOUSES = HOUSE;
 function planVillage(z, R) {
-  if (S.style !== 'freeride' || !VILLAGE_TYPES[z.type] || z.slope > 0.31 || z.idx < 2) return;
-  if (S.lastVillage !== undefined && z.idx - S.lastVillage < 3) return;
-  if (R() > 0.42 * VILLAGE_TYPES[z.type]) return;
+  if (S.style !== 'freeride' || !VILLAGE_TYPES[z.type] || z.slope > 0.34 || z.idx < 2) return;
+  if (S.lastVillage !== undefined && z.idx - S.lastVillage < 2) return;
+  if (R() > 0.75 * VILLAGE_TYPES[z.type]) return;
   const rr = (a, b) => a + (b - a) * R();
   // Seite mit dem meisten Platz neben den Spuren
   let best = null;
@@ -1230,8 +1234,8 @@ function planVillage(z, R) {
     const room = z.valley + 22 - ext;
     if (!best || room > best.room) best = { sg, ext, room };
   }
-  if (best.room < 52) return;
-  const uc = best.sg * (best.ext + 34 + Math.min(18, (best.room - 52) * 0.5));
+  if (best.room < 46) return;
+  const uc = best.sg * (best.ext + 32 + Math.min(18, (best.room - 46) * 0.5));
   const n = 4 + Math.floor(R() * 4), dc = z.d0 + z.len * rr(0.35, 0.65);
   const kinds = ['Chapel', 'VillageHouseA', 'VillageHouseB', 'VillageHouseA', 'Hayloft', 'VillageHouseB', 'Hayloft', 'VillageHouseA'];
   if (R() < 0.45) kinds.shift();
@@ -1295,11 +1299,11 @@ function nearHouse(x, d, m) {
 // Kleine Blockhütten im Pulver, eingeschneit bis zur Traufe: man fährt über die Wechte aufs Dach, der First ist die
 // Absprungkante. Das Dach selbst ist in der Physik eine Fahrfläche (course.js addDeck), das Gelände trägt nur die Wechte.
 export const WOOD_HUT = { hw: 2.8, hd: 2.3, E: 2.0, rise: 1.0, ovY: 0.5, ovX: 0.4, snow: 0.12, Ld: 5 };
-const HUT_TYPES = { cruise: 1, glade: 0.9, bowl: 1.3, steep: 1.2, flat: 0.6, cliff: 0.7 };
+const HUT_TYPES = { cruise: 1, glade: 1, bowl: 1.1, steep: 1.1, flat: 0.8, cliff: 0.8, park: 0.6 };
 function planHuts(z, R) {
-  if (S.style !== 'freeride' || !HUT_TYPES[z.type] || z.slope < 0.3 || z.slope > 0.56) return;   // steil genug für eine weiche Landung
+  if (S.style !== 'freeride' || !HUT_TYPES[z.type] || z.slope < 0.27 || z.slope > 0.58) return;   // steil genug für eine weiche Landung
   const rr = (a, b) => a + (b - a) * R();
-  const n = R() < 0.55 * HUT_TYPES[z.type] ? (R() < 0.35 ? 2 : 1) : 0;
+  const n = R() < 0.85 * HUT_TYPES[z.type] ? (R() < 0.45 ? 2 : 1) : 0;
   z.huts = [];
   for (let k = 0, t = 0; k < n && t < 30; t++) {
     const d = rr(z.d0 + PCFG.transition + 25, z.d1 - PCFG.transition - 60), u = rr(-z.valley * 0.85, z.valley * 0.85);

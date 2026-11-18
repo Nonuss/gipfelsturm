@@ -598,7 +598,9 @@ export function genChunk(i) {
     }
   }
   // ---- Markierungsstangen entlang der Spuren, Farbe nach Schwierigkeit
-  for (let dm = Math.ceil(d0 / 22) * 22; dm < d1; dm += 22) {
+  // alle 50 m ein Paar: genug zur Orientierung, ohne dass die Piste wie ein Stangenwald aussieht
+  const MSP = 50;
+  for (let dm = Math.ceil(d0 / MSP) * MSP; dm < d1; dm += MSP) {
     if (dm < 30) continue;
     const c = P.props(dm);
     const col = MARK[P.difficultyColor(c.slope)];
@@ -676,8 +678,8 @@ export function genChunk(i) {
         addD(dir > 0 ? 'SignArrow' : 'SignArrowL', sx, dm, { col, r: 0.4, type: 'haus' });
         if (b.lk[li] === 1) addD('TrailArch', b.lx[li], dm + 26, { rot: laneYaw(li, dm + 26) + Math.PI / 2 });
         // Einfahrt mit farbigen Leitstangen markieren: zeigt schon von weitem, wo die neue Piste hinführt
-        for (let k = 0; k < 8; k++) {
-          const dd = dm + 4 + k * 9, cc = P.props(dd);
+        for (let k = 0; k < 3; k++) {
+          const dd = dm + 6 + k * 14, cc = P.props(dd);
           if (cc.lw[li] < 2.2) continue;
           for (const sg of [-1, 1]) {
             const x = cc.lx[li] + sg * (cc.lw[li] - 0.3);

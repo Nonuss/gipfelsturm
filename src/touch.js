@@ -128,6 +128,7 @@ export function setupTouch({ isAir, isRunning, onResize }) {
     <div class="tz" id="tzDrag"></div>
     <div class="tb right">
       <button class="tbtn big" id="tJump" aria-label="Springen, in der Luft halten für Grab"><svg viewBox="0 0 24 24"><path d="M5 15l7-7 7 7"/><path d="M5 20h14"/></svg></button>
+      <button class="tbtn spec" id="tSpec" aria-label="Spezialtrick (in der Luft)"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/></svg></button>
       <button class="tbtn" id="tTuck" aria-label="Hocke"><svg viewBox="0 0 24 24"><path d="M6 6l6 6 6-6"/><path d="M6 13l6 6 6-6"/></svg></button>
     </div>
     <div class="tb left">
@@ -152,7 +153,7 @@ export function setupTouch({ isAir, isRunning, onResize }) {
   hold($('tTuck'), 'KeyW');
   hold($('tBrake'), 'KeyS');
   const tap = (el, code) => el.addEventListener('click', (e) => { e.preventDefault(); key(code, true); key(code, false); });
-  tap($('tMenu'), 'Escape'); tap($('tCam'), 'KeyC');
+  tap($('tMenu'), 'Escape'); tap($('tCam'), 'KeyC'); tap($('tSpec'), 'Digit0');
   // Respawn-Punkt: kurz tippen = zurück (ohne Punkt: zurück auf die Spur), halten = hier neu setzen
   { const el = $('tCp'); let tm = null, long = false;
     el.addEventListener('pointerdown', (e) => { e.preventDefault(); long = false; el.classList.add('on'); tm = setTimeout(() => { long = true; key('KeyF', true); key('KeyF', false); }, 550); });
@@ -208,6 +209,7 @@ export function setupTouch({ isAir, isRunning, onResize }) {
       ui.classList.toggle('noTilt', !touch.tilt);
     },
     setRunning(r) { ui.classList.toggle('active', r); },
+    setAir(a) { ui.classList.toggle('air', a); },
     setTilt,
     tiltOn: () => touch.wantTilt,
     setCheckpoints(on) { $('tCp').style.display = on ? '' : 'none'; },

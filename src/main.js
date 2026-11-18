@@ -18,6 +18,7 @@ import { setupTouch, updateTouch, touch, isTouch, viewSize, view } from './touch
 import { Avalanche } from './avalanche.js';
 import * as HG from './heligen.js';
 import { shop, buildShopUI, OUTFITS } from './shop.js';
+import { SKIS, BOARDS, statMul } from './gear.js';
 
 const { clamp, lerp, smoothstep, G } = C;
 const $ = (id) => document.getElementById(id);
@@ -167,14 +168,14 @@ const game = {
 };
 const PEND_TIME = 1.6;      // so lange muss man nach einer Landung ohne Sturz weiterfahren
 const COMBO_TIME = 14;      // ohne neuen Trick fällt der Multiplikator danach zurück
-const keys = { left: false, right: false, up: false, down: false, space: false, gl: false, gr: false };
-const airKey = { left: false, right: false, up: false, down: false, space: false, gl: false, gr: false };
-const inp = { steer: 0, tuck: 0, brake: 0, jump: false };
+const keys = { left: false, right: false, up: false, down: false, space: false, gl: false, gr: false, bl: false, br: false, tail: false, nose: false };
+const airKey = { left: false, right: false, up: false, down: false, space: false, gl: false, gr: false, bl: false, br: false, tail: false, nose: false };
+const inp = { steer: 0, tuck: 0, brake: 0, jump: false, butter: 0, press: 0, pop: 0 };
 const zeroInp = { steer: 0, tuck: 0, brake: 0, jump: false };
 const vis = {
   lean: 0, crouch: 0, compress: 0, plow: 0, air: 0, up: new THREE.Vector3(0, 1, 0), crashAngle: 0, crashSpin: 0,
   tuck: 0, spin: 0, extend: 0, zoom: 0, shake: 0, crashCam: 0,
-  camSide: 1, flipCam: 0, bigAir: 0, dip: 0, fpv: 0, slide: 0, grindSide: 1, look: 0,
+  camSide: 1, flipCam: 0, bigAir: 0, dip: 0, fpv: 0, slide: 0, grindSide: 1, look: 0, press: 0, avZoom: 0,
 };
 // Renn-Disziplin (Slalom, Riesentorlauf, Super-G, Abfahrt). Wird gemerkt.
 let disc = 'sg';
@@ -188,7 +189,18 @@ function setGear(g) {
   gear = g;
   try { localStorage.setItem('gipfelsturm_gear', g); } catch {}
   if (skier) skier.setGear(g);
+  phys.setGearStats(gearStats());
   syncOpts();
+}
+/** Eigenschaften des angelegten Skis bzw. Bretts als Multiplikatoren (1 = neutral). */
+let gsCache = null, gsKey = '';
+function gearStats() {
+  const key = gear + ':' + (gear === 'board' ? shop.equip.board : shop.equip.ski);
+  if (key !== gsKey) {
+    const d = gear === 'board' ? BOARDS[shop.equip.board] || BOARDS.classic : SKIS[shop.equip.ski] || SKIS.allround;
+    gsCache = statMul(d.st); gsKey = key;
+  }
+  return gsCache;
 }
 // Switch: Körper ist um 180° gedreht (fährt rückwärts). swYaw ist 0 oder pi.
 let swYaw = 0;
@@ -234,7 +246,12 @@ function toggleFs(want) {
 }
 document.addEventListener('fullscreenchange', () => syncOpts());
 document.addEventListener('webkitfullscreenchange', () => syncOpts());
-const trick = { pitch: 0, yaw: 0, pv: 0, yv: 0, grab: 0, grabT: 0, wasAir: false, gs: 0, gT: { safety: 0, mute: 0, tail: 0 } };
+const trick = { pitch: 0, yaw: 0, pv: 0, yv: 0, grab: 0, grabT: 0, wasAir: false, gs: 0, gT: { safety: 0, mute: 0, tail: 0 }, pop: null };
+// Bodentricks (v29): Butter-Drehungen auf dem Schnee (Q/E), Nose- und Tail-Press (G/X) als Manual, Ollie/Nollie aus dem
+// Press. bt.on = eine Butter-Drehung läuft; bt.man = so lange wird schon ohne Drehung gepresst.
+const bt = { on: false, t: 0, nose: false, man: 0, manDir: 0, wasSwitch: false, dir: 0 };
+/** Trick-Faktor der angelegten Ausrüstung (Werte aus dem Shop, 5 = neutral): Dreh-Tempo und Trickpunkte. */
+const trickMul = () => gearStats().trick;
 let jumpQueued = false;
 let quietCrash = false;
 
@@ -335,6 +352,7 @@ const SW_IDS = { jacket: ['swJacket', 'colJacket'], accent: ['swAccent', 'colAcc
 
 /** Ausrüstung aus dem Shop am Fahrer anlegen (Ski, Brett, Outfit mit Kopfteil). */
 function applyEquip() {
+  phys.setGearStats(gearStats());
   if (!skier) return;
   skier.setSkiDesign(shop.equip.ski);
   skier.setBoardDesign(shop.equip.board);
@@ -672,8 +690,9 @@ function demoUpdate(dt) {
 function resetVisuals() {
   hasPrevSki = false;
   Object.assign(vis, { lean: 0, crouch: 0, compress: 0, plow: 0, air: 0, crashAngle: 0, crashSpin: 0, tuck: 0, spin: 0, extend: 0, zoom: 0, shake: 0, crashCam: 0, camSide: 1, flipCam: 0, bigAir: 0, dip: 0 });
-  Object.assign(trick, { pitch: 0, yaw: 0, pv: 0, yv: 0, grab: 0, grabT: 0, wasAir: false });
-  swYaw = 0; vis.look = 0; vis.specRoll = 0; vis.sup = 0; vis.cross = 0;
+  Object.assign(trick, { pitch: 0, yaw: 0, pv: 0, yv: 0, grab: 0, grabT: 0, wasAir: false, pop: null });
+  swYaw = 0; vis.look = 0; vis.specRoll = 0; vis.sup = 0; vis.cross = 0; vis.press = 0; vis.avZoom = 0;
+  bt.on = false; bt.man = 0; inp.butter = 0; inp.press = 0; avCam = 0; avNear = 0; phys.noRockCrash = false;
   special = null; lastSpecial = null; timeScale = 1; specCam.w = 0;
   skier.attachSkis();
   skier.pivot.rotation.set(0, 0, 0);
@@ -749,7 +768,7 @@ function startRun(same) {
 // Während des Countdowns schwebt der Helikopter über dem Gipfel, der Fahrer steht in der offenen Tür.
 // Bei „Spring!“ fällt er gut 4 m in den Tiefschnee, der Helikopter dreht ab und fliegt davon.
 const HINT_STD = $('hint').textContent;
-const HINT_HELI = 'A/D lenken · W Hocke · S bremsen · Leertaste springen  |  Gipfel bis Tal auf Zeit · ein Sturz heißt zurück zum Gipfel · den Weg suchst du selbst';
+const HINT_HELI = 'A/D lenken · W Hocke · S bremsen · Leertaste springen · Q/E Butter  |  Gipfel bis Tal auf Zeit · ein Sturz heißt zurück zum Gipfel · den Weg suchst du selbst';
 const heli = { on: false, t: 0, pos: new THREE.Vector3(), drop: new THREE.Vector3(), group: null, rotor: null, tail: null, vel: new THREE.Vector3() };
 function heliStart() {
   heli.on = game.kind === 'endless' && game.style === 'heli';
@@ -878,7 +897,7 @@ const dec1 = (v) => v.toFixed(1).replace('.', ',');
 // ---------------------------------------------------------------- Lawinen (Heli-Berg)
 // Steile, tiefverschneite Hänge können abreißen: je steiler, schneller und härter (Landungen), desto eher.
 // Das Brett reißt oberhalb ab, die Front rollt hinab – wer schnell genug ist oder seitlich rausfährt, entkommt.
-let avRisk = 0, avCam = 0;
+let avRisk = 0, avCam = 0, avNear = 0;
 function avalancheUpdate(dt) {
   if (!aval) return;
   const heliMode = game.kind === 'endless' && game.style === 'heli';
@@ -889,6 +908,11 @@ function avalancheUpdate(dt) {
     if (avRisk > 1 + Math.random() * 0.02) triggerAvalanche();
   }
   const r = aval.update(dt, C, phys.pos);
+  avNear = aval.active ? r.near : 0;
+  // Lawinen-Sicht (v29): solange die Lawine abgeht und nah ist, zoomt die Kamera heraus (siehe updateCamera); in
+  // dieser Zeit lassen Felsen und Felswände den Fahrer nicht stürzen, er prallt nur ab
+  avCam = Math.max(0, avCam - dt);
+  phys.noRockCrash = game.mode === 'run' && (avCam > 0 || avNear > 0.08);
   audio.setRumble(aval.active ? r.near : 0);
   if (aval.active) vis.shake = Math.max(vis.shake, r.near * 0.45);
   if (r.caught && phys.crashed <= 0 && game.mode === 'run') {
@@ -911,7 +935,7 @@ function triggerAvalanche(landing = false) {
   const back = landing ? 7 : 16, side = (Math.random() - 0.5) * 20;
   aval.start({ x: px + gx * back + gd * side, d: d + gd * back - gx * side, fx: -gx, fd: -gd }, 70 + Math.random() * 60, C);
   audio.crack();
-  avCam = 3.4;   // kurz seitlich zeigen, wie der Riss durch den Hang läuft und die Platte bricht
+  avCam = 3.4;   // mindestens so lange herausgezoomte Sicht, danach solange die Lawine nah ist
   vis.shake = 0.5;
   showMsg('Der Hang reißt!', 'bad');
 }
@@ -1064,7 +1088,8 @@ function toCheckpoint() {
 }
 
 // ---------------------------------------------------------------- Eingabe
-const KEYMAP = { ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right', ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyS: 'down', Space: 'space' };
+const KEYMAP = { ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right', ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyS: 'down', Space: 'space',
+  KeyQ: 'bl', KeyE: 'br', KeyX: 'tail', KeyG: 'nose' };   // Bodentricks: Q/E Butter-Drehung, X Tail-Press, G Nose-Press
 window.addEventListener('keydown', (e) => {
   if (e.repeat) return;
   if (e.target instanceof HTMLInputElement) return;
@@ -1098,7 +1123,11 @@ window.addEventListener('keydown', (e) => {
   if (game.mode === 'run') { const sd = SPECIALS.find((q) => q.key === k || q.key.replace('Digit', 'Numpad') === k); if (sd) { startSpecial(sd); return; } if (k === 'Digit0' || k === 'Numpad0') { startSpecial(null); return; } }
   if (k === 'Space' || k === 'Enter') {
     if (game.mode === 'menu' || (game.mode === 'finished' && game.finishT > 1.2)) startRun();
-    else if (game.mode === 'run' && (phys.grounded || phys.grind)) jumpQueued = true;   // auch von der Rail abspringen
+    else if (game.mode === 'run' && (phys.grounded || phys.grind)) {
+      jumpQueued = true;   // auch von der Rail abspringen
+      // aus dem Press abgesprungen: Ollie (Enden) bzw. Nollie (Spitzen), springt etwas höher
+      if (phys.grounded && Math.abs(vis.press) > 0.45) trick.pop = vis.press > 0 ? 'Ollie' : 'Nollie';
+    }
   } else if (k === 'KeyR') { if (game.mode !== 'loading') startRun(); }
   else if (k === 'KeyF') setCheckpoint();
   else if (k === 'KeyT' || k === 'Backspace') toCheckpoint();
@@ -1138,7 +1167,7 @@ window.addEventListener('pointerup', (e) => {
 // ---------------------------------------------------------------- Tricks
 function updateTricks(dt) {
   const inAir = !phys.grounded && phys.crashed <= 0 && (game.mode === 'run' || (game.mode === 'menu' && demo.on));
-  if (inAir && !trick.wasAir) { for (const k in airKey) airKey[k] = false; trick.grabT = 0; trick.gT.safety = trick.gT.mute = trick.gT.tail = 0; lastSpecial = null; }
+  if (inAir && !trick.wasAir) { for (const k in airKey) airKey[k] = false; trick.grabT = 0; trick.gT.safety = trick.gT.mute = trick.gT.tail = 0; lastSpecial = null; bt.on = false; bt.man = 0; }
   trick.wasAir = inAir;
   const kk = (r) => 1 - Math.exp(-dt * r);
   if (!special) { vis.specRoll = (vis.specRoll || 0) * (1 - kk(8)); vis.sup = (vis.sup || 0) * (1 - kk(8)); vis.cross = (vis.cross || 0) * (1 - kk(8)); }
@@ -1147,8 +1176,9 @@ function updateTricks(dt) {
     const flipIn = (airKey.down ? 1 : 0) - (airKey.up ? 1 : 0);
     const spinIn = (airKey.right ? 1 : 0) - (airKey.left ? 1 : 0);
     // Ohne Taste dreht die Figur zur nächsten vollen Umdrehung weiter und richtet sich aus
-    const pT = flipIn !== 0 ? flipIn * 8.4 : clamp((Math.round(trick.pitch / TAU) * TAU - trick.pitch) * 9, -8.4, 8.4);
-    const yT = spinIn !== 0 ? spinIn * 8.8 : clamp((Math.round(trick.yaw / Math.PI) * Math.PI - trick.yaw) * 9, -8.8, 8.8);   // auf halbe Drehungen: 180 = rückwärts landen
+    const rm = 1 + (trickMul() - 1) * 0.6;   // Freestyle-Ski drehen schneller
+    const pT = flipIn !== 0 ? flipIn * 8.4 * rm : clamp((Math.round(trick.pitch / TAU) * TAU - trick.pitch) * 9, -8.4 * rm, 8.4 * rm);
+    const yT = spinIn !== 0 ? spinIn * 8.8 * rm : clamp((Math.round(trick.yaw / Math.PI) * Math.PI - trick.yaw) * 9, -8.8 * rm, 8.8 * rm);   // auf halbe Drehungen: 180 = rückwärts landen
     // weiches An- und Ausdrehen wirkt natürlicher als ein starres Tempo
     trick.pv += clamp(pT - trick.pv, -38 * dt, 38 * dt);
     trick.yv += clamp(yT - trick.yv, -44 * dt, 44 * dt);
@@ -1161,9 +1191,9 @@ function updateTricks(dt) {
   } else {
     const k = 1 - Math.exp(-dt * 12);
     trick.pitch -= trick.pitch * k;
-    trick.yaw -= trick.yaw * k;
-    trick.pv = 0; trick.yv = 0;
+    trick.pv = 0;
     trick.grab += clamp(0 - trick.grab, -10 * dt, 10 * dt);
+    if (!groundTricks(dt)) { trick.yaw -= trick.yaw * k; trick.yv = 0; }
   }
   const k = (r) => 1 - Math.exp(-dt * r);
   const rotating = inAir && (Math.abs(trick.pv) > 1.2 || Math.abs(trick.yv) > 1.2 || trick.grab > 0.3);
@@ -1182,6 +1212,73 @@ function updateTricks(dt) {
   const nearGround = inAir && phys.vel.y < 0 && phys.gap < 2.6 && Math.abs(trick.pv) < 2.5;
   const pop = inAir && phys.airTime < 0.16;
   vis.extend += ((nearGround || pop ? 1 : 0) - vis.extend) * k(11);
+}
+
+/** Bodentricks während der Fahrt. Gibt true zurück, solange eine Butter-Drehung trick.yaw führt. */
+function groundTricks(dt) {
+  const ok = game.mode === 'run' && phys.grounded && !phys.grind && phys.crashed <= 0 && !special;
+  const kk = (r) => 1 - Math.exp(-dt * r);
+  const spinIn = ok ? (keys.br ? 1 : 0) - (keys.bl ? 1 : 0) : 0;
+  const pressIn = ok ? (keys.tail ? 1 : 0) - (keys.nose ? 1 : 0) : 0;
+  const tm = trickMul();
+  if (!ok) { bt.on = false; bt.man = 0; vis.press += (0 - vis.press) * kk(10); inp.butter = 0; inp.press = 0; return false; }
+  if (spinIn !== 0 && !bt.on) {
+    // Drehung beginnt: aus dem Press heraus (Nose mit G, sonst auf den Skienden)
+    bt.on = true; bt.t = 0; bt.nose = pressIn < 0; bt.wasSwitch = isSwitch(); bt.dir = spinIn; bt.man = 0;
+    trick.yaw -= Math.round(trick.yaw / Math.PI) * Math.PI;
+  }
+  let spinning = false;
+  if (bt.on) {
+    spinning = true;
+    bt.t += dt;
+    if (pressIn < 0) bt.nose = true;
+    // auf dem Schnee langsamer als in der Luft, bei hohem Tempo zäher; Freestyle-Ski drehen deutlich leichter
+    const rate = 5.2 * (1 + (tm - 1) * 1.4) * lerp(1, 0.72, smoothstep(14, 30, phys.speed));
+    const target = Math.round(trick.yaw / Math.PI) * Math.PI;
+    const yT = spinIn !== 0 ? spinIn * rate : clamp((target - trick.yaw) * 8, -rate, rate);
+    trick.yv += clamp(yT - trick.yv, -28 * dt, 28 * dt);
+    trick.yaw += trick.yv * dt;
+    if (spinIn === 0 && Math.abs(trick.yaw - target) < 0.07 && Math.abs(trick.yv) < 1.6) {
+      const halves = Math.round(trick.yaw / Math.PI);
+      trick.yaw -= halves * Math.PI; trick.yv = 0;
+      bt.on = false;
+      if (halves !== 0) {
+        swYaw = ((swYaw + halves * Math.PI) % TAU + TAU) % TAU;
+        const n = Math.abs(halves), deg = String(n * 180);
+        const name = BOARD() ? `${bt.wasSwitch ? 'Fakie ' : ''}${bt.nose ? 'Nose' : 'Tail'}-Butter ${halves < 0 ? 'Frontside' : 'Backside'} ${deg}`
+          : `${bt.wasSwitch ? 'Switch ' : ''}${bt.nose ? 'Nose-Butter' : 'Butter'} ${deg}`;
+        scoreGround(name, Math.round(170 * Math.pow(n, 1.35) * (bt.nose ? 1.25 : 1) * (bt.wasSwitch ? 1.2 : 1)));
+      }
+    }
+  }
+  // Press (Manual): ohne Drehung auf den Skienden oder Spitzen fahren; zählt ab 0,6 s, beim Loslassen gewertet
+  if (!bt.on && pressIn !== 0) {
+    if (bt.manDir !== pressIn) { bt.man = 0; bt.manDir = pressIn; }
+    bt.man += dt;
+  } else if (bt.man > 0) {
+    if (bt.man > 0.6 && !bt.on) {
+      const nose = bt.manDir < 0, t = Math.min(bt.man, 6);
+      const name = BOARD() ? (nose ? 'Nose Press' : 'Tail Press') : nose ? 'Nose-Manual' : 'Tail-Manual';
+      scoreGround(`${name} ${t.toFixed(1).replace('.', ',')} s`, Math.round((60 + 150 * t) * (nose ? 1.2 : 1)));
+    }
+    bt.man = 0;
+  }
+  // Sichtbar: Körper kippt auf die Enden (+) oder Spitzen (−); während der Drehung von selbst auf die Enden
+  const pT = pressIn !== 0 ? pressIn : bt.on ? (bt.nose ? -0.8 : 0.8) : 0;
+  vis.press += (pT - vis.press) * kk(11);
+  inp.press = Math.abs(vis.press);
+  inp.butter = bt.on ? Math.abs(Math.sin(trick.yaw)) : 0;
+  return spinning;
+}
+/** Bodentrick werten (gleiches Risiko-Konto wie die Lufttricks). */
+function scoreGround(name, base) {
+  let pts = Math.round(base * trickMul());
+  if (C.cfg.heli) { fwt.tricks += pts * flowMult(); flowUp(1, ''); }
+  pts = addPending(pts, true);
+  game.tricks++;
+  if (pts > game.bestTrickPts) { game.bestTrickPts = pts; game.bestTrick = name; }
+  showMsg(C.cfg.heli ? name : `${name}  +${num(pts)}`, 'gold');
+  audio.gate();
 }
 
 /** Wird bei der Landung aufgerufen: wertet Drehungen aus oder lässt den Fahrer stürzen. */
@@ -1212,6 +1309,8 @@ function scoreLanding(e) {
   let pts = 0, cats = 0;
   const spc = lastSpecial; lastSpecial = null;
   if (spc) { parts.push(spc.name); pts += spc.pts; cats++; }
+  const pop = trick.pop; trick.pop = null;
+  if (pop && e.airTime > 0.35) { parts.push(pop); pts += 140; cats++; }
   if (flips !== 0 && !spc) {
     const n = Math.abs(flips);
     parts.push((n === 2 ? 'Doppel-' : n >= 3 ? 'Dreifach-' : '') + (flips > 0 ? 'Backflip' : 'Frontflip'));
@@ -1236,6 +1335,7 @@ function scoreLanding(e) {
   const airPts = e.airTime > 0.55 ? Math.round(e.dist * 4) : 0;
   if (cats > 0) {
     if (cats > 1) pts = Math.round(pts * 1.5);
+    pts = Math.round(pts * trickMul());   // Freestyle-Ski bringen mehr Trickpunkte
     pts += airPts;
     const name = parts.join(' + ');
     const comboNow = game.combo;
@@ -1328,41 +1428,30 @@ function updateCamera(dt, time) {
     camSnap = false;
     return;
   }
-  // Lawinen-Kamera: seitlich und etwas unterhalb, Blick auf Fahrer und die anrollende Front
-  if (avCam > 0 && game.mode === 'run' && !special) {   // der Spezialtrick hat seine eigene Kamera
-    avCam -= dt;
-    const f = 1;
-    tV.set(Math.sin(phys.heading), 0, -Math.cos(phys.heading));
-    tV2.set(-tV.z, 0, tV.x);                                          // rechts
-    tV3.copy(phys.pos).addScaledVector(tV2, 17).addScaledVector(tV, 9);
-    tV3.y = Math.max(C.height(tV3.x, tV3.z) + 2.5, phys.pos.y + 1.5);
-    camPos.lerp(tV3, 1 - Math.exp(-dt * 6));
-    lookSm.lerp(tV.multiplyScalar(-9).add(phys.pos).setY(phys.pos.y + 3), 1 - Math.exp(-dt * 6));
-    camera.position.copy(camPos);
-    camera.lookAt(lookSm);
-    if (Math.abs(camera.fov - 62) > 0.1) { camera.fov = 62; camera.updateProjectionMatrix(); }
-    void f;
-    if (avCam > 0) return;
-  }
-  const z = vis.zoom, cc = vis.crashCam;
+  // Lawinen-Sicht (v29): statt seitlich zu schwenken (man sah nicht mehr, was vor einem liegt) geht die Kamera weit
+  // zurück und nach oben und schaut voraus den Hang hinab: Felsen und Bäume vor einem sind früh zu sehen, die Lawine
+  // im Rücken bleibt im Bild. Weich ein- und ausgeblendet, Blickrichtung bleibt die Fahrtrichtung.
+  vis.avZoom = (vis.avZoom || 0) + (((avCam > 0 || avNear > 0.08) && game.mode === 'run' && !special ? 1 : 0) - (vis.avZoom || 0)) * (1 - Math.exp(-dt * 2.2));
+  const av = vis.avZoom;
+  const z = vis.zoom * (1 - av), cc = vis.crashCam;
   if (sp > 2) tV.set(phys.vel.x, 0, phys.vel.z).normalize();
   else tV.set(Math.sin(phys.heading), 0, -Math.cos(phys.heading));
   camDir.lerp(tV, camSnap ? 1 : 1 - Math.exp(-dt * 3.2)).normalize();
   // Bei Tricks rückt die Kamera heran und schwenkt leicht zur Seite, beim Sturz geht sie auf Abstand
   const fc = vis.flipCam * z, ba = vis.bigAir * (1 - z * 0.6);
-  const dist = (lerp(6.4 + sp * 0.07 - inp.tuck * 0.5 + vis.air * 1.2, 4.6 + fc * 0.8, z) + ba * 3.2) * (1 - 0.35 * cc) + cc * 2.6;
+  const dist = (lerp(6.4 + sp * 0.07 - inp.tuck * 0.5 + vis.air * 1.2, 4.6 + fc * 0.8, z) + ba * 3.2 + av * 9) * (1 - 0.35 * cc) + cc * 2.6;
   tV2.copy(p).addScaledVector(camDir, -dist);
   const side = (2.6 * z + 1.6 * fc) * vis.camSide;
   tV2.x += -camDir.z * side;
   tV2.z += camDir.x * side;
   const groundY = C.height(tV2.x, tV2.z);
   tV2.y = Math.max(groundY + 1.9 + sp * 0.012, p.y + 1.55);
-  tV2.y = Math.max(groundY + 1.2, lerp(tV2.y, p.y + 1.3 - fc * 0.35, z * 0.75)) + cc * 1.9 + ba * 1.6 - vis.dip * 0.45;
+  tV2.y = Math.max(groundY + 1.2, lerp(tV2.y, p.y + 1.3 - fc * 0.35, z * 0.75)) + cc * 1.9 + ba * 1.6 - vis.dip * 0.45 + av * 6;
   camPos.lerp(tV2, camSnap ? 1 : 1 - Math.exp(-dt * (7.5 + cc * 9)));
   const gh = C.height(camPos.x, camPos.z) + 0.9;
   if (camPos.y < gh) camPos.y = gh;
-  tV3.copy(p).addScaledVector(camDir, (6 + ba * 5) * (1 - z) * (1 - cc));
-  tV3.y = lerp(lerp(C.height(tV3.x, tV3.z) + 1.0, p.y + 1.0, 0.5 + vis.air * 0.3 - ba * 0.35), p.y + 0.9, Math.max(z, cc));
+  tV3.copy(p).addScaledVector(camDir, (6 + ba * 5 + av * 24) * (1 - z) * (1 - cc));
+  tV3.y = lerp(lerp(C.height(tV3.x, tV3.z) + 1.0, p.y + 1.0, 0.5 + vis.air * 0.3 - ba * 0.35 - av * 0.5), p.y + 0.9, Math.max(z, cc));
   lookSm.lerp(tV3, camSnap ? 1 : 1 - Math.exp(-dt * (11 + z * 8)));
   camSnap = false;
   const sh = Math.pow(clamp(sp / 42, 0, 1), 2) * 0.035 + vis.shake * 0.4;
@@ -1372,7 +1461,7 @@ function updateCamera(dt, time) {
     camPos.z + (C.vnoise(time * 19, 4.1) - 0.5) * sh);
   camera.lookAt(lookSm);
   camera.rotateZ(-vis.lean * 0.09 + (C.vnoise(time * 17, 9.2) - 0.5) * vis.shake * 0.12);
-  let fov = 60 + 22 * smoothstep(8, 44, sp) + inp.tuck * 2 - 15 * z - 20 * cc + 6 * ba;
+  let fov = 60 + 22 * smoothstep(8, 44, sp) * (1 - 0.5 * av) + inp.tuck * 2 - 15 * z - 20 * cc + 6 * ba + 6 * av;
 
   // ---- Ego-Sicht (Helmkamera): Augen im Kopf des Fahrers, dreht bei Flips und Spins voll mit,
   // neigt sich in die Kurve, federt bei Landungen, zittert mit Tempo und Untergrund. Beim Sturz Verfolgerkamera.
@@ -1620,7 +1709,7 @@ function handleEvents() {
         if (e.clean && e.dist > 1.5) {
           const rail = e.kind === 'rail';
           const name = BOARD() ? (rail ? 'Boardslide' : '50-50') : rail ? 'Railslide' : '50-50 Box';
-          let pts = Math.round((rail ? 120 : 70) + e.dist * (rail ? 34 : 22));
+          let pts = Math.round(((rail ? 120 : 70) + e.dist * (rail ? 34 : 22)) * trickMul());
           pts = addPending(pts, true);
           game.tricks++;
           showMsg(`${name} ${e.dist.toFixed(1)} m  +${num(pts)}`, 'gold');
@@ -1697,6 +1786,7 @@ function checkGates() {
 
 // ---------------------------------------------------------------- Figur ausrichten
 const mBasis = new THREE.Matrix4(), vF = new THREE.Vector3(), vR = new THREE.Vector3(), vB = new THREE.Vector3();
+const pcA = new THREE.Vector3(), pcB = new THREE.Vector3(), pressQ = new THREE.Quaternion(), AX_X = new THREE.Vector3(1, 0, 0);
 const bdTmp = new THREE.Vector3(), BOARD_Y = -0.85 + 0.002 * 0.94;   // Brettmitte im Drehpunkt-System (Körper 0,85 m tiefer, Maßstab 0,94)
 function updateSkier(dt) {
   const k = (r) => 1 - Math.exp(-dt * r);
@@ -1711,7 +1801,7 @@ function updateSkier(dt) {
   const sgn = Math.abs(inp.steer) > 0.3 ? Math.sign(inp.steer) : 0;
   if (grnd && sgn && vis.lastSteer && sgn !== vis.lastSteer && phys.speed > 5) vis.compress = Math.max(vis.compress, 0.35 + 0.3 * heliK);
   if (sgn) vis.lastSteer = sgn;
-  const crouchT = phys.grind ? 0.45 : clamp(inp.tuck + inp.brake * 0.2 + 0.14 * clamp(phys.speed / 18, 0, 1), 0, 1);
+  const crouchT = phys.grind ? 0.45 : clamp(inp.tuck + inp.brake * 0.2 + 0.14 * clamp(phys.speed / 18, 0, 1) + 0.22 * Math.abs(vis.press || 0), 0, 1);
   vis.crouch += (crouchT - vis.crouch) * k(7);
   vis.compress *= Math.exp(-dt * 4.5);
   vis.shake *= Math.exp(-dt * 3.2);
@@ -1775,6 +1865,16 @@ function updateSkier(dt) {
       const pkB = clamp((phys.pow - 0.18) / 0.4, 0, 1);
       const ty = -0.002 - 0.026 * pkB + 0.135 * Math.abs(Math.sin(roll));
       pv.position.set(-bdTmp.x * g, 0.85 + (ty - bdTmp.y - 0.85) * g, -bdTmp.z * g);
+    }
+    // Press (v29): der ganze Körper kippt um das Ski-Ende (Tail, +) bzw. die Spitze (Nose, −); der Kontaktpunkt bleibt
+    // auf dem Schnee liegen, die andere Seite hebt ab. Gedreht wird um die Querachse des Skis, auch mitten im Butter-Spin.
+    const pr = vis.press || 0;
+    if (Math.abs(pr) > 0.002) {
+      const ang = pr * (BOARD() ? 0.24 : 0.3), zc = pr > 0 ? (BOARD() ? 0.6 : 0.74) : (BOARD() ? -0.6 : -0.82);
+      pcA.set(0, -0.85, zc).applyQuaternion(pv.quaternion);
+      pv.quaternion.multiply(pressQ.setFromAxisAngle(AX_X, ang));
+      pcB.set(0, -0.85, zc).applyQuaternion(pv.quaternion);
+      pv.position.add(pcA.sub(pcB));
     }
   }
   // Rückwärts (Switch) ist der Körper um 180° gedreht: Neigung und Lenkdrehung müssen im Körper gespiegelt werden,
@@ -1954,6 +2054,7 @@ function tick(dt, render) {
     acc += dt;
     while (acc >= H) {
       inp.jump = jumpQueued && game.mode === 'run';
+      inp.pop = inp.jump && trick.pop ? 1.3 : 0;
       jumpQueued = false;
       if (heli.on && (game.mode === 'countdown' || game.mode === 'menu')) { /* hängt in der Heli-Tür */ }
       else if (game.mode === 'menu' && demo.on) phys.step(H, demo.inp);

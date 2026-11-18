@@ -14,8 +14,11 @@ export class SkiPhysics {
     this.fwd = new THREE.Vector3(0, 0, -1);
     this.right = new THREE.Vector3(1, 0, 0);
     this.events = [];
+    this.gs = { glide: 1, turn: 1, pow: 1, trick: 1, grip: 1 };   // Ausrüstung (gear.js statMul), 1 = neutral
     this.reset(-1);
   }
+  /** Eigenschaften des angelegten Skis oder Bretts (Multiplikatoren aus gear.js statMul). */
+  setGearStats(m) { this.gs = m || { glide: 1, turn: 1, pow: 1, trick: 1, grip: 1 }; }
 
   reset(d, x0) {
     const x = x0 === undefined ? centerX(d) : x0, z = -d;
@@ -38,6 +41,7 @@ export class SkiPhysics {
     this.pressure = 1;
     this.grind = null;   // auf Rail/Box: { g, s (gefahrene Meter), bal (Balance −1..1) }
     this.grindCool = 0;
+    this.noRockCrash = false;   // Lawinen-Sicht: Felsen werfen nicht ab
     terrainNormal(x, z, this.normal);
   }
 
@@ -45,6 +49,7 @@ export class SkiPhysics {
     if (this.grind) { this.stepGrind(dt, inp); return; }
     this.grindCool = Math.max(0, this.grindCool - dt);
     const p = this.pos, v = this.vel;
+    const ox = p.x, oy = p.y, oz = p.z;   // Stand vor dem Schritt (Heli: Wände)
     groundNormal(p.x, p.z, p.y, N);
     // Tiefschnee: im Rennen bremst das Gelände neben der Piste, im Freeride-Berg gibt es echten Pulverschnee mit Tiefe
     const sf = surfaceAt(p.x, p.z);
@@ -61,13 +66,17 @@ export class SkiPhysics {
       this.aLat = 0; this.skid = 0;
       if (this.crashed <= 0) this.events.push({ type: 'respawn' });
     } else if (this.grounded) {
-      const gripG = lerp(1.5, 0.72, inp.brake) * lerp(1, cfg.endless ? 0.7 : 0.62, pw);
+      // Heli-Pulver (v29): mehr Griff als im Freeride-Pulver, die breiten Ski stützen sich im tiefen Schnee ab
+      const gs = this.gs, press = inp.press || 0;
+      // Kantengriff: auf hartem Schnee nach dem Kantengriff-Wert, im Pulver nach dem Pulver-Wert; im Press (nur Enden
+      // oder Spitzen auf dem Schnee) greift die Kante weniger
+      const gripG = lerp(1.5, 0.72, inp.brake) * lerp(gs.grip, (cfg.heli ? 0.92 : cfg.endless ? 0.7 : 0.62) * Math.sqrt(gs.pow), pw) * (1 - 0.22 * press);
       const maxLat = gripG * G;
-      const wCarve = (maxLat * 0.9) / Math.max(speed, 2.5);
-      const wPivot = 2.6 * (1 - smoothstep(3, 15, speed));
+      const wCarve = (maxLat * 0.9) / Math.max(speed, 2.5) * gs.turn;
+      const wPivot = 2.6 * (1 - smoothstep(3, 15, speed)) * gs.turn;
       let wMax = Math.max(wCarve, wPivot);
       if (inp.brake > 0) wMax = Math.max(wMax, 2.1 * inp.brake);
-      wMax = Math.min(wMax, 2.3) * lerp(1, 0.55, inp.tuck);
+      wMax = Math.min(wMax, 2.3 * gs.turn) * lerp(1, 0.55, inp.tuck);
       this.yawRate = inp.steer * wMax;
       this.heading += this.yawRate * dt;
 
@@ -82,17 +91,22 @@ export class SkiPhysics {
       }
 
       // Reibung + Luftwiderstand
-      const mu = lerp(0.04, cfg.heli ? 0.05 : cfg.endless ? 0.072 : 0.11, pw);
+      // Pulver-Wert: der Tiefschnee-Anteil der Reibung und der Schneewiderstand sinken mit breiten, aufschwimmenden Ski
+      const mu = (0.04 + ((cfg.heli ? 0.05 : cfg.endless ? 0.072 : 0.11) - 0.04) * pw / gs.pow) / gs.glide;
       // Heli-Berg: tiefer, leichter Pulver trägt – man schwebt darüber und wird kaum gebremst (wie echter Powder)
-      const k = lerp(0.0036, 0.0019, inp.tuck);
-      const powDrag = cfg.heli ? pw * (0.08 + 0.012 * speed) : cfg.endless ? pw * (0.26 + 0.03 * speed) : pw * 0.05 * speed;
-      const dec = mu * G * N.y + k * speed * speed + powDrag + inp.brake * 4.6;
+      const k = lerp(0.0036, 0.0019, inp.tuck) / (1 + (gs.glide - 1) * 0.6);
+      const powDrag = (cfg.heli ? pw * (0.08 + 0.012 * speed) : cfg.endless ? pw * (0.26 + 0.03 * speed) : pw * 0.05 * speed) / gs.pow;
+      // Butter-Drehung: quer zur Fahrt schiebt der Ski Schnee vor sich her (mit Freestyle-Ski weniger)
+      const butterDrag = (inp.butter || 0) * (0.5 + 0.035 * speed) / gs.trick;
+      const dec = mu * G * N.y + k * speed * speed + powDrag + butterDrag + inp.brake * 4.6;
       if (speed > 1e-4) v.multiplyScalar(Math.max(0, speed - dec * dt) / speed);
       v.y -= G * dt;
 
-      // Kantengriff
+      // Kantengriff. Heli-Berg (v29): die Kante hält zusätzlich den Querhang-Abtrieb (Schwerkraft quer zum Ski). Vorher
+      // ging dafür der ganze Griff drauf, der Hang drückte einen bei Tempo in seine Richtung, Lenken dagegen griff kaum.
       vl = v.dot(Rv);
-      const dv = clamp(-vl, -maxLat * dt, maxLat * dt);
+      const lim = maxLat + (cfg.heli ? Math.abs(G * Rv.y) * 0.9 : 0);
+      const dv = clamp(-vl, -lim * dt, lim * dt);
       v.addScaledVector(Rv, dv);
       const a = dv / dt;
       this.aLat += (a - this.aLat) * Math.min(1, dt * 10);
@@ -101,7 +115,7 @@ export class SkiPhysics {
       this.pressure = clamp(0.6 + Math.abs(a) / (1.2 * G), 0.5, 1.6);
 
       if (inp.jump) {
-        v.addScaledVector(N, 4.3);
+        v.addScaledVector(N, 4.3 + (inp.pop || 0));   // aus dem Press (Ollie/Nollie) springt man höher
         this.grounded = false;
         this.airTime = 0;
         this.airStart.copy(p);
@@ -165,13 +179,45 @@ export class SkiPhysics {
       if (this.grind) { this.normal.set(0, 1, 0); this.speed = v.length(); return; }
     }
 
-    const hgt = groundAt(p.x, p.z, p.y);
-    this.onDeck = hgt > height(p.x, p.z) + 0.05;
+    let hgt = groundAt(p.x, p.z, p.y);
     groundNormal(p.x, p.z, p.y, N2);
+    // Heli-Berg: Steiler als etwa 60 Grad ist eine Wand (Seiten der Klippen-Bänke, Stirn einer Windlippe, Rinnenwand).
+    // Wer hineinfährt, fährt nicht mehr an ihr hinauf (vorher glitt man an der Felswand senkrecht nach oben, mitten
+    // durch den Fels, und kam so auf die Bank), sondern prallt ab und gleitet an ihr entlang; frontal und schnell
+    // gegen eine hohe Wand heißt Sturz.
+    let onWall = false;
+    if (cfg.heli && this.crashed <= 0 && p.y - hgt < 0.05 && N2.y < 0.5) {
+      const hl = Math.hypot(N2.x, N2.z) || 1, wx = N2.x / hl, wz = N2.z / hl;
+      const into = -(v.x * wx + v.z * wz);
+      if (into > 0.02) {
+        // hineingefahren: zurück auf den Stand vor dem Schritt, die Bewegung in die Wand fällt weg
+        const tall = groundAt(p.x - wx * 1.5, p.z - wz * 1.5, p.y) - hgt > 1.5;
+        // nur den Teil des Schritts zurücknehmen, der in die Wand ging; entlang und hinab geht es weiter
+        const sIn = -((p.x - ox) * wx + (p.z - oz) * wz);
+        if (sIn > 0) { p.x += wx * sIn; p.z += wz * sIn; }
+        if (groundAt(p.x, p.z, p.y) > oy + 0.002) p.set(ox, oy, oz);   // dort ginge es bergauf, also immer noch in der Wand: ganz zurück
+        v.x += wx * into; v.z += wz * into;
+        // die Ski drehen sich mit an der Wand entlang (sonst führt die Kante das Tempo immer wieder in die Wand zurück)
+        if (Math.hypot(v.x, v.z) > 1) { const hv = Math.atan2(v.x, -v.z); let dh = hv - this.heading; dh = Math.atan2(Math.sin(dh), Math.cos(dh)); if (Math.abs(dh) < Math.PI / 2) this.heading = hv; }
+        if (tall && into > 12 && !this.noRockCrash) { this.events.push({ type: 'hit', what: 'wand' }); this.crash(); }
+        else { const sp = v.length(); if (sp > 1e-3) v.multiplyScalar(Math.max(0, sp - into * 0.15) / sp); }   // Anprall kostet etwas Tempo, Streifen kaum
+      } else {
+        // an der Wand, aber nicht hinein: man hält sich dort nicht, sondern rutscht frei an ihr hinab
+        const pen = Math.max(0, hgt - p.y);
+        p.x += wx * (pen * N2.y / hl + 0.02); p.z += wz * (pen * N2.y / hl + 0.02);
+        if (this.grounded) { this.grounded = false; this.airTime = 0; this.airStart.copy(p); }
+        onWall = true;
+      }
+      if (v.y > 0) v.y *= 0.3;   // die Wand hebt nicht an
+      hgt = groundAt(p.x, p.z, p.y);
+      groundNormal(p.x, p.z, p.y, N2);
+    }
+    this.onDeck = hgt > height(p.x, p.z) + 0.05;
     const gap = p.y - hgt;
     const vn = v.dot(N2);
     this.gap = gap;
-    if (this.grounded) {
+    if (onWall) { /* an der Wand: in diesem Schritt kein Bodenkontakt */ }
+    else if (this.grounded) {
       // Pulver und Unterholz fangen kleine Kanten ab: neben der Piste hebt man nicht bei jeder Welle ab
       if (vn > 1.5 + 0.012 * this.speed + 2.4 * this.pow + 0.8 * this.off && gap > 0) {
         this.grounded = false;
@@ -180,8 +226,9 @@ export class SkiPhysics {
       } else {
         p.y = hgt;
         // Heli-Berg: wer mit Tempo gegen eine Felswand fährt (Seitenwand einer Rinne, Wandfuß), stürzt
-        if (cfg.heli && N2.y < 0.42 && vn < -8 && this.crashed <= 0) { this.events.push({ type: 'hit', what: 'wand' }); this.crash(); }
+        if (cfg.heli && N2.y < 0.42 && vn < -8 && this.crashed <= 0 && !this.noRockCrash) { this.events.push({ type: 'hit', what: 'wand' }); this.crash(); }
         if (vn < 0) v.addScaledVector(N2, -vn);
+        if (cfg.heli && N2.y < 0.5 && v.y > 0) v.y = 0;   // an einer Wand gewinnt man keine Höhe
       }
     } else if (gap <= 0) {
       p.y = hgt;
@@ -221,7 +268,18 @@ export class SkiPhysics {
             v.multiplyScalar(0.8);
           } else if (this.crashed > 0) {
             v.multiplyScalar(0.3);
-          } else if (into > (c.type === 'fels' ? 2.2 : c.type === 'baum' ? 5.5 : 7)) {   // Felsen sind hart: schon bei Schritttempo-Aufprall Sturz
+          } else if (c.type === 'fels' && this.noRockCrash && into > 0) {
+            // Lawinen-Sicht: am Felsen vorbeigleiten statt hängenzubleiben (Tempo bleibt weitgehend, Richtung seitlich vorbei)
+            const sp0 = Math.hypot(v.x, v.z), tx = -nz, tz = nx, vt = v.x * tx + v.z * tz;
+            const sg = Math.abs(vt) > 0.5 ? Math.sign(vt) : (dx * tx + dz * tz >= 0 ? 1 : -1);
+            const keep = sp0 * (into > 3 ? 0.85 : 0.995);   // Tempoverlust nur beim ersten Anprall, nicht bei jedem Streifen
+            // neue Richtung: seitlich am Felsen vorbei, aber weiter in die alte Fahrtrichtung (nicht zurück bergauf)
+            const fx = v.x / (sp0 || 1), fz = v.z / (sp0 || 1);
+            let ux = tx * sg * 0.7 + fx + nx * 0.25, uz = tz * sg * 0.7 + fz + nz * 0.25;
+            const ul = Math.hypot(ux, uz) || 1; ux /= ul; uz /= ul;
+            v.x = ux * keep; v.z = uz * keep;
+            this.heading = Math.atan2(v.x, -v.z);   // Ski drehen mit, sonst bremst die Kante das seitliche Tempo weg
+          } else if (into > (c.type === 'fels' ? (this.noRockCrash ? 1e9 : 2.2) : c.type === 'baum' ? 5.5 : 7)) {   // Felsen sind hart: schon bei Schritttempo-Aufprall Sturz (nicht in der Lawinen-Sicht)
             this.events.push({ type: 'hit', what: c.type });
             this.crash();
             v.multiplyScalar(0.4);

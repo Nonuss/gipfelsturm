@@ -393,3 +393,72 @@ Stand Cache `gipfelsturm-v26`, jeder Block einzeln gebaut, gepusht und mit grün
 | Coole Spezialtricks mit eigener Kamera | neu | Tasten 1 bis 5: Cork 720 (Kreisfahrt), Rodeo 540 (Profil), Superman bzw. Method Air (Heldenkamera von vorne), Iron Cross bzw. Stalefish (Froschperspektive), Bullet Time Doppel-Backflip (ganze Kreisfahrt); Zeitlupe 0,4 bis 0,6; Start nur bei genug Flugzeit; Handy: Stern-Knopf in der Luft | alle fünf mit Ski und zwei mit Snowboard sauber gelandet, Kamerabilder geprüft |
 
 Weitere Bots: `piste_validate.mjs` Freeride 30 von 30 ohne Sturz; Freestyle, abseits und `race_validate.mjs` mit genau denselben Ergebnissen wie v27 (ein bekannter Freestyle-Sturz bei Seed 57, 20 freie Linien bei ±85 m stecken, ein knappes Tor im Super-G Stil 2).
+
+## Wunschliste nach dem Spieltest (v29, 2026-11-18)
+
+### Bodentricks (neu)
+
+| Taste | Trick | Wertung |
+|---|---|---|
+| Q / E halten | Butter-Drehung links oder rechts auf dem Schnee (180, 360, 540 ...), beim Loslassen dreht der Fahrer zur nächsten halben Drehung aus; ungerade halbe Drehungen fahren rückwärts weiter | 170 x Drehungen^1,35, Nose-Butter +25 %, aus der Rückwärtsfahrt +20 % |
+| X halten | Tail-Press (Manual auf den Skienden), Snowboard: Tail Press | ab 0,6 s, 60 + 150 je Sekunde |
+| G halten | Nose-Press, mit Q/E: Nose-Butter | wie Tail-Press, +20 % |
+| Leertaste aus dem Press | Ollie (Enden) oder Nollie (Spitzen), springt 1,3 m/s höher | +140, zählt mit Lufttricks als Kombination |
+
+- Darstellung: der ganze Körper kippt um das Ski-Ende bzw. die Spitze (Kontaktpunkt bleibt auf dem Schnee), auch mitten in der Drehung; Snowboard ebenso.
+- Physik: im Press greift die Kante 22 % weniger, quer stehende Ski bremsen in der Drehung (Freestyle-Ski weniger).
+- Wertung über dasselbe Risiko-Konto wie die Lufttricks (`addPending`, Kombi-Multiplikator), im Heli-Modus in die Trick-Wertung und Flow-Kette.
+- Handy: neuer Dreh-Knopf am Boden an der Stelle des Stern-Knopfs (Richtung nach der Lenkung), hoch wischen und halten = Nose-Press, runter = Tail-Press.
+- Im Spiel geprüft (Canvas-Export, Browser ausgeblendet): Butter 360, Butter 180 (danach rückwärts), Tail- und Nose-Manual, Ollie aus dem Press mit 1,1 s Luft, Snowboard Nose-Butter Frontside 180 und Tail Press, Dreh-Knopf in der Handy-Ansicht.
+
+### Ski- und Brett-Eigenschaften (neu)
+
+Jedes Teil hat fünf Werte von 1 bis 10 (Tempo, Wendigkeit, Pulver, Tricks, Kantengriff), im Shop als Balken mit Vergleich zum angelegten Teil (+/−). Wert 5 ist neutral: der Allround-Ski und das Classic-Brett fahren genau wie vorher, deshalb sind alle Bots unverändert.
+
+Messung `node tools/gear_stats.mjs` (echte Spielphysik):
+
+| Teil | Werte T/W/P/Tr/K | Endtempo Hocke | Kurvenradius bei 54 km/h | Pulver-Bremswirkung Freeride | Tempoverlust Butter 1 s |
+|---|---|---|---|---|---|
+| Allround / Classic | 5/5/5/5/5 | 123 km/h | 16,3 m | 2,87 m/s² | 2,2 km/h |
+| Slalom-Racer | 5/9/2/3/8 | 123 km/h | 12,9 m | 3,33 m/s² | 2,5 km/h |
+| Riesentorlauf GS | 8/4/3/2/8 | 127 km/h | 15,3 m | 2,97 m/s² | 2,7 km/h |
+| Powder 118 | 5/5/10/6/3 | 123 km/h | 17,7 m | 2,52 m/s² | 2,1 km/h |
+| Park Twin (Ski und Brett) | 4/7/4/10/4 | 121 km/h | 15,5 m | 3,05 m/s² | 1,7 km/h |
+| Gipfel Gold | 8/7/7/8/7 | 127 km/h | 13,8 m | 2,53 m/s² | 1,9 km/h |
+
+Freestyle-Teile (Tricks 10): Luft-Drehungen 18 % schneller, Butter-Drehungen 42 % schneller, alle Trickpunkte (Luft, Rails, Boden) x 1,3. Im Spiel: mit dem Park Twin dreht der Butter 360 in 0,9 s statt 1,2 s.
+
+### Heli-Berg
+
+| Wunsch | Ursache | Änderung | Messung |
+|---|---|---|---|
+| An den riesigen Sprüngen am Rand durchglitchen | Die Seiten der Klippen-Bänke waren senkrechte Schneewände ohne Fels (Felswand nur bis 76 m hinter der Kante). Die Physik ließ den Fahrer an jeder Wand hinauffahren (Geschwindigkeit in die Wand wurde nach oben umgelenkt), mitten durch den Fels | Physik: steiler als 60 Grad ist eine Wand; hineinfahren heißt abprallen und an ihr entlanggleiten (Ski drehen mit), an einer Wand gewinnt man keine Höhe; frontal über 43 km/h gegen eine hohe Wand Sturz. Felswand an den Bank-Seiten so weit bergauf, wie die Bank über 2 m hoch ist. Windlippen mit flacheren Seiten | `node tools/heli_edges.mjs 3` (12.300 seitliche und schräge Anfahrten an Bänke und Windlippen): Wandfahrten 5100 (bis 16 m hoch) auf 0 |
+| Gelände zu uneben | Erosionsrillen und feine Rippen: quer zur Falllinie im Mittel 1,7 m Buckel auf 20 m | Vier Glättungsdurchgänge nach der Erosion (Wellen unter etwa 40 m), feine Rippen und Rauschen kleiner; Couloirs, Klippen und Geländeformen bleiben. Interpolation schwingt nicht mehr über die Eckwerte (Mulden im Rinnenboden) | `node tools/heli_rough.mjs 4`: Buckel quer Median 1,72 auf 0,35 m, Falllinie 0,70 auf 0,11 m; über 1 m quer 77 % auf 10 % |
+| Ganz unten im Tal alles weiß | Talboden und unterste 70 m waldfrei | Talboden mit Waldflecken und Wiesen, Fluss, Straße und Dörfer frei; geht zum Hang in den Bergwald über | Talboden 0 % auf rund 44 % bewaldet |
+| Nicht überall Bäume | unten geschlossener Wald | Almen (einige hundert Meter) und Lichtungen, auch in der Fernsicht | rund 15 % der Waldzone offen |
+| Lenkung greift bei Tempo am Querhang nicht | Der ganze Kantengriff ging auf den Querhang-Abtrieb, dazu hob man auf dem welligen Hang dauernd ab (20 bis 26 % der Zeit in der Luft, keine Lenkung) | Kante hält im Heli zusätzlich den Querhang-Abtrieb, mehr Griff im Heli-Pulver; dazu das glattere Gelände | `node tools/heli_steer.mjs 3` (120 Steilhänge 29 bis 44 Grad, 2 s voll gegen den Hang): bei 101 km/h quer Drehung im Mittel 16 bis 21 auf 47 bis 49 Grad, schlechteste 10 % von −3 bis 4 auf 40 Grad; Luftanteil 26 % auf 4 % |
+
+- Absprungpunkte: auf einem Grat wird auch 30 m links und rechts geprüft, ob die Falllinie ins Tal führt (ein Bot rollte vom Westgrat auf die Rückseite); mehr Kandidaten, weiterhin 5 Punkte je Berg.
+- Nach dem Einschneiden der Couloirs volles Mindestgefälle (vorher 0,9-fach): im Rinnen-Auslauf rollte man im Pulver aus.
+
+### Lawinen-Kamera
+
+- Statt seitlich zu schwenken geht die Kamera weit zurück und hoch und schaut voraus den Hang hinab (Blickrichtung bleibt die Fahrtrichtung), mindestens 3,4 s und solange die Lawine nah ist, weich ein- und ausgeblendet.
+- In dieser Zeit lassen Felsen und Felswände nicht stürzen: man gleitet seitlich am Felsen vorbei (Test: frontal mit 72 km/h auf einen Felsen, vorher Sturz, jetzt vorbei mit rund drei Vierteln des Tempos). Bäume werfen weiterhin ab.
+- Standbild: Fahrer, Schollen und der Hang bis ins Tal im Bild.
+
+### Bots vorher und nachher
+
+| Prüfung | v28 | v29 |
+|---|---|---|
+| `piste_validate.mjs 10 3200` (Freeride, Freestyle, abseits) | 0 Stürze; Freestyle 1 Sturz Seed 57; abseits 20 Linien bei ±85 m stecken | genau gleich (Ausgaben identisch) |
+| `race_validate.mjs` | 1 knappes Tor Super-G Stil 2, Slalom schnell verpasst 4 Tore | genau gleich |
+| `terrain_scan2.mjs` | 4 Stellen, alle über 120 m neben der Piste | genau gleich |
+| `heli_validate.mjs 6 ohne` | 75 von 76 im Tal, 1 Linie steckt in einer Rinne | 75 von 78 im Tal, 0 Geländestürze, 3840 Klippensprünge ohne Sturz (höchster Aufprall 13,3 m/s); 1 Linie (Dauer-Lenkung nach rechts) steckt, 2 Bot-Fahrten prallen mit rund 100 km/h frontal gegen eine Felswand und stürzen (vorher wären sie an der Wand hinaufgeglitten; der Bot weicht nicht aus) |
+
+### Nicht geprüft
+
+- Kein Mensch hat die Bodentricks, die Ski-Werte, die neue Heli-Lenkung und die Wände gespielt. Ob Q/E/X/G gut erreichbar sind und sich der Butter gut anfühlt, ist offen.
+- Handy-Knopf und Wischen für den Press nur in der Handy-Ansicht des Browsers geprüft, nicht auf einem echten Telefon.
+- Die Heli-Wand-Regel kann an engen Couloir-Wänden bei Vollgas frontal stürzen lassen; ob das fair wirkt, muss ein Spieltest zeigen.
+- In `heli_edges.mjs` gerät der Fahrer in 3 von 12.300 Fahrten kurz mehr als 0,3 m unter die Oberfläche (nicht weiter untersucht).

@@ -1,5 +1,5 @@
 // Vorschau des Heli-Gebirges ohne Browser: Reliefbild von oben (Sonne, Schatten, Fels, Wald, Gletscher, Klippen).
-// Aufruf: node tools/heli_preview.mjs [seed] [feld|alles] -> docs/img/heli_<seed>_<feld|alles>.png
+// Aufruf: node tools/heli_preview.mjs [seed] [feld|alles] [ausgabe.png] -> sonst docs/img/heli_<seed>_<feld|alles>.png
 import zlib from 'node:zlib';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -54,7 +54,7 @@ if (!big) for (const c of s.cliffs) for (let u = c.u0; u <= c.u1; u += 2) {
   const p = HB.cliffPoint(c, 0, u), px = Math.round((p.x - X0) / (X1 - X0) * W), py = Math.round((p.d - D0) / (D1 - D0) * Hh);
   if (px >= 0 && py >= 0 && px < W && py < Hh) { const k = (py * W + px) * 3; buf[k] = 230; buf[k + 1] = 40; buf[k + 2] = 30; }
 }
-const out = path.join(ROOT, 'docs', 'img', `heli_${seed}_${mode}.png`);
+const out = process.argv[4] ? path.resolve(process.argv[4]) : path.join(ROOT, 'docs', 'img', `heli_${seed}_${mode}.png`);
 fs.mkdirSync(path.dirname(out), { recursive: true });
 fs.writeFileSync(out, png(W, Hh, buf));
 console.log('gespeichert', out, (Date.now() - t0) + ' ms');

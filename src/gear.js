@@ -31,17 +31,29 @@ class Builder {
   }
 }
 
+// ------------------------------------------------------------------ Eigenschaften (v29)
+// Jeder Ski und jedes Brett hat Werte von 1 bis 10, die der Shop als Balken zeigt und die Physik umsetzt. 5 ist neutral
+// (der Allround-Ski vom Start fährt genau wie vorher). tempo: Gleiten und Luftwiderstand, turn: Wendigkeit (Drehrate),
+// pow: Auftrieb im Tiefschnee, trick: Dreh-Tempo in der Luft und am Boden, leichter buttern, mehr Trickpunkte,
+// grip: Kantengriff auf hartem Schnee.
+export const STAT_NAMES = [['tempo', 'Tempo'], ['turn', 'Wendigkeit'], ['pow', 'Pulver'], ['trick', 'Tricks'], ['grip', 'Kantengriff']];
+/** Multiplikatoren aus den Werten: 1 bei Wert 5. */
+export function statMul(st) {
+  const f = (k, a) => 1 + (((st && st[k]) || 5) - 5) * a;
+  return { glide: f('tempo', 0.04), turn: f('turn', 0.05), pow: f('pow', 0.1), trick: f('trick', 0.06), grip: f('grip', 0.04) };
+}
+
 // ------------------------------------------------------------------ Ski
-// d: { len, tip, waist, tail, twin, rockT, rockL, top: [Farben], pat: Muster, base, edgeC, bind: Farbe }
+// d: { len, tip, waist, tail, twin, rockT, rockL, top: [Farben], pat: Muster, base, edgeC, bind: Farbe, st: Werte }
 export const SKIS = {
-  allround: { name: 'Allround', len: 1.72, tip: 0.122, waist: 0.078, tail: 0.106, rockT: 0.045, rockL: 0.012, top: ['#23262d', '#ff6a13', '#f2f2f0'], pat: 'stripe', base: '#14161a', bind: '#ff6a13' },
-  slalom: { name: 'Slalom-Racer', len: 1.65, tip: 0.124, waist: 0.066, tail: 0.104, rockT: 0.03, rockL: 0.006, top: ['#e3202b', '#f6f6f4', '#14161a'], pat: 'race', base: '#101216', bind: '#e3202b', plate: true },
-  giant: { name: 'Riesentorlauf GS', len: 1.85, tip: 0.112, waist: 0.068, tail: 0.098, rockT: 0.03, rockL: 0.006, top: ['#1d4fd8', '#f6f6f4', '#ffd23f'], pat: 'race', base: '#101216', bind: '#1d4fd8', plate: true },
-  powder: { name: 'Powder 118', len: 1.86, tip: 0.142, waist: 0.118, tail: 0.13, rockT: 0.085, rockL: 0.05, top: ['#ff8a1e', '#14161a', '#fff1d6'], pat: 'mountain', base: '#1a1c22', bind: '#14161a' },
-  park: { name: 'Park Twin', len: 1.74, tip: 0.124, waist: 0.092, tail: 0.124, rockT: 0.06, rockL: 0.055, twin: true, top: ['#b6ff3a', '#7a2bd9', '#ff3d7f', '#14161a'], pat: 'blocks', base: '#2a1446', bind: '#14161a' },
-  wood: { name: 'Holz Classic', len: 1.78, tip: 0.128, waist: 0.084, tail: 0.112, rockT: 0.05, rockL: 0.015, top: ['#a8743f', '#7d5128', '#e8d8b8'], pat: 'wood', base: '#1a1712', bind: '#2b2b2b' },
-  carbon: { name: 'Carbon Pro', len: 1.8, tip: 0.13, waist: 0.096, tail: 0.116, rockT: 0.06, rockL: 0.02, top: ['#17191d', '#2a2e36', '#27c3ff'], pat: 'carbon', base: '#0d0e10', bind: '#27c3ff' },
-  gold: { name: 'Gipfel Gold', len: 1.8, tip: 0.128, waist: 0.088, tail: 0.112, rockT: 0.055, rockL: 0.018, top: ['#d4a62a', '#14161a', '#fff3c4'], pat: 'gold', base: '#15130d', bind: '#d4a62a' },
+  allround: { name: 'Allround', st: { tempo: 5, turn: 5, pow: 5, trick: 5, grip: 5 }, len: 1.72, tip: 0.122, waist: 0.078, tail: 0.106, rockT: 0.045, rockL: 0.012, top: ['#23262d', '#ff6a13', '#f2f2f0'], pat: 'stripe', base: '#14161a', bind: '#ff6a13' },
+  slalom: { name: 'Slalom-Racer', st: { tempo: 5, turn: 9, pow: 2, trick: 3, grip: 8 }, len: 1.65, tip: 0.124, waist: 0.066, tail: 0.104, rockT: 0.03, rockL: 0.006, top: ['#e3202b', '#f6f6f4', '#14161a'], pat: 'race', base: '#101216', bind: '#e3202b', plate: true },
+  giant: { name: 'Riesentorlauf GS', st: { tempo: 8, turn: 4, pow: 3, trick: 2, grip: 8 }, len: 1.85, tip: 0.112, waist: 0.068, tail: 0.098, rockT: 0.03, rockL: 0.006, top: ['#1d4fd8', '#f6f6f4', '#ffd23f'], pat: 'race', base: '#101216', bind: '#1d4fd8', plate: true },
+  powder: { name: 'Powder 118', st: { tempo: 5, turn: 5, pow: 10, trick: 6, grip: 3 }, len: 1.86, tip: 0.142, waist: 0.118, tail: 0.13, rockT: 0.085, rockL: 0.05, top: ['#ff8a1e', '#14161a', '#fff1d6'], pat: 'mountain', base: '#1a1c22', bind: '#14161a' },
+  park: { name: 'Park Twin', st: { tempo: 4, turn: 7, pow: 4, trick: 10, grip: 4 }, len: 1.74, tip: 0.124, waist: 0.092, tail: 0.124, rockT: 0.06, rockL: 0.055, twin: true, top: ['#b6ff3a', '#7a2bd9', '#ff3d7f', '#14161a'], pat: 'blocks', base: '#2a1446', bind: '#14161a' },
+  wood: { name: 'Holz Classic', st: { tempo: 6, turn: 6, pow: 6, trick: 6, grip: 5 }, len: 1.78, tip: 0.128, waist: 0.084, tail: 0.112, rockT: 0.05, rockL: 0.015, top: ['#a8743f', '#7d5128', '#e8d8b8'], pat: 'wood', base: '#1a1712', bind: '#2b2b2b' },
+  carbon: { name: 'Carbon Pro', st: { tempo: 8, turn: 7, pow: 5, trick: 5, grip: 7 }, len: 1.8, tip: 0.13, waist: 0.096, tail: 0.116, rockT: 0.06, rockL: 0.02, top: ['#17191d', '#2a2e36', '#27c3ff'], pat: 'carbon', base: '#0d0e10', bind: '#27c3ff' },
+  gold: { name: 'Gipfel Gold', st: { tempo: 8, turn: 7, pow: 7, trick: 8, grip: 7 }, len: 1.8, tip: 0.128, waist: 0.088, tail: 0.112, rockT: 0.055, rockL: 0.018, top: ['#d4a62a', '#14161a', '#fff3c4'], pat: 'gold', base: '#15130d', bind: '#d4a62a' },
 };
 
 function skiPattern(d, t, x, cols) {
@@ -126,12 +138,12 @@ export function makeSki(d) {
 // ------------------------------------------------------------------ Snowboards
 // Länge entlang x (wie das alte Brett), Breite z, Bindungen bei x = ±0.26
 export const BOARDS = {
-  classic: { name: 'Classic', len: 1.56, w: 0.27, shape: 'twin', top: ['#1e2127', '#ff6a13'], pat: 'stripes', bind: '#14161a' },
-  freestyle: { name: 'Park Twin', len: 1.52, w: 0.262, shape: 'twin', top: ['#ffd23f', '#14161a', '#ff3d7f'], pat: 'checker', bind: '#ff3d7f' },
-  powder: { name: 'Powder Swallowtail', len: 1.6, w: 0.29, shape: 'swallow', top: ['#2f6fd0', '#e9e6df', '#14161a'], pat: 'mountain', bind: '#2f6fd0' },
-  freeride: { name: 'Freeride Directional', len: 1.62, w: 0.274, shape: 'directional', top: ['#0f6b5a', '#f2f2f0', '#d99a1c'], pat: 'wave', bind: '#14161a' },
-  aurora: { name: 'Polarlicht', len: 1.56, w: 0.27, shape: 'twin', top: ['#0b1230', '#35e0a1', '#7a2bd9'], pat: 'aurora', bind: '#35e0a1' },
-  gold: { name: 'Gipfel Gold', len: 1.58, w: 0.272, shape: 'directional', top: ['#d4a62a', '#14161a'], pat: 'stripes', bind: '#d4a62a' },
+  classic: { name: 'Classic', st: { tempo: 5, turn: 5, pow: 5, trick: 5, grip: 5 }, len: 1.56, w: 0.27, shape: 'twin', top: ['#1e2127', '#ff6a13'], pat: 'stripes', bind: '#14161a' },
+  freestyle: { name: 'Park Twin', st: { tempo: 4, turn: 7, pow: 4, trick: 10, grip: 4 }, len: 1.52, w: 0.262, shape: 'twin', top: ['#ffd23f', '#14161a', '#ff3d7f'], pat: 'checker', bind: '#ff3d7f' },
+  powder: { name: 'Powder Swallowtail', st: { tempo: 5, turn: 4, pow: 10, trick: 4, grip: 4 }, len: 1.6, w: 0.29, shape: 'swallow', top: ['#2f6fd0', '#e9e6df', '#14161a'], pat: 'mountain', bind: '#2f6fd0' },
+  freeride: { name: 'Freeride Directional', st: { tempo: 7, turn: 5, pow: 7, trick: 4, grip: 6 }, len: 1.62, w: 0.274, shape: 'directional', top: ['#0f6b5a', '#f2f2f0', '#d99a1c'], pat: 'wave', bind: '#14161a' },
+  aurora: { name: 'Polarlicht', st: { tempo: 6, turn: 6, pow: 6, trick: 7, grip: 6 }, len: 1.56, w: 0.27, shape: 'twin', top: ['#0b1230', '#35e0a1', '#7a2bd9'], pat: 'aurora', bind: '#35e0a1' },
+  gold: { name: 'Gipfel Gold', st: { tempo: 8, turn: 7, pow: 7, trick: 8, grip: 7 }, len: 1.58, w: 0.272, shape: 'directional', top: ['#d4a62a', '#14161a'], pat: 'stripes', bind: '#d4a62a' },
 };
 function boardPattern(d, t, z, cols) {
   const [a, b, c] = cols;

@@ -40,7 +40,12 @@ function sampleCubic(g, x, d) {
   const i = clamp(Math.floor(fx), 1, g.nx - 3), j = clamp(Math.floor(fd), 1, g.nd - 3);
   const tx = clamp(fx - i, 0, 1), td = clamp(fd - j, 0, 1), h = g.h, nx = g.nx;
   const row = (jj) => { const k = jj * nx + i; return cubic(h[k - 1], h[k], h[k + 1], h[k + 2], tx); };
-  return cubic(row(j - 1), row(j), row(j + 1), row(j + 2), td);
+  const v = cubic(row(j - 1), row(j), row(j + 1), row(j + 2), td);
+  // v29: nicht über die vier Eckwerte der Zelle hinausschwingen. Neben steilen Rinnenwänden entstanden sonst bis 0,5 m
+  // tiefe Mulden im Rinnenboden, in denen man im Pulver ausrollte und stecken blieb.
+  const k = j * nx + i, a = h[k], b = h[k + 1], c = h[k + nx], e = h[k + nx + 1];
+  const lo = Math.min(a, b, c, e), hi = Math.max(a, b, c, e);
+  return v < lo ? lo : v > hi ? hi : v;
 }
 function sampleLin(g, arr, x, d) {
   const fx = clamp((x - g.x0) / g.cell, 0, g.nx - 1.001), fd = clamp((d - g.d0) / g.cell, 0, g.nd - 1.001);
@@ -118,7 +123,7 @@ function detail(s, x, d, base, fine) {
       const w1 = 160 * (fbm(r / 600 + s.ns, th * 4) - 0.5);
       const fade = 1 - smoothstep(s.DV - 1800, s.DV - 600, d);
       y += env2 * fade * 17 * (Math.pow(ridged((u + w1) / 230 + s.ns, r / 900), 2) - 0.45);
-      if (fine) y += env2 * fade * 5 * (Math.pow(ridged((u + w1 * 0.6) / 70 + s.ns * 2, r / 380), 2) - 0.45);
+      if (fine) y += env2 * fade * 2 * (Math.pow(ridged((u + w1 * 0.6) / 70 + s.ns * 2, r / 380), 2) - 0.45);
     }
     // Grat-Rauschen überall in den Bergen (Nachbargipfel, Seitenflanken); in der Hauptflanke zurückgenommen,
     // denn richtungsloses Rauschen erzeugt dort Buckel quer zur Falllinie
@@ -127,7 +132,7 @@ function detail(s, x, d, base, fine) {
     y += fm * env * 34 * (Math.pow(ridged((x + wx) / 620 + s.ns, (d + wd) / 620), 1.6) - 0.4) * (1 - 0.5 * env2);
     y += fm * env * 16 * (ridged((x + wd) / 260, (d + wx) / 260 + s.ns) - 0.5);
     y += 22 * (fbm(x / 1700 + s.ns, d / 1700) - 0.5) * env;
-    if (fine) y += env * 4 * (vnoise(x / 70, d / 70 + s.ns) - 0.5);
+    if (fine) y += env * 1.5 * (vnoise(x / 70, d / 70 + s.ns) - 0.5);
   }
   // Fluss im Talboden
   const q = d - valleyAxis(s, x) - riverOffset(s, x);
@@ -200,6 +205,10 @@ export function init(seed, opts = {}) {
     thermal(fg, 1.1, 8);
     keepFloor(s, fg, pre);
   }
+  // Glätten (v29): Erosionsrillen und feine Rippen machten den Hang quer gefahren zum Waschbrett (Buckel auf 20 m im
+  // Mittel 1,7 m, man hob bei Tempo dauernd ab). Vier Durchgänge nehmen Wellen unter etwa 40 m heraus; die großen Rippen,
+  // Couloirs (danach eingeschnitten), Klippen und Geländeformen bleiben.
+  smoothFine(s, fg, 4);
   s.tErode = Date.now() - t0 - s.tMacro;
   // Rand des feinen Rasters weich an das grobe anschließen
   const B = 380;
@@ -210,7 +219,9 @@ export function init(seed, opts = {}) {
     fg.h[k] = lerp(sampleCubic(cg, x, d), fg.h[k], w);
   }
   s.couloirs = carveCouloirs(s, fg, R, rr);
-  if (!opts.noFill) { for (let k = 0; k < epsMap.length; k++) epsMap[k] *= 0.9; fillDepressions(fg, 0, epsMap); }
+  // nach den Couloirs noch einmal auffüllen; v29: mit vollem Mindestgefälle (vorher 0,9-fach), sonst rollte man im
+  // flachen Auslauf einer Rinne im Pulver aus
+  if (!opts.noFill) { for (let k = 0; k < epsMap.length; k++) epsMap[k] *= 1.15; fillDepressions(fg, 0, epsMap); }
   // Talboden und Ziel
   s.fin = Math.round(valleyAxis(s, 0) - s.Wv - 60);
   s.end = s.DV + 650;
@@ -229,6 +240,7 @@ export function init(seed, opts = {}) {
   s.shC = bakeShadow(s, cg, 1);
   // Dörfer im Tal
   s.villages = placeVillages(s, R, rr);
+  clearVillages(s);
   s.summit = { x: 0, d: 0, y: heightDU(0, 0, s) };
   s.tAll = Date.now() - t0;
   return s;
@@ -275,6 +287,15 @@ function erode(g, nDrops, R, str = 1) {
       sp = Math.sqrt(Math.max(0, sp * sp - dH * grav));
       wa *= 1 - evap;
     }
+  }
+}
+/** Glätten: Rillen und Rippen unter etwa 40 m Wellenlänge herausnehmen (binomial 1-2-1 in beide Richtungen). */
+function smoothFine(s, g, passes) {
+  const { nx, nd, h } = g, tmp = new Float32Array(h.length);
+  for (let p = 0; p < passes; p++) {
+    for (let j = 0; j < nd; j++) for (let i = 1; i < nx - 1; i++) { const k = j * nx + i; tmp[k] = (h[k - 1] + 2 * h[k] + h[k + 1]) * 0.25; }
+    for (let j = 0; j < nd; j++) { tmp[j * nx] = h[j * nx]; tmp[j * nx + nx - 1] = h[j * nx + nx - 1]; }
+    for (let j = 1; j < nd - 1; j++) for (let i = 0; i < nx; i++) { const k = j * nx + i; h[k] = (tmp[k - nx] + 2 * tmp[k] + tmp[k + nx]) * 0.25; }
   }
 }
 /** Der Fluss trägt den Schutt ab: Talboden bleibt in seiner ursprünglichen Form, zu den Hängen weich übergeblendet. */
@@ -355,13 +376,49 @@ function buildMaps(s) {
     f *= 1 - 0.75 * smoothstep(0.003, 0.008, s.curv[k]) * smoothstep(fl + 60, fl + 260, y);   // große Lawinenstriche bleiben frei
     const cl = fbm(x / 95 + s.ns * 3, d / 95);
     f *= lerp(smoothstep(0.32, 0.62, cl), 1, smoothstep(tl - 120, tl - 320, y) * 0.92);  // oben Baumgruppen, unten geschlossener Wald
-    f *= smoothstep(fl + 28, fl + 70, y) * 0.97 + 0.03 * smoothstep(0.7, 0.78, cl);      // Talboden offen (Wiesen), nur vereinzelt Gehölze
-    const q = d - valleyAxis(s, x) - riverOffset(s, x);
-    f *= smoothstep(10, 26, Math.abs(q));                                                // nicht im Fluss
+    // Talboden (v29): kein weißes Feld mehr, sondern Wald in Flecken mit Wiesen dazwischen; zum Hang hin geht er in den
+    // Bergwald über. Fluss und Straße bleiben frei, Dörfer werden nach dem Setzen ausgespart (clearVillages).
+    f = lerp(floorWood(x, d, s), f, smoothstep(fl + 12, fl + 45, y));
+    f *= openLand(x, d, s);                                                              // Almen und Lichtungen
     s.forest[k] = clamp(f, 0, 1);
     // Gletscher: hohe, flache Mulden (Kare)
     s.glacier[k] = smoothstep(0.0003, 0.0018, s.curv[k]) * smoothstep(0.75, 0.4, s.slope[k]) * smoothstep(s.treeY + 600, s.treeY + 900, y);
   }
+}
+
+/** Almen und Lichtungen (v29): 1 = Wald möglich, 0 = offen. Große Almen (einige hundert Meter) und kleine Lichtungen,
+ *  damit nicht jeder Hang unter der Baumgrenze geschlossen bewaldet ist. */
+export function openLand(x, d, s = S) {
+  const alm = smoothstep(0.31, 0.37, fbm(x / 520 + s.ns * 1.7, d / 520 + 11));
+  const lich = smoothstep(0.28, 0.33, fbm(x / 115 + 5.3, d / 115 + s.ns));
+  return alm * lich;
+}
+/** Wald im Talboden: Flecken mit Wiesen dazwischen; Fluss, Straße und (wenn schon gesetzt) Dörfer und Stadel frei. */
+export function floorWood(x, d, s = S) {
+  let w = smoothstep(0.44, 0.53, fbm(x / 320 + s.ns * 0.7, d / 320 + 3)) * 0.85;
+  if (w <= 0) return 0;
+  const q = d - valleyAxis(s, x) - riverOffset(s, x);
+  w *= smoothstep(12, 30, Math.abs(q));                                   // Fluss mit Uferstreifen
+  w *= smoothstep(9, 20, Math.abs(d - valleyAxis(s, x) - s.Wv * 0.8));    // Straße
+  if (w > 0 && s.villages) for (const v of s.villages) {
+    const e = Math.hypot((x - v.x) / 1.6, d - v.d);
+    if (e < 190) w *= smoothstep(110, 190, e);                             // Dorf mit Wiesen rundherum
+  }
+  return w;
+}
+/** Nach dem Setzen der Dörfer: Wald um Häuser und Heustadel ausräumen. */
+function clearVillages(s) {
+  const g = s.fg, { nx, nd, cell } = g;
+  const clear = (x, d, r) => {
+    const i0 = Math.max(0, Math.floor((x - r - g.x0) / cell)), i1 = Math.min(nx - 1, Math.ceil((x + r - g.x0) / cell));
+    const j0 = Math.max(0, Math.floor((d - r - g.d0) / cell)), j1 = Math.min(nd - 1, Math.ceil((d + r - g.d0) / cell));
+    for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) {
+      const k = j * nx + i, e = Math.hypot(g.x0 + i * cell - x, g.d0 + j * cell - d);
+      s.forest[k] *= smoothstep(r * 0.6, r, e);
+    }
+  };
+  for (const v of s.villages) { clear(v.x, v.d, 140); for (const h of v.houses) clear(h.x, h.d, 30); }
+  for (const b of s.villages.barns || []) clear(b.x, b.d, 22);
 }
 
 // ------------------------------------------------------------------ Klippen
@@ -531,7 +588,7 @@ export function heightDU(d, x, s = S) {
   if (!inGrid(fg, x, d)) return sampleCubic(s.cg, x, d);
   let y = sampleCubic(fg, x, d);
   // feine Unruhe im Schnee (das Raster hat 10 m)
-  y += 0.45 * (vnoise(x / 24 + 3, d / 24 + s.ns) - 0.5) + 0.08 * (vnoise(x / 7, d / 7) - 0.5);   // nur leichte Unruhe, der Hang soll glatt fahrbar sein
+  y += 0.3 * (vnoise(x / 24 + 3, d / 24 + s.ns) - 0.5) + 0.05 * (vnoise(x / 7, d / 7) - 0.5);   // nur leichte Unruhe, der Hang soll glatt fahrbar sein
   const key = bucketKey(x, d);
   const l = s.cliffBuckets && s.cliffBuckets.get(key);
   if (l) for (let i = 0; i < l.length; i++) y += cliffDelta(l[i], x, d);
@@ -655,11 +712,14 @@ export function wallLine(c) {
     const wx = c.fx * nal + c.ax * nu, wd = c.fd * nal + c.ad * nu, l = Math.hypot(wx, wd) || 1;
     pts.push({ x, d, z: -d, nx: wx / l, nz: -wd / l });
   };
-  for (let t = Math.min(c.Lup * 0.85, 76); t > 3; t -= 3.2) push(edgeA(c, c.u0) - t, sideLo(c, -t), 0, -1);
+  // Seitenwände so weit bergauf, wie die Bank noch über 2 m hoch ist (vorher höchstens 76 m: dahinter stand die Seite
+  // als weiße, senkrechte Schneewand ohne Fels)
+  const tMax = c.Lup * (1 - Math.sqrt(Math.min(1, 2 / c.h)));
+  for (let t = tMax; t > 3; t -= 3.2) push(edgeA(c, c.u0) - t, sideLo(c, -t), 0, -1);
   push(edgeA(c, c.u0) - 0.5, sideLo(c, -0.5) + 0.4, 0.7, -0.7);
   for (let u = sideLo(c, 0) + 2.4; u < sideHi(c, 0) - 2.0; u += 1.9) push(edgeA(c, u) + 0.2, u, 1, 0);
   push(edgeA(c, c.u1) - 0.5, sideHi(c, -0.5) - 0.4, 0.7, 0.7);
-  for (let t = 3.2; t < Math.min(c.Lup * 0.85, 76); t += 3.2) push(edgeA(c, c.u1) - t, sideHi(c, -t), 0, 1);
+  for (let t = 3.2; t < tMax; t += 3.2) push(edgeA(c, c.u1) - t, sideHi(c, -t), 0, 1);
   return pts;
 }
 /** Absprungpunkt des Helikopters: der gewählte aus dropPoints(), sonst knapp unter dem Gipfel auf der Talseite. */
@@ -708,6 +768,9 @@ export function dropPoints() {
   };
   const make = (name, note, x, d) => {
     if (out.length && !reachesValley(x, d)) return false;
+    // v29: auch ein Stück links und rechts davon (auf einem Grat teilt sich die Falllinie; wer mit Schwung auf die
+    // falsche Seite gerät, darf nicht auf der Rückseite landen)
+    if (out.length) { const f = fallAt(S, x, d); for (const o of [-30, 30]) if (!reachesValley(x + f.fd * o, d - f.fx * o)) return false; }
     const [fx, fd] = fallDir(x, d), sl = meanSlope(x, d), nc = featsBelow(x, d);
     const diff = Math.max(1, Math.min(5, Math.round(1 + ((sl - 0.6) / 0.33) * 3 + Math.min(1, nc * 0.15))));
     out.push({ name, note, x, d, fx, fd, diff, slope: +sl.toFixed(2), cliffs: nc });
@@ -731,8 +794,8 @@ export function dropPoints() {
     }
     return cand.sort((a, b) => b.sc - a.sc);
   };
-  for (const c of crest(-1).slice(0, 12)) if (make('Westgrat', 'luftiger Grat, links und rechts steile Rinnen', c.x, c.d)) break;
-  for (const c of crest(1).slice(0, 12)) if (make('Ostgrat', 'langer Grat mit Blick ins Tal', c.x, c.d)) break;
+  for (const c of crest(-1).slice(0, 120)) if (make('Westgrat', 'luftiger Grat, links und rechts steile Rinnen', c.x, c.d)) break;
+  for (const c of crest(1).slice(0, 120)) if (make('Ostgrat', 'langer Grat mit Blick ins Tal', c.x, c.d)) break;
   // Couloir: Einstieg des höchstgelegenen Couloirs (ein Stück unterhalb des Anfangs, im Rinnenboden)
   const cbs = [];
   for (const c of S.couloirs || []) {
@@ -806,8 +869,8 @@ function featDelta(f, x, d) {
   }
   if (f.k === 'kick') {
     const al = dx * f.fx + dd * f.fd, u = dx * f.ax + dd * f.ad;
-    if (al < -f.L || al > 2 || Math.abs(u) > f.w + 3) return 0;
-    const wl = 1 - smoothstep(f.w - 2, f.w + 3, Math.abs(u));
+    if (al < -f.L || al > 2 || Math.abs(u) > f.w + 3 + f.h * 1.5) return 0;
+    const wl = 1 - smoothstep(f.w - 2, f.w + 3 + f.h * 1.5, Math.abs(u));   // Seiten flach genug zum Hinauffahren
     if (al <= 0) { const t = 1 + al / f.L; return f.h * t * t * wl; }
     return f.h * (1 - smoothstep(0, 2, al)) * wl;
   }
@@ -828,7 +891,7 @@ function addFeat(s, f, r) {
     s.featBuckets.get(key).push(f);
   }
 }
-const featRange = (f) => (f.k === 'kick' ? f.L + f.w + 6 : f.k === 'spines' ? f.R * 1.5 + 5 : f.r * 3);
+const featRange = (f) => (f.k === 'kick' ? f.L + f.w + 6 + f.h * 1.5 : f.k === 'spines' ? f.R * 1.5 + 5 : f.r * 3);
 function fallAt(s, x, d) {
   const e = 12, gx = heightCoarse(x + e, d) - heightCoarse(x - e, d), gd = heightCoarse(x, d + e) - heightCoarse(x, d - e), gl = Math.hypot(gx, gd) || 1;
   return { fx: -gx / gl, fd: -gd / gl, sl: gl / (2 * e) };

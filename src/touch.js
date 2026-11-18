@@ -129,6 +129,7 @@ export function setupTouch({ isAir, isRunning, onResize }) {
     <div class="tb right">
       <button class="tbtn big" id="tJump" aria-label="Springen, in der Luft halten für Grab"><svg viewBox="0 0 24 24"><path d="M5 15l7-7 7 7"/><path d="M5 20h14"/></svg></button>
       <button class="tbtn spec" id="tSpec" aria-label="Spezialtrick (in der Luft)"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/></svg></button>
+      <button class="tbtn butter" id="tButter" aria-label="Butter-Drehung am Boden (halten, Richtung nach der Lenkung)"><svg viewBox="0 0 24 24"><path d="M19 12a7 7 0 1 1-2.05-4.95"/><path d="M19 4v4h-4"/></svg></button>
       <button class="tbtn" id="tTuck" aria-label="Hocke"><svg viewBox="0 0 24 24"><path d="M6 6l6 6 6-6"/><path d="M6 13l6 6 6-6"/></svg></button>
     </div>
     <div class="tb left">
@@ -154,6 +155,11 @@ export function setupTouch({ isAir, isRunning, onResize }) {
   hold($('tBrake'), 'KeyS');
   const tap = (el, code) => el.addEventListener('click', (e) => { e.preventDefault(); key(code, true); key(code, false); });
   tap($('tMenu'), 'Escape'); tap($('tCam'), 'KeyC'); tap($('tSpec'), 'Digit0');
+  // Butter-Knopf: halten dreht auf dem Schnee; die Richtung folgt der Lenkung beim Drücken (ohne Lenkung rechts herum)
+  { const el = $('tButter'); let code = null;
+    el.addEventListener('pointerdown', (e) => { e.preventDefault(); try { el.setPointerCapture(e.pointerId); } catch {} el.classList.add('on'); code = (touch.steer || 0) < -0.2 ? 'KeyQ' : 'KeyE'; key(code, true); });
+    const up = (e) => { e.preventDefault(); el.classList.remove('on'); if (code) key(code, false); code = null; };
+    el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up); }
   // Respawn-Punkt: kurz tippen = zurück (ohne Punkt: zurück auf die Spur), halten = hier neu setzen
   { const el = $('tCp'); let tm = null, long = false;
     el.addEventListener('pointerdown', (e) => { e.preventDefault(); long = false; el.classList.add('on'); tm = setTimeout(() => { long = true; key('KeyF', true); key('KeyF', false); }, 550); });
@@ -182,6 +188,9 @@ export function setupTouch({ isAir, isRunning, onResize }) {
       key(flip, true);
     } else if (isAir() && Math.abs(dx) > 36 && Math.abs(dx) > Math.abs(dy) && !flip) {
       flip = dx < 0 ? 'ArrowLeft' : 'ArrowRight';   // seitlich wischen und halten = Mute Grab (links) / Tail Grab (rechts)
+      key(flip, true);
+    } else if (!isAir() && !flip && Math.abs(dy) > 40 && Math.abs(dy) > Math.abs(dx) * 1.3) {
+      flip = dy < 0 ? 'KeyG' : 'KeyX';     // am Boden: hoch wischen und halten = Nose-Press, runter = Tail-Press
       key(flip, true);
     } else if (!isAir()) {   // Daumen-Lenkung geht immer, auch wenn Neigen an ist (Ziehen hat Vorrang)
       dragSteer = Math.max(-1, Math.min(1, dx / 70));

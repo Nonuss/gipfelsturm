@@ -1,6 +1,6 @@
 // Shop im Startmenü: Punkte aus den Läufen sammeln (im Browser gespeichert) und dafür Ski, Snowboards und Outfits kaufen.
 // Gekauftes bleibt gekauft; angelegt wird mit einem Klick. Die Punkte gibt es nur im Spiel, kein echtes Geld.
-import { SKIS, BOARDS } from './gear.js';
+import { SKIS, BOARDS, STAT_NAMES } from './gear.js';
 
 const KEY = { wallet: 'gipfelsturm_wallet', owned: 'gipfelsturm_owned', equip: 'gipfelsturm_equip', earned: 'gipfelsturm_earned' };
 const START_POINTS = 300;   // Startguthaben: das erste Teil ist gleich erreichbar
@@ -17,17 +17,17 @@ export const OUTFITS = {
 };
 const SKI_INFO = {
   allround: ['Taillierter Allround-Ski mit leichtem Rocker an der Schaufel', 0],
-  slalom: ['Kurzer Rennski mit schmaler Mitte (66 mm) und Rennplatte', 300],
-  giant: ['Langer Riesentorlauf-Ski für weite, schnelle Bögen', 600],
-  park: ['Twin-Tip mit Rocker vorne und hinten, für Rails und Rückwärtslandungen', 700],
-  powder: ['118 mm breit, viel Rocker: schwimmt im Tiefschnee obenauf', 900],
+  slalom: ['Kurzer Rennski mit schmaler Mitte (66 mm) und Rennplatte: enge Bögen, beißt auf Eis', 300],
+  giant: ['Langer Riesentorlauf-Ski für weite, schnelle Bögen, Tempo statt Tricks', 600],
+  park: ['Twin-Tip mit Rocker vorne und hinten. Der Trick-Ski: dreht schneller, buttert leicht, bringt bis 30 % mehr Trickpunkte', 700],
+  powder: ['118 mm breit, viel Rocker: schwimmt im Tiefschnee obenauf, auf Eis wenig Halt', 900],
   wood: ['Echtholz-Optik mit hellen Seitenwangen', 1000],
   carbon: ['Carbon-Gewebe, blaue Akzente, leichte Bindung', 1400],
   gold: ['Goldene Oberfläche, schwarze Mitte, für die Bestenliste', 2500],
 };
 const BOARD_INFO = {
   classic: ['Twin-Board mit Streifen, das Brett vom Start', 0],
-  freestyle: ['Weiches Park-Board mit Schachbrett-Grafik', 300],
+  freestyle: ['Weiches Park-Board mit Schachbrett-Grafik. Das Trick-Brett: dreht schneller, buttert leicht, mehr Trickpunkte', 300],
   freeride: ['Directional mit langer Nase und Wellen-Grafik', 800],
   powder: ['Swallowtail: Schwalbenschwanz hinten, Nase hoch, für tiefen Pulver', 1100],
   aurora: ['Nachtblau mit Polarlicht-Verlauf', 1300],
@@ -35,8 +35,8 @@ const BOARD_INFO = {
 };
 
 export const CATALOG = {
-  ski: Object.keys(SKIS).map((id) => ({ id, name: SKIS[id].name, text: SKI_INFO[id][0], price: SKI_INFO[id][1], colors: SKIS[id].top })),
-  board: Object.keys(BOARDS).map((id) => ({ id, name: BOARDS[id].name, text: BOARD_INFO[id][0], price: BOARD_INFO[id][1], colors: BOARDS[id].top })),
+  ski: Object.keys(SKIS).map((id) => ({ id, name: SKIS[id].name, text: SKI_INFO[id][0], price: SKI_INFO[id][1], colors: SKIS[id].top, st: SKIS[id].st })),
+  board: Object.keys(BOARDS).map((id) => ({ id, name: BOARDS[id].name, text: BOARD_INFO[id][0], price: BOARD_INFO[id][1], colors: BOARDS[id].top, st: BOARDS[id].st })),
   outfit: Object.keys(OUTFITS).map((id) => ({ id, name: OUTFITS[id].name, text: OUTFITS[id].text, price: OUTFITS[id].price, colors: OUTFITS[id].jacket ? [OUTFITS[id].jacket, OUTFITS[id].accent, OUTFITS[id].pants] : ['#1d2c52', '#ff6a13', '#33363b'] })),
 };
 
@@ -94,7 +94,13 @@ export function buildShopUI(root, apply) {
       card.className = 'card' + (on ? ' on' : '');
       const sw = it.colors.map((c, i) => `<span style="background:${c};flex:${i ? 1 : 2.2}"></span>`).join('');
       const label = on ? 'Angelegt' : own ? 'Anlegen' : `Kaufen · ${num(it.price)}`;
-      card.innerHTML = `<div class="sw ${tab}">${sw}</div><b>${it.name}</b><p>${it.text}</p><button ${on || (!own && !afford) ? 'disabled' : ''}>${label}</button>${!own && !afford ? `<small>noch ${num(it.price - shop.wallet)} Punkte</small>` : ''}`;
+      // Eigenschaften als Balken (1 bis 10); der Vergleich zum angelegten Teil steht als Pfeil daneben
+      const cur = tab !== 'outfit' && CATALOG[tab].find((q) => q.id === shop.equip[tab]);
+      const stats = it.st ? `<ul class="gstats">${STAT_NAMES.map(([k, nm]) => {
+        const v = it.st[k], dv = cur && cur.st && !on ? v - cur.st[k] : 0;
+        return `<li><span>${nm}</span><i style="--v:${v * 10}%" role="img" aria-label="${nm} ${v} von 10"></i><em class="${dv > 0 ? 'up' : dv < 0 ? 'dn' : ''}">${dv > 0 ? '+' + dv : dv < 0 ? String(dv).replace('-', '−') : ''}</em></li>`;
+      }).join('')}</ul>` : '';
+      card.innerHTML = `<div class="sw ${tab}">${sw}</div><b>${it.name}</b><p>${it.text}</p>${stats}<button ${on || (!own && !afford) ? 'disabled' : ''}>${label}</button>${!own && !afford ? `<small>noch ${num(it.price - shop.wallet)} Punkte</small>` : ''}`;
       card.querySelector('button').addEventListener('click', () => {
         if (own) shop.wear(tab, it.id); else shop.buy(tab, it.id);
         apply();

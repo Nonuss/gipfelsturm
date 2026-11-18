@@ -2,7 +2,7 @@
 // zwei Gitter (Massiv fein, Umgebung grob) mit Position, Normale und Material (Fels, Wald, Sonne, Gletscher)
 // sowie die Fichten der Ferne (Position, Drehung, Größe, Helligkeit).
 import * as HB from './heliberg.js';
-import { clamp, smoothstep, fbm, mulberry32 } from './mathutil.js';
+import { clamp, lerp, smoothstep, fbm, mulberry32 } from './mathutil.js';
 
 function grid(nx, nd, P, H, matFn, skip) {
   const n = nx * nd, pos = new Float32Array(n * 3), nor = new Float32Array(n * 3), am = new Float32Array(n * 4), ao = new Float32Array(n);
@@ -38,7 +38,9 @@ export function farArrays(s, tier) {
   const rockOf = (slope, curv) => smoothstep(0.62, 1.0, slope) + clamp(-curv * 120, 0, 0.45) * smoothstep(0.4, 0.75, slope);
   const coarseForest = (x, d, y, slope) => {
     const fl = HB.floorY(x, d), tl = s.treeY + (fl - s.valleyY) + 160 * (fbm(x / 900, d / 900) - 0.5);
-    return smoothstep(tl + 40, tl - 200, y) * smoothstep(1.3, 0.85, slope) * smoothstep(fl + 25, fl + 70, y) * (0.55 + 0.45 * smoothstep(0.3, 0.6, fbm(x / 260 + 4, d / 260)));
+    const up = smoothstep(tl + 40, tl - 200, y) * smoothstep(1.3, 0.85, slope) * (0.55 + 0.45 * smoothstep(0.3, 0.6, fbm(x / 260 + 4, d / 260)));
+    // wie im Massiv: Talboden mit Waldflecken, dazu Almen und Lichtungen (v29)
+    return lerp(HB.floorWood(x, d), up, smoothstep(fl + 12, fl + 45, y)) * HB.openLand(x, d);
   };
   const floorMask = (x, d, y) => smoothstep(s.valleyY + 60, s.valleyY + 15, y + (s.valleyY - HB.floorY(x, HB.valleyD(x))));
   // Massiv (feines Raster)

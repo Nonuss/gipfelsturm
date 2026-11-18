@@ -645,13 +645,16 @@ export function genTile(ti, tj, T, treeMul, addCollider, addRock) {
   for (let n = 0; n < N; n++) {
     const x = x0 + R() * T, d = d0 + R() * T, pr = R(), sc0 = R(), rot = R() * TAU, tint = 0.82 + R() * 0.36, vr = R(), vr2 = R();
     const f = forestAt(x, d);
-    if (f < 0.02 || pr > f * 0.28) continue;   // etwa 6 bis 7 m Baumabstand im dichten Wald: fahrbar wie echter Heli-Wald
+    // v30: lichter Wald in Gruppen (vorher rund 200 Bäume je Hektar, im Mittel nur 14 m freie Fahrt). Jetzt etwa 50 je
+    // Hektar, in Gruppen mit Gassen dazwischen, wie in echten Tree-Runs beim Heli-Skiing
+    const grp = smoothstep(0.38, 0.62, fbm(x / 38 + s.ns * 2.3, d / 38 + 5.1));
+    if (f < 0.02 || pr > f * (0.02 + 0.11 * grp)) continue;
     if (nearCliff(x, d, 4)) continue;
     const z = -d, hh = heightH(x, z);
     if (Math.abs(heightH(x + 1.4, z) - hh) > 1.6 || Math.abs(heightH(x, z - 1.4) - hh) > 1.8) continue;
     const scale = (0.7 + sc0 * 0.9) * lerp(0.75, 1.15, f);
     out.trees.push({ x, z, y: hh - 0.15, scale, rot, variant: vr < 0.45 ? 0 : vr2 < 0.6 ? 1 : 2, tint });
-    addCollider(x, z, 0.5 * scale + 0.15, 'baum', 0, 0, hh + 7 * scale);
+    addCollider(x, z, 0.38 * scale + 0.1, 'baum', 0, 0, hh + 7 * scale);   // Stamm und dichte untere Äste; die Spitzen der Zweige streift man
   }
   // Felsblöcke: wenige, große, auf steilen Rippen
   for (let n = 0; n < 14; n++) {

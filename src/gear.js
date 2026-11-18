@@ -34,7 +34,7 @@ class Builder {
 // ------------------------------------------------------------------ Eigenschaften (v29)
 // Jeder Ski und jedes Brett hat Werte von 1 bis 10, die der Shop als Balken zeigt und die Physik umsetzt. 5 ist neutral
 // (der Allround-Ski vom Start fährt genau wie vorher). tempo: Gleiten und Luftwiderstand, turn: Wendigkeit (Drehrate),
-// pow: Auftrieb im Tiefschnee, trick: Dreh-Tempo in der Luft, ruhigere Balance im Tiefschnee-Manual, mehr Trickpunkte,
+// pow: Auftrieb im Tiefschnee, trick: Dreh-Tempo in der Luft und mehr Trickpunkte,
 // grip: Kantengriff auf hartem Schnee.
 export const STAT_NAMES = [['tempo', 'Tempo'], ['turn', 'Wendigkeit'], ['pow', 'Pulver'], ['trick', 'Tricks'], ['grip', 'Kantengriff']];
 /** Multiplikatoren aus den Werten: 1 bei Wert 5. */
@@ -53,7 +53,7 @@ export const SKIS = {
   park: { name: 'Park Twin', st: { tempo: 4, turn: 7, pow: 4, trick: 10, grip: 4 }, len: 1.74, tip: 0.124, waist: 0.092, tail: 0.124, rockT: 0.06, rockL: 0.055, twin: true, top: ['#b6ff3a', '#7a2bd9', '#ff3d7f', '#14161a'], pat: 'blocks', base: '#2a1446', bind: '#14161a' },
   wood: { name: 'Holz Classic', st: { tempo: 6, turn: 6, pow: 6, trick: 6, grip: 5 }, len: 1.78, tip: 0.128, waist: 0.084, tail: 0.112, rockT: 0.05, rockL: 0.015, top: ['#a8743f', '#7d5128', '#e8d8b8'], pat: 'wood', base: '#1a1712', bind: '#2b2b2b' },
   carbon: { name: 'Carbon Pro', st: { tempo: 8, turn: 7, pow: 5, trick: 5, grip: 7 }, len: 1.8, tip: 0.13, waist: 0.096, tail: 0.116, rockT: 0.06, rockL: 0.02, top: ['#17191d', '#2a2e36', '#27c3ff'], pat: 'carbon', base: '#0d0e10', bind: '#27c3ff' },
-  gold: { name: 'Gipfel Gold', st: { tempo: 8, turn: 7, pow: 7, trick: 8, grip: 7 }, len: 1.8, tip: 0.128, waist: 0.088, tail: 0.112, rockT: 0.055, rockL: 0.018, top: ['#d4a62a', '#14161a', '#fff3c4'], pat: 'gold', base: '#15130d', bind: '#d4a62a' },
+  gold: { name: 'Gipfel Gold', metal: true, st: { tempo: 8, turn: 7, pow: 7, trick: 8, grip: 7 }, len: 1.8, tip: 0.128, waist: 0.088, tail: 0.112, rockT: 0.055, rockL: 0.018, top: ['#e8b64a', '#14161a', '#fbe3a0'], pat: 'gold', base: '#15130d', bind: '#e8b64a' },
 };
 
 function skiPattern(d, t, x, cols) {
@@ -143,7 +143,7 @@ export const BOARDS = {
   powder: { name: 'Powder Swallowtail', st: { tempo: 5, turn: 4, pow: 10, trick: 4, grip: 4 }, len: 1.6, w: 0.29, shape: 'swallow', top: ['#2f6fd0', '#e9e6df', '#14161a'], pat: 'mountain', bind: '#2f6fd0' },
   freeride: { name: 'Freeride Directional', st: { tempo: 7, turn: 5, pow: 7, trick: 4, grip: 6 }, len: 1.62, w: 0.274, shape: 'directional', top: ['#0f6b5a', '#f2f2f0', '#d99a1c'], pat: 'wave', bind: '#14161a' },
   aurora: { name: 'Polarlicht', st: { tempo: 6, turn: 6, pow: 6, trick: 7, grip: 6 }, len: 1.56, w: 0.27, shape: 'twin', top: ['#0b1230', '#35e0a1', '#7a2bd9'], pat: 'aurora', bind: '#35e0a1' },
-  gold: { name: 'Gipfel Gold', st: { tempo: 8, turn: 7, pow: 7, trick: 8, grip: 7 }, len: 1.58, w: 0.272, shape: 'directional', top: ['#d4a62a', '#14161a'], pat: 'stripes', bind: '#d4a62a' },
+  gold: { name: 'Gipfel Gold', metal: true, st: { tempo: 8, turn: 7, pow: 7, trick: 8, grip: 7 }, len: 1.58, w: 0.272, shape: 'directional', top: ['#e8b64a', '#14161a'], pat: 'stripes', bind: '#e8b64a' },
 };
 function boardPattern(d, t, z, cols) {
   const [a, b, c] = cols;
@@ -211,33 +211,66 @@ export function makeHeadItem(kind) {
   const grp = new THREE.Group();
   const mat = (c, r = 0.85) => new THREE.MeshStandardMaterial({ color: c, roughness: r });
   if (kind === 'santa') {
-    // Weihnachtsmütze über dem Helm: rote, umknickende Spitze, weißer Plüschrand, Bommel; dazu ein weißer Vollbart
-    const red = mat('#c8102e'), white = mat('#f4f2ee', 0.95);
-    const brim = new THREE.Mesh(new THREE.TorusGeometry(0.135, 0.035, 10, 24), white);
+    // Weihnachtsmütze über dem Helm: weicher Plüschrand, Stoff-Spitze, die nach hinten umknickt und mit dem Tempo
+    // schwingt, Bommel; dazu ein Vollbart mit Schnurrbart
+    const red = mat('#b80f2a', 0.9), white = mat('#f6f3ee', 1);
+    const brim = new THREE.Mesh(new THREE.TorusGeometry(0.138, 0.036, 14, 40), white);
     brim.rotation.x = Math.PI / 2; brim.position.set(0, 1.86, 0.01); grp.add(brim);
-    const pts = [];
-    for (let i = 0; i <= 10; i++) { const t = i / 10; pts.push(new THREE.Vector2(0.135 * (1 - t) + 0.012 * t, t * 0.26)); }
-    const cone = new THREE.Mesh(new THREE.LatheGeometry(pts, 16), red);
-    cone.position.set(0, 1.875, 0.01); cone.rotation.x = 0.55; grp.add(cone);
-    const pom = new THREE.Mesh(new THREE.SphereGeometry(0.045, 12, 8), white);
-    pom.position.set(0, 1.875 + Math.cos(0.55) * 0.26, 0.01 + Math.sin(0.55) * 0.26); grp.add(pom);
-    const beardG = new THREE.SphereGeometry(0.12, 16, 12, 0, Math.PI * 2, Math.PI * 0.45, Math.PI * 0.55);
-    const beard = new THREE.Mesh(beardG, white);
-    beard.scale.set(1.0, 1.25, 0.75); beard.position.set(0, 1.71, -0.065); grp.add(beard);
-    const mous = new THREE.Mesh(new THREE.CapsuleGeometry(0.022, 0.09, 4, 8), white);
-    mous.rotation.z = Math.PI / 2; mous.position.set(0, 1.705, -0.135); grp.add(mous);
+    // Spitze als gebogene Röhre mit abnehmendem Radius
+    const path = new THREE.CatmullRomCurve3([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0.12, 0.02), new THREE.Vector3(0, 0.2, 0.09), new THREE.Vector3(0, 0.18, 0.19), new THREE.Vector3(0, 0.1, 0.24)]);
+    const tube = new THREE.TubeGeometry(path, 40, 1, 20, false), tp = tube.attributes.position;
+    for (let k = 0; k < tp.count; k++) {
+      const ring = Math.floor(k / 21) / 40, c = path.getPointAt(ring), r = 0.13 * Math.pow(1 - ring, 1.15) + 0.012;
+      const dx = tp.getX(k) - c.x, dy = tp.getY(k) - c.y, dz = tp.getZ(k) - c.z, l = Math.hypot(dx, dy, dz) || 1;
+      tp.setXYZ(k, c.x + dx / l * r, c.y + dy / l * r, c.z + dz / l * r);
+    }
+    tube.computeVertexNormals();
+    const cap = new THREE.Mesh(tube, red); cap.position.set(0, 1.875, 0.01); grp.add(cap);
+    const pom = new THREE.Mesh(new THREE.IcosahedronGeometry(0.05, 2), white);
+    pom.position.set(0, 1.875 + 0.1, 0.01 + 0.25); grp.add(pom);
+    const beard = new THREE.Mesh(new THREE.SphereGeometry(0.125, 24, 16, 0, Math.PI * 2, Math.PI * 0.42, Math.PI * 0.58), white);
+    beard.scale.set(1.02, 1.35, 0.78); beard.position.set(0, 1.72, -0.06); grp.add(beard);
+    for (const sx of [-1, 1]) {
+      const m = new THREE.Mesh(new THREE.CapsuleGeometry(0.02, 0.06, 6, 10), white);
+      m.rotation.z = Math.PI / 2 + sx * 0.35; m.position.set(sx * 0.035, 1.708, -0.136); grp.add(m);
+    }
   } else if (kind === 'tophat') {
-    const blk = mat('#16171b', 0.5), band = mat('#e3202b', 0.6);
-    const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.19, 0.19, 0.015, 24), blk); brim.position.set(0, 1.88, 0.0); grp.add(brim);
-    const crown = new THREE.Mesh(new THREE.CylinderGeometry(0.115, 0.125, 0.2, 24), blk); crown.position.set(0, 1.985, 0.0); grp.add(crown);
-    const b2 = new THREE.Mesh(new THREE.CylinderGeometry(0.127, 0.127, 0.04, 24), band); b2.position.set(0, 1.91, 0.0); grp.add(b2);
-    const nose = new THREE.Mesh(new THREE.ConeGeometry(0.025, 0.14, 10), mat('#ff7a1a', 0.6)); nose.rotation.x = -Math.PI / 2; nose.position.set(0, 1.72, -0.2); grp.add(nose);
+    // Zylinder aus Seidenfilz (leicht glänzend), gewölbte Krempe, rotes Band; dazu die Karottennase
+    const blk = new THREE.MeshStandardMaterial({ color: '#141518', roughness: 0.35, metalness: 0.1 }), band = mat('#c8102e', 0.55);
+    const prof = [[0.0, 0], [0.2, 0], [0.205, 0.008], [0.19, 0.016], [0.13, 0.016], [0.126, 0.03], [0.12, 0.2], [0.124, 0.22], [0.0, 0.22]].map(([r, y]) => new THREE.Vector2(r, y));
+    const hat = new THREE.Mesh(new THREE.LatheGeometry(prof, 40), blk); hat.position.set(0, 1.872, 0); hat.scale.set(1, 1, 0.92); grp.add(hat);
+    const b2 = new THREE.Mesh(new THREE.CylinderGeometry(0.1265, 0.127, 0.038, 40, 1, true), band); b2.position.set(0, 1.92, 0); b2.scale.set(1, 1, 0.92); grp.add(b2);
+    const nose = new THREE.Mesh(new THREE.ConeGeometry(0.024, 0.14, 14), mat('#ff7a1a', 0.6)); nose.rotation.x = -Math.PI / 2; nose.position.set(0, 1.72, -0.2); grp.add(nose);
   } else if (kind === 'headband') {
-    const hb = new THREE.Mesh(new THREE.TorusGeometry(0.132, 0.022, 8, 24), mat('#ff3d7f', 0.8)); hb.rotation.x = Math.PI / 2; hb.position.set(0, 1.79, 0.0); hb.scale.set(1, 1.1, 1); grp.add(hb);
+    // Frottee-Stirnband in Neon mit einem Streifen
+    const hb = new THREE.Mesh(new THREE.TorusGeometry(0.134, 0.024, 12, 40), mat('#ff3d7f', 0.95)); hb.rotation.x = Math.PI / 2; hb.position.set(0, 1.79, 0.0); hb.scale.set(1, 1.08, 1.4); grp.add(hb);
+    const st = new THREE.Mesh(new THREE.TorusGeometry(0.1375, 0.006, 8, 40), mat('#27c3ff', 0.9)); st.rotation.x = Math.PI / 2; st.position.set(0, 1.79, 0.0); st.scale.set(1, 1.08, 1); grp.add(st);
   } else if (kind === 'crown') {
-    const g = mat('#d4a62a', 0.3); g.metalness = 0.8;
-    const ring = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.05, 20, 1, true), g); ring.position.set(0, 1.9, 0); grp.add(ring);
-    for (let i = 0; i < 8; i++) { const a = (i / 8) * Math.PI * 2; const sp = new THREE.Mesh(new THREE.ConeGeometry(0.022, 0.07, 6), g); sp.position.set(Math.cos(a) * 0.125, 1.955, Math.sin(a) * 0.125); grp.add(sp); }
+    // Königskrone: Goldreif mit Rand oben und unten, acht Zacken (vier hohe mit Perlen, vier kleine Lilien), Edelsteine
+    // rundum, roter Samt innen, zwei gekreuzte Bügel mit Reichsapfel und Kreuz obenauf
+    const gold = new THREE.MeshStandardMaterial({ color: '#e8b64a', roughness: 0.22, metalness: 1 });
+    gold.userData.metal = true;
+    const velvet = mat('#8e0f22', 1), pearl = new THREE.MeshStandardMaterial({ color: '#f4efe6', roughness: 0.25 });
+    const gem = (c) => { const m = new THREE.MeshStandardMaterial({ color: c, roughness: 0.08, metalness: 0.2, emissive: c, emissiveIntensity: 0.25 }); return m; };
+    const R = 0.138, y0 = 1.872;
+    const band = new THREE.Mesh(new THREE.CylinderGeometry(R, R * 1.02, 0.055, 48, 1, true), gold); band.position.y = y0 + 0.0275; grp.add(band);
+    for (const [yy, rr] of [[y0, R * 1.02], [y0 + 0.055, R]]) { const t = new THREE.Mesh(new THREE.TorusGeometry(rr, 0.0075, 8, 48), gold); t.rotation.x = Math.PI / 2; t.position.y = yy; grp.add(t); }
+    for (let k = 0; k < 8; k++) {
+      const a = (k / 8) * Math.PI * 2, cx = Math.sin(a), cz = Math.cos(a), big = k % 2 === 0;
+      // Zacke: flaches Dreieck, nach außen gewölbt dem Reif folgend
+      const sh = new THREE.Shape(); const w = big ? 0.036 : 0.028, h = big ? 0.075 : 0.045;
+      sh.moveTo(-w, 0); sh.quadraticCurveTo(-w * 0.35, h * 0.35, 0, h); sh.quadraticCurveTo(w * 0.35, h * 0.35, w, 0); sh.lineTo(-w, 0);
+      const pg = new THREE.ExtrudeGeometry(sh, { depth: 0.006, bevelEnabled: true, bevelThickness: 0.002, bevelSize: 0.002, bevelSegments: 2, curveSegments: 8 });
+      const pt = new THREE.Mesh(pg, gold); pt.position.set(cx * R, y0 + 0.055, cz * R); pt.rotation.y = a; grp.add(pt);
+      const tip = new THREE.Mesh(new THREE.SphereGeometry(big ? 0.011 : 0.008, 12, 8), big ? pearl : gold); tip.position.set(cx * R, y0 + 0.055 + h + 0.006, cz * R); grp.add(tip);
+      const st = new THREE.Mesh(new THREE.SphereGeometry(big ? 0.013 : 0.009, 14, 10), gem(big ? (k % 4 === 0 ? '#c4142b' : '#1f4fd1') : '#178a4c'));
+      st.scale.set(1, 1, 0.55); st.position.set(cx * (R * 1.02 + 0.004), y0 + 0.028, cz * (R * 1.02 + 0.004)); st.rotation.y = a; grp.add(st);
+    }
+    const cap = new THREE.Mesh(new THREE.SphereGeometry(R * 0.97, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), velvet); cap.scale.y = 0.62; cap.position.y = y0 + 0.05; grp.add(cap);
+    for (const rot of [0, Math.PI / 2]) { const arch = new THREE.Mesh(new THREE.TorusGeometry(R * 0.98, 0.007, 8, 40, Math.PI), gold); arch.scale.y = 0.78; arch.position.y = y0 + 0.055; arch.rotation.y = rot; grp.add(arch); }
+    const orb = new THREE.Mesh(new THREE.SphereGeometry(0.02, 16, 12), gold); orb.position.y = y0 + 0.055 + R * 0.98 * 0.78 + 0.018; grp.add(orb);
+    const c1 = new THREE.Mesh(new THREE.BoxGeometry(0.008, 0.04, 0.008), gold); c1.position.y = orb.position.y + 0.035; grp.add(c1);
+    const c2 = new THREE.Mesh(new THREE.BoxGeometry(0.026, 0.008, 0.008), gold); c2.position.y = orb.position.y + 0.04; grp.add(c2);
   }
   grp.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.renderOrder = 10; } });
   return grp;
@@ -262,7 +295,8 @@ export function makeBodyItems(kind) {
   const band = (y, rx, rz, h, m, parent) => { const b = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, h, 28, 1, true), m); b.scale.set(rx, 1, rz); b.position.y = y; m.side = THREE.DoubleSide; parent.add(b); return b; };
   if (kind === 'santa') {
     band(1.0, 0.222, 0.178, 0.085, mat('#121214', 0.45), pel);                                    // breiter schwarzer Gürtel
-    const buckle = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.1, 0.02), mat('#e2b53a', 0.3, 0.8)); buckle.position.set(0, 1.0, -0.182); pel.add(buckle);
+    const bm = mat('#e8b64a', 0.22, 1); bm.userData.metal = true;
+    const buckle = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.1, 0.02), bm); buckle.position.set(0, 1.0, -0.182); pel.add(buckle);
     const inner = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.05, 0.025), mat('#121214', 0.45)); inner.position.set(0, 1.0, -0.184); pel.add(inner);
     for (const y of [1.18, 1.3, 1.42]) { const b = new THREE.Mesh(new THREE.SphereGeometry(0.018, 8, 6), mat('#121214', 0.4)); b.position.set(0, y, -0.172); ch.add(b); }
   } else if (kind === 'racer') {
@@ -277,7 +311,8 @@ export function makeBodyItems(kind) {
     const packMat = mat('#2a2d35', 0.85);
     const pack = new THREE.Mesh(new THREE.CapsuleGeometry(0.12, 0.2, 4, 12), packMat); pack.scale.set(1.08, 1, 0.5); pack.position.set(0, 1.27, 0.175); ch.add(pack);
     const lid = new THREE.Mesh(new THREE.SphereGeometry(0.125, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), mat('#ff6a13', 0.8)); lid.scale.set(1.06, 0.45, 0.52); lid.position.set(0, 1.4, 0.175); ch.add(lid);
-    const shovel = new THREE.Mesh(new THREE.BoxGeometry(0.17, 0.22, 0.012), mat('#c9ced6', 0.4, 0.6)); shovel.position.set(0, 1.25, 0.24); ch.add(shovel);
+    const sm = mat('#c9ced6', 0.35, 1); sm.userData.metal = true;
+    const shovel = new THREE.Mesh(new THREE.BoxGeometry(0.17, 0.22, 0.012), sm); shovel.position.set(0, 1.25, 0.24); ch.add(shovel);
     for (const sx of [-1, 1]) {
       const top = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.02, 0.3), mat('#16171b', 0.8)); top.position.set(sx * 0.1, 1.47, 0.02); ch.add(top);
       const st = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.34, 0.02), mat('#16171b', 0.8)); st.position.set(sx * 0.1, 1.31, -0.166); ch.add(st);
@@ -288,7 +323,10 @@ export function makeBodyItems(kind) {
     for (const y of [1.42, 1.3]) { const b = new THREE.Mesh(new THREE.SphereGeometry(0.024, 8, 6), mat('#121214', 0.6)); b.position.set(0, y, -0.175); ch.add(b); }
     const b3 = new THREE.Mesh(new THREE.SphereGeometry(0.024, 8, 6), mat('#121214', 0.6)); b3.position.set(0, 1.1, -0.172); pel.add(b3);
   } else if (kind === 'gold') {
-    const medal = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.012, 20), mat('#e2b53a', 0.25, 0.9)); medal.rotation.x = Math.PI / 2; medal.position.set(0, 1.25, -0.185); ch.add(medal);
+    const gm = mat('#e8b64a', 0.2, 1); gm.userData.metal = true;
+    const medal = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.012, 36), gm); medal.rotation.x = Math.PI / 2; medal.position.set(0, 1.25, -0.186); ch.add(medal);
+    const rim = new THREE.Mesh(new THREE.TorusGeometry(0.045, 0.004, 8, 36), gm); rim.position.set(0, 1.25, -0.193); ch.add(rim);
+    const star = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.004, 5), gm); star.rotation.x = Math.PI / 2; star.position.set(0, 1.25, -0.194); ch.add(star);
     for (const sx of [-1, 1]) { const r = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.26, 0.008), mat('#d7141a', 0.7)); r.position.set(sx * 0.05, 1.37, -0.175); r.rotation.z = -sx * 0.35; ch.add(r); }
   } else if (kind === 'retro') {
     const pack = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.1, 0.08), mat('#27c3ff', 0.7)); pack.position.set(0, 0.98, -0.2); pel.add(pack);   // Bauchtasche

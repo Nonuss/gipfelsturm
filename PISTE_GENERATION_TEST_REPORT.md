@@ -473,3 +473,13 @@ Freestyle-Teile (Tricks 10): Luft-Drehungen 18 % schneller, Butter-Drehungen 42 
 | Kurz weiß nach einem Trick | nicht nachgestellt: Bildhelligkeit Bild für Bild nach Backflips, allen fünf Spezialtricks, in der Ego-Sicht und mit Lawine gemessen, kein Aufblitzen | offen, braucht Angabe, wann genau |
 
 Bots: Freeride, Freestyle und Rennen unverändert (Ausgaben identisch), Heli-Lenkung unverändert.
+
+## Rückmeldung v30 (v31, 2026-11-18, abends)
+
+| Rückmeldung | Änderung | Prüfung |
+|---|---|---|
+| Vor- und Zurücklehnen wieder weg | Tiefschnee-Manual, Balance-Anzeige, Zurücklehnen-Knopf und Tasten Q/E komplett entfernt | Freeride, Freestyle, Rennen: Bot-Ausgaben identisch zu v28 |
+| Heli: Wald viel zu dicht, man kommt nicht durch | Bäume in Gruppen mit Gassen, etwa ein Viertel der Dichte; Kollision auf Stamm und dichte untere Äste verkleinert (Radius 0,38 · Größe + 0,1 statt 0,5 · Größe + 0,15) | `tools/heli_trees.mjs 3`: Bäume je Hektar im Wald Median 197 auf 50; freie Fahrt geradeaus Median 14 auf 90 m; 100 m ohne Baum 5 % auf 46 %. Neuer Testfahrer, der ausweicht (`tools/heli_forest_bot.mjs 3`, 400 m durch bewaldete Hänge): bis 58 km/h 16 auf 65 von 75 ohne Sturz, bis 80 km/h 11 auf 52 von 75 |
+| Man bekommt zu schnell Geld | Freeride/Freestyle ein Vierzigstel statt ein Zehntel der gesicherten Punkte; Heli 2,5 je Wertungspunkt + 20 (vorher 8 + 50, also bis 270 statt 850); Rennen etwa ein Drittel von vorher | Rechnung |
+| Outfits nicht fein, Krone verbessern, Gold-Ski echt golden | Metallteile spiegeln jetzt eine kleine Umgebung (nur diese Materialien, die Szene bleibt gleich). Krone neu: Goldreif mit Rändern, acht Zacken mit Perlen, Edelsteine, roter Samt, gekreuzte Bügel mit Reichsapfel und Kreuz. Gold-Ski und Gold-Brett aus Metall statt gelber Farbe. Weihnachtsmütze als gebogene Stoffspitze, Bart mit Schnurrbart; Zylinder aus Seidenfilz mit gewölbter Krempe; Stirnband mit Streifen; Medaille mit Rand und Stern; Gürtelschnalle und Schaufel aus Metall | Standbilder von vorne und seitlich |
+| Mehr Tricks auf anderen Zahlen, cool und real | 6 Misty 720 (Brett: Frontside Misty 540), 7 Flatspin 540, 8 Double Cork 1080 (viel Luft nötig), 9 Daffy (Brett: Frontside 360 Indy); eigene Kamera und Zeitlupe wie 1 bis 5, Handy-Stern wählt sie mit | alle acht (Ski und Brett) im Spiel gesprungen und sauber gelandet, Standbilder mitten im Trick |

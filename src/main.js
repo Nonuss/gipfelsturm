@@ -5,6 +5,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { FXAAPass } from 'three/addons/postprocessing/FXAAPass.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import * as C from './course.js';
 import { World, loadModels } from './world.js';
 import { SnowTracks } from './snow.js';
@@ -168,14 +169,14 @@ const game = {
 };
 const PEND_TIME = 1.6;      // so lange muss man nach einer Landung ohne Sturz weiterfahren
 const COMBO_TIME = 14;      // ohne neuen Trick fällt der Multiplikator danach zurück
-const keys = { left: false, right: false, up: false, down: false, space: false, gl: false, gr: false, bl: false, br: false, tail: false, nose: false };
-const airKey = { left: false, right: false, up: false, down: false, space: false, gl: false, gr: false, bl: false, br: false, tail: false, nose: false };
-const inp = { steer: 0, tuck: 0, brake: 0, jump: false, press: 0, pop: 0 };
+const keys = { left: false, right: false, up: false, down: false, space: false, gl: false, gr: false };
+const airKey = { left: false, right: false, up: false, down: false, space: false, gl: false, gr: false };
+const inp = { steer: 0, tuck: 0, brake: 0, jump: false };
 const zeroInp = { steer: 0, tuck: 0, brake: 0, jump: false };
 const vis = {
   lean: 0, crouch: 0, compress: 0, plow: 0, air: 0, up: new THREE.Vector3(0, 1, 0), crashAngle: 0, crashSpin: 0,
   tuck: 0, spin: 0, extend: 0, zoom: 0, shake: 0, crashCam: 0,
-  camSide: 1, flipCam: 0, bigAir: 0, dip: 0, fpv: 0, slide: 0, grindSide: 1, look: 0, press: 0, avZoom: 0,
+  camSide: 1, flipCam: 0, bigAir: 0, dip: 0, fpv: 0, slide: 0, grindSide: 1, look: 0, avZoom: 0,
 };
 // Renn-Disziplin (Slalom, Riesentorlauf, Super-G, Abfahrt). Wird gemerkt.
 let disc = 'sg';
@@ -246,12 +247,7 @@ function toggleFs(want) {
 }
 document.addEventListener('fullscreenchange', () => syncOpts());
 document.addEventListener('webkitfullscreenchange', () => syncOpts());
-const trick = { pitch: 0, yaw: 0, pv: 0, yv: 0, grab: 0, grabT: 0, wasAir: false, gs: 0, gT: { safety: 0, mute: 0, tail: 0 }, pop: null };
-// Tiefschnee-Manual (v29): nur im tiefen Pulver und mit Tempo. Q lehnt zurück und startet ihn, dann wird mit Q
-// (weiter zurück) und E (nach vorne) balanciert. Die Balance kippt von selbst weg (bei Tempo und auf welligem Boden
-// schneller): zu weit hinten heißt Sturz, zu weit vorne tauchen die Spitzen wieder ein und der Manual ist vorbei (gewertet
-// ab 1 s). Leertaste aus dem Manual: Ollie.
-const man = { on: false, t: 0, bal: 0, armed: false, ny: 1, ph: 0, wasBack: false, hintT: 0 };
+const trick = { pitch: 0, yaw: 0, pv: 0, yv: 0, grab: 0, grabT: 0, wasAir: false, gs: 0, gT: { safety: 0, mute: 0, tail: 0 } };
 /** Trick-Faktor der angelegten Ausrüstung (Werte aus dem Shop, 5 = neutral): Dreh-Tempo und Trickpunkte. */
 const trickMul = () => gearStats().trick;
 let jumpQueued = false;
@@ -273,6 +269,19 @@ const SPECIALS = [
     pitch: (u) => -0.3 * bump(u), yaw: (u) => 0.5 * bump(u), roll: (u) => -0.3 * bump(u), cross: (u) => bump(u, 0.5) },
   { key: 'Digit5', ski: 'Bullet Time Doppel-Backflip', board: 'Bullet Time Doppel-Backflip', T: 1.45, Tmin: 1.15, slow: 0.4, cam: 'bullet', pts: 4200,
     pitch: (u) => 2 * TAU * ezSpin(u), yaw: () => 0, roll: () => 0 },
+  // v30: vier weitere, wie sie im Contest gesprungen werden
+  // Misty: vorwärts gekippte Schraube (Kopf geht nach vorn unten), Ski 720 vorwärts gelandet, Brett 540 auf Fakie
+  { key: 'Digit6', ski: 'Misty 720', board: 'Frontside Misty 540', T: 1.3, Tmin: 0.95, slow: 0.55, cam: 'hero', pts: 2500,
+    pitch: (u) => -1.05 * bump(u, 1), yaw: (u) => (BOARD() ? -3 * Math.PI : -2 * TAU) * ezSpin(u), roll: (u) => -0.45 * Math.sin(TAU * u) },
+  // Flatspin: Körper fast waagrecht, dreht flach wie ein Teller; 540 = rückwärts landen
+  { key: 'Digit7', ski: 'Flatspin 540', board: 'Backside Flatspin 540', T: 1.2, Tmin: 0.9, slow: 0.55, cam: 'side', pts: 2100,
+    pitch: (u) => 0.35 * bump(u, 1), yaw: (u) => 3 * Math.PI * ezSpin(u), roll: (u) => 1.15 * bump(u, 0.8) },
+  // Double Cork 1080: drei Drehungen um die Hochachse mit zwei schrägen Überschlägen, braucht viel Luft
+  { key: 'Digit8', ski: 'Double Cork 1080', board: 'Double Cork 1080', T: 1.65, Tmin: 1.3, slow: 0.45, cam: 'orbit', pts: 4800,
+    pitch: (u) => 0.85 * bump(u, 1), yaw: (u) => -3 * TAU * ezSpin(u), roll: (u) => 0.55 * Math.sin(2 * TAU * u) },
+  // Daffy (Ski): Klassiker aus den 80ern, Beine weit vor und zurück gegrätscht. Brett: Frontside 360 mit Indy Grab
+  { key: 'Digit9', ski: 'Daffy', board: 'Frontside 360 Indy', T: 1.0, Tmin: 0.6, slow: 0.6, cam: 'side', pts: 1000,
+    pitch: (u) => -0.12 * bump(u), yaw: (u) => (BOARD() ? -TAU * ezSpin(u) : 0), roll: () => 0, daffy: (u) => bump(u, 0.45), bgrab: (u) => bump(u, 0.5), bgs: 0 },
 ];
 let special = null, lastSpecial = null, timeScale = 1;
 const specCam = { w: 0, mode: 'orbit', a0: 0, u: 0 };
@@ -315,7 +324,9 @@ function updateSpecial(dt) {
   vis.specRoll = d.roll(u);
   vis.sup = d.sup ? d.sup(u) : 0;
   vis.cross = d.cross ? d.cross(u) : 0;
+  vis.daffy = d.daffy && !BOARD() ? d.daffy(u) : 0;
   if (BOARD() && (vis.sup > 0 || vis.cross > 0)) { trick.grab = Math.max(vis.sup, vis.cross); trick.gs = vis.sup > 0 ? -1 : 1; }
+  if (BOARD() && d.bgrab) { trick.grab = d.bgrab(u); trick.gs = d.bgs; }
   specCam.u = u;
   if (u >= 1) {
     trick.pitch = sp.p0 + d.pitch(1); trick.yaw = sp.y0 + d.yaw(1);
@@ -388,11 +399,11 @@ function earn(n, why) {
   if (got) { updateWallet(); if (why) showMsg(`+${num(got)} Shop-Punkte · ${why}`, 'good'); }
   return got;
 }
-/** Freeride und Freestyle: gesicherte Punkte am Ende eines Laufs (Menü oder neuer Lauf), ein Zehntel davon. */
+/** Freeride und Freestyle: gesicherte Punkte am Ende eines Laufs (Menü oder neuer Lauf), ein Vierzigstel davon (v30, vorher ein Zehntel). */
 function payEndless() {
   if (C.cfg.heli || game.kind !== 'endless' || game.paid || !(game.mode === 'run' || game.mode === 'countdown')) return 0;
   game.paid = true;
-  return earn(Math.floor(game.score / 10));
+  return earn(Math.floor(game.score / 40));
 }
 let shopUI = null;
 /** Eigene Farben gewählt: Outfit „Eigene Farben“ anlegen. */
@@ -692,9 +703,9 @@ function demoUpdate(dt) {
 function resetVisuals() {
   hasPrevSki = false;
   Object.assign(vis, { lean: 0, crouch: 0, compress: 0, plow: 0, air: 0, crashAngle: 0, crashSpin: 0, tuck: 0, spin: 0, extend: 0, zoom: 0, shake: 0, crashCam: 0, camSide: 1, flipCam: 0, bigAir: 0, dip: 0 });
-  Object.assign(trick, { pitch: 0, yaw: 0, pv: 0, yv: 0, grab: 0, grabT: 0, wasAir: false, pop: null });
-  swYaw = 0; vis.look = 0; vis.specRoll = 0; vis.sup = 0; vis.cross = 0; vis.press = 0; vis.avZoom = 0;
-  man.on = false; man.wasBack = false; inp.press = 0; showBal(false); avCam = 0; avNear = 0; phys.noRockCrash = false;
+  Object.assign(trick, { pitch: 0, yaw: 0, pv: 0, yv: 0, grab: 0, grabT: 0, wasAir: false });
+  swYaw = 0; vis.look = 0; vis.specRoll = 0; vis.sup = 0; vis.cross = 0; vis.daffy = 0; vis.avZoom = 0;
+  avCam = 0; avNear = 0; phys.noRockCrash = false;
   special = null; lastSpecial = null; timeScale = 1; specCam.w = 0;
   skier.attachSkis();
   skier.pivot.rotation.set(0, 0, 0);
@@ -770,7 +781,7 @@ function startRun(same) {
 // Während des Countdowns schwebt der Helikopter über dem Gipfel, der Fahrer steht in der offenen Tür.
 // Bei „Spring!“ fällt er gut 4 m in den Tiefschnee, der Helikopter dreht ab und fliegt davon.
 const HINT_STD = $('hint').textContent;
-const HINT_HELI = 'A/D lenken · W Hocke · S bremsen · Leertaste springen · Q im Tiefschnee zurücklehnen, mit Q/E balancieren  |  Gipfel bis Tal auf Zeit · ein Sturz heißt zurück zum Gipfel · den Weg suchst du selbst';
+const HINT_HELI = 'A/D lenken · W Hocke · S bremsen · Leertaste springen  |  Gipfel bis Tal auf Zeit · ein Sturz heißt zurück zum Gipfel · den Weg suchst du selbst';
 const heli = { on: false, t: 0, pos: new THREE.Vector3(), drop: new THREE.Vector3(), group: null, rotor: null, tail: null, vel: new THREE.Vector3() };
 function heliStart() {
   heli.on = game.kind === 'endless' && game.style === 'heli';
@@ -1042,7 +1053,7 @@ function finishRun() {
     $('finTime').innerHTML = `${dec1(sc.total)}<small> / 100</small>`;
     const rowsH = [['Linie', dec1(sc.line)], ['Flüssigkeit', dec1(sc.flow)], ['Kontrolle', dec1(sc.control)], ['Sprünge', dec1(sc.air)],
       ['Zeit', fmt(total)], ['Größter Drop', `${Math.round(fwt.maxDrop)} m`], ['Längste Flow-Kette', `×${(1 + Math.min(2, fwt.flowMax * 0.25)).toFixed(2).replace(/0$/, '').replace('.', ',')}`], ['Beste Wertung', dec1(bestSc)]];
-    const gotH = earn(sc.total * 8 + 50);
+    const gotH = earn(sc.total * 2.5 + 20);   // v30: langsamer (vorher bis 850 je Abfahrt, jetzt bis 270)
     rowsH.push(['Shop-Punkte', `+${num(gotH)}`]);
     $('finStats').innerHTML = rowsH.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
     return;
@@ -1052,7 +1063,8 @@ function finishRun() {
   // Shop-Punkte: getroffene Tore, Länge der Disziplin, Bonus für eine neue Bestzeit
   const lenF = { sl: 1, gs: 1.3, sg: 1.7, dh: 2.1 }[disc] || 1;
   const missed = C.gates.length - game.passed;
-  rows.push(['Shop-Punkte', `+${num(earn((30 + game.passed * 5 - missed * 3) * lenF + (isBest ? 80 : 0)))}`]);
+  // v30: etwa ein Drittel von vorher (der Gold-Ski soll ein Ziel über viele Läufe sein, nicht über zwei)
+  rows.push(['Shop-Punkte', `+${num(earn(Math.max(0, (12 + game.passed * 2 - missed * 2) * lenF) + (isBest ? 30 : 0)))}`]);
   $('finStats').innerHTML = rows.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
 }
 
@@ -1090,8 +1102,7 @@ function toCheckpoint() {
 }
 
 // ---------------------------------------------------------------- Eingabe
-const KEYMAP = { ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right', ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyS: 'down', Space: 'space',
-  KeyQ: 'bl', KeyE: 'br' };   // Tiefschnee-Manual: Q zurücklehnen (startet ihn), E nach vorne
+const KEYMAP = { ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right', ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyS: 'down', Space: 'space' };
 window.addEventListener('keydown', (e) => {
   if (e.repeat) return;
   if (e.target instanceof HTMLInputElement) return;
@@ -1125,11 +1136,7 @@ window.addEventListener('keydown', (e) => {
   if (game.mode === 'run') { const sd = SPECIALS.find((q) => q.key === k || q.key.replace('Digit', 'Numpad') === k); if (sd) { startSpecial(sd); return; } if (k === 'Digit0' || k === 'Numpad0') { startSpecial(null); return; } }
   if (k === 'Space' || k === 'Enter') {
     if (game.mode === 'menu' || (game.mode === 'finished' && game.finishT > 1.2)) startRun();
-    else if (game.mode === 'run' && (phys.grounded || phys.grind)) {
-      jumpQueued = true;   // auch von der Rail abspringen
-      // aus dem Press abgesprungen: Ollie (Enden) bzw. Nollie (Spitzen), springt etwas höher
-      if (phys.grounded && man.on) trick.pop = 'Ollie';
-    }
+    else if (game.mode === 'run' && (phys.grounded || phys.grind)) jumpQueued = true;   // auch von der Rail abspringen
   } else if (k === 'KeyR') { if (game.mode !== 'loading') startRun(); }
   else if (k === 'KeyF') setCheckpoint();
   else if (k === 'KeyT' || k === 'Backspace') toCheckpoint();
@@ -1172,7 +1179,7 @@ function updateTricks(dt) {
   if (inAir && !trick.wasAir) { for (const k in airKey) airKey[k] = false; trick.grabT = 0; trick.gT.safety = trick.gT.mute = trick.gT.tail = 0; lastSpecial = null; }
   trick.wasAir = inAir;
   const kk = (r) => 1 - Math.exp(-dt * r);
-  if (!special) { vis.specRoll = (vis.specRoll || 0) * (1 - kk(8)); vis.sup = (vis.sup || 0) * (1 - kk(8)); vis.cross = (vis.cross || 0) * (1 - kk(8)); }
+  if (!special) { vis.specRoll = (vis.specRoll || 0) * (1 - kk(8)); vis.sup = (vis.sup || 0) * (1 - kk(8)); vis.cross = (vis.cross || 0) * (1 - kk(8)); vis.daffy = (vis.daffy || 0) * (1 - kk(8)); }
   if (inAir && updateSpecial(dt)) { /* Choreografie läuft */ }
   else if (inAir) {
     const flipIn = (airKey.down ? 1 : 0) - (airKey.up ? 1 : 0);
@@ -1197,7 +1204,6 @@ function updateTricks(dt) {
     trick.grab += clamp(0 - trick.grab, -10 * dt, 10 * dt);
     trick.yaw -= trick.yaw * k; trick.yv = 0;
   }
-  groundTricks(dt);
   const k = (r) => 1 - Math.exp(-dt * r);
   const rotating = inAir && (Math.abs(trick.pv) > 1.2 || Math.abs(trick.yv) > 1.2 || trick.grab > 0.3);
   vis.zoom += ((rotating ? 1 : 0) - vis.zoom) * k(rotating ? 5 : 2.5);
@@ -1217,82 +1223,6 @@ function updateTricks(dt) {
   vis.extend += ((nearGround || pop ? 1 : 0) - vis.extend) * k(11);
 }
 
-/** Tiefschnee-Manual: Start, Balance, Sturz nach hinten, Ende nach vorne, Ollie. */
-function groundTricks(dt) {
-  const kk = (r) => 1 - Math.exp(-dt * r);
-  const back = !!keys.bl, fwd = !!keys.br || (man.on && !!keys.up);   // vorne auch mit W (am Handy: Hocke-Knopf)
-  const ok = game.mode === 'run' && phys.grounded && !phys.grind && phys.crashed <= 0 && !special;
-  man.hintT = Math.max(0, man.hintT - dt);
-  if (!ok) {
-    // abgesprungen (Ollie) oder über eine Kante: sauber beendet, wenn er lange genug lief
-    if (man.on && !phys.grounded && phys.crashed <= 0 && game.mode === 'run') endManual(true);
-    man.on = false;
-  } else {
-    const deep = phys.pow > 0.55, sp = phys.speed;
-    if (!man.on && back && !man.wasBack) {
-      if (!deep) { if (man.hintT <= 0) { showMsg('Zurücklehnen geht nur im Tiefschnee', 'bad'); man.hintT = 3; } }
-      else if (sp < 8) { if (man.hintT <= 0) { showMsg('Zu langsam zum Zurücklehnen', 'bad'); man.hintT = 3; } }
-      else { Object.assign(man, { on: true, t: 0, bal: 0.1, armed: false, ny: phys.normal.y, ph: Math.random() * 6.28 }); }
-    }
-    if (man.on) {
-      man.t += dt;
-      if (!back) man.armed = true;   // die Starttaste zählt erst nach dem Loslassen als Eingabe
-      const tm = trickMul();
-      // instabil: je weiter aus der Mitte, desto schneller kippt es weiter; Freestyle-Ski sind gutmütiger
-      const k = 1.7 * lerp(1, 1.45, smoothstep(10, 32, sp)) / (1 + (tm - 1) * 1.6);
-      const t = man.t, wob = (Math.sin(t * 2.3 + man.ph) * 0.55 + Math.sin(t * 5.7 + man.ph * 2) * 0.3) * (0.5 + sp / 28);
-      const terr = clamp((phys.normal.y - man.ny) / dt, -3, 3) * 0.9;   // Wellen im Gelände werfen einen nach vorn oder hinten
-      man.ny = phys.normal.y;
-      const inpB = ((man.armed && back) ? 1 : 0) - (fwd ? 1 : 0);
-      man.bal += (man.bal * k + wob * 0.5 + terr) * dt + inpB * 2.4 * dt;
-      if (!deep) { endManual(true); man.on = false; }                       // raus aus dem Pulver: Spitzen setzen auf
-      else if (man.bal > 1) {
-        man.on = false;
-        showMsg('Nach hinten gekippt!', 'bad');
-        quietCrash = true;
-        phys.crash();
-      } else if (man.bal < -1) { endManual(true); man.on = false; }
-    }
-  }
-  man.wasBack = back;
-  // Sichtbar: Ski hoch aus dem Schnee, je nach Balance mehr oder weniger (hinten am meisten)
-  const pT = man.on ? clamp(0.62 + 0.38 * man.bal, 0.15, 1) : 0;
-  vis.press += (pT - vis.press) * kk(man.on ? 9 : 7);
-  inp.press = man.on ? 0.8 : 0;
-  showBal(man.on, man.bal, man.t);
-}
-function endManual(clean) {
-  const t = man.t;
-  if (!clean || t < 1) return;
-  const name = BOARD() ? 'Powder Wheelie' : 'Tiefschnee-Manual';
-  scoreGround(`${name} ${t.toFixed(1).replace('.', ',')} s`, Math.round(90 + 210 * Math.pow(t, 1.25)));
-}
-/** Balance-Anzeige während des Manuals: Balken mit Marke, rechts ist hinten (Sturz), links vorne (Ende). */
-let balEl = null;
-function showBal(on, bal = 0, t = 0) {
-  if (!balEl) {
-    balEl = document.createElement('div');
-    balEl.id = 'balMeter';
-    balEl.setAttribute('aria-hidden', 'true');
-    balEl.innerHTML = '<span class="lab">E vor</span><div class="bar"><i></i></div><span class="lab">Q zurück</span><b></b>';
-    document.getElementById('hud').appendChild(balEl);
-  }
-  balEl.classList.toggle('on', on);
-  if (!on) return;
-  balEl.querySelector('i').style.left = `${(clamp(bal, -1, 1) * 0.5 + 0.5) * 100}%`;
-  balEl.querySelector('.bar').classList.toggle('warn', bal > 0.6);
-  balEl.querySelector('b').textContent = `${t.toFixed(1).replace('.', ',')} s`;
-}
-/** Bodentrick werten (gleiches Risiko-Konto wie die Lufttricks). */
-function scoreGround(name, base) {
-  let pts = Math.round(base * trickMul());
-  if (C.cfg.heli) { fwt.tricks += pts * flowMult(); flowUp(1, ''); }
-  pts = addPending(pts, true);
-  game.tricks++;
-  if (pts > game.bestTrickPts) { game.bestTrickPts = pts; game.bestTrick = name; }
-  showMsg(C.cfg.heli ? name : `${name}  +${num(pts)}`, 'gold');
-  audio.gate();
-}
 
 /** Wird bei der Landung aufgerufen: wertet Drehungen aus oder lässt den Fahrer stürzen. */
 function scoreLanding(e) {
@@ -1322,8 +1252,6 @@ function scoreLanding(e) {
   let pts = 0, cats = 0;
   const spc = lastSpecial; lastSpecial = null;
   if (spc) { parts.push(spc.name); pts += spc.pts; cats++; }
-  const pop = trick.pop; trick.pop = null;
-  if (pop && e.airTime > 0.35) { parts.push(pop); pts += 140; cats++; }
   if (flips !== 0 && !spc) {
     const n = Math.abs(flips);
     parts.push((n === 2 ? 'Doppel-' : n >= 3 ? 'Dreifach-' : '') + (flips > 0 ? 'Backflip' : 'Frontflip'));
@@ -1799,7 +1727,6 @@ function checkGates() {
 
 // ---------------------------------------------------------------- Figur ausrichten
 const mBasis = new THREE.Matrix4(), vF = new THREE.Vector3(), vR = new THREE.Vector3(), vB = new THREE.Vector3();
-const pcA = new THREE.Vector3(), pcB = new THREE.Vector3(), pressQ = new THREE.Quaternion(), AX_X = new THREE.Vector3(1, 0, 0);
 const bdTmp = new THREE.Vector3(), BOARD_Y = -0.85 + 0.002 * 0.94;   // Brettmitte im Drehpunkt-System (Körper 0,85 m tiefer, Maßstab 0,94)
 function updateSkier(dt) {
   const k = (r) => 1 - Math.exp(-dt * r);
@@ -1879,23 +1806,13 @@ function updateSkier(dt) {
       const ty = -0.002 - 0.026 * pkB + 0.135 * Math.abs(Math.sin(roll));
       pv.position.set(-bdTmp.x * g, 0.85 + (ty - bdTmp.y - 0.85) * g, -bdTmp.z * g);
     }
-    // Tiefschnee-Manual: Ski heben die Spitzen aus dem Schnee, der Fahrer sitzt zurück (Haltung in skier.js). Der ganze
-    // Körper kippt nur ein wenig mit, um das Ski-Ende (Kontaktpunkt bleibt auf dem Schnee); das Snowboard kippt als Ganzes.
-    const pr = vis.press || 0;
-    if (pr > 0.002) {
-      const ang = pr * (BOARD() ? 0.22 : 0.07), zc = BOARD() ? 0.6 : 0.74;
-      pcA.set(0, -0.85, zc).applyQuaternion(pv.quaternion);
-      pv.quaternion.multiply(pressQ.setFromAxisAngle(AX_X, ang));
-      pcB.set(0, -0.85, zc).applyQuaternion(pv.quaternion);
-      pv.position.add(pcA.sub(pcB));
-    }
   }
   // Rückwärts (Switch) ist der Körper um 180° gedreht: Neigung und Lenkdrehung müssen im Körper gespiegelt werden,
   // sonst lehnt er sich aus der Kurve heraus statt hinein.
   const bodySign = Math.cos(trick.yaw + swYaw);
   skier.update({
     lean: BOARD() ? 0 : vis.lean * bodySign, crouch: BOARD() ? Math.min(1, vis.crouch + 0.32 * Math.abs(vis.lean)) : vis.crouch, edge: BOARD() && !crashed ? vis.bEdgeExtra || 0 : 0, steer: phys.grounded && !BOARD() ? inp.steer * bodySign * (1 + 0.9 * (C.cfg.heli ? 1 : 0)) : 0, plow: BOARD() ? 0 : vis.plow, plowDir: bodySign < 0 ? -1 : 1, air: vis.air, compress: vis.compress,
-    speed: phys.speed, man: BOARD() ? 0 : vis.press || 0, grab: trick.grab, grabSide: trick.gs, sup: BOARD() ? 0 : vis.sup || 0, cross: BOARD() ? 0 : vis.cross || 0, look: vis.look, tuck: vis.tuck, spin: vis.spin, extend: vis.extend, crash: crashed ? 1 : 0, crashA: vis.crashAngle,
+    speed: phys.speed, grab: trick.grab, grabSide: trick.gs, sup: BOARD() ? 0 : vis.sup || 0, cross: BOARD() ? 0 : vis.cross || 0, daffy: BOARD() ? 0 : vis.daffy || 0, look: vis.look, tuck: vis.tuck, spin: vis.spin, extend: vis.extend, crash: crashed ? 1 : 0, crashA: vis.crashAngle,
   }, dt);
   skier.updateLoose(dt, C.height);
   if (blob) {
@@ -2067,7 +1984,6 @@ function tick(dt, render) {
     acc += dt;
     while (acc >= H) {
       inp.jump = jumpQueued && game.mode === 'run';
-      inp.pop = inp.jump && trick.pop ? 1.3 : 0;
       jumpQueued = false;
       if (heli.on && (game.mode === 'countdown' || game.mode === 'menu')) { /* hängt in der Heli-Tür */ }
       else if (game.mode === 'menu' && demo.on) phys.step(H, demo.inp);
@@ -2116,6 +2032,8 @@ function tick(dt, render) {
   world = new World(scene, models);
   skier = new Skier(models);
   scene.add(skier.root);
+  // Spiegelung nur für Metallteile (Gold-Ski, Krone, Medaille): eine kleine vorberechnete Umgebung
+  { const pm = new THREE.PMREMGenerator(renderer); skier.setEnv(pm.fromScene(new RoomEnvironment(), 0.04).texture); pm.dispose(); }
   skier.setGear(gear);
   // Ohne Echtzeit-Schatten (niedrige Stufe): weicher Kontaktschatten unter dem Fahrer, damit man Höhe und Landung abschätzen kann
   {

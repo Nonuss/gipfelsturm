@@ -67,10 +67,9 @@ export class SkiPhysics {
       if (this.crashed <= 0) this.events.push({ type: 'respawn' });
     } else if (this.grounded) {
       // Heli-Pulver (v29): mehr Griff als im Freeride-Pulver, die breiten Ski stützen sich im tiefen Schnee ab
-      const gs = this.gs, press = inp.press || 0;
-      // Kantengriff: auf hartem Schnee nach dem Kantengriff-Wert, im Pulver nach dem Pulver-Wert; im Tiefschnee-Manual
-      // (nur die Skienden im Schnee) greift die Kante weniger
-      const gripG = lerp(1.5, 0.72, inp.brake) * lerp(gs.grip, (cfg.heli ? 0.92 : cfg.endless ? 0.7 : 0.62) * Math.sqrt(gs.pow), pw) * (1 - 0.22 * press);
+      const gs = this.gs;
+      // Kantengriff: auf hartem Schnee nach dem Kantengriff-Wert, im Pulver nach dem Pulver-Wert
+      const gripG = lerp(1.5, 0.72, inp.brake) * lerp(gs.grip, (cfg.heli ? 0.92 : cfg.endless ? 0.7 : 0.62) * Math.sqrt(gs.pow), pw);
       const maxLat = gripG * G;
       const wCarve = (maxLat * 0.9) / Math.max(speed, 2.5) * gs.turn;
       const wPivot = 2.6 * (1 - smoothstep(3, 15, speed)) * gs.turn;
@@ -113,7 +112,7 @@ export class SkiPhysics {
       this.pressure = clamp(0.6 + Math.abs(a) / (1.2 * G), 0.5, 1.6);
 
       if (inp.jump) {
-        v.addScaledVector(N, 4.3 + (inp.pop || 0));   // aus dem Manual (Ollie) springt man höher
+        v.addScaledVector(N, 4.3);
         this.grounded = false;
         this.airTime = 0;
         this.airStart.copy(p);

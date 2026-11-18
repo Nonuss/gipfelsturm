@@ -336,14 +336,6 @@ html.rot .menu .seg.gear button { padding: 6px 10px; font-size: 12px; }
 .shopdlg .gstats em { font-style: normal; font-weight: 700; font-size: 10px; text-align: right; }
 .shopdlg .gstats em.up { color: #7ee08a; }
 .shopdlg .gstats em.dn { color: #ff8a7a; }
-/* Balance beim Tiefschnee-Manual (v29): Marke auf einem Balken, rechts der Sturz nach hinten */
-#balMeter { position: absolute; left: 50%; top: 62%; transform: translateX(-50%); display: none; align-items: center; gap: 10px; font: 700 12px var(--font); letter-spacing: 0.06em; color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5); pointer-events: none; }
-#balMeter.on { display: flex; }
-#balMeter .lab { opacity: 0.75; text-transform: uppercase; font-size: 11px; }
-#balMeter .bar { position: relative; width: 220px; height: 12px; border-radius: 6px; background: linear-gradient(90deg, rgba(255, 255, 255, 0.18) 0 12%, rgba(126, 224, 138, 0.55) 30% 70%, rgba(255, 120, 100, 0.75) 88% 100%); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4); }
-#balMeter .bar.warn { box-shadow: inset 0 0 0 2px #ff8a7a; }
-#balMeter i { position: absolute; top: -5px; width: 6px; height: 22px; margin-left: -3px; border-radius: 3px; background: #fff; box-shadow: 0 0 6px rgba(0, 0, 0, 0.45); }
-#balMeter b { min-width: 46px; font-style: italic; font-size: 16px; }
 .shopdlg .sw.ski { height: 14px; border-radius: 10px 4px 4px 10px; margin: 6px 0; transform: skewX(-12deg); }
 .shopdlg .sw.board { height: 22px; border-radius: 14px; margin: 2px 0; }
 .shopdlg .sw.outfit { border-radius: 8px; }
@@ -359,10 +351,5 @@ html.rot .menu .seg.gear button { padding: 6px 10px; font-size: 12px; }
 
 /* Spezialtrick-Stern: nur in der Luft sichtbar */
 #touchUI .tbtn.spec { width: 66px; height: 66px; background: rgba(255, 200, 80, 0.42); opacity: 0; pointer-events: none; transition: opacity 0.15s; }
-/* Zurücklehnen-Knopf (v29): nur am Boden, an derselben Stelle wie der Stern in der Luft */
-#touchUI .tbtn.butter { width: 66px; height: 66px; background: rgba(120, 220, 255, 0.3); transition: opacity 0.15s; }
-#touchUI.air .tbtn.butter { opacity: 0; pointer-events: none; }
-#touchUI:not(.air) .tbtn.spec { display: none; }
-#touchUI.air .tbtn.butter { display: none; }
 #touchUI.air .tbtn.spec { opacity: 1; pointer-events: auto; }
 #touchUI .tbtn.spec svg { fill: rgba(255, 255, 255, 0.9); }

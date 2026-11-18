@@ -136,7 +136,22 @@ export class Skier {
     this.head = null;
   }
 
-  /** Ski-Modell aus dem Shop (gear.js); beide Ski teilen sich eine Geometrie. */
+  /** Umgebungs-Spiegelung (nur für Metall: Gold-Ski, Krone, Schnallen); die übrige Szene bleibt ohne. */
+  setEnv(tex) {
+    this.env = tex;
+    this.root.traverse((o) => { if (o.isMesh && o.material.userData && o.material.userData.metal) { o.material.envMap = tex; o.material.needsUpdate = true; } });
+  }
+  metalize(grp) { if (this.env) grp.traverse((o) => { if (o.isMesh && o.material.userData && o.material.userData.metal) o.material.envMap = this.env; }); }
+  /** Material für Teile aus echtem Metall (Gold): spiegelt die Umgebung, Farbe aus den Ecken. */
+  goldMat() {
+    if (!this._gold) {
+      this._gold = new THREE.MeshStandardMaterial({ vertexColors: true, metalness: 1, roughness: 0.24, side: THREE.DoubleSide, transparent: true });
+      this._gold.userData.metal = true;
+    }
+    if (this.env) this._gold.envMap = this.env;
+    return this._gold;
+  }
+  /** Ski-Modell aus dem Shop (gear.js); beide Ski teilen sich eine Geometrie. Metall-Ski (Gold) mit eigenem Material. */
   setSkiDesign(id) {
     const d = SKIS[id] || SKIS.allround;
     if (this.skiId === id) return;
@@ -144,7 +159,10 @@ export class Skier {
     const g = makeSki(d);
     this.skiMat.side = THREE.DoubleSide;
     this.skiMat.roughness = 0.32;
-    for (const k of this.sides) { const old = k.ski.geometry; k.ski.geometry = g; if (old && !old.userData.shared && old !== g && !this.sides.some((q) => q.ski.geometry === old)) old.dispose(); }
+    for (const k of this.sides) {
+      const old = k.ski.geometry; k.ski.geometry = g; k.ski.material = d.metal ? this.goldMat() : this.skiMat;
+      if (old && !old.userData.shared && old !== g && !this.sides.some((q) => q.ski.geometry === old)) old.dispose();
+    }
   }
   setBoardDesign(id) {
     const d = BOARDS[id] || BOARDS.classic;
@@ -154,6 +172,8 @@ export class Skier {
     g.translate(0, -0.006, 0);   // Belag wie beim alten Brett knapp unter der Brettmitte
     this.board.geometry.dispose();
     this.board.geometry = g;
+    if (!this.boardMat) this.boardMat = this.board.material;
+    this.board.material = d.metal ? this.goldMat() : this.boardMat;
     this.board.material.side = THREE.DoubleSide;
   }
   /** Ausrüstung am Körper zum Outfit (Gürtel, Startnummer, Rucksack, Schal, Medaille). */
@@ -166,6 +186,7 @@ export class Skier {
     }
     if (!kind) return;
     this.bodyItems = makeBodyItems(kind);
+    this.metalize(this.bodyItems.pel); this.metalize(this.bodyItems.ch);
     this.bones[PEL].add(this.bodyItems.pel);
     this.bones[CH].add(this.bodyItems.ch);
     this.bodyItems.pel.visible = this.bodyItems.ch.visible = !this.fpv;
@@ -177,6 +198,7 @@ export class Skier {
     if (this.head) { this.bones[HD].remove(this.head); this.head.traverse((o) => { if (o.isMesh) { o.geometry.dispose(); o.material.dispose(); } }); this.head = null; }
     if (!kind) return;
     this.head = makeHeadItem(kind);
+    this.metalize(this.head);
     this.head.visible = !this.fpv;
     this.bones[HD].add(this.head);
   }
@@ -260,26 +282,25 @@ export class Skier {
     const air = s.air, grab = s.grab || 0, tuck = s.tuck || 0, spin = s.spin || 0, ext = (s.extend || 0) * air;
     const crash = s.crash || 0, ca = s.crashA || 0;
     const sup = s.sup || 0, cross = s.cross || 0;   // Spezialtricks: Superman (gestreckt), Iron Cross (Ski gekreuzt)
-    // Tiefschnee-Manual: Spitzen hoch, Gesäß zurück und tief, Oberkörper aufrecht, Arme nach vorn zum Ausbalancieren
-    const man = this.gear === 'board' ? 0 : clamp(s.man || 0, 0, 1), manA = man * 0.42;
+    const daffy = s.daffy || 0;                     // Daffy: linkes Bein weit nach vorn (Spitze hoch), rechtes nach hinten
     let c = clamp(Math.max(s.crouch + s.compress * 0.7 + air * 0.25, tuck * 0.9, grab * 0.75, cross * 0.7), 0, 1);
-    c = lerp(c, 0.08, Math.max(ext, sup));
+    c = lerp(c, 0.08, Math.max(ext, sup, daffy * 0.7));
     if (crash) c = 0.35;
     const plow = s.plow;
     const idle = 1 - clamp(s.speed / 3, 0, 1);
     const bob = Math.sin(this.t * 2.2) * 0.012 * idle + Math.sin(this.t * 31) * 0.004 * clamp(s.speed / 30, 0, 1);
-    const hipH = lerp(1.0, 0.70, c) - 0.09 * Math.abs(lean) - 0.1 * man;
+    const hipH = lerp(1.0, 0.70, c) - 0.09 * Math.abs(lean);
     const edge = clamp(lean * 1.2, -1.05, 1.05);
     const spinAbs = Math.abs(spin) * (1 - grab) * (1 - tuck);
 
     // Becken
-    tC.set(Math.sin(lean) * hipH * 0.88, Math.cos(lean) * hipH + bob, 0.05 + 0.10 * c + 0.2 * man);
-    eA.set(-(0.10 + 0.30 * c) + 0.12 * man, s.steer * 0.10 + spin * 0.15, -lean * 0.55);
+    tC.set(Math.sin(lean) * hipH * 0.88, Math.cos(lean) * hipH + bob, 0.05 + 0.10 * c);
+    eA.set(-(0.10 + 0.30 * c), s.steer * 0.10 + spin * 0.15, -lean * 0.55);
     mR.makeRotationFromEuler(eA);
     this.mPel.copy(this.setBone(PEL, tC, mR, P0));
 
     // Oberkörper
-    const bend = 0.34 + 0.70 * c - air * 0.12 * (1 - grab) * (1 - tuck) - 0.42 * man;
+    const bend = 0.34 + 0.70 * c - air * 0.12 * (1 - grab) * (1 - tuck);
     tC.copy(W0).applyMatrix4(this.mPel);
     const look = s.look || 0;   // rückwärts fahren: Oberkörper dreht mit, Kopf schaut über die Schulter in Fahrtrichtung
     eA.set(-bend, s.steer * 0.18 + spin * 0.45 + grab * 0.2 + look * 0.55 + (crash ? Math.sin(ca * 1.3) * 0.5 : 0), -lean * 0.18);
@@ -308,10 +329,9 @@ export class Skier {
         f.rotation.set(grab * 0.25 + tuck * 0.1 + (s.edge || 0), side * 0.26, 0);
       } else {
         const stance = 0.17 + 0.07 * Math.abs(lean) + 0.13 * plow + air * 0.03 + grab * 0.03;
-        // Manual: der Ski dreht um sein Ende (0,8 m hinter dem Schuh), deshalb hebt sich der Schuh um 0,8 · sin(Winkel)
-        f.position.set(side * stance * (1 - 0.25 * cross), Math.abs(Math.sin(edge)) * 0.03 + grab * 0.2 + tuck * 0.16 + cross * 0.22 + sup * 0.1 + 0.8 * Math.sin(manA), -0.09 * lean * side - grab * 0.06 + cross * 0.12 + sup * 0.32 + 0.8 * (1 - Math.cos(manA)));
+        f.position.set(side * stance * (1 - 0.25 * cross) * (1 - 0.35 * daffy), Math.abs(Math.sin(edge)) * 0.03 + grab * 0.2 + tuck * 0.16 + cross * 0.22 + sup * 0.1 + daffy * (side < 0 ? 0.2 : 0.06), -0.09 * lean * side - grab * 0.06 + cross * 0.12 + sup * 0.32 + daffy * (side < 0 ? -0.46 : 0.42));
         // Pflug: vorwärts Spitzen zusammen, rückwärts Enden zusammen (plowDir = -1) – der Keil öffnet sich immer in Fahrtrichtung
-        f.rotation.set(air * 0.1 * (1 - ext) + grab * 0.32 + tuck * 0.12 - sup * 0.35 + manA, side * (plow * 0.33 * (s.plowDir || 1) + grab * 0.22 + cross * 0.75), -(edge - side * plow * 0.28) - side * cross * 0.35);
+        f.rotation.set(air * 0.1 * (1 - ext) + grab * 0.32 + tuck * 0.12 - sup * 0.35 + daffy * (side < 0 ? 0.6 : -0.55), side * (plow * 0.33 * (s.plowDir || 1) + grab * 0.22 + cross * 0.75), -(edge - side * plow * 0.28) - side * cross * 0.35);
       }
       f.updateMatrix();
       if (!k.loose) {
@@ -353,7 +373,7 @@ export class Skier {
         // Superman: Arme gestreckt nach vorne oben; Iron Cross: Arme weit zur Seite
         if (sup > 0.01) k.hand.lerp(tD.set(side * 0.2, 1.62, -0.62).applyMatrix4(this.mCh), sup);
         if (cross > 0.01) k.hand.lerp(tD.copy(k.shoulder).add(tC.set(side * 0.62, 0.12, -0.12)), cross);
-        if (man > 0.01) k.hand.lerp(tD.set(side * 0.34, 1.2, -0.58).applyMatrix4(this.mCh), man * 0.85);
+        if (daffy > 0.01) k.hand.lerp(tD.copy(k.shoulder).add(tC.set(side * 0.5, 0.18, side * 0.25)), daffy);   // Arme seitlich zum Ausgleich
       }
       if (this.gear === 'board' && !crash && grab < 0.01) {
         // ohne Stöcke: Arme locker seitlich, leicht vor dem Körper, zum Ausbalancieren

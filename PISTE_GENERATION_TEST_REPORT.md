@@ -483,3 +483,10 @@ Bots: Freeride, Freestyle und Rennen unverändert (Ausgaben identisch), Heli-Len
 | Man bekommt zu schnell Geld | Freeride/Freestyle ein Vierzigstel statt ein Zehntel der gesicherten Punkte; Heli 2,5 je Wertungspunkt + 20 (vorher 8 + 50, also bis 270 statt 850); Rennen etwa ein Drittel von vorher | Rechnung |
 | Outfits nicht fein, Krone verbessern, Gold-Ski echt golden | Metallteile spiegeln jetzt eine kleine Umgebung (nur diese Materialien, die Szene bleibt gleich). Krone neu: Goldreif mit Rändern, acht Zacken mit Perlen, Edelsteine, roter Samt, gekreuzte Bügel mit Reichsapfel und Kreuz. Gold-Ski und Gold-Brett aus Metall statt gelber Farbe. Weihnachtsmütze als gebogene Stoffspitze, Bart mit Schnurrbart; Zylinder aus Seidenfilz mit gewölbter Krempe; Stirnband mit Streifen; Medaille mit Rand und Stern; Gürtelschnalle und Schaufel aus Metall | Standbilder von vorne und seitlich |
 | Mehr Tricks auf anderen Zahlen, cool und real | 6 Misty 720 (Brett: Frontside Misty 540), 7 Flatspin 540, 8 Double Cork 1080 (viel Luft nötig), 9 Daffy (Brett: Frontside 360 Indy); eigene Kamera und Zeitlupe wie 1 bis 5, Handy-Stern wählt sie mit | alle acht (Ski und Brett) im Spiel gesprungen und sauber gelandet, Standbilder mitten im Trick |
+
+## Unterstützen-Knopf (v32, 2026-11-18)
+
+- Neuer Knopf „Unterstützen“ im Menü mit kurzem Fenster (gratis, ohne Werbung, Spende freiwillig, man bekommt nichts im Spiel) und ein dezenter Hinweis auf dem Zielbildschirm. Der Link öffnet in einem neuen Fenster (`noopener noreferrer`).
+- Der Spendenlink steht an einer Stelle: `DONATE_URL` in `src/donate.js`. Solange er leer ist, ist alles ausgeblendet; nur echte https-Links werden gezeigt. Der Anbieter wird aus dem Link erkannt (Ko-fi, PayPal, Buy Me a Coffee, Patreon, GitHub Sponsors).
+- Geprüft im Browser: leer = ausgeblendet, `javascript:`-Link abgelehnt, mit Test-Link Knopf, Fenster und Zielhinweis sichtbar; Menüleiste passt auch in der Handy-Ansicht.
+- Offen: Noahs echter Link fehlt noch, deshalb ist der Knopf online noch nicht zu sehen. Vor dem Freischalten ein Impressum auf der Seite ergänzen (siehe Vault-Notiz zum Geldverdienen).

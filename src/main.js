@@ -20,6 +20,7 @@ import { Avalanche } from './avalanche.js';
 import * as HG from './heligen.js';
 import { shop, buildShopUI, OUTFITS } from './shop.js';
 import { SKIS, BOARDS, statMul } from './gear.js';
+import { setupDonate } from './donate.js';
 
 const { clamp, lerp, smoothstep, G } = C;
 const $ = (id) => document.getElementById(id);
@@ -2028,6 +2029,7 @@ function tick(dt, render) {
   setTier(qualSetting === 'auto' ? (!isTouch && localStorage.getItem(AUTO_KEY)) || 'high' : qualSetting);
   resize();
   buildMenuControls();
+  setupDonate();
   const models = await loadModels();
   world = new World(scene, models);
   skier = new Skier(models);
@@ -2066,7 +2068,7 @@ function tick(dt, render) {
     tp: (d, lane = 0, speed = 0) => { const L = C.cfg.heli ? { x: C.centerX(d) + lane } : C.mapSlice(d, d + 1, 1).rows[0].lanes[lane]; teleport(L.x, -d); const x0 = C.centerX(d + 6) - C.centerX(d); phys.heading = Math.atan2(x0, 6); phys.vel.set(Math.sin(phys.heading) * speed, 0, -Math.cos(phys.heading) * speed); if (game.mode === 'menu') { game.mode = 'run'; } },
     // Testhilfe: freie Kamera für Standbilder (Position, Blickpunkt), rendert genau ein Bild
     shot: (px, py, pz, lx, ly, lz, fov = 55) => { camera.position.set(px, py, pz); camera.fov = fov; camera.near = 0.3; camera.updateProjectionMatrix(); camera.lookAt(lx, ly, lz); world.sky.position.copy(camera.position); composer.render(); },
-    restartHeli: () => startRun(true), setGear, SPECIALS, startSpecial, special: () => special, airLeft, timeScale: () => timeScale, specCam, edge: () => boardEdge, finishRun, fwt, fwtScore, applyDropPref, renderMode, heliStart, flowUp, shop, applyEquip,
+    restartHeli: () => startRun(true), setGear, setupDonate, SPECIALS, startSpecial, special: () => special, airLeft, timeScale: () => timeScale, specCam, edge: () => boardEdge, finishRun, fwt, fwtScore, applyDropPref, renderMode, heliStart, flowUp, shop, applyEquip,
         advance: (sec, noRender) => { const n = Math.round(sec * 60); for (let i = 0; i < n; i++) tick(1 / 60, !noRender && i === n - 1); },
   };
   requestAnimationFrame((t) => { last = t; frame(t); });

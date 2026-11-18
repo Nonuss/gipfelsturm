@@ -72,6 +72,14 @@
       <button data-dlg="dlgOutfit" aria-haspopup="dialog">Outfit</button>
       <button data-dlg="dlgSettings" aria-haspopup="dialog">Einstellungen</button>
       <button data-dlg="dlgKeys" aria-haspopup="dialog">Steuerung</button>
+      <button data-dlg="dlgDonate" aria-haspopup="dialog" id="donateBtn" hidden>Unterstützen</button>
+    </div>
+
+    <div class="dlg hidden" id="dlgDonate" role="dialog" aria-label="Unterstützen">
+      <header><b>Unterstützen</b><button class="x" aria-label="Schließen">×</button></header>
+      <p class="donate">Gipfelsturm ist gratis und ohne Werbung. Wenn dir das Spiel Spaß macht, kannst du die Weiterentwicklung mit einer kleinen Spende unterstützen.</p>
+      <p class="donate small">Ganz freiwillig: Du bekommst dafür nichts im Spiel, alle fahren mit denselben Chancen. Die Zahlung läuft über eine externe Seite, die sich in einem neuen Fenster öffnet.</p>
+      <a id="donateLink" class="cta donatecta">Unterstützen</a>
     </div>
 
     <div class="dlg hidden wide shopdlg" id="dlgShop" role="dialog" aria-label="Shop">
@@ -129,6 +137,7 @@
       <div class="stats" id="finStats"></div>
       <button id="againBtn" class="cta">Nochmal <small>R</small></button>
       <button id="menuBtn" class="ghost">Menü <small>Esc</small></button>
+      <a id="finDonate" class="findonate" hidden>Gefällt dir Gipfelsturm? Unterstützen</a>
     </div>
   </div>
 

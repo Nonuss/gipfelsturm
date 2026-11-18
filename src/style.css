@@ -353,3 +353,11 @@ html.rot .menu .seg.gear button { padding: 6px 10px; font-size: 12px; }
 #touchUI .tbtn.spec { width: 66px; height: 66px; background: rgba(255, 200, 80, 0.42); opacity: 0; pointer-events: none; transition: opacity 0.15s; }
 #touchUI.air .tbtn.spec { opacity: 1; pointer-events: auto; }
 #touchUI .tbtn.spec svg { fill: rgba(255, 255, 255, 0.9); }
+
+/* Unterstützen (v32): Knopf im Menü und Hinweis im Ziel erscheinen nur mit eingetragenem Spendenlink (src/donate.js) */
+#donateBtn[hidden], #finDonate[hidden] { display: none; }
+.dlg p.donate { margin: 0 0 10px; font-size: 15px; line-height: 1.45; }
+.dlg p.donate.small { font-size: 13px; opacity: 0.75; }
+.dlg .donatecta { display: inline-block; margin-top: 4px; color: #fff; text-decoration: none; font-size: 18px; padding: 12px 20px; }
+.findonate { display: block; margin-top: 16px; font-size: 14px; letter-spacing: 0.04em; color: #fff; opacity: 0.8; text-decoration: underline; text-underline-offset: 3px; }
+.findonate:hover, .findonate:focus-visible { opacity: 1; }

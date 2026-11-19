@@ -397,3 +397,13 @@ html.rot #shop3d .s3-left, html.rot #shop3d .s3-detail { top: 58px; bottom: 10px
 html.rot #shop3d .s3-list button { padding: 6px 8px; font-size: 13px; }
 html.rot #shop3d .s3-detail h2 { font-size: 20px; } html.rot #shop3d .s3-detail p { font-size: 12px; }
 html.rot #shop3d .s3-buy { font-size: 16px; padding: 9px 12px; }
+
+/* Joystick (v35): links unten, springt an die Stelle, an der der Daumen aufsetzt */
+#touchUI .tstickzone { position: absolute; left: 0; bottom: 0; width: 46%; height: 72%; display: none; pointer-events: auto; touch-action: none; }
+#touchUI.stick .tstickzone { display: block; }
+#touchUI.stick #tBrake, #touchUI.stick #tTuck { display: none; }
+#touchUI .tstick { position: absolute; left: calc(110px + env(safe-area-inset-left)); top: calc(100% - 120px - env(safe-area-inset-bottom)); width: 0; height: 0; pointer-events: none; }
+#touchUI .tstick i { position: absolute; left: -64px; top: -64px; width: 128px; height: 128px; border-radius: 50%; background: rgba(12, 22, 38, 0.28); border: 2px solid rgba(255, 255, 255, 0.45); box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.12); }
+#touchUI .tstick b { position: absolute; left: -28px; top: -28px; width: 56px; height: 56px; border-radius: 50%; background: rgba(255, 255, 255, 0.75); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35); transition: transform 0.12s ease-out; }
+#touchUI .tstick.on b { transition: none; background: #fff; }
+#touchUI .tstick.on i { border-color: rgba(255, 255, 255, 0.8); }

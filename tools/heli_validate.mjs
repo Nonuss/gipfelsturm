@@ -46,7 +46,8 @@ function run(seed, o) {
     if (o.until ? o.until(x, d) : HB.finished(x, d)) { res.finished = true; res.time = t; break; }
     ensureTiles(x, d);
     const sp = phys.speed, LA = 10 + sp * 0.7;
-    let [fx, fd] = fallDir(x + Math.sin(phys.heading) * LA, d + Math.cos(phys.heading) * LA);
+    // im Stand oder sehr langsam: wie ein Spieler zur örtlichen Falllinie drehen (die Kante hält einen sonst quer am Hang)
+    let [fx, fd] = sp < 2.5 ? fallDir(x, d, 4) : fallDir(x + Math.sin(phys.heading) * LA, d + Math.cos(phys.heading) * LA);
     const bias = o.bias ? o.bias(t, d) : 0;
     if (o.line) { const tx = o.line(d + LA); fx = (tx - x); fd = LA; }
     const want = Math.atan2(fx, fd) + bias;

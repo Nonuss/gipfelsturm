@@ -523,8 +523,9 @@ export class World {
     }
     const HB = C.HB;
     const hash = (a, b, c) => { const t = Math.sin(a * 12.9898 + b * 78.233 + c * 37.719) * 43758.5453; return t - Math.floor(t); };
-    for (const c of walls) {
-      const pts = HB.wallLine(c), n = pts.length;
+    for (const w of walls) {
+      // Heli: Abschnitt einer Klippe { c, ua, ub, id, ice } (v35); sonst eine ganze Klippe
+      const c = w.c ? w : w, pts = w.c ? HB.wallLine(w.c, w.ua, w.ub) : HB.wallLine(w), n = pts.length;
       // Wandhöhe je Stützpunkt
       let hMax = 0;
       for (const p of pts) {

@@ -227,7 +227,7 @@ function syncOpts() {
   sel('optCam', firstPerson ? '1' : '0');
   sel('optFs', fsOn() ? '1' : '0');
   sel('optGear', gear);
-  if (typeof touchCtl !== 'undefined' && touchCtl) sel('optSteer', touchCtl.tiltOn() ? '1' : '0');
+  if (typeof touchCtl !== 'undefined' && touchCtl) sel('optSteer', touchCtl.mode());
 }
 
 // ---------------------------------------------------------------- Vollbild
@@ -454,7 +454,7 @@ function buildMenuControls() {
   for (const b of $('optFs').children) b.addEventListener('click', () => toggleFs(b.dataset.v === '1'));
   for (const b of $('optGear').children) b.addEventListener('click', () => { setGear(b.dataset.v); b.blur(); });
   for (const b of $('optDisc').children) b.addEventListener('click', () => { selectDisc(b.dataset.v); b.blur(); });
-  for (const b of $('optSteer').children) b.addEventListener('click', async () => { if (touchCtl) await touchCtl.setTilt(b.dataset.v === '1'); syncOpts(); });
+  for (const b of $('optSteer').children) b.addEventListener('click', async () => { if (touchCtl) await touchCtl.setMode(b.dataset.v); syncOpts(); });
   $('fsBtn').addEventListener('click', () => { toggleFs(); $('fsBtn').blur(); });
   shop.onChange = () => { updateWallet(); if (shop3d) shop3d.refresh(); };
   $('shopBtn').addEventListener('click', () => { if (!shop3d || game.mode !== 'menu') return; closeDlg(); shop3d.open(); });

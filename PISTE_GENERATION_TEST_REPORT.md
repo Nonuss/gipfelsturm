@@ -505,3 +505,30 @@ Bots: Freeride, Freestyle und Rennen unverändert (Ausgaben identisch), Heli-Len
 - Oberfläche: oben Guthaben und Schließen, links Reiter (Ski, Snowboards, Outfits) und Liste mit Farbmustern und Preis bzw. „Gekauft“/„Angelegt“, rechts Name, Beschreibung, Werte-Balken mit Vergleich zum angelegten Teil und der Knopf Kaufen bzw. Anlegen. Wer ein Brett anlegt, fährt danach Snowboard, wer einen Ski anlegt, Ski. Tastatur: Pfeile hoch/runter wählen, links/rechts Reiter, Enter kaufen oder anlegen, Esc zurück. Am Handy quer mit schmaleren Leisten.
 - Eigene Szene und Kamera, gerendert nur solange der Shop offen ist; das Spiel darunter bleibt unverändert.
 - Geprüft im Browser: Öffnen, Reiter, Auswahl mit Anprobieren, Kaufen mit Testpunkten, Anlegen eines Bretts (Ausrüstung wechselt auf Snowboard), Esc zurück ins Menü, Handy-Ansicht quer; Standbilder aller Reiter. Testpunkte und Testkäufe danach gelöscht.
+
+## Breite Klippen, Felsen in den Windlippen, Joystick (v35, 2026-11-19)
+
+| Rückmeldung | Änderung |
+|---|---|
+| „Warum ist um die Sprünge im Heli ein weißes, blockartiges Ding?“ | Das war die angehobene Bank, mit der Klippen ins Höhenfeld gebaut wurden: 18 bis 60 m schmal, mit steilen weißen Seitenwänden. Neu sind Klippen breite Felsbänder: die Wand wird zu den Enden niedriger und verschwindet im Hang, es gibt keine Seitenwände mehr. Oberhalb wird nur ein knappes Drittel der Höhe angehoben, der Rest unterhalb abgesenkt (dort bleibt der Hang so steil wie vorher, die Landung ist steil). Die Felswand wird in Abschnitten von rund 40 m je Kachel gebaut, damit sie auch bei 380 m Breite überall steht |
+| „Mit Klippen meinte ich wirklich breite, sehr hohe Klippen“ | 30 Felsbänder je Berg, 100 bis 380 m breit, 16 bis 57 m hoch (Median rund 34 m), gewellte Kante, wechselnde Wandhöhe. Damit Drops aus über 50 m landbar sind, fängt tiefer Heli-Pulver Landungen stärker ab (55 statt 42 Prozent), wie beim Big-Mountain-Fahren; jede Klippe wird mit der Flugbahn bei 14 bis 108 km/h geprüft |
+| „Normale Jumps mit Steinen darin“ | Windlippen etwas größer (2 bis 4,2 m hoch); unter der Absprungkante steht eine Felsstufe, über die der Schnee geweht ist, an den Seiten liegen Blöcke im Schnee. Die Felsen unter der Kante haben keine eigene Kollision (die Absprungfläche ist schon fest), die seitlichen schon |
+| Handy: Joystick | Unter Einstellungen „Lenkung“ jetzt Neigen, Daumen oder Joystick. Der Joystick setzt links unten dort auf, wo der Daumen landet: seitlich lenkt (in der Luft drehen), nach unten Hocke (Luft: Frontflip), nach oben bremsen (Luft: Backflip), beliebig kombiniert, z. B. links unten = Hocke und links. Die Knöpfe Hocke und Bremse sind in diesem Modus ausgeblendet |
+
+Dazu: Am Ende eines Couloirs stieg der Rinnenboden an (die Tiefe nahm schneller ab, als das Gelände fiel); jetzt fällt der Boden überall und die Rinne läuft aus. Der Heli-Bot dreht sich im Stand zur örtlichen Falllinie wie ein Spieler (die Kante hält einen sonst quer am Steilhang).
+
+### Prüfung
+
+| Test | Ergebnis |
+|---|---|
+| `heli_validate.mjs 6 ohne` | 76 von 78 Fahrten im Tal, 0 Geländestürze; 1440 Sprünge über die neuen Felsbänder (180 Klippen) ohne Sturz, höchster Aufprall 15,2 m/s (Grenze 23); eine Bot-Linie mit dauerndem Rechtsdrall bleibt stecken |
+| `heli_jumps.mjs 3` (ohne Kacheln) | Felsbänder: 1 Sturz in 5400 Fahrten (frontal gegen eine Wand); Windlippen: 36 Wandstürze in 9120 Fahrten (schnell und schräg gegen die steilere Stirn der größeren Windlippen) |
+| `heli_jumps.mjs 3 mit` | Felsstürze an den Windlippen 97 von 9120 (vorher 11), fast alle schräge Anfahrten am Rand vorbei an die neuen, sichtbaren Seitenblöcken; Felsbänder 46 Felsstürze weiter unten an anderen Felsen |
+| Lenkung, Wald, Kanten | wie v34 (Querhang 101 km/h im Mittel 47 bis 49 Grad; Wald bis 58 km/h 67 von 75; 0 Wandfahrten) |
+| Freeride, Freestyle, Rennen | Ausgaben identisch zu v28 |
+| Im Spiel | Standbilder eines 320 m breiten, 55 m hohen Felsbands von unten, von der Seite und von oben; Windlippe mit Felsstufe von vorne, seitlich und aus der Anfahrt; Joystick in der Handy-Ansicht: links unten = Hocke und links, rechts = lenken ohne Hocke, oben = bremsen, Loslassen = neutral |
+
+### Nicht geprüft
+- Kein Mensch hat die neuen Klippen und den Joystick gespielt. Ob Drops aus 50 m sich gut anfühlen und der Joystick auf einem echten Telefon angenehm liegt, ist offen.
+- Die Felsen unter den Windlippen wirken im Schatten fast schwarz.
+- Aus der Ferne (außerhalb der geladenen Kacheln) sind die Felsbänder nicht zu sehen; sie erscheinen erst beim Näherkommen.

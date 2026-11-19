@@ -230,7 +230,8 @@ export class SkiPhysics {
     } else if (gap <= 0) {
       p.y = hgt;
       // Pulverschnee fängt Landungen ab
-      const impact = Math.max(0, -vn) * (1 - 0.42 * this.pow);
+      // Heli-Berg (v35): tiefer, steiler Pulver fängt große Drops stärker ab (wie beim Big-Mountain-Fahren)
+      const impact = Math.max(0, -vn) * (1 - (cfg.heli ? 0.55 : 0.42) * this.pow);
       if (vn < 0) v.addScaledVector(N2, -vn);
       this.grounded = true;
       this.gap = 0;

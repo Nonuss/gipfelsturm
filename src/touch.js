@@ -8,7 +8,10 @@ export const touch = {
   steer: null,          // analoger Lenkwert -1..1 (null = keine Touch-/Neigungslenkung aktiv)
   tilt: false,          // Neigungssteuerung an
   tiltOk: false,        // Sensor liefert Werte
+  mode: 'tilt',         // 'tilt' Neigen, 'thumb' Daumen ziehen, 'stick' Joystick (v35)
+  stick: { on: false, x: 0, y: 0 },   // Joystick: x -1..1 (rechts +), y -1..1 (unten +)
 };
+let stickKeys = { w: false, s: false };
 
 const key = (code, down) => window.dispatchEvent(new KeyboardEvent(down ? 'keydown' : 'keyup', { code, bubbles: true }));
 
@@ -80,6 +83,14 @@ export function updateTouch(inAir, dt = 1 / 60) {
     s = Math.sign(d) * Math.min(1, m * (0.55 + 0.45 * m));              // fein in der Mitte, kräftig am Rand
   }
   if (dragSteer !== null) s = dragSteer;                                 // Daumen hat Vorrang
+  // Joystick: seitlich = lenken (in der Luft drehen), unten = Hocke (Luft: Frontflip), oben = bremsen (Luft: Backflip)
+  if (touch.mode === 'stick') {
+    const st = touch.stick, dz = (v) => (Math.abs(v) < 0.12 ? 0 : Math.sign(v) * (Math.abs(v) - 0.12) / 0.88);
+    s = st.on ? dz(st.x) : 0;
+    const wantW = st.on && st.y > (stickKeys.w ? 0.28 : 0.4), wantS = st.on && st.y < (stickKeys.s ? -0.35 : -0.5);
+    if (wantW !== stickKeys.w) { key('KeyW', wantW); stickKeys.w = wantW; }
+    if (wantS !== stickKeys.s) { key('KeyS', wantS); stickKeys.s = wantS; }
+  } else if (stickKeys.w || stickKeys.s) { if (stickKeys.w) key('KeyW', false); if (stickKeys.s) key('KeyS', false); stickKeys = { w: false, s: false }; }
   touch.steer = s;
   // In der Luft: deutliches Neigen/Ziehen dreht (Spin) – wie A/D am PC
   const want = inAir && s !== null ? (s > 0.5 ? 1 : s < -0.5 ? -1 : (Math.abs(s) < 0.3 ? 0 : airSpin)) : 0;
@@ -126,6 +137,7 @@ export function setupTouch({ isAir, isRunning, onResize }) {
   // und Respawn-Punkt (tippen = zurück, halten = neu setzen; im Heli-Modus ausgeblendet). Lenken: Neigen oder Daumen.
   ui.innerHTML = `
     <div class="tz" id="tzDrag"></div>
+    <div class="tstickzone" id="tStickZone"><div class="tstick" id="tStick"><i></i><b></b></div></div>
     <div class="tb right">
       <button class="tbtn big" id="tJump" aria-label="Springen, in der Luft halten für Grab"><svg viewBox="0 0 24 24"><path d="M5 15l7-7 7 7"/><path d="M5 20h14"/></svg></button>
       <button class="tbtn spec" id="tSpec" aria-label="Spezialtrick (in der Luft)"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/></svg></button>
@@ -166,6 +178,33 @@ export function setupTouch({ isAir, isRunning, onResize }) {
     touch.wantTilt = on;
     try { localStorage.setItem('gs_tilt', touch.tilt ? '1' : '0'); } catch {}
   };
+  /** Steuerart: 'tilt' Neigen, 'thumb' Daumen ziehen, 'stick' Joystick. */
+  const setMode = async (m) => {
+    touch.mode = m;
+    try { localStorage.setItem('gs_ctrl', m); } catch {}
+    ui.classList.toggle('stick', m === 'stick');
+    await setTilt(m === 'tilt');
+  };
+  // Joystick: setzt dort auf, wo der Daumen in der linken Bildhälfte landet; der Knopf folgt bis zum Rand des Rings
+  { const zone = $('tStickZone'), st = $('tStick'), knob = st.querySelector('b'), R = 56;
+    let pid2 = null, cx = 0, cy = 0;
+    const local = (e) => { const [x, y] = pt(e), r = zone.getBoundingClientRect(), [zx, zy] = view.rot ? [r.top, window.innerWidth - r.right] : [r.left, r.top]; return [x - zx, y - zy]; };
+    const home = () => { st.style.left = ''; st.style.top = ''; st.classList.remove('on'); knob.style.transform = ''; };
+    zone.addEventListener('pointerdown', (e) => {
+      if (touch.mode !== 'stick') return;
+      e.preventDefault(); pid2 = e.pointerId; try { zone.setPointerCapture(pid2); } catch {}
+      [cx, cy] = local(e); st.style.left = cx + 'px'; st.style.top = cy + 'px'; st.classList.add('on');
+      touch.stick.on = true; touch.stick.x = 0; touch.stick.y = 0;
+    });
+    zone.addEventListener('pointermove', (e) => {
+      if (e.pointerId !== pid2) return;
+      const [x, y] = local(e); let dx = x - cx, dy = y - cy; const l = Math.hypot(dx, dy);
+      if (l > R) { dx *= R / l; dy *= R / l; }
+      knob.style.transform = `translate(${dx}px, ${dy}px)`;
+      touch.stick.x = dx / R; touch.stick.y = dy / R;
+    });
+    const end = (e) => { if (e.pointerId !== pid2) return; pid2 = null; touch.stick.on = false; touch.stick.x = 0; touch.stick.y = 0; home(); };
+    zone.addEventListener('pointerup', end); zone.addEventListener('pointercancel', end); }
 
   // Fläche: Daumen ziehen = lenken (wenn Neigen aus ist oder zusätzlich), in der Luft wischen = Flip
   const dz = $('tzDrag');
@@ -194,10 +233,12 @@ export function setupTouch({ isAir, isRunning, onResize }) {
   };
   dz.addEventListener('pointerup', end); dz.addEventListener('pointercancel', end);
 
-  // Neigen ist Standard, sobald erlaubt (gemerkte Wahl)
-  let want = true;
-  try { want = localStorage.getItem('gs_tilt') !== '0'; } catch {}
-  touch.wantTilt = want;
+  // Neigen ist Standard, sobald erlaubt (gemerkte Wahl); Joystick seit v35 wählbar
+  let want = true, mode = null;
+  try { want = localStorage.getItem('gs_tilt') !== '0'; mode = localStorage.getItem('gs_ctrl'); } catch {}
+  touch.mode = mode === 'stick' || mode === 'thumb' || mode === 'tilt' ? mode : want ? 'tilt' : 'thumb';
+  touch.wantTilt = touch.mode === 'tilt';
+  ui.classList.toggle('stick', touch.mode === 'stick');
   showTilt();
   return {
     /** Beim Start aus dem Tipp heraus: Neigung erlauben lassen und Nulllage setzen. */
@@ -211,6 +252,8 @@ export function setupTouch({ isAir, isRunning, onResize }) {
     setRunning(r) { ui.classList.toggle('active', r); },
     setAir(a) { ui.classList.toggle('air', a); },
     setTilt,
+    setMode,
+    mode: () => touch.mode,
     tiltOn: () => touch.wantTilt,
     setCheckpoints(on) { $('tCp').style.display = on ? '' : 'none'; },
     isRunning,

@@ -165,7 +165,7 @@ export function setupTouch({ isAir, isRunning, onResize }) {
   hold($('tTuck'), 'KeyW');
   hold($('tBrake'), 'KeyS');
   const tap = (el, code) => el.addEventListener('click', (e) => { e.preventDefault(); key(code, true); key(code, false); });
-  tap($('tMenu'), 'Escape'); tap($('tCam'), 'KeyC'); tap($('tSpec'), 'Digit0');
+  tap($('tMenu'), 'Escape'); tap($('tCam'), 'KeyC'); tap($('tSpec'), 'SpecialRandom');
   // Respawn-Punkt: kurz tippen = zurück (ohne Punkt: zurück auf die Spur), halten = hier neu setzen
   { const el = $('tCp'); let tm = null, long = false;
     el.addEventListener('pointerdown', (e) => { e.preventDefault(); long = false; el.classList.add('on'); tm = setTimeout(() => { long = true; key('KeyF', true); key('KeyF', false); }, 550); });

@@ -540,3 +540,25 @@ Dazu: Am Ende eines Couloirs stieg der Rinnenboden an (die Tiefe nahm schneller 
 - Test (frontal und versetzt mit 72 km/h auf einen 2,5 m hohen Felsen, 2 s): kein Sturz, ein Anstoß, danach 58 bis 59 km/h statt 76 km/h ohne Felsen, seitliche Abweichung 1,5 m wie ohne Felsen (vorher bis 8 m weggeschoben).
 - Kamera: in der Lawinen-Sicht nur noch etwa 2,4 m weiter zurück und 1,5 m höher als sonst (vorher 9 m und 6 m), Blick 10 m statt 24 m voraus, kaum weiterer Bildwinkel; sie greift nur noch, solange die Lawine wirklich nah ist, und mindestens 2,5 s nach dem Abriss.
 - Freeride-Bot unverändert, Heli-Sprungtest unverändert.
+
+## Spezialtricks echter, zehnter Trick (v37, 2026-11-19)
+
+- Rückmeldung (Freund von Noah): Die Tricks 1 bis 5 sehen nicht echt aus.
+- Ursache: Der Körper drehte starr erst um die Hochachse und kippte dabei nach vorn, ohne Grab und ohne kompakte Haltung. Echte Corks, Rodeos und Mistys drehen um eine schräge Achse, der Kopf geht seitlich bzw. rückwärts über die Schulter nach unten, die Hand hält den Ski.
+- Neu: Drehung um eine schräge Achse (am Anfang und Ende senkrecht, in der Mitte bis 58 bis 72 Grad gekippt), Grab in der Mitte der Drehung (Mute, Safety, Tail; Brett Indy, Melon, Tail), kompakte Haltung während der Überschläge.
+
+| Taste | Ski | Snowboard |
+|---|---|---|
+| 1 | Cork 720 Mute | Backside Cork 720 Indy |
+| 2 | Rodeo 540 Tail | Backside Rodeo 540 Melon |
+| 3 | Japan Air (statt Superman: Ski hinter dem Körper hochgezogen, Spitzen nach unten) | Method Air |
+| 4 | Iron Cross mit Tail Grab | Stalefish |
+| 5 | Doppel-Backflip, eng gehockt mit Safety Grab (Bullet-Time-Kamera) | dasselbe |
+| 6 | Misty 720 Mute | Frontside Misty 540 Indy |
+| 7 | Flatspin 540 Safety | Backside Flatspin 540 |
+| 8 | Double Cork 1080 Safety | Double Cork 1080 Indy |
+| 9 | Daffy | Frontside 360 Indy |
+| 0 | Triple Cork 1440 Mute (neu, braucht rund 1,6 s Luft) | Triple Cork 1440 Indy |
+
+- Der Handy-Stern wählt weiterhin einen passenden Trick (jetzt auch den Triple Cork).
+- Geprüft im Spiel: alle zehn mit Ski und Brett aus großer Höhe gesprungen und sauber gelandet; Standbilder von der Seite bei 30 und 55 Prozent jeder Drehung.

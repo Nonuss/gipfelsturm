@@ -283,6 +283,7 @@ export class Skier {
     const crash = s.crash || 0, ca = s.crashA || 0;
     const sup = s.sup || 0, cross = s.cross || 0;   // Spezialtricks: Superman (gestreckt), Iron Cross (Ski gekreuzt)
     const daffy = s.daffy || 0;                     // Daffy: linkes Bein weit nach vorn (Spitze hoch), rechtes nach hinten
+    const tweak = s.tweak || 0;                     // Japan Air: Ski hinter dem Körper hochgezogen, Spitzen nach unten
     let c = clamp(Math.max(s.crouch + s.compress * 0.7 + air * 0.25, tuck * 0.9, grab * 0.75, cross * 0.7), 0, 1);
     c = lerp(c, 0.08, Math.max(ext, sup, daffy * 0.7));
     if (crash) c = 0.35;
@@ -329,9 +330,9 @@ export class Skier {
         f.rotation.set(grab * 0.25 + tuck * 0.1 + (s.edge || 0), side * 0.26, 0);
       } else {
         const stance = 0.17 + 0.07 * Math.abs(lean) + 0.13 * plow + air * 0.03 + grab * 0.03;
-        f.position.set(side * stance * (1 - 0.25 * cross) * (1 - 0.35 * daffy), Math.abs(Math.sin(edge)) * 0.03 + grab * 0.2 + tuck * 0.16 + cross * 0.22 + sup * 0.1 + daffy * (side < 0 ? 0.2 : 0.06), -0.09 * lean * side - grab * 0.06 + cross * 0.12 + sup * 0.32 + daffy * (side < 0 ? -0.46 : 0.42));
+        f.position.set(side * stance * (1 - 0.25 * cross) * (1 - 0.35 * daffy), Math.abs(Math.sin(edge)) * 0.03 + grab * 0.2 + tuck * 0.16 + cross * 0.22 + sup * 0.1 + daffy * (side < 0 ? 0.2 : 0.06) + tweak * 0.3, -0.09 * lean * side - grab * 0.06 + cross * 0.12 + sup * 0.32 + daffy * (side < 0 ? -0.46 : 0.42) + tweak * 0.42);
         // Pflug: vorwärts Spitzen zusammen, rückwärts Enden zusammen (plowDir = -1) – der Keil öffnet sich immer in Fahrtrichtung
-        f.rotation.set(air * 0.1 * (1 - ext) + grab * 0.32 + tuck * 0.12 - sup * 0.35 + daffy * (side < 0 ? 0.6 : -0.55), side * (plow * 0.33 * (s.plowDir || 1) + grab * 0.22 + cross * 0.75), -(edge - side * plow * 0.28) - side * cross * 0.35);
+        f.rotation.set(air * 0.1 * (1 - ext) + grab * 0.32 + tuck * 0.12 - sup * 0.35 + daffy * (side < 0 ? 0.6 : -0.55) - tweak * 0.85, side * (plow * 0.33 * (s.plowDir || 1) + grab * 0.22 + cross * 0.75), -(edge - side * plow * 0.28) - side * cross * 0.35);
       }
       f.updateMatrix();
       if (!k.loose) {

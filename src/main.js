@@ -255,35 +255,57 @@ const trickMul = () => gearStats().trick;
 let jumpQueued = false;
 let quietCrash = false;
 
-// ---------------------------------------------------------------- Spezialtricks (Tasten 1 bis 5 in der Luft)
+// ---------------------------------------------------------------- Spezialtricks (Tasten 1 bis 0 in der Luft)
 // Jeder Spezialtrick ist eine fest choreografierte Bewegung mit eigener Kamera und Zeitlupe. Er startet nur, wenn die
 // Flugzeit reicht; wer zu früh aufsetzt, ist nicht ausgedreht und stürzt wie bei normalen Tricks.
 const ezSpin = (u) => u - Math.sin(TAU * u) / TAU * 0.6;   // weich an- und ausdrehen, nie ganz still
 const bump = (u, p = 0.6) => Math.pow(Math.max(0, Math.sin(Math.PI * u)), p);
+// v37: Drehungen wie im echten Contest. Corks, Rodeos und Mistys drehen um eine SCHRÄGE Achse (axis: Richtung im
+// Körper, x rechts, y oben, z hinten; ang: Drehwinkel), die am Anfang und Ende senkrecht steht: so geht der Kopf in der
+// Mitte zur Seite nach unten und der Fahrer landet sauber. Dazu ein Grab in der Mitte der Drehung (grab, gs: 0 Safety,
+// -1 Mute, 1 Tail; Brett bgs: 0 Indy, -1 Melon, 1 Tail) und eine kompakte Haltung (tuck). Vorher drehte der Körper starr
+// erst um die Hochachse und kippte dabei nach vorn, ohne Grab: das sah nicht echt aus.
+const mid = (a, b, c, d) => (u) => smoothstep(a, b, u) * (1 - smoothstep(c, d, u));   // Grab/Haltung in der Mitte
+/** Schräge Achse: kippt mit bump(u) um maximal deg Grad in Richtung (x, z) (Körper: x rechts, z hinten). */
+const tiltAxis = (deg, x, z, p = 0.75) => { const l = Math.hypot(x, z) || 1; x /= l; z /= l; return (u) => { const k = bump(u, p) * deg * Math.PI / 180; return [Math.sin(k) * x, Math.cos(k), Math.sin(k) * z]; }; };
 const SPECIALS = [
-  { key: 'Digit1', ski: 'Cork 720', board: 'Cork 720', T: 1.25, Tmin: 0.85, slow: 0.5, cam: 'orbit', pts: 2200,
-    pitch: (u) => 0.8 * bump(u, 1), yaw: (u) => -2 * TAU * ezSpin(u), roll: (u) => 0.35 * Math.sin(TAU * u) },
-  { key: 'Digit2', ski: 'Rodeo 540', board: 'Rodeo 540', T: 1.35, Tmin: 1.0, slow: 0.55, cam: 'side', pts: 2600,
-    pitch: (u) => TAU * ezSpin(u), yaw: (u) => 3 * Math.PI * ezSpin(u), roll: () => 0 },
-  { key: 'Digit3', ski: 'Superman', board: 'Method Air', T: 1.05, Tmin: 0.7, slow: 0.6, cam: 'hero', pts: 1500,
-    pitch: (u) => -1.1 * bump(u, 0.7), yaw: () => 0, roll: (u) => 0.25 * bump(u), sup: (u) => bump(u, 0.5) },
-  { key: 'Digit4', ski: 'Iron Cross', board: 'Stalefish', T: 0.95, Tmin: 0.6, slow: 0.6, cam: 'frog', pts: 1200,
-    pitch: (u) => -0.3 * bump(u), yaw: (u) => 0.5 * bump(u), roll: (u) => -0.3 * bump(u), cross: (u) => bump(u, 0.5) },
+  // 1 Cork 720: zwei Umdrehungen um eine stark schräge Achse, der Kopf taucht seitlich ab, Mute Grab (Brett: Indy)
+  { key: 'Digit1', ski: 'Cork 720 Mute', board: 'Backside Cork 720 Indy', T: 1.3, Tmin: 0.95, slow: 0.5, cam: 'orbit', pts: 2400,
+    axis: tiltAxis(58, 0.8, 0.6), ang: (u) => -2 * TAU * ezSpin(u), pitch: () => 0, yaw: (u) => -2 * TAU * ezSpin(u), roll: () => 0,
+    grab: mid(0.18, 0.32, 0.7, 0.86), gs: -1, bgs: 0, tuck: mid(0.1, 0.3, 0.75, 0.9) },
+  // 2 Rodeo 540: Rückwärtssalto mit halber Schraube (Achse fast quer), Tail Grab, Landung rückwärts
+  { key: 'Digit2', ski: 'Rodeo 540 Tail', board: 'Backside Rodeo 540 Melon', T: 1.35, Tmin: 1.0, slow: 0.55, cam: 'side', pts: 2700,
+    axis: tiltAxis(72, -1, 0.2, 0.6), ang: (u) => 3 * Math.PI * ezSpin(u), pitch: () => 0, yaw: (u) => 3 * Math.PI * ezSpin(u), roll: () => 0,
+    grab: mid(0.15, 0.3, 0.72, 0.88), gs: 1, bgs: -1, tuck: mid(0.08, 0.28, 0.75, 0.92) },
+  // 3 Japan Air: gerader Sprung, Ski hinter dem Körper hochgezogen und verdreht, linke Hand am Ski (Brett: Method Air)
+  { key: 'Digit3', ski: 'Japan Air', board: 'Method Air', T: 1.05, Tmin: 0.7, slow: 0.6, cam: 'hero', pts: 1500,
+    pitch: (u) => -0.42 * bump(u, 0.7), yaw: (u) => 0.35 * bump(u), roll: (u) => 0.45 * bump(u, 0.8), grab: (u) => bump(u, 0.45), gs: -1, tuck: (u) => 0.55 * bump(u, 0.5), tweak: (u) => bump(u, 0.55), sup: (u) => (BOARD() ? bump(u, 0.5) : 0) },
+  // 4 Iron Cross: Skienden zusammen, Spitzen weit gespreizt zum X, Tail Grab, Körper leicht gedreht (Brett: Stalefish)
+  { key: 'Digit4', ski: 'Iron Cross', board: 'Stalefish', T: 0.95, Tmin: 0.6, slow: 0.6, cam: 'frog', pts: 1300,
+    pitch: (u) => -0.25 * bump(u), yaw: (u) => 0.55 * bump(u), roll: (u) => -0.35 * bump(u), cross: (u) => bump(u, 0.5), grab: (u) => 0.85 * bump(u, 0.6), gs: 1 },
+  // 5 Doppel-Backflip: zwei Salti rückwärts, eng gehockt mit Safety Grab, Kamera fährt einmal rundherum
   { key: 'Digit5', ski: 'Bullet Time Doppel-Backflip', board: 'Bullet Time Doppel-Backflip', T: 1.45, Tmin: 1.15, slow: 0.4, cam: 'bullet', pts: 4200,
-    pitch: (u) => 2 * TAU * ezSpin(u), yaw: () => 0, roll: () => 0 },
-  // v30: vier weitere, wie sie im Contest gesprungen werden
-  // Misty: vorwärts gekippte Schraube (Kopf geht nach vorn unten), Ski 720 vorwärts gelandet, Brett 540 auf Fakie
-  { key: 'Digit6', ski: 'Misty 720', board: 'Frontside Misty 540', T: 1.3, Tmin: 0.95, slow: 0.55, cam: 'hero', pts: 2500,
-    pitch: (u) => -1.05 * bump(u, 1), yaw: (u) => (BOARD() ? -3 * Math.PI : -2 * TAU) * ezSpin(u), roll: (u) => -0.45 * Math.sin(TAU * u) },
-  // Flatspin: Körper fast waagrecht, dreht flach wie ein Teller; 540 = rückwärts landen
-  { key: 'Digit7', ski: 'Flatspin 540', board: 'Backside Flatspin 540', T: 1.2, Tmin: 0.9, slow: 0.55, cam: 'side', pts: 2100,
-    pitch: (u) => 0.35 * bump(u, 1), yaw: (u) => 3 * Math.PI * ezSpin(u), roll: (u) => 1.15 * bump(u, 0.8) },
-  // Double Cork 1080: drei Drehungen um die Hochachse mit zwei schrägen Überschlägen, braucht viel Luft
-  { key: 'Digit8', ski: 'Double Cork 1080', board: 'Double Cork 1080', T: 1.65, Tmin: 1.3, slow: 0.45, cam: 'orbit', pts: 4800,
-    pitch: (u) => 0.85 * bump(u, 1), yaw: (u) => -3 * TAU * ezSpin(u), roll: (u) => 0.55 * Math.sin(2 * TAU * u) },
-  // Daffy (Ski): Klassiker aus den 80ern, Beine weit vor und zurück gegrätscht. Brett: Frontside 360 mit Indy Grab
+    axis: () => [-1, 0, 0], ang: (u) => 2 * TAU * ezSpin(u), pitch: () => 0, yaw: () => 0, roll: () => 0,
+    grab: mid(0.12, 0.25, 0.75, 0.88), gs: 0, bgs: 0, tuck: mid(0.05, 0.2, 0.8, 0.95) },
+  // 6 Misty 720: vorwärts gekippte Schraube (Kopf geht nach vorn unten), Mute Grab; Brett: Frontside Misty 540 auf Fakie
+  { key: 'Digit6', ski: 'Misty 720 Mute', board: 'Frontside Misty 540 Indy', T: 1.3, Tmin: 0.95, slow: 0.55, cam: 'hero', pts: 2500,
+    axis: tiltAxis(60, -0.6, -0.8), ang: (u) => (BOARD() ? -3 * Math.PI : -2 * TAU) * ezSpin(u), pitch: () => 0, yaw: (u) => (BOARD() ? -3 * Math.PI : -2 * TAU) * ezSpin(u), roll: () => 0,
+    grab: mid(0.2, 0.35, 0.7, 0.85), gs: -1, bgs: 0, tuck: mid(0.1, 0.3, 0.75, 0.9) },
+  // 7 Flatspin 540: Körper flach gekippt, dreht wie ein Teller, ohne Kopfüber; Landung rückwärts
+  { key: 'Digit7', ski: 'Flatspin 540 Safety', board: 'Backside Flatspin 540', T: 1.2, Tmin: 0.9, slow: 0.55, cam: 'side', pts: 2100,
+    axis: tiltAxis(42, 0.2, 1), ang: (u) => 3 * Math.PI * ezSpin(u), pitch: () => 0, yaw: (u) => 3 * Math.PI * ezSpin(u), roll: () => 0,
+    grab: mid(0.2, 0.35, 0.65, 0.8), gs: 0, bgs: 1, tuck: mid(0.15, 0.3, 0.7, 0.85) },
+  // 8 Double Cork 1080: drei Umdrehungen mit zwei schrägen Überschlägen, Safety Grab
+  { key: 'Digit8', ski: 'Double Cork 1080 Safety', board: 'Double Cork 1080 Indy', T: 1.65, Tmin: 1.3, slow: 0.45, cam: 'orbit', pts: 4800,
+    axis: tiltAxis(62, 0.85, 0.5, 0.55), ang: (u) => -3 * TAU * ezSpin(u), pitch: () => 0, yaw: (u) => -3 * TAU * ezSpin(u), roll: () => 0,
+    grab: mid(0.15, 0.28, 0.75, 0.88), gs: 0, bgs: 0, tuck: mid(0.08, 0.22, 0.8, 0.92) },
+  // 9 Daffy (Ski): Klassiker aus den 80ern, Beine weit vor und zurück gegrätscht. Brett: Frontside 360 mit Indy Grab
   { key: 'Digit9', ski: 'Daffy', board: 'Frontside 360 Indy', T: 1.0, Tmin: 0.6, slow: 0.6, cam: 'side', pts: 1000,
     pitch: (u) => -0.12 * bump(u), yaw: (u) => (BOARD() ? -TAU * ezSpin(u) : 0), roll: () => 0, daffy: (u) => bump(u, 0.45), bgrab: (u) => bump(u, 0.5), bgs: 0 },
+  // 10 (Taste 0) Triple Cork 1440: vier Umdrehungen mit drei schrägen Überschlägen, der Big-Air-Trick der Profis
+  { key: 'Digit0', ski: 'Triple Cork 1440 Mute', board: 'Triple Cork 1440 Indy', T: 2.0, Tmin: 1.6, slow: 0.4, cam: 'bullet', pts: 7000,
+    axis: tiltAxis(64, 0.85, 0.5, 0.45), ang: (u) => -4 * TAU * ezSpin(u), pitch: () => 0, yaw: (u) => -4 * TAU * ezSpin(u), roll: () => 0,
+    grab: mid(0.12, 0.24, 0.8, 0.9), gs: -1, bgs: 0, tuck: mid(0.06, 0.18, 0.84, 0.94) },
 ];
 let special = null, lastSpecial = null, timeScale = 1;
 const specCam = { w: 0, mode: 'orbit', a0: 0, u: 0 };
@@ -327,6 +349,9 @@ function updateSpecial(dt) {
   vis.sup = d.sup ? d.sup(u) : 0;
   vis.cross = d.cross ? d.cross(u) : 0;
   vis.daffy = d.daffy && !BOARD() ? d.daffy(u) : 0;
+  vis.specTuck = d.tuck ? d.tuck(u) : 0;
+  vis.tweak = d.tweak ? d.tweak(u) : 0;
+  if (d.grab) { trick.grab = d.grab(u); trick.gs = BOARD() && d.bgs !== undefined ? d.bgs : d.gs; }
   if (BOARD() && (vis.sup > 0 || vis.cross > 0)) { trick.grab = Math.max(vis.sup, vis.cross); trick.gs = vis.sup > 0 ? -1 : 1; }
   if (BOARD() && d.bgrab) { trick.grab = d.bgrab(u); trick.gs = d.bgs; }
   specCam.u = u;
@@ -705,7 +730,7 @@ function resetVisuals() {
   hasPrevSki = false;
   Object.assign(vis, { lean: 0, crouch: 0, compress: 0, plow: 0, air: 0, crashAngle: 0, crashSpin: 0, tuck: 0, spin: 0, extend: 0, zoom: 0, shake: 0, crashCam: 0, camSide: 1, flipCam: 0, bigAir: 0, dip: 0 });
   Object.assign(trick, { pitch: 0, yaw: 0, pv: 0, yv: 0, grab: 0, grabT: 0, wasAir: false });
-  swYaw = 0; vis.look = 0; vis.specRoll = 0; vis.sup = 0; vis.cross = 0; vis.daffy = 0; vis.avZoom = 0;
+  swYaw = 0; vis.look = 0; vis.specRoll = 0; vis.sup = 0; vis.cross = 0; vis.daffy = 0; vis.tweak = 0; vis.specTuck = 0; vis.avZoom = 0;
   avCam = 0; avNear = 0; phys.noRockCrash = false;
   special = null; lastSpecial = null; timeScale = 1; specCam.w = 0;
   skier.attachSkis();
@@ -1134,7 +1159,7 @@ window.addEventListener('keydown', (e) => {
     // Tricks zählen nur für Tasten, die erst in der Luft gedrückt werden
     if (game.mode === 'run' && !phys.grounded) airKey[name] = true;
   }
-  if (game.mode === 'run') { const sd = SPECIALS.find((q) => q.key === k || q.key.replace('Digit', 'Numpad') === k); if (sd) { startSpecial(sd); return; } if (k === 'Digit0' || k === 'Numpad0') { startSpecial(null); return; } }
+  if (game.mode === 'run') { const sd = SPECIALS.find((q) => q.key === k || q.key.replace('Digit', 'Numpad') === k); if (sd) { startSpecial(sd); return; } if (k === 'SpecialRandom') { startSpecial(null); return; } }
   if (k === 'Space' || k === 'Enter') {
     if (game.mode === 'menu' || (game.mode === 'finished' && game.finishT > 1.2)) startRun();
     else if (game.mode === 'run' && (phys.grounded || phys.grind)) jumpQueued = true;   // auch von der Rail abspringen
@@ -1180,7 +1205,7 @@ function updateTricks(dt) {
   if (inAir && !trick.wasAir) { for (const k in airKey) airKey[k] = false; trick.grabT = 0; trick.gT.safety = trick.gT.mute = trick.gT.tail = 0; lastSpecial = null; }
   trick.wasAir = inAir;
   const kk = (r) => 1 - Math.exp(-dt * r);
-  if (!special) { vis.specRoll = (vis.specRoll || 0) * (1 - kk(8)); vis.sup = (vis.sup || 0) * (1 - kk(8)); vis.cross = (vis.cross || 0) * (1 - kk(8)); vis.daffy = (vis.daffy || 0) * (1 - kk(8)); }
+  if (!special) { vis.specRoll = (vis.specRoll || 0) * (1 - kk(8)); vis.sup = (vis.sup || 0) * (1 - kk(8)); vis.cross = (vis.cross || 0) * (1 - kk(8)); vis.daffy = (vis.daffy || 0) * (1 - kk(8)); vis.tweak = (vis.tweak || 0) * (1 - kk(8)); }
   if (inAir && updateSpecial(dt)) { /* Choreografie läuft */ }
   else if (inAir) {
     const flipIn = (airKey.down ? 1 : 0) - (airKey.up ? 1 : 0);
@@ -1216,7 +1241,7 @@ function updateTricks(dt) {
   // Großer Flug (hoch über dem Boden): Kamera geht auf Abstand und zeigt die Landung
   vis.bigAir += ((inAir && phys.gap > 4 ? 1 : 0) - vis.bigAir) * k(inAir ? 2.2 : 3);
   vis.dip *= Math.exp(-dt * 5);
-  vis.tuck += ((inAir ? clamp(Math.abs(trick.pv) / 7, 0, 1) : 0) - vis.tuck) * k(9);
+  vis.tuck += ((inAir ? Math.max(clamp(Math.abs(trick.pv) / 7, 0, 1), special ? vis.specTuck || 0 : 0) : 0) - vis.tuck) * k(9);
   vis.spin += ((inAir ? clamp(-trick.yv / 8.8, -1, 1) : 0) - vis.spin) * k(9);
   // Absprung: kurz strecken. Kurz vor dem Boden: Beine zur Landung ausfahren.
   const nearGround = inAir && phys.vel.y < 0 && phys.gap < 2.6 && Math.abs(trick.pv) < 2.5;
@@ -1730,6 +1755,7 @@ function checkGates() {
 
 // ---------------------------------------------------------------- Figur ausrichten
 const mBasis = new THREE.Matrix4(), vF = new THREE.Vector3(), vR = new THREE.Vector3(), vB = new THREE.Vector3();
+const vAx = new THREE.Vector3(), qSp = new THREE.Quaternion(), eSp = new THREE.Euler();
 const bdTmp = new THREE.Vector3(), BOARD_Y = -0.85 + 0.002 * 0.94;   // Brettmitte im Drehpunkt-System (Körper 0,85 m tiefer, Maßstab 0,94)
 function updateSkier(dt) {
   const k = (r) => 1 - Math.exp(-dt * r);
@@ -1810,12 +1836,20 @@ function updateSkier(dt) {
       pv.position.set(-bdTmp.x * g, 0.85 + (ty - bdTmp.y - 0.85) * g, -bdTmp.z * g);
     }
   }
+  // Spezialtrick mit schräger Achse (v37): Ausrichtung = Grundstellung (Blickrichtung, Rest-Drehung beim Einsatz) mal
+  // Drehung um die Achse. Am Ende steht die Achse senkrecht, die Euler-Stellung übernimmt nahtlos.
+  if (special && special.def.axis && !crashed) {
+    const sp = special, u = Math.min(1, sp.t / sp.T), fade = 1 - smoothstep(0, 0.25, u), a = sp.def.axis(u);
+    vAx.set(a[0], a[1], a[2]).normalize();
+    pv.quaternion.setFromEuler(eSp.set(sp.p0 + sp.pIn * fade, -(sp.y0 + sp.yIn * fade + swYaw), 0, 'YXZ'));
+    pv.quaternion.multiply(qSp.setFromAxisAngle(vAx, -sp.def.ang(u)));
+  }
   // Rückwärts (Switch) ist der Körper um 180° gedreht: Neigung und Lenkdrehung müssen im Körper gespiegelt werden,
   // sonst lehnt er sich aus der Kurve heraus statt hinein.
   const bodySign = Math.cos(trick.yaw + swYaw);
   skier.update({
     lean: BOARD() ? 0 : vis.lean * bodySign, crouch: BOARD() ? Math.min(1, vis.crouch + 0.32 * Math.abs(vis.lean)) : vis.crouch, edge: BOARD() && !crashed ? vis.bEdgeExtra || 0 : 0, steer: phys.grounded && !BOARD() ? inp.steer * bodySign * (1 + 0.9 * (C.cfg.heli ? 1 : 0)) : 0, plow: BOARD() ? 0 : vis.plow, plowDir: bodySign < 0 ? -1 : 1, air: vis.air, compress: vis.compress,
-    speed: phys.speed, grab: trick.grab, grabSide: trick.gs, sup: BOARD() ? 0 : vis.sup || 0, cross: BOARD() ? 0 : vis.cross || 0, daffy: BOARD() ? 0 : vis.daffy || 0, look: vis.look, tuck: vis.tuck, spin: vis.spin, extend: vis.extend, crash: crashed ? 1 : 0, crashA: vis.crashAngle,
+    speed: phys.speed, grab: trick.grab, grabSide: trick.gs, sup: BOARD() ? 0 : vis.sup || 0, cross: BOARD() ? 0 : vis.cross || 0, daffy: BOARD() ? 0 : vis.daffy || 0, tweak: BOARD() ? 0 : vis.tweak || 0, look: vis.look, tuck: vis.tuck, spin: vis.spin, extend: vis.extend, crash: crashed ? 1 : 0, crashA: vis.crashAngle,
   }, dt);
   skier.updateLoose(dt, C.height);
   if (blob) {

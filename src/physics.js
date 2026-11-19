@@ -42,6 +42,7 @@ export class SkiPhysics {
     this.grind = null;   // auf Rail/Box: { g, s (gefahrene Meter), bal (Balance −1..1) }
     this.grindCool = 0;
     this.noRockCrash = false;   // Lawinen-Sicht: Felsen werfen nicht ab
+    this.hopRock = null;
     terrainNormal(x, z, this.normal);
   }
 
@@ -235,6 +236,7 @@ export class SkiPhysics {
       if (vn < 0) v.addScaledVector(N2, -vn);
       this.grounded = true;
       this.gap = 0;
+      this.hopRock = null;
       const dist = Math.hypot(p.x - this.airStart.x, p.z - this.airStart.z);
       this.events.push({ type: 'land', impact, airTime: this.airTime, dist });
       if (impact > 23 && this.crashed <= 0) this.crash();
@@ -246,6 +248,7 @@ export class SkiPhysics {
     {
       nearColliders(p.z, (c) => {
         if (c.top !== undefined ? p.y > c.top + 0.2 : gap >= 2.5) return;   // über das Hindernis hinweg geflogen
+        if (c === this.hopRock) return;                                      // Lawinen-Sicht: gerade darüber gesprungen
         // Felswand vor einer Klippen-Bank: nur wer auf die Wand zufährt, prallt an ihr ab (lx/lz = Normale nach außen)
         if (c.type === 'felswand' && v.x * c.lx + v.z * c.lz >= 0) return;
         const dx = p.x - c.x, dz = p.z - c.z;
@@ -269,16 +272,16 @@ export class SkiPhysics {
           } else if (this.crashed > 0) {
             v.multiplyScalar(0.3);
           } else if ((c.type === 'fels' || c.type === 'felswand') && this.noRockCrash && into > 0) {
-            // Lawinen-Sicht: am Felsen vorbeigleiten statt hängenzubleiben (Tempo bleibt weitgehend, Richtung seitlich vorbei)
-            const sp0 = Math.hypot(v.x, v.z), tx = -nz, tz = nx, vt = v.x * tx + v.z * tz;
-            const sg = Math.abs(vt) > 0.5 ? Math.sign(vt) : (dx * tx + dz * tz >= 0 ? 1 : -1);
-            const keep = sp0 * (into > 3 ? 0.85 : 0.995);   // Tempoverlust nur beim ersten Anprall, nicht bei jedem Streifen
-            // neue Richtung: seitlich am Felsen vorbei, aber weiter in die alte Fahrtrichtung (nicht zurück bergauf)
-            const fx = v.x / (sp0 || 1), fz = v.z / (sp0 || 1);
-            let ux = tx * sg * 0.7 + fx + nx * 0.25, uz = tz * sg * 0.7 + fz + nz * 0.25;
-            const ul = Math.hypot(ux, uz) || 1; ux /= ul; uz /= ul;
-            v.x = ux * keep; v.z = uz * keep;
-            this.heading = Math.atan2(v.x, -v.z);   // Ski drehen mit, sonst bremst die Kante das seitliche Tempo weg
+            // Lawinen-Sicht (v36): kein Sturz und kein seitliches Wegschieben mehr. Der Fahrer stößt an, verliert Tempo
+            // und springt über den Felsen (wie ein Fahrer, der im letzten Moment abspringt); die Richtung bleibt.
+            if (this.grounded && into > 1) {
+              v.multiplyScalar(0.8);
+              const need = c.top !== undefined ? Math.max(0.6, c.top - p.y + 0.4) : 1.5;
+              v.y = Math.max(v.y, Math.min(8, Math.sqrt(2 * G * need)));
+              this.grounded = false; this.airTime = 0; this.airStart.copy(p);
+              this.hopRock = c;   // bis zur Landung zählt dieser Felsen nicht mehr
+              this.events.push({ type: 'bump', what: c.type });
+            } else if (into > 0) { v.x += nx * into; v.z += nz * into; }   // in der Luft: nur nicht hinein
           } else if (into > (c.type === 'fels' || c.type === 'felswand' ? (this.noRockCrash ? 1e9 : 2.2) : c.type === 'baum' ? 5.5 : 7)) {   // Felsen sind hart: schon bei Schritttempo-Aufprall Sturz (nicht in der Lawinen-Sicht)
             this.events.push({ type: 'hit', what: c.type });
             this.crash();

@@ -926,7 +926,7 @@ function avalancheUpdate(dt) {
   // Lawinen-Sicht (v29): solange die Lawine abgeht und nah ist, zoomt die Kamera heraus (siehe updateCamera); in
   // dieser Zeit lassen Felsen und Felswände den Fahrer nicht stürzen, er prallt nur ab
   avCam = Math.max(0, avCam - dt);
-  phys.noRockCrash = game.mode === 'run' && (avCam > 0 || avNear > 0.08);
+  phys.noRockCrash = game.mode === 'run' && (avCam > 0 || avNear > 0.25);
   audio.setRumble(aval.active ? r.near : 0);
   if (aval.active) vis.shake = Math.max(vis.shake, r.near * 0.45);
   if (r.caught && phys.crashed <= 0 && game.mode === 'run') {
@@ -949,7 +949,7 @@ function triggerAvalanche(landing = false) {
   const back = landing ? 7 : 16, side = (Math.random() - 0.5) * 20;
   aval.start({ x: px + gx * back + gd * side, d: d + gd * back - gx * side, fx: -gx, fd: -gd }, 70 + Math.random() * 60, C);
   audio.crack();
-  avCam = 3.4;   // mindestens so lange herausgezoomte Sicht, danach solange die Lawine nah ist
+  avCam = 2.5;   // mindestens so lange etwas weitere Sicht, danach solange die Lawine wirklich nah ist
   vis.shake = 0.5;
   showMsg('Der Hang reißt!', 'bad');
 }
@@ -1370,10 +1370,10 @@ function updateCamera(dt, time) {
     camSnap = false;
     return;
   }
-  // Lawinen-Sicht (v29): statt seitlich zu schwenken (man sah nicht mehr, was vor einem liegt) geht die Kamera weit
+  // Lawinen-Sicht (v29, v36 näher): statt seitlich zu schwenken (man sah nicht mehr, was vor einem liegt) geht die Kamera etwas
   // zurück und nach oben und schaut voraus den Hang hinab: Felsen und Bäume vor einem sind früh zu sehen, die Lawine
   // im Rücken bleibt im Bild. Weich ein- und ausgeblendet, Blickrichtung bleibt die Fahrtrichtung.
-  vis.avZoom = (vis.avZoom || 0) + (((avCam > 0 || avNear > 0.08) && game.mode === 'run' && !special ? 1 : 0) - (vis.avZoom || 0)) * (1 - Math.exp(-dt * 2.2));
+  vis.avZoom = (vis.avZoom || 0) + (((avCam > 0 || avNear > 0.25) && game.mode === 'run' && !special ? 1 : 0) - (vis.avZoom || 0)) * (1 - Math.exp(-dt * 2.2));
   const av = vis.avZoom;
   const z = vis.zoom * (1 - av), cc = vis.crashCam;
   if (sp > 2) tV.set(phys.vel.x, 0, phys.vel.z).normalize();
@@ -1381,18 +1381,18 @@ function updateCamera(dt, time) {
   camDir.lerp(tV, camSnap ? 1 : 1 - Math.exp(-dt * 3.2)).normalize();
   // Bei Tricks rückt die Kamera heran und schwenkt leicht zur Seite, beim Sturz geht sie auf Abstand
   const fc = vis.flipCam * z, ba = vis.bigAir * (1 - z * 0.6);
-  const dist = (lerp(6.4 + sp * 0.07 - inp.tuck * 0.5 + vis.air * 1.2, 4.6 + fc * 0.8, z) + ba * 3.2 + av * 9) * (1 - 0.35 * cc) + cc * 2.6;
+  const dist = (lerp(6.4 + sp * 0.07 - inp.tuck * 0.5 + vis.air * 1.2, 4.6 + fc * 0.8, z) + ba * 3.2 + av * 2.4) * (1 - 0.35 * cc) + cc * 2.6;
   tV2.copy(p).addScaledVector(camDir, -dist);
   const side = (2.6 * z + 1.6 * fc) * vis.camSide;
   tV2.x += -camDir.z * side;
   tV2.z += camDir.x * side;
   const groundY = C.height(tV2.x, tV2.z);
   tV2.y = Math.max(groundY + 1.9 + sp * 0.012, p.y + 1.55);
-  tV2.y = Math.max(groundY + 1.2, lerp(tV2.y, p.y + 1.3 - fc * 0.35, z * 0.75)) + cc * 1.9 + ba * 1.6 - vis.dip * 0.45 + av * 6;
+  tV2.y = Math.max(groundY + 1.2, lerp(tV2.y, p.y + 1.3 - fc * 0.35, z * 0.75)) + cc * 1.9 + ba * 1.6 - vis.dip * 0.45 + av * 1.5;
   camPos.lerp(tV2, camSnap ? 1 : 1 - Math.exp(-dt * (7.5 + cc * 9)));
   const gh = C.height(camPos.x, camPos.z) + 0.9;
   if (camPos.y < gh) camPos.y = gh;
-  tV3.copy(p).addScaledVector(camDir, (6 + ba * 5 + av * 24) * (1 - z) * (1 - cc));
+  tV3.copy(p).addScaledVector(camDir, (6 + ba * 5 + av * 10) * (1 - z) * (1 - cc));
   tV3.y = lerp(lerp(C.height(tV3.x, tV3.z) + 1.0, p.y + 1.0, 0.5 + vis.air * 0.3 - ba * 0.35 - av * 0.5), p.y + 0.9, Math.max(z, cc));
   lookSm.lerp(tV3, camSnap ? 1 : 1 - Math.exp(-dt * (11 + z * 8)));
   camSnap = false;
@@ -1403,7 +1403,7 @@ function updateCamera(dt, time) {
     camPos.z + (C.vnoise(time * 19, 4.1) - 0.5) * sh);
   camera.lookAt(lookSm);
   camera.rotateZ(-vis.lean * 0.09 + (C.vnoise(time * 17, 9.2) - 0.5) * vis.shake * 0.12);
-  let fov = 60 + 22 * smoothstep(8, 44, sp) * (1 - 0.5 * av) + inp.tuck * 2 - 15 * z - 20 * cc + 6 * ba + 6 * av;
+  let fov = 60 + 22 * smoothstep(8, 44, sp) * (1 - 0.5 * av) + inp.tuck * 2 - 15 * z - 20 * cc + 6 * ba + 3 * av;
 
   // ---- Ego-Sicht (Helmkamera): Augen im Kopf des Fahrers, dreht bei Flips und Spins voll mit,
   // neigt sich in die Kurve, federt bei Landungen, zittert mit Tempo und Untergrund. Beim Sturz Verfolgerkamera.
@@ -1627,7 +1627,9 @@ function handleEvents() {
   for (let i = 0; i < phys.events.length; i++) {
     const e = phys.events[i];
     if (e.type === 'hit') lastHit = e.what;
-    else if (e.type === 'land') {
+    else if (e.type === 'bump') {   // Lawinen-Sicht: an einen Felsen gestoßen und darüber gesprungen
+      vis.shake = Math.max(vis.shake, 0.55); vis.compress = 1; audio.land(7); burst(40, 3.5);
+    } else if (e.type === 'land') {
       vis.compress = Math.max(vis.compress, clamp(e.impact / 9, 0.15, 1));
       vis.shake = Math.max(vis.shake, clamp(e.impact / 30, 0, 0.5));
       vis.dip = Math.max(vis.dip, clamp((e.impact - 2) / 14, 0, 0.6));   // Kamera federt bei der Landung kurz mit

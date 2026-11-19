@@ -532,3 +532,11 @@ Dazu: Am Ende eines Couloirs stieg der Rinnenboden an (die Tiefe nahm schneller 
 - Kein Mensch hat die neuen Klippen und den Joystick gespielt. Ob Drops aus 50 m sich gut anfühlen und der Joystick auf einem echten Telefon angenehm liegt, ist offen.
 - Die Felsen unter den Windlippen wirken im Schatten fast schwarz.
 - Aus der Ferne (außerhalb der geladenen Kacheln) sind die Felsbänder nicht zu sehen; sie erscheinen erst beim Näherkommen.
+
+## Lawinen-Sicht: Fels und Kamera (v36, 2026-11-19)
+
+- Rückmeldung: Auf der Flucht vor der Lawine an einen Stein gefahren, wurde man einfach seitlich vorbeigeschoben, und die Kamera war sehr weit vom Snowboarder weg.
+- Fels: Statt den Fahrer seitlich am Felsen vorbeizuschieben (Richtung und Ski wurden umgelenkt) springt er jetzt beim Anstoßen über den Felsen: kurzer Ruck mit Wackeln und Schneeburst, etwa ein Fünftel Tempo weg, die Fahrtrichtung bleibt; bis zur Landung zählt dieser Felsen nicht mehr. Weiterhin kein Sturz in der Lawinen-Sicht.
+- Test (frontal und versetzt mit 72 km/h auf einen 2,5 m hohen Felsen, 2 s): kein Sturz, ein Anstoß, danach 58 bis 59 km/h statt 76 km/h ohne Felsen, seitliche Abweichung 1,5 m wie ohne Felsen (vorher bis 8 m weggeschoben).
+- Kamera: in der Lawinen-Sicht nur noch etwa 2,4 m weiter zurück und 1,5 m höher als sonst (vorher 9 m und 6 m), Blick 10 m statt 24 m voraus, kaum weiterer Bildwinkel; sie greift nur noch, solange die Lawine wirklich nah ist, und mindestens 2,5 s nach dem Abriss.
+- Freeride-Bot unverändert, Heli-Sprungtest unverändert.

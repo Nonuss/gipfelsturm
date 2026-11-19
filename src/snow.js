@@ -36,6 +36,10 @@ float snowH(vec2 p, float nearF){
   h += sNoise(p*17.0)*0.07*nearF;
   return h;
 }
+float sastrugi(vec2 q){
+  float n = sNoise(q) * 0.7 + sNoise(q * 2.3 + 5.1) * 0.3;
+  return (1.0 - abs(2.0 * n - 1.0)) * (0.6 + 0.4 * sNoise(q * 0.31 + 2.0));
+}
 float glintLayer(vec2 p, float scale, vec3 V, vec3 L){
   vec2 g = p*scale; vec2 id = floor(g); vec2 f = fract(g)-0.5;
   vec3 r = sHash32(id);
@@ -75,6 +79,19 @@ if (distance(vSnowPos.xz, uClip.xy) > uClip.z) discard;
   float h0 = snowH(p, fNear), hx = snowH(p+vec2(e,0.), fNear), hz = snowH(p+vec2(0.,e), fNear);
   float rough = mix(1.0, 0.35, vPiste) * (1.0 - rockF) * (1.0 - 0.6*vPow);
   vec2 grad = vec2(hx-h0, hz-h0)/e * 0.11 * fMid * rough * (1.0 - smoothstep(0.06, 0.3, pxw));
+#ifdef ULTRA
+  {
+    // Ultra: vom Wind geformte Gangeln (Sastrugi) im unberührten Pulver, schräg zur Falllinie, mit scharfem Grat
+    vec2 wq = vec2(p.x * 0.82 + p.y * 0.57, p.y * 0.82 - p.x * 0.57) * vec2(0.22, 0.9);
+    float fR = (1.0 - smoothstep(25.0, 150.0, camDist)) * (1.0 - smoothstep(0.05, 0.22, pxw)) * vPow * (1.0 - rockF) * (1.0 - vPiste);
+    float eR = 0.06 + camDist * 0.002;
+    float r0 = sastrugi(wq), rx = sastrugi(wq + vec2(0.82, -0.57) * vec2(0.22, 0.9) * eR), rz = sastrugi(wq + vec2(0.57, 0.82) * vec2(0.22, 0.9) * eR);
+    grad += vec2(rx - r0, rz - r0) / eR * 0.13 * fR;
+    // feine Körnung ganz nah am Fahrer
+    float fG = (1.0 - smoothstep(3.0, 14.0, camDist)) * (1.0 - smoothstep(0.004, 0.012, pxw)) * (1.0 - rockF);
+    grad += (vec2(sNoise(p * 61.0), sNoise(p * 61.0 + 17.3)) - 0.5) * 0.12 * fG;
+  }
+#endif
 #endif
 
   vec2 tuv = (p - uTrackCenter)/uTrackSize + 0.5;
@@ -190,7 +207,7 @@ vAO = aAO;`);
       .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n' + FRAG_NORMAL)
       .replace('#include <lights_fragment_end>', '#include <lights_fragment_end>\n' + FRAG_LIGHT);
   };
-  mat.customProgramCacheKey = () => 'snow-v5-' + (opts.patch ? 'patch' : 'main') + (mat.defines && mat.defines.LOWQ ? 'low' : 'hi') + (mat.defines && mat.defines.HELISUN ? 'sun' : '');
+  mat.customProgramCacheKey = () => 'snow-v5-' + (opts.patch ? 'patch' : 'main') + (mat.defines && mat.defines.LOWQ ? 'low' : 'hi') + (mat.defines && mat.defines.HELISUN ? 'sun' : '') + (mat.defines && mat.defines.ULTRA ? 'U' : '');
   return mat;
 }
 

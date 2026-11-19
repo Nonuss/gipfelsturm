@@ -5,6 +5,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { FXAAPass } from 'three/addons/postprocessing/FXAAPass.js';
+import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import * as C from './course.js';
 import { World, loadModels } from './world.js';
@@ -39,6 +40,91 @@ const camera = new THREE.PerspectiveCamera(62, 1, 0.3, 20000);
 
 const composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 }));
 composer.addPass(new RenderPass(scene, camera));
+// ---- Ultra: Umgebungsverdeckung (GTAO) in halber Auflösung, nur im Umkreis um die Kamera (die Ferne liegt im Dunst).
+// Kein zweites Zeichnen der Szene: GTAO liest die Tiefe aus dem normalen Bilddurchgang (Tiefentextur an den Zwischenbildern
+// des Composers, nur auf Ultra angehängt) und leitet die Flächennormalen daraus ab.
+const gtao = new GTAOPass(scene, camera, 1, 1, { depthTexture: new THREE.DepthTexture(1, 1) }, { radius: 1.5, distanceExponent: 1.3, thickness: 2.0, scale: 1.6, samples: 12, distanceFallOff: 1 }, { radius: 6, samples: 12, rings: 2 });
+gtao.output = GTAOPass.OUTPUT.Off;   // nur rechnen; eingemischt wird im Ultra-Durchgang unten (spart zwei Vollbild-Durchgänge)
+gtao.needsSwap = false;
+gtao.enabled = false;
+const gtaoSize = gtao.setSize.bind(gtao), AO_RES = 0.5;
+gtao.setSize = (w, h) => gtaoSize(Math.max(1, Math.round(w * AO_RES)), Math.max(1, Math.round(h * AO_RES)));
+const aoBox = new THREE.Box3();
+let sceneDepth = null;
+const gtaoRender = gtao.render.bind(gtao);
+gtao.render = (r, wb, rb, dt, mask) => {
+  sceneDepth = rb.depthTexture;   // das Zwischenbild, in das die Szene eben gezeichnet wurde
+  for (const m of [gtao.gtaoMaterial, gtao.pdMaterial, gtao.depthRenderMaterial, ufx.material]) m.uniforms.tDepth.value = sceneDepth;
+  gtaoRender(r, wb, rb, dt, mask);
+};
+/** Tiefentexturen an den Zwischenbildern nur auf Ultra (sonst bleiben die Zwischenbilder wie bisher). */
+function sceneDepthTargets(on) {
+  for (const rt of [composer.renderTarget1, composer.renderTarget2]) {
+    if (!!rt.depthTexture === on) continue;
+    if (rt.depthTexture) rt.depthTexture.dispose();
+    rt.depthTexture = on ? new THREE.DepthTexture(rt.width, rt.height) : null;
+    rt.dispose();
+  }
+}
+composer.addPass(gtao);
+// ---- Ultra: Bewegungsunschärfe bei Tempo (aus der Kamerabewegung, der Fahrer bleibt scharf) und Tiefenunschärfe in den
+// Spezialtrick-Kameras. Liest die Tiefe aus dem GTAO-Durchgang, kostet also keinen weiteren Szenen-Durchlauf.
+const ufx = new ShaderPass({
+  uniforms: {
+    tDiffuse: { value: null }, tDepth: { value: null }, uInvProj: { value: new THREE.Matrix4() }, uCamWorld: { value: new THREE.Matrix4() },
+    tAO: { value: gtao.pdRenderTarget.texture }, uAOI: { value: 1 },
+    uPrevVP: { value: new THREE.Matrix4() }, uMB: { value: 0 }, uDof: { value: 0 }, uFocus: { value: 5 }, uRes: { value: new THREE.Vector2(1, 1) },
+  },
+  vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+  fragmentShader: /* glsl */ `uniform sampler2D tDiffuse; uniform sampler2D tDepth; uniform sampler2D tAO; uniform float uAOI; uniform mat4 uInvProj; uniform mat4 uCamWorld; uniform mat4 uPrevVP;
+    uniform float uMB; uniform float uDof; uniform float uFocus; uniform vec2 uRes; varying vec2 vUv;
+    vec3 vpos(vec2 uv){ float d = texture2D(tDepth, uv).x; vec4 c = uInvProj * vec4(uv * 2.0 - 1.0, d * 2.0 - 1.0, 1.0); return c.xyz / c.w; }
+    float coc(float d){ return clamp(abs(d - uFocus) / max(d, 0.1) * uDof, 0.0, 1.0) * 10.0; }
+    vec3 colAt(vec2 uv){ return texture2D(tDiffuse, uv).rgb * mix(1.0, texture2D(tAO, uv).r, uAOI); }
+    float h12(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * .1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
+    void main(){
+      vec3 vp = vpos(vUv);
+      float dist = -vp.z;
+      vec3 col = colAt(vUv);
+      float jit = h12(gl_FragCoord.xy);
+      if (uDof > 0.001) {
+        // Tiefenunschärfe: Scheibe aus 20 Proben; scharfe Vordergrund-Pixel (der Fahrer) verschmieren nicht in den Hintergrund
+        float r = coc(dist);
+        if (r > 0.6) {
+          vec3 acc = col; float ws = 1.0;
+          for (int i = 0; i < 20; i++) {
+            float a = (float(i) + jit) * 2.39996, rr = sqrt((float(i) + 0.5) / 20.0) * r;
+            vec2 uv = vUv + vec2(cos(a), sin(a)) * rr / uRes;
+            float w = clamp(coc(-vpos(uv).z) - rr + 1.0, 0.0, 1.0);
+            acc += colAt(uv) * w; ws += w;
+          }
+          col = acc / ws;
+        }
+      } else if (uMB > 0.001) {
+        // Bewegungsunschärfe: wohin ist dieser Punkt seit dem letzten Bild auf dem Schirm gewandert?
+        vec4 pc = uPrevVP * (uCamWorld * vec4(vp, 1.0));
+        if (pc.w > 0.0) {
+          vec2 vel = (vUv - (pc.xy / pc.w * 0.5 + 0.5)) * uMB * smoothstep(5.0, 22.0, dist);
+          float L = length(vel); if (L > 0.03) vel *= 0.03 / L;
+          if (length(vel * uRes) > 1.5) {
+            vec3 acc = col; float ws = 1.0;
+            for (int i = 0; i < 10; i++) {
+              vec2 uv = vUv + vel * ((float(i) + jit) / 10.0 - 0.5);
+              float w = smoothstep(4.0, 7.0, -vpos(uv).z);   // nichts vom Fahrer in die Umgebung ziehen
+              acc += colAt(uv) * w; ws += w;
+            }
+            col = acc / ws;
+          }
+        }
+      }
+      gl_FragColor = vec4(col, 1.0);
+    }`,
+});
+ufx.uniforms.tAO.value = gtao.pdRenderTarget.texture;   // ShaderPass kopiert Texturen in den Uniforms, daher erst hier setzen
+ufx.enabled = false;
+composer.addPass(ufx);
+const prevVP = new THREE.Matrix4(), curVP = new THREE.Matrix4(), prevCamPos = new THREE.Vector3();
+let prevFov = 0;
 const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.28, 0.55, 1.0);
 composer.addPass(bloom);
 composer.addPass(new OutputPass());
@@ -103,6 +189,9 @@ function applyQuality() {
   }
   bloom.enabled = Q.bloom;
   fxaa.enabled = Q.msaa === 0;
+  gtao.enabled = ufx.enabled = Q.ultra;
+  sceneDepthTargets(Q.ultra);
+  if (Q.shadow > renderer.capabilities.maxTextureSize) Q.shadow = renderer.capabilities.maxTextureSize;
   // Niedrig: keine Echtzeit-Schatten (größter Einzelposten auf schwacher Grafik); Geländeform bleibt durch die
   // vorberechnete Schattierung lesbar
   renderer.shadowMap.enabled = Q.shadow > 0;
@@ -111,10 +200,18 @@ function applyQuality() {
   if (world) {
     world.setLowQuality(Q.tier === 'low');
     if (Q.shadow > 0) world.setShadowSize(Q.shadow);
+    world.setShadowArea(Q.shadowArea);
     if (C.cfg.endless && !C.cfg.heli) scene.fog.far = Q.view - 30;
   }
   if (dust) dust.points.visible = Q.dust;
   if (patch && Q.patch > 0 && patch.cell !== Q.patch) { const old = patch; scene.remove(old.mesh); old.geo.dispose(); patch = new PowderPatch(scene, Q.patch, Math.round(18 / Q.patch) + 1); }
+  if (world) world.setUltra(Q.ultra, patch ? [patch.mesh.material] : []);
+  if (skier) skier.setCloth(Q.ultra);
+  // Ultra: mehr Schneestaub (größerer Ringspeicher), mehr Eiskristalle in der Luft
+  const sprayMax = Q.ultra ? 16000 : 9000;
+  if (spray && spray.max !== sprayMax) { scene.remove(spray.points); spray.geo.dispose(); spray.mat.dispose(); spray = new Spray(scene, sprayMax); }
+  if (dust) dust.points.geometry.setDrawRange(0, Q.ultra ? 2800 : 1400);
+  ultraSlowT = 0; ultraWarned = false;
   resize();
   for (const b of $('quality').children) b.classList.toggle('sel', b.dataset.q === qualSetting);
 }
@@ -139,8 +236,17 @@ function dynamicResolution(rawDt) {
   else if (fps > 58) { drsStable += 0.8; if (drsStable > 4 && drsUpBlock <= 0) { renderScale = Math.min(maxScale(), renderScale * 1.07); drsStable = 0; } }
   if (Math.abs(renderScale - old) > 0.01) resize();
 }
+// Ultra wird nie still heruntergeschaltet; bleibt die Bildrate lange sehr niedrig, kommt einmal pro Lauf ein Hinweis
+let ultraEma = 60, ultraSlowT = 0, ultraWarned = false;
+function watchUltra(rawDt) {
+  if (!Q.ultra || game.mode !== 'run' || document.hidden || rawDt > 0.25) return;
+  ultraEma += (1 / Math.max(rawDt, 1e-3) - ultraEma) * 0.04;
+  ultraSlowT = ultraEma < 28 && renderScale <= minScale() + 0.01 ? ultraSlowT + rawDt : 0;
+  if (ultraSlowT > 5 && !ultraWarned) { ultraWarned = true; showMsg('Ultra ist für diesen Rechner sehr schwer. Unter Einstellungen läuft Hoch flüssiger.', 'bad'); }
+}
 function watchPerformance(rawDt) {
   dynamicResolution(rawDt);
+  watchUltra(rawDt);
   if (qualSetting !== 'auto' || game.mode !== 'run' || document.hidden || rawDt > 0.25) return;
   fpsEma += (1 / Math.max(rawDt, 1e-3) - fpsEma) * 0.05;
   // Handys: im Stromsparmodus sind 30 Bilder/s gedeckelt – das ist kein Grund, die Grafik zu senken
@@ -1559,8 +1665,8 @@ function emitPowder(dt) {
   if (!phys.grounded || phys.crashed > 0 || phys.pow < 0.12 || phys.speed < 3) return;
   const p = phys.pos, v = phys.vel, f = phys.fwd, r = phys.right, n = phys.normal;
   const carvePlume = clamp(Math.abs(phys.aLat) / 9, 0, 1.4);
-  powAcc += dt * phys.pow * (10 + phys.speed * 2.4 + carvePlume * (30 + phys.speed * 5)) * Math.max(0.8, Q.trees);   // Pulverfahne auch auf Niedrig kräftig
-  let count = Math.min(26, Math.floor(powAcc));
+  powAcc += dt * phys.pow * (10 + phys.speed * 2.4 + carvePlume * (30 + phys.speed * 5)) * (Q.ultra ? Q.fx : Math.max(0.8, Q.trees));   // Pulverfahne auch auf Niedrig kräftig
+  let count = Math.min(Q.ultra ? 42 : 26, Math.floor(powAcc));
   powAcc -= count;
   if (powAcc > 40) powAcc = 0;
   while (count-- > 0) {
@@ -1569,7 +1675,7 @@ function emitPowder(dt) {
     const x = p.x + r.x * side * 0.3 + f.x * along, y = p.y + 0.15 + Math.random() * 0.3, z = p.z + r.z * side * 0.3 + f.z * along;
     const up = 1.4 + Math.random() * (1.5 + phys.speed * 0.12) + carvePlume * 1.6;
     spray.emit(x, y, z, v.x * (0.3 + Math.random() * 0.25) + r.x * side * (0.8 + Math.random() * 1.8 + carvePlume * 3.2) + n.x * up, v.y * 0.3 + n.y * up, v.z * (0.3 + Math.random() * 0.25) + r.z * side * (0.8 + Math.random() * 1.8 + carvePlume * 3.2) + n.z * up,
-      0.55 + Math.random() * 0.9, 1.0 + Math.random() * 1.3, 1.4, 0.45 * (0.5 + phys.pow * 0.6), 2.4);
+      (0.55 + Math.random() * 0.9) * (Q.ultra ? 0.85 : 1), 1.0 + Math.random() * 1.3, 1.4, 0.45 * (0.5 + phys.pow * 0.6), 2.4);
   }
 }
 function emitSpray(dt) {
@@ -1580,8 +1686,8 @@ function emitSpray(dt) {
   const carve = clamp((Math.abs(phys.aLat) - 3.5) / 11, 0, 1);
   const skid = clamp(phys.skid / 3, 0, 1.6);
   const inten = skid * 1.2 + carve * 0.55 + inp.brake * 0.9 + (C.cfg.endless ? phys.pow * 0.4 : phys.off * 0.5) + 0.03;
-  sprayAcc += inten * Math.min(sp, 30) * 26 * dt;
-  let count = Math.min(70, Math.floor(sprayAcc));
+  sprayAcc += inten * Math.min(sp, 30) * 26 * dt * Q.fx;
+  let count = Math.min(Q.ultra ? 110 : 70, Math.floor(sprayAcc));
   sprayAcc -= count;
   if (sprayAcc > 100) sprayAcc = 0;
   const dirSign = phys.skid > 0.5 ? Math.sign(phys.slip) || 1 : -Math.sign(phys.aLat) || 1;
@@ -1600,7 +1706,7 @@ function emitSpray(dt) {
       v.x * keep + r.x * out * push + n.x * upv + (Math.random() - 0.5) * 1.2,
       v.y * keep + r.y * out * push + n.y * upv + Math.random() * 0.8,
       v.z * keep + r.z * out * push + n.z * upv + (Math.random() - 0.5) * 1.2,
-      0.16 + Math.random() * 0.3 + inten * 0.12, 0.45 + Math.random() * 0.75);
+      (0.16 + Math.random() * 0.3 + inten * 0.12) * (Q.ultra ? 0.8 : 1), 0.45 + Math.random() * 0.75);
   }
 }
 
@@ -1630,7 +1736,7 @@ function emitCrash(dt) {
   const p = phys.pos, v = phys.vel, n = phys.normal, r = phys.right;
   const sp = phys.speed;
   const bodyH = skier.pivot.position.y * 0.94;
-  cloudAcc += dt * (90 + sp * 40);
+  cloudAcc += dt * (90 + sp * 40) * Q.fx;
   let c = Math.min(120, Math.floor(cloudAcc));
   cloudAcc -= c;
   while (c-- > 0) {
@@ -1852,6 +1958,7 @@ function updateSkier(dt) {
     lean: BOARD() ? 0 : vis.lean * bodySign, crouch: BOARD() ? Math.min(1, vis.crouch + 0.32 * Math.abs(vis.lean)) : vis.crouch, edge: BOARD() && !crashed ? vis.bEdgeExtra || 0 : 0, steer: phys.grounded && !BOARD() ? inp.steer * bodySign * (1 + 0.9 * (C.cfg.heli ? 1 : 0)) : 0, plow: BOARD() ? 0 : vis.plow, plowDir: bodySign < 0 ? -1 : 1, air: vis.air, compress: vis.compress,
     speed: phys.speed, grab: trick.grab, grabSide: trick.gs, sup: BOARD() ? 0 : vis.sup || 0, cross: BOARD() ? 0 : vis.cross || 0, daffy: BOARD() ? 0 : vis.daffy || 0, tweak: BOARD() ? 0 : vis.tweak || 0, look: vis.look, tuck: vis.tuck, spin: vis.spin, extend: vis.extend, crash: crashed ? 1 : 0, crashA: vis.crashAngle,
   }, dt);
+  if (Q.ultra) skier.setWind(phys.vel, dt);
   skier.updateLoose(dt, C.height);
   if (blob) {
     // Kontaktschatten: ohne Echtzeit-Schatten immer, mit Schatten beim Snowboard (klebt das Brett optisch an den Schnee)
@@ -2058,7 +2165,27 @@ function tick(dt, render) {
     patch.update(phys.pos.x, phys.pos.z, C.cfg.endless && Q.patch > 0 && phys.pow > 0.18 && game.mode !== 'menu');
     tracks.update(phys.pos.x, phys.pos.z);
   }
-  if (render) { if (shop3d && shop3d.isOpen) shop3d.render(dt); else composer.render(); }
+  if (render) { if (shop3d && shop3d.isOpen) shop3d.render(dt); else { if (Q.ultra) ultraUniforms(); composer.render(); } }
+}
+/** Ultra: Umkreis der Umgebungsverdeckung, Kamera-Matrizen für die Bewegungsunschärfe, Fokus der Trick-Kameras. */
+function ultraUniforms() {
+  camera.updateMatrixWorld();
+  const c = camera.position;
+  aoBox.min.set(c.x - 70, c.y - 70, c.z - 70); aoBox.max.set(c.x + 70, c.y + 70, c.z + 70);
+  gtao.setSceneClipBox(aoBox);
+  const u = ufx.uniforms;
+  u.uInvProj.value.copy(camera.projectionMatrixInverse);
+  u.uCamWorld.value.copy(camera.matrixWorld);
+  curVP.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+  // Schnitt (Moduswechsel, Respawn, Trick-Kamera springt): kein Verwischen über den Sprung hinweg
+  const cut = c.distanceTo(prevCamPos) > 6 || Math.abs(camera.fov - prevFov) > 4;
+  u.uPrevVP.value.copy(cut ? curVP : prevVP);
+  prevVP.copy(curVP); prevCamPos.copy(c); prevFov = camera.fov;
+  const run = game.mode === 'run' || game.mode === 'finished';
+  u.uMB.value = run ? 0.55 * smoothstep(8, 30, phys.speed) * (1 - specCam.w) : 0;
+  u.uDof.value = run ? specCam.w * 1.1 : 0;
+  u.uFocus.value = c.distanceTo(tV.set(phys.pos.x, phys.pos.y + 0.9, phys.pos.z));
+  u.uRes.value.set(renderer.domElement.width, renderer.domElement.height);
 }
 
 // ---------------------------------------------------------------- Start
@@ -2110,8 +2237,8 @@ function tick(dt, render) {
     avalanche: () => triggerAvalanche(), aval: () => aval,
     tp: (d, lane = 0, speed = 0) => { const L = C.cfg.heli ? { x: C.centerX(d) + lane } : C.mapSlice(d, d + 1, 1).rows[0].lanes[lane]; teleport(L.x, -d); const x0 = C.centerX(d + 6) - C.centerX(d); phys.heading = Math.atan2(x0, 6); phys.vel.set(Math.sin(phys.heading) * speed, 0, -Math.cos(phys.heading) * speed); if (game.mode === 'menu') { game.mode = 'run'; } },
     // Testhilfe: freie Kamera für Standbilder (Position, Blickpunkt), rendert genau ein Bild
-    shot: (px, py, pz, lx, ly, lz, fov = 55) => { camera.position.set(px, py, pz); camera.fov = fov; camera.near = 0.3; camera.updateProjectionMatrix(); camera.lookAt(lx, ly, lz); world.sky.position.copy(camera.position); composer.render(); },
-    restartHeli: () => startRun(true), setGear, setupDonate, shop3d: () => shop3d, SPECIALS, startSpecial, special: () => special, airLeft, timeScale: () => timeScale, specCam, edge: () => boardEdge, finishRun, fwt, fwtScore, applyDropPref, renderMode, heliStart, flowUp, shop, applyEquip,
+    shot: (px, py, pz, lx, ly, lz, fov = 55) => { camera.position.set(px, py, pz); camera.fov = fov; camera.near = 0.3; camera.updateProjectionMatrix(); camera.lookAt(lx, ly, lz); world.sky.position.copy(camera.position); if (Q.ultra) ultraUniforms(); composer.render(); },
+    ultraUniforms, gtao, ufx, HG, restartHeli: () => startRun(true), setGear, setupDonate, shop3d: () => shop3d, SPECIALS, startSpecial, special: () => special, airLeft, timeScale: () => timeScale, specCam, edge: () => boardEdge, finishRun, fwt, fwtScore, applyDropPref, renderMode, heliStart, flowUp, shop, applyEquip,
         advance: (sec, noRender) => { const n = Math.round(sec * 60); for (let i = 0; i < n; i++) tick(1 / 60, !noRender && i === n - 1); },
   };
   requestAnimationFrame((t) => { last = t; frame(t); });

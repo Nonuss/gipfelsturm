@@ -303,6 +303,7 @@ body.touch #touchUI .tb.left, html.rot #touchUI .tb.left { bottom: calc(26px + e
 @media (max-height: 500px) { #touchUI .tbtn { width: 62px; height: 62px; } #touchUI .tbtn.big { width: 88px; height: 88px; } #touchUI .tb.top { top: calc(78px + env(safe-area-inset-top)); } }
 html.rot #touchUI .tbtn { width: 62px; height: 62px; } html.rot #touchUI .tbtn.big { width: 88px; height: 88px; } html.rot #touchUI .tb.top { top: 78px; }
 .touchonly { display: none !important; } body.touch .touchonly { display: flex !important; }
+body.touch .notouch { display: none !important; }
 body.touch #minimap { left: calc(12px + env(safe-area-inset-left)); right: auto; top: 104px; }   /* rechts liegen die Knöpfe */
 
 .menu .seg.gear { margin-left: auto; pointer-events: auto; }

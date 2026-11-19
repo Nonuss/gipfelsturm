@@ -156,6 +156,23 @@ export class World {
     if (sh.map) { sh.map.dispose(); sh.map = null; }
   }
 
+  /** Halbe Kantenlänge des Schattenbereichs um den Fahrer (Ultra: größer, dank der feineren Karte trotzdem schärfer). */
+  setShadowArea(S) {
+    if (this.shadowSize === S) return;
+    this.shadowSize = S;
+    Object.assign(this.sun.shadow.camera, { left: -S, right: S, top: S, bottom: -S });
+    this.sun.shadow.camera.updateProjectionMatrix();
+  }
+
+  /** Ultra: zusätzliche Schneestruktur (Windgangeln im Pulver, feinere Körnung). Andere Stufen bleiben unverändert. */
+  setUltra(on, extra = []) {
+    for (const m of [this.snowMat, this.snowMatH, ...extra]) {
+      if (!m || !!m.defines.ULTRA === on) continue;
+      if (on) m.defines.ULTRA = 1; else delete m.defines.ULTRA;
+      m.needsUpdate = true;
+    }
+  }
+
   updateSun(p) {
     const texel = (2 * this.shadowSize) / this.sun.shadow.mapSize.x;
     const lx = this._lx, ly = this._ly;

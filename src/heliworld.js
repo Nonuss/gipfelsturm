@@ -31,7 +31,7 @@ export class HeliWorld {
     this.tileMat = world.snowMatH;
   }
 
-  get radius() { return Q.tier === 'low' ? 200 : Q.tier === 'mid' ? 240 : 280; }
+  get radius() { return Q.tier === 'low' ? 200 : Q.tier === 'mid' ? 240 : Q.ultra ? 330 : 280; }
 
   build() {
     const s = C.HB.info();

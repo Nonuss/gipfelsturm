@@ -77,7 +77,7 @@ export class Spray {
 }
 
 export class DiamondDust {
-  constructor(scene, count = 1400) {
+  constructor(scene, count = 2800) {   // gezeichnet werden 1400, auf Ultra alle (setDrawRange in main.js)
     const p = new Float32Array(count * 3), r = new Float32Array(count);
     for (let i = 0; i < count; i++) {
       p[i * 3] = Math.random(); p[i * 3 + 1] = Math.random(); p[i * 3 + 2] = Math.random();

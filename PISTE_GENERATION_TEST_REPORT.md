@@ -571,3 +571,42 @@ Dazu: Am Ende eines Couloirs stieg der Rinnenboden an (die Tiefe nahm schneller 
 - Neuer Test `node tools/rail_test.mjs 5` (65 Rails und Boxen auf 5 Bergen, je ohne Eingabe, mit wild wechselndem A/D und mit dauerndem A): vorher 154 von 195 Fahrten abgerutscht, jetzt 0, alle 195 bis zum Ende. Im Spiel zwei Boxen und zwei Rails mit gehaltenem A bis zum Ende gefahren, Körper nicht gedreht, kein Sturz.
 - Nebenbei: Metertexte im Spiel (Rail, Sprungweite, Zielstatistik) mit Komma statt Punkt.
 - Freeride- und Freestyle-Bot unverändert.
+
+## Grafikstufe Ultra (v39, 2026-11-19)
+
+- Wunsch von Noah: eine Stufe für starke PCs, die wirklich realistisch aussieht, mit flatterndem Gewand. Die Stufen Hoch, Mittel, Niedrig und Auto bleiben unverändert; Ultra wird nur von Hand unter Einstellungen gewählt (am Handy ausgeblendet), die Automatik schaltet nie auf Ultra.
+- Ultra wird nie still heruntergeschaltet. Die dynamische Auflösung darf bis 1,25 Pixel pro CSS-Pixel sinken; bleibt die Bildrate dann 5 s unter 28, kommt einmal pro Lauf der Hinweis, dass Hoch flüssiger läuft.
+
+| Baustein | Umsetzung |
+|---|---|
+| Flatternde Kleidung | Verformung im Vertex-Shader nach dem Skinning (`src/skier.js`): Ärmel, Saum und Rücken der Jacke, Hosenbeine über den Schuhen; Wellen laufen mit dem Fahrtwind über den Stoff, die angeströmte Seite liegt flach an, die windabgewandte flattert. Weihnachtsmütze (Spitze und Bommel schwingen und wehen nach hinten), Bart, Schal-Ende des Schneemann-Outfits. Stärke wächst mit dem Tempo, Zeitlupe gilt mit |
+| Umgebungsverdeckung | GTAO in halber Auflösung im Umkreis von 70 m um die Kamera; liest die Tiefe aus dem normalen Bilddurchgang (kein zweites Zeichnen der Szene) und wird im Ultra-Durchgang eingemischt |
+| Bewegungsunschärfe | aus der Kamerabewegung zwischen zwei Bildern, ab etwa 30 km/h zunehmend, nur für Dinge ab 5 m Abstand (der Fahrer bleibt scharf), aus bei Schnitten |
+| Tiefenunschärfe | in den Spezialtrick-Kameras: Fokus auf dem Fahrer, Hintergrund weich; scharfer Vordergrund verschmiert nicht |
+| Schatten | Schattenkarte 8192 statt 4096, Bereich ±140 m statt ±95 m (trotzdem feiner) |
+| Schnee | Windgangeln (Sastrugi) im unberührten Pulver, feine Körnung ganz nah |
+| Sichtweite | Freeride und Freestyle 1300 m statt 1000 m, Heli-Kacheln im Umkreis 330 m statt 280 m, Pulverschicht feiner (0,4 m) |
+| Schneestaub | 1,6-mal so viel Gischt und Pulverfahne mit etwas kleineren Teilchen (Ringspeicher 16000 statt 9000), doppelt so viele Eiskristalle in der Luft |
+
+Baumdichte bleibt wie auf Hoch: mehr Bäume hätten eine andere, schwerere Strecke erzeugt.
+
+### Prüfung
+
+Gemessen auf diesem Rechner (Apple M4, Fenster 1600 mal 900 bei doppelter Pixeldichte, also 3200 mal 1800 Bildpunkte, ausgeblendeter Browserbereich, Spielschritt plus Zeichnen mit erzwungenem Warten auf die Grafik, 40 Bilder nach 7 s Fahrt mit Hocke):
+
+| Welt | Hoch vorher (v38) | Hoch nachher | Ultra |
+|---|---|---|---|
+| Rennen | 36 ms | 37 bis 38 ms | 49 ms |
+| Freeride | 41 ms | 39 bis 40 ms | 53 ms |
+| Freestyle | 40 ms | 37 bis 40 ms | 52 ms |
+| Heli | nicht gemessen | 39 ms | 53 ms |
+
+- Ultra kostet hier rund 35 Prozent mehr Bildzeit als Hoch (Umgebungsverdeckung etwa 8 ms, Unschärfe-Durchgang etwa 4 ms, größere Schatten und Sichtweite etwa 5 ms). Der erste Entwurf lag bei 64 ms: GTAO zeichnete die Szene ein zweites Mal und mischte mit zwei Vollbild-Durchgängen in das kantengeglättete Zwischenbild; beides entfällt jetzt.
+- Hoch vorher und nachher: Standbilder derselben Fahrt (Freestyle, Seed 4242) gleich, Bildzeit im Rauschen gleich, auch nachdem im selben Tab vorher Ultra lief (Umschalten stellt Materialien, Zwischenbilder und Partikelspeicher zurück).
+- Standbilder Ultra gegen Hoch in allen vier Welten aus derselben Fahrt; Nahaufnahme von der Seite mit Weihnachtsmütze und Schal in drei Bildern im Abstand von 0,04 s (Ärmelkontur, Schattierung und Bommel bewegen sich); Spezialtrick 1 mit Tiefenunschärfe; GTAO-Ausgabe einzeln geprüft (Astunterseiten, Stammfüße, Kontakt unter dem Fahrer).
+- Ultra bleibt nach Neuladen gewählt, keine Fehler in der Konsole.
+
+### Nicht geprüft
+- Bildrate im sichtbaren Fenster und auf anderen Grafikkarten; der Hinweis bei niedriger Bildrate wurde nicht ausgelöst (läuft nur bei echten Animationsbildern).
+- Die Jacke hat nur rund 500 Eckpunkte, das Flattern ist deshalb eher ein Wellen der Ärmel und des Saums als feiner Faltenwurf. Schatten und Umgebungsverdeckung flattern nicht mit.
+- Kein Mensch hat Ultra gespielt; ob die Bewegungsunschärfe bei hohem Tempo angenehm oder zu stark wirkt, ist offen.

@@ -39,7 +39,7 @@ export class SkiPhysics {
     this.gap = 0;
     this.yawRate = 0;
     this.pressure = 1;
-    this.grind = null;   // auf Rail/Box: { g, s (gefahrene Meter), bal (Balance −1..1) }
+    this.grind = null;   // auf Rail/Box: { g, s (gefahrene Meter), bal (leichte Neigung, nur sichtbar) }
     this.grindCool = 0;
     this.noRockCrash = false;   // Lawinen-Sicht: Felsen werfen nicht ab
     this.hopRock = null;
@@ -309,7 +309,10 @@ export class SkiPhysics {
     gr.t += dt;
     // Balance ist instabil (kippt von selbst weg), Gegenlenken hält sie; auf Boxen deutlich gutmütiger
     const k = g.kind === 'box' ? 0.55 : 1;
-    gr.bal += (gr.bal * 1.5 + Math.sin(gr.t * 2.1 + gr.ph) * 0.5 + Math.sin(gr.t * 5.3 + gr.ph * 2) * 0.25) * k * dt - inp.steer * 2.6 * dt;
+    // v38: keine Balance mehr, von der man abfallen kann. Die Neigung ist nur noch sichtbar: leichtes Wiegen, A/D lehnt
+    // ein wenig zur Seite. Man bleibt auf der Rail bzw. Box bis zum Ende, bis man abspringt oder stehen bleibt.
+    const balT = clamp(-inp.steer * 0.45 + (Math.sin(gr.t * 2.1 + gr.ph) * 0.12 + Math.sin(gr.t * 5.3 + gr.ph * 2) * 0.05) * k, -0.55, 0.55);
+    gr.bal += (balT - gr.bal) * Math.min(1, dt * 6);
     gr.s += va * dt;
     this.heading = Math.atan2(g.dx, -g.dz);
     this.speed = Math.abs(va);
@@ -318,7 +321,6 @@ export class SkiPhysics {
     let leave = null;
     if (inp.jump) leave = { clean: true, pop: 4.6 };
     else if (gr.s >= g.L) leave = { clean: true, pop: 0.6 };
-    else if (Math.abs(gr.bal) > 1) leave = { clean: false, side: Math.sign(gr.bal) };
     else if (va < 0.8) leave = { clean: gr.s > 2, pop: 0 };
     if (leave) {
       v.set(g.dx * va, g.dy * va + (leave.pop || 0), g.dz * va);

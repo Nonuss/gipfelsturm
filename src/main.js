@@ -501,7 +501,7 @@ function buildMenuControls() {
 const MODES = [
   { id: 'race', name: 'Rennen', kicker: '', line: '', acc: '#ff7a2e' },
   { id: 'endless', name: 'Freeride', kicker: 'Endloser Berg · jedes Mal neu', line: 'Wald, Pulverhänge und Klippen. Punkte zählen erst nach sauberer Landung, ein Sturz kostet alle.', acc: '#63e6b0' },
-  { id: 'freestyle', name: 'Freestyle', kicker: 'Endlos · Kicker, Gaps, Rails', line: 'Riesige Sprünge und Rails. Grabs mit Pfeil links und rechts, auf der Rail hältst du die Balance.', acc: '#ffd23f' },
+  { id: 'freestyle', name: 'Freestyle', kicker: 'Endlos · Kicker, Gaps, Rails', line: 'Riesige Sprünge und Rails. Grabs mit Pfeil links und rechts, Rails und Boxen fährst du bis zum Ende.', acc: '#ffd23f' },
   { id: 'heli', name: 'Heli-Skiing', kicker: 'Gipfel bis Tal · Wertung wie im Freeride-Contest', line: 'Der Helikopter setzt dich ab, wo du willst. Bewertet werden Linie, Flüssigkeit, Kontrolle und Sprünge.', acc: '#7cc8ff' },
 ];
 const MODE_KEY = 'gipfelsturm_mode';
@@ -1084,8 +1084,8 @@ function finishRun() {
     $('finStats').innerHTML = rowsH.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
     return;
   }
-  const rows = hk ? [['Höhenmeter', `${num(-C.baseH(C.FINISH_D))} m`], ['Höchsttempo', `${Math.round(game.topSpeed * 3.6)} km/h`], ['Weitester Sprung', `${game.bestJump.toFixed(1)} m`], ['Bestzeit', fmt(game.bestHeli)]] : [['Tore', `${game.passed}/${C.gates.length}`], ['Strafzeit', `+${game.penalty.toFixed(0)} s`], ['Trickpunkte', num(game.score)],
-    ['Höchsttempo', `${Math.round(game.topSpeed * 3.6)} km/h`], ['Weitester Sprung', `${game.bestJump.toFixed(1)} m`], ['Bestzeit', fmt(game.best)]];
+  const rows = hk ? [['Höhenmeter', `${num(-C.baseH(C.FINISH_D))} m`], ['Höchsttempo', `${Math.round(game.topSpeed * 3.6)} km/h`], ['Weitester Sprung', `${game.bestJump.toFixed(1).replace('.', ',')} m`], ['Bestzeit', fmt(game.bestHeli)]] : [['Tore', `${game.passed}/${C.gates.length}`], ['Strafzeit', `+${game.penalty.toFixed(0)} s`], ['Trickpunkte', num(game.score)],
+    ['Höchsttempo', `${Math.round(game.topSpeed * 3.6)} km/h`], ['Weitester Sprung', `${game.bestJump.toFixed(1).replace('.', ',')} m`], ['Bestzeit', fmt(game.best)]];
   // Shop-Punkte: getroffene Tore, Länge der Disziplin, Bonus für eine neue Bestzeit
   const lenF = { sl: 1, gs: 1.3, sg: 1.7, dh: 2.1 }[disc] || 1;
   const missed = C.gates.length - game.passed;
@@ -1201,7 +1201,8 @@ window.addEventListener('pointerup', (e) => {
 
 // ---------------------------------------------------------------- Tricks
 function updateTricks(dt) {
-  const inAir = !phys.grounded && phys.crashed <= 0 && (game.mode === 'run' || (game.mode === 'menu' && demo.on));
+  // auf der Rail zählt man nicht als in der Luft: A/D dreht dort den Körper nicht mehr (v38)
+  const inAir = !phys.grounded && !phys.grind && phys.crashed <= 0 && (game.mode === 'run' || (game.mode === 'menu' && demo.on));
   if (inAir && !trick.wasAir) { for (const k in airKey) airKey[k] = false; trick.grabT = 0; trick.gT.safety = trick.gT.mute = trick.gT.tail = 0; lastSpecial = null; }
   trick.wasAir = inAir;
   const kk = (r) => 1 - Math.exp(-dt * r);
@@ -1316,7 +1317,7 @@ function scoreLanding(e) {
     showMsg(e.fwtText, 'gold');
   } else if (e.airTime > 0.55 && e.dist > 3) {   // Hüpfer auf der Stelle zählen nicht als Sprung
     const p = addPending(airPts, false);
-    showMsg(`${e.dist.toFixed(1)} m Sprung${game.kind === 'endless' && !C.cfg.heli ? `  +${p}` : ''}`, 'gold');
+    showMsg(`${e.dist.toFixed(1).replace('.', ',')} m Sprung${game.kind === 'endless' && !C.cfg.heli ? `  +${p}` : ''}`, 'gold');
   }
 }
 
@@ -1681,7 +1682,7 @@ function handleEvents() {
           let pts = Math.round(((rail ? 120 : 70) + e.dist * (rail ? 34 : 22)) * trickMul());
           pts = addPending(pts, true);
           game.tricks++;
-          showMsg(`${name} ${e.dist.toFixed(1)} m  +${num(pts)}`, 'gold');
+          showMsg(`${name} ${e.dist.toFixed(1).replace('.', ',')} m  +${num(pts)}`, 'gold');
           audio.gate();
         } else if (!e.clean) showMsg('Abgerutscht', 'bad');
       }
@@ -1815,7 +1816,7 @@ function updateSkier(dt) {
   } else {
     const railSlide = phys.grind && phys.grind.g.kind === 'rail' ? 1 : 0;
     vis.slide += (railSlide * vis.grindSide - vis.slide) * k(14);
-    // auf der Rail: Körper quer zur Rail, Balance als leichte Neigung sichtbar
+    // auf der Rail: Körper quer zur Rail, leichte Neigung (A/D) sichtbar
     const balTilt = phys.grind ? -phys.grind.bal * 0.35 : 0;
     const bs = Math.cos(trick.yaw + swYaw) < 0 ? -1 : 1;
     // Snowboard: das Brett geht stärker auf die Kante als der Körper. Der Körper neigt sich nur halb so weit in die Kurve,

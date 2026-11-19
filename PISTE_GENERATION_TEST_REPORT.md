@@ -562,3 +562,12 @@ Dazu: Am Ende eines Couloirs stieg der Rinnenboden an (die Tiefe nahm schneller 
 
 - Der Handy-Stern wählt weiterhin einen passenden Trick (jetzt auch den Triple Cork).
 - Geprüft im Spiel: alle zehn mit Ski und Brett aus großer Höhe gesprungen und sauber gelandet; Standbilder von der Seite bei 30 und 55 Prozent jeder Drehung.
+
+## Rails und Boxen ohne Abfallen (v38, 2026-11-19)
+
+- Rückmeldung: Auf Rails und Boxen im Freestyle fällt man herunter, auch wenn man sich dreht; ein Überbleibsel der alten Balance-Logik.
+- Ursache: Die Balance kippte von selbst weg und A/D schob sie weiter, ab 100 Prozent rutschte man seitlich ab. Zusätzlich zählte die Rail für die Trick-Logik als „in der Luft“, A/D drehte den Körper auf der Rail mit.
+- Änderung: Keine Balance mehr, von der man abfällt. Man rutscht bis zum Ende, bis man mit der Leertaste abspringt oder stehen bleibt. A/D lehnt nur noch leicht zur Seite (sichtbar), der Körper dreht sich auf der Rail nicht mehr. Hilfetexte angepasst.
+- Neuer Test `node tools/rail_test.mjs 5` (65 Rails und Boxen auf 5 Bergen, je ohne Eingabe, mit wild wechselndem A/D und mit dauerndem A): vorher 154 von 195 Fahrten abgerutscht, jetzt 0, alle 195 bis zum Ende. Im Spiel zwei Boxen und zwei Rails mit gehaltenem A bis zum Ende gefahren, Körper nicht gedreht, kein Sturz.
+- Nebenbei: Metertexte im Spiel (Rail, Sprungweite, Zielstatistik) mit Komma statt Punkt.
+- Freeride- und Freestyle-Bot unverändert.

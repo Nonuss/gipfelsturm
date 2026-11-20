@@ -17,6 +17,12 @@
   <canvas id="c"></canvas>
   <canvas id="snap" aria-hidden="true"></canvas>
 
+  <div id="tut" class="hidden" role="status" aria-live="polite">
+    <div class="tstep" id="tutStep"></div>
+    <div class="ttext" id="tutText"></div>
+    <div class="tbar"><i id="tutFill"></i></div>
+    <button id="tutSkip" type="button">Überspringen</button>
+  </div>
   <div id="hud" class="hidden">
     <div class="panel tl">
       <div class="label" id="lblMain">Zeit</div>
@@ -99,6 +105,7 @@
       <header><b>Einstellungen</b><button class="x" aria-label="Schließen">×</button></header>
       <div class="outfit">
         <div class="row"><span>Grafik</span><div class="seg" id="quality"><button data-q="auto">Auto</button><button data-q="ultra" class="notouch">Ultra</button><button data-q="high">Hoch</button><button data-q="mid">Mittel</button><button data-q="low">Niedrig</button><button data-q="minimal">Sparsam</button></div></div>
+        <div class="row"><span>Tutorial</span><div class="seg"><button id="tutStart" type="button">Starten</button></div></div>
         <div class="row"><span>Ton</span><div class="seg" id="optSound"><button data-v="1">An</button><button data-v="0">Aus</button></div></div>
         <div class="row"><span>Kamera</span><div class="seg" id="optCam"><button data-v="0">Verfolger</button><button data-v="1">Ego-Sicht</button></div></div>
         <div class="row touchonly"><span>Lenkung</span><div class="seg" id="optSteer"><button data-v="tilt">Neigen</button><button data-v="thumb">Daumen</button><button data-v="stick">Joystick</button></div></div>

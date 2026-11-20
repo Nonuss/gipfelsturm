@@ -226,12 +226,9 @@ export function makeHeadItem(kind) {
     }
     tube.computeVertexNormals();
     const cap = new THREE.Mesh(tube, red); cap.position.set(0, 1.875, 0.01); grp.add(cap);
-    cap.userData.cloth = 'cap';    // Ultra: die Spitze weht im Fahrtwind (skier.js)
     const pom = new THREE.Mesh(new THREE.IcosahedronGeometry(0.05, 2), white.clone());
     pom.position.set(0, 1.875 + 0.1, 0.01 + 0.25); grp.add(pom);
-    pom.userData.cloth = 'pom';
     const beard = new THREE.Mesh(new THREE.SphereGeometry(0.125, 24, 16, 0, Math.PI * 2, Math.PI * 0.42, Math.PI * 0.58), white.clone());
-    beard.userData.cloth = 'beard';
     beard.scale.set(1.02, 1.35, 0.78); beard.position.set(0, 1.72, -0.06); grp.add(beard);
     for (const sx of [-1, 1]) {
       const m = new THREE.Mesh(new THREE.CapsuleGeometry(0.02, 0.06, 6, 10), white);
@@ -323,7 +320,6 @@ export function makeBodyItems(kind) {
   } else if (kind === 'snowman') {
     band(1.53, 0.135, 0.13, 0.07, mat('#d7141a', 0.9), ch);                                       // Schal
     const end = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.24, 0.025, 1, 10, 1), mat('#d7141a', 0.9)); end.position.set(0.06, 1.4, -0.16); end.rotation.z = 0.15; ch.add(end);
-    end.userData.cloth = 'scarf';
     for (const y of [1.42, 1.3]) { const b = new THREE.Mesh(new THREE.SphereGeometry(0.024, 8, 6), mat('#121214', 0.6)); b.position.set(0, y, -0.175); ch.add(b); }
     const b3 = new THREE.Mesh(new THREE.SphereGeometry(0.024, 8, 6), mat('#121214', 0.6)); b3.position.set(0, 1.1, -0.172); pel.add(b3);
   } else if (kind === 'gold') {

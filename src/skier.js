@@ -46,85 +46,6 @@ function ik(A, T, l1, l2, pole, out) {
   return out.copy(A).addScaledVector(tA, a).addScaledVector(tB, h);
 }
 
-// ---------------------------------------------------------------- Ultra: Stoff im Fahrtwind
-// Verformung im Vertex-Shader nach dem Skinning. aCloth: x = wie frei der Stoff ist (0 fest, 1 ganz frei),
-// y = Art (0 Stoffbahn: Wellen laufen über die Fläche; 1 loses Ende: schwingt als Ganzes), z = wie stark der Wind
-// das Teil nach hinten zieht. Die Windrichtung kommt in Weltkoordinaten und wird pro Teil in dessen Raum gedreht.
-const CLOTH_HEAD = /* glsl */ `
-attribute vec3 aCloth;
-uniform vec3 uClothWind;
-uniform float uClothTime;
-float clothK; float clothPh; vec3 clothWd;
-void clothPrep(vec3 p, vec3 n){
-  vec3 wl = inverse(mat3(modelMatrix)) * uClothWind;
-  float spd = length(wl);
-  clothWd = spd > 0.01 ? wl / spd : vec3(0.0, 0.0, 1.0);
-  // die angeströmte Seite liegt flach am Körper, auf der windabgewandten Seite flattert der Stoff
-  float lee = mix(0.3 + 0.7 * smoothstep(-0.35, 0.6, dot(n, clothWd)), 1.0, aCloth.y);
-  clothK = aCloth.x * clamp(spd / 22.0, 0.0, 1.6) * lee;
-  float rip = 1.0 - aCloth.y;
-  clothPh = uClothTime * (8.0 + spd * 0.55) - dot(p, clothWd) * 13.0 * rip + dot(p, vec3(5.0, 11.0, 3.0)) * rip + aCloth.x * 2.4 * aCloth.y;
-}
-`;
-const CLOTH_NORMAL = /* glsl */ `
-clothPrep(position, objectNormal);
-objectNormal = normalize(objectNormal - clothWd * (cos(clothPh) * 0.5 + cos(clothPh * 2.13 + 1.3) * 0.35) * 0.7 * clothK * (1.0 - aCloth.y));
-`;
-const CLOTH_POS = /* glsl */ `
-{
-  float cf = sin(clothPh) * 0.65 + sin(clothPh * 2.13 + 1.3) * 0.35;
-  vec3 cn = normalize(objectNormal);
-  vec3 sd = normalize(cross(clothWd, vec3(0.0, 1.0, 0.0)) + vec3(1e-4, 0.0, 0.0));
-  vec3 ofs = mix(cn * cf * 0.032, sd * cf * 0.045 + vec3(0.0, 0.022 * cf, 0.0), aCloth.y);
-  ofs += clothWd * mix(0.012, 0.085, aCloth.y) * aCloth.z * (0.75 + 0.25 * cf);
-  transformed += ofs * clothK;
-}
-`;
-function patchCloth(mat, uni) {
-  if (mat.userData.clothOn) return;
-  mat.userData.clothOn = true;
-  mat.onBeforeCompile = (sh) => {
-    Object.assign(sh.uniforms, uni);
-    sh.vertexShader = sh.vertexShader
-      .replace('#include <common>', '#include <common>\n' + CLOTH_HEAD)
-      .replace('#include <skinnormal_vertex>', '#include <skinnormal_vertex>\n' + CLOTH_NORMAL)
-      .replace('#include <skinning_vertex>', '#include <skinning_vertex>\n' + CLOTH_POS);
-  };
-  mat.customProgramCacheKey = () => 'cloth1';
-  mat.needsUpdate = true;
-}
-function unpatchCloth(mat) {
-  if (!mat.userData.clothOn) return;
-  mat.userData.clothOn = false;
-  delete mat.onBeforeCompile; delete mat.customProgramCacheKey;   // zurück zu den Vorgaben von Three.js
-  mat.needsUpdate = true;
-}
-const sstep = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
-/** Gewichte aus der Ruhehaltung (Körperkoordinaten, y oben, -z vorne). */
-function clothWeights(geo, kind) {
-  if (geo.attributes.aCloth && geo.userData.clothKind === kind) return;
-  const p = geo.attributes.position, a = new Float32Array(p.count * 3);
-  for (let i = 0; i < p.count; i++) {
-    const x = p.getX(i), y = p.getY(i), z = p.getZ(i);
-    let w = 0, mode = 0, drag = 1;
-    if (kind === 'jacket') {
-      const hem = sstep(1.2, 0.98, y);                                   // Saum unten
-      const arm = sstep(0.24, 0.4, Math.abs(x)) * (0.6 + 0.4 * sstep(0.3, 0.44, Math.abs(x)));   // Ärmel, zum Bündchen hin freier
-      const back = z > 0.05 ? 0.15 : 0;                                  // Rücken bläht sich etwas
-      w = clamp(0.22 + back + 0.78 * Math.max(hem, arm), 0, 1);
-    } else if (kind === 'pants') {
-      w = 0.22 + 0.6 * sstep(0.55, 0.12, y);                            // Hosenbeine über den Schuhen flattern
-    } else if (kind === 'cap') {
-      const l = Math.hypot(x, y, z); w = clamp((l - 0.12) / 0.14, 0, 1) ** 1.5; mode = 1;
-    } else if (kind === 'pom') { w = 1; mode = 1; }
-    else if (kind === 'beard') { w = 0.55 * sstep(0.0, -0.12, y); }
-    else if (kind === 'scarf') { w = clamp((0.12 - y) / 0.24, 0, 1) ** 1.5; mode = 1; drag = 0.35; }
-    a[i * 3] = w; a[i * 3 + 1] = mode; a[i * 3 + 2] = drag;
-  }
-  geo.setAttribute('aCloth', new THREE.BufferAttribute(a, 3));
-  geo.userData.clothKind = kind;
-}
-
 function makeSkinned(geo, mat) {
   const n = geo.attributes.position.count;
   const b0 = geo.attributes._b0, b1 = geo.attributes._b1, w = geo.attributes._w0;
@@ -179,8 +100,6 @@ export class Skier {
       m.bind(this.skeleton, new THREE.Matrix4());
       this.skinned[name] = m;
     }
-    this.clothU = { uClothWind: { value: V(0, 0, 0) }, uClothTime: { value: 0 } };
-    this.clothOn = false;
 
     const rigid = (name, mat, parent) => {
       const o = new THREE.Mesh(models[name], mat);
@@ -273,7 +192,6 @@ export class Skier {
     this.bones[PEL].add(this.bodyItems.pel);
     this.bones[CH].add(this.bodyItems.ch);
     this.bodyItems.pel.visible = this.bodyItems.ch.visible = !this.fpv;
-    if (this.clothOn) this.clothItems();
   }
   /** Kopfteil zum Outfit (Weihnachtsmütze mit Bart, Zylinder, Stirnband, Krone) am Kopfknochen. */
   setHead(kind) {
@@ -285,31 +203,6 @@ export class Skier {
     this.metalize(this.head);
     this.head.visible = !this.fpv;
     this.bones[HD].add(this.head);
-    if (this.clothOn) this.clothItems();
-  }
-
-  /** Ultra: Jacke, Hose, Mützenspitze, Bart und Schal wehen im Fahrtwind. Aus: unveränderte Materialien. */
-  setCloth(on) {
-    this.clothOn = on;
-    const parts = [[this.jacketMat, 'Sk_Jacket', 'jacket'], [this.accentMat, 'Sk_JacketAcc', 'jacket'], [this.pantsMat, 'Sk_Pants', 'pants']];
-    for (const [mat, name, kind] of parts) {
-      if (on) { clothWeights(this.skinned[name].geometry, kind); patchCloth(mat, this.clothU); } else unpatchCloth(mat);
-    }
-    this.clothItems();
-  }
-  clothItems() {
-    for (const g of [this.head, this.bodyItems && this.bodyItems.ch, this.bodyItems && this.bodyItems.pel]) {
-      if (!g) continue;
-      g.traverse((o) => {
-        if (!o.isMesh || !o.userData.cloth) return;
-        if (this.clothOn) { clothWeights(o.geometry, o.userData.cloth); patchCloth(o.material, this.clothU); } else unpatchCloth(o.material);
-      });
-    }
-  }
-  /** Fahrtwind = Gegenwind zur Bewegung (Weltkoordinaten), Zeit läuft mit der Spielzeit (Zeitlupe inklusive). */
-  setWind(vel, dt) {
-    this.clothU.uClothWind.value.copy(vel).negate();
-    this.clothU.uClothTime.value = (this.clothU.uClothTime.value + dt) % 1000;
   }
 
   /** 'ski' oder 'board' */

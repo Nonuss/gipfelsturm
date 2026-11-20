@@ -33,6 +33,17 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #9fc3ee; fon
 
 #msg { position: absolute; left: 0; right: 0; top: 23%; text-align: center; font-size: 46px; font-weight: 800; font-style: italic; letter-spacing: 0.03em; opacity: 0; }
 #msg.show { animation: pop 1.5s ease-out forwards; }
+#tut { position: fixed; z-index: 40; top: 22px; left: 50%; transform: translateX(-50%); width: min(520px, calc(100% - 400px)); min-width: 300px; box-sizing: border-box; padding: 12px 22px 14px; text-align: center; background: var(--glass); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.18); color: var(--snow); text-shadow: 0 2px 10px rgba(10, 30, 60, 0.45); transition: border-color 0.2s; }
+#tut .tstep { font-size: 13px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.8; }
+#tut .ttext { margin: 6px 0 10px; font-size: 19px; font-weight: 600; line-height: 1.4; }
+#tut kbd { height: 24px; min-width: 24px; padding: 0 7px; font-size: 13px; text-shadow: none; vertical-align: 1px; }
+#tut .tbar { height: 4px; border-radius: 2px; background: rgba(255, 255, 255, 0.22); overflow: hidden; }
+#tut .tbar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width 0.15s; }
+#tut.ok { border-color: #63e6b0; }
+#tut.ok .tstep { color: #63e6b0; opacity: 1; }
+#tut.ok .tbar i { background: #63e6b0; }
+#tutSkip { position: absolute; right: 12px; top: 9px; padding: 2px 4px; background: none; font-size: 12px; letter-spacing: 0.06em; opacity: 0.75; text-decoration: underline; }
+#tutSkip:hover, #tutSkip:focus-visible { opacity: 1; }
 #rew { position: absolute; left: 50%; top: 14%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 22px; font-weight: 800; font-style: italic; letter-spacing: 0.12em; text-transform: uppercase; color: #dfe9ff; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35); pointer-events: none; }
 #rew .rbar { width: 180px; height: 4px; border-radius: 2px; background: rgba(255, 255, 255, 0.22); overflow: hidden; }
 #rew .rbar i { display: block; height: 100%; width: 0; background: #dfe9ff; }
@@ -302,9 +313,11 @@ body.touch #hud { z-index: 32; }   /* nur der Vollbild-Knopf im HUD fängt Tipps
 #touchUI .tsm { width: 42px; height: 42px; min-width: 0; border-radius: 50%; }
 #touchUI .tsm svg { width: 52%; height: 52%; }
 #touchUI .tb.top { left: auto; right: calc(14px + env(safe-area-inset-right)); transform: none; top: calc(96px + env(safe-area-inset-top)); flex-direction: column; gap: 10px; }
+/* Kleine Knöpfe oben rechts als 2 mal 2 Raster (Menü, Kamera / Zurückspulen, Respawn): bleibt über den großen Knöpfen */
+#touchUI .tb.top { display: grid; grid-template-columns: repeat(2, 42px); gap: 10px; }
 body.touch #touchUI .tb.left, html.rot #touchUI .tb.left { bottom: calc(26px + env(safe-area-inset-bottom)); }
-@media (max-height: 500px) { #touchUI .tbtn { width: 62px; height: 62px; } #touchUI .tbtn.big { width: 88px; height: 88px; } #touchUI .tb.top { top: calc(78px + env(safe-area-inset-top)); } }
-html.rot #touchUI .tbtn { width: 62px; height: 62px; } html.rot #touchUI .tbtn.big { width: 88px; height: 88px; } html.rot #touchUI .tb.top { top: 78px; }
+@media (max-height: 500px) { #touchUI .tbtn { width: 62px; height: 62px; } #touchUI .tbtn.big { width: 88px; height: 88px; } #touchUI .tb.top { top: calc(118px + env(safe-area-inset-top)); right: calc(120px + env(safe-area-inset-right)); } }
+html.rot #touchUI .tbtn { width: 62px; height: 62px; } html.rot #touchUI .tbtn.big { width: 88px; height: 88px; } html.rot #touchUI .tb.top { top: 118px; right: 120px; }
 .touchonly { display: none !important; } body.touch .touchonly { display: flex !important; }
 body.touch .notouch { display: none !important; }
 body.touch #minimap { left: calc(12px + env(safe-area-inset-left)); right: auto; top: 104px; }   /* rechts liegen die Knöpfe */
@@ -411,3 +424,26 @@ html.rot #shop3d .s3-buy { font-size: 16px; padding: 9px 12px; }
 #touchUI .tstick b { position: absolute; left: -28px; top: -28px; width: 56px; height: 56px; border-radius: 50%; background: rgba(255, 255, 255, 0.75); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35); transition: transform 0.12s ease-out; }
 #touchUI .tstick.on b { transition: none; background: #fff; }
 #touchUI .tstick.on i { border-color: rgba(255, 255, 255, 0.8); }
+
+/* Tutorial auf kleinen Bildschirmen (Handy quer): flacher und schmaler, damit genug Sicht bleibt */
+@media (max-height: 500px) {
+  #tut { top: 8px; left: 148px; transform: none; padding: 7px 14px 9px; width: min(440px, calc(100% - 372px)); min-width: 0; }
+  #tut .tstep { font-size: 11px; }
+  #tut .ttext { margin: 3px 0 6px; font-size: 15px; line-height: 1.32; }
+  #tut kbd { height: 20px; min-width: 20px; font-size: 12px; }
+  #tutSkip { top: 5px; right: 8px; font-size: 11px; }
+}
+html.rot #tut { top: 8px; left: 148px; transform: none; padding: 7px 14px 9px; width: min(440px, calc(100% - 372px)); min-width: 0; }
+html.rot #tut .tstep { font-size: 11px; }
+html.rot #tut .ttext { margin: 3px 0 6px; font-size: 15px; line-height: 1.32; }
+html.rot #tutSkip { top: 5px; right: 8px; font-size: 11px; }
+
+/* Handy quer (wenig Höhe): rechte Knopfsäule enger (bleibt unter der Tore-Anzeige), Tempo rechts neben der Bremse und unter der Minikarte */
+@media (max-height: 500px) {
+  #touchUI .tb.right { gap: 8px; }
+  body.touch .speedo { left: calc(106px + env(safe-area-inset-left)); bottom: calc(18px + env(safe-area-inset-bottom)); }
+}
+html.rot #touchUI .tb.right { gap: 8px; }
+html.rot body.touch .speedo { left: 106px; bottom: 18px; }
+/* Während des Tutorials liegt die Karte oben in der Mitte; der Vollbild-Knopf (Taste V geht weiter) macht Platz */
+html.tutorial #fsBtn { display: none; }

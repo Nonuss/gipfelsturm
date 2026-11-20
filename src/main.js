@@ -207,7 +207,6 @@ function applyQuality() {
   if (dust) dust.points.visible = Q.dust;
   if (patch && Q.patch > 0 && patch.cell !== Q.patch) { const old = patch; scene.remove(old.mesh); old.geo.dispose(); patch = new PowderPatch(scene, Q.patch, Math.round(18 / Q.patch) + 1); }
   if (world) world.setUltra(Q.ultra, patch ? [patch.mesh.material] : []);
-  if (skier) skier.setCloth(Q.ultra);
   // Ultra: mehr Schneestaub (größerer Ringspeicher), mehr Eiskristalle in der Luft
   const sprayMax = Q.ultra ? 16000 : 9000;
   if (spray && spray.max !== sprayMax) { scene.remove(spray.points); spray.geo.dispose(); spray.mat.dispose(); spray = new Spray(scene, sprayMax); }
@@ -226,6 +225,9 @@ function chooseQuality(q) {
 let fpsEma = 60, slowT = 0;
 let drsT = 0, drsN = 0, drsUpBlock = 0, drsStable = 0;
 function dynamicResolution(rawDt) {
+  // Von Hand gewählte Stufe bleibt genau so, wie sie ist (auch wenn es ruckelt): volle Auflösung der Stufe, kein
+  // Herunterregeln. Nur „Auto“ passt Auflösung und Stufe an.
+  if (qualSetting !== 'auto') { drsT = 0; drsN = 0; if (Math.abs(renderScale - maxScale()) > 0.01) { renderScale = maxScale(); resize(); } return; }
   if (game.mode !== 'run' || document.hidden || rawDt > 0.25) { drsT = 0; drsN = 0; return; }
   drsT += rawDt; drsN++;
   drsUpBlock = Math.max(0, drsUpBlock - rawDt);
@@ -242,8 +244,8 @@ let ultraEma = 60, ultraSlowT = 0, ultraWarned = false;
 function watchUltra(rawDt) {
   if (!Q.ultra || game.mode !== 'run' || document.hidden || rawDt > 0.25) return;
   ultraEma += (1 / Math.max(rawDt, 1e-3) - ultraEma) * 0.04;
-  ultraSlowT = ultraEma < 28 && renderScale <= minScale() + 0.01 ? ultraSlowT + rawDt : 0;
-  if (ultraSlowT > 5 && !ultraWarned) { ultraWarned = true; showMsg('Ultra ist für diesen Rechner sehr schwer. Unter Einstellungen läuft Hoch flüssiger.', 'bad'); }
+  ultraSlowT = ultraEma < 28 ? ultraSlowT + rawDt : 0;
+  if (ultraSlowT > 5 && !ultraWarned) { ultraWarned = true; showMsg('Ultra ist für diesen Rechner sehr schwer. Unter Einstellungen läuft Hoch flüssiger', 'bad'); }
 }
 function watchPerformance(rawDt) {
   dynamicResolution(rawDt);
@@ -536,6 +538,7 @@ function earn(n, why) {
 }
 /** Freeride und Freestyle: gesicherte Punkte am Ende eines Laufs (Menü oder neuer Lauf), ein Vierzigstel davon (v30, vorher ein Zehntel). */
 function payEndless() {
+  if (tut.on) return 0;
   if (C.cfg.heli || game.kind !== 'endless' || game.paid || !(game.mode === 'run' || game.mode === 'countdown')) return 0;
   game.paid = true;
   return earn(Math.floor(game.score / 40));
@@ -881,6 +884,7 @@ function setKind(kind, seed) {
 
 function startRun(same) {
   const fromMenu = game.mode === 'menu';
+  if (fromMenu && !tut.on && !tutDone()) { startTutorial(); return; }   // allererster Start: zuerst das Tutorial
   closeDlg();
   demo.on = false; airKey.space = false;
   audio.start();
@@ -1127,10 +1131,12 @@ function toMenu() {
   // Heli: den gerade gefahrenen Berg im Menü behalten (kein Warten); sonst frische Welt im Hintergrund
   if (MODES[modeIdx].id === 'heli' && C.cfg.heli) { renderMode(); demoStart(); }
   else selectMode(modeIdx, true);
+  if (tut.on) closeTutorial();
 }
 
 const totalScore = () => Math.round(game.score);
 function saveEndlessBest() {
+  if (tut.on) return;
   if (C.cfg.heli || game.kind !== 'endless' || game.mode === 'menu' || game.mode === 'loading') return;
   const t = totalScore();
   const sfx = STYLE_SFX[game.style] || '';
@@ -1225,6 +1231,7 @@ function toCheckpoint() {
   if (C.cfg.heli) return;
   if (game.mode !== 'run' || phys.crashed > 0) return;
   if (game.cp) {
+    if (tut.on) tut.cpBack = true;
     teleport(game.cp.x, game.cp.z, game.cp.h);
     showMsg('Zurück am Respawn-Punkt', 'good');
     return;
@@ -1234,6 +1241,69 @@ function toCheckpoint() {
   const x = C.cfg.endless ? C.surfaceAt(phys.pos.x, -d).lx : C.centerX(d);
   teleport(x, -d);
   showMsg('Zurück auf die Piste', 'good');
+}
+
+// ---------------------------------------------------------------- Tutorial
+// Beim ersten Start (erster Druck auf Start) eine geführte Fahrt im Freeride: Lenken, Hocke, Bremsen, Springen, Trick,
+// Zurückspulen, Respawn-Punkt. Jeder Schritt zählt erst, wenn man ihn wirklich ausführt. Danach (oder nach Überspringen)
+// nur noch über Einstellungen > Tutorial.
+const TUT_KEY = 'gipfelsturm_tutorial_done';
+const tut = { on: false, i: 0, p: 0, ok: 0, a: 0, b: 0, cpBack: false, endT: 0, w: -1 };
+const tutDone = () => { try { return localStorage.getItem(TUT_KEY) === '1'; } catch { return true; } };
+const kb = (k) => `<kbd>${k}</kbd>`;
+const TUT = [
+  { d: `Lenken mit ${kb('A')} und ${kb('D')} oder den Pfeiltasten. Fahr eine Kurve nach links und eine nach rechts.`,
+    t: 'Lenken: Handy wie ein Lenkrad neigen (oder Daumen bzw. Joystick, je nach Einstellung). Fahr eine Kurve nach links und eine nach rechts.',
+    run: (dt) => { if (phys.grounded && phys.speed > 2) { if (inp.steer < -0.5) tut.a += dt; if (inp.steer > 0.5) tut.b += dt; } return (Math.min(tut.a, 0.7) + Math.min(tut.b, 0.7)) / 1.4; } },
+  { d: `${kb('W')} halten: Hocke. So wirst du schneller.`, t: 'Knopf Hocke halten (Joystick: nach unten). So wirst du schneller.',
+    run: (dt) => (tut.a += inp.tuck > 0.7 && phys.grounded ? dt : 0) / 1.5 },
+  { d: `${kb('S')} halten: bremsen.`, t: 'Knopf Bremse halten (Joystick: nach oben): bremsen.',
+    run: (dt) => (tut.a += inp.brake > 0.7 && phys.speed > 1.5 ? dt : 0) / 1.0 },
+  { d: `${kb('Leertaste')}: springen.`, t: 'Sprung-Knopf: springen.',
+    run: () => (!phys.grounded && !phys.grind && phys.airTime > 0.15 ? 1 : 0) },
+  { d: `Spring und drück in der Luft ${kb('S')} für einen Backflip oder ${kb('A')} oder ${kb('D')} für eine Drehung.`, t: 'Spring und wisch in der Luft nach oben (Backflip) oder neig das Handy (Drehung).',
+    run: () => (!phys.grounded && (Math.abs(trick.pitch) > 1.3 || Math.abs(trick.yaw) > 1.3) ? 1 : 0) },
+  { d: `${kb('Q')} halten: Zurückspulen, bis 8 Sekunden. Praktisch nach einem Sturz.`, t: 'Doppelpfeil-Knopf rechts oben halten: Zurückspulen, bis 8 Sekunden. Praktisch nach einem Sturz.',
+    run: (dt) => (tut.a += rew.on ? dt : 0) / 0.8 },
+  { d: `${kb('F')}: Respawn-Punkt setzen, ${kb('T')}: dorthin zurück. Probier beides.`, t: 'Fahnen-Knopf halten: Respawn-Punkt setzen. Kurz tippen: dorthin zurück. Probier beides.',
+    run: () => (game.cp ? 0.5 : 0) + (tut.cpBack ? 0.5 : 0) },
+];
+const TUT_END = { d: `Geschafft! Im Menü wählst du Rennen, Freeride, Freestyle oder Heli-Skiing. Spezialtricks liegen auf ${kb('1')} bis ${kb('0')}, alle Tasten stehen unter Steuerung.`,
+  t: 'Geschafft! Im Menü wählst du Rennen, Freeride, Freestyle oder Heli-Skiing. Der Stern-Knopf in der Luft zeigt Spezialtricks, alles Weitere steht unter Steuerung.' };
+function tutShow() {
+  const end = tut.i >= TUT.length, st = end ? TUT_END : TUT[tut.i];
+  $('tut').classList.toggle('ok', end);
+  $('tutStep').textContent = end ? 'Tutorial fertig' : `Tutorial ${tut.i + 1} von ${TUT.length}`;
+  $('tutText').innerHTML = isTouch ? st.t : st.d;
+  $('tutSkip').textContent = end ? 'Zum Menü' : 'Überspringen';
+  tut.w = -1; tutBar(end ? 1 : 0);
+}
+function tutBar(p) { const w = Math.round(p * 100); if (w !== tut.w) { tut.w = w; $('tutFill').style.width = w + '%'; } }
+function startTutorial() {
+  closeDlg();
+  if (game.mode !== 'menu') toMenu();
+  Object.assign(tut, { on: true, i: 0, p: 0, ok: 0, a: 0, b: 0, cpBack: false, endT: 0 });
+  setKind('endless', 4711);   // ruhiger Freeride-Berg
+  startRun();
+  $('tut').classList.remove('hidden');
+  document.documentElement.classList.add('tutorial');
+  tutShow();
+}
+/** Tutorial schließen und merken (auch nach Überspringen oder Esc): kommt nur noch über die Einstellungen. */
+function closeTutorial() {
+  tut.on = false;
+  try { localStorage.setItem(TUT_KEY, '1'); } catch {}
+  $('tut').classList.add('hidden');
+  document.documentElement.classList.remove('tutorial');
+}
+function tutUpdate(dt) {
+  if (!tut.on || game.mode === 'menu') return;
+  if (tut.i >= TUT.length) { tut.endT += dt; if (tut.endT > 8) toMenu(); return; }
+  if (tut.ok > 0) { tut.ok -= dt; if (tut.ok <= 0) { tut.i++; tut.a = 0; tut.b = 0; tutShow(); } return; }
+  if (game.mode !== 'run') return;
+  tut.p = clamp(TUT[tut.i].run(dt), 0, 1);
+  tutBar(tut.p);
+  if (tut.p >= 1) { tut.ok = 0.9; $('tut').classList.add('ok'); $('tutStep').textContent = 'Gut gemacht'; }
 }
 
 // ---------------------------------------------------------------- Zurückspulen (Taste Q halten; nicht im Heli)
@@ -1362,6 +1432,8 @@ const touchCtl = setupTouch({ isAir: () => game.mode === 'run' && !phys.grounded
 $('startBtn').addEventListener('click', () => { if (touchCtl) touchCtl.onStart(); if (game.mode === 'menu') startRun(); });
 $('againBtn').addEventListener('click', () => { if (touchCtl) touchCtl.onStart(); startRun(); });
 $('menuBtn').addEventListener('click', () => toMenu());
+$('tutSkip').addEventListener('click', () => toMenu());
+$('tutStart').addEventListener('click', () => { if (touchCtl) touchCtl.onStart(); startTutorial(); });
 $('mPrev').addEventListener('click', () => selectMode(modeIdx - 1));
 $('mNext').addEventListener('click', () => selectMode(modeIdx + 1));
 // Handy und Maus: im Menü seitlich wischen wechselt den Modus
@@ -2030,7 +2102,6 @@ function updateSkier(dt) {
     lean: BOARD() ? 0 : vis.lean * bodySign, crouch: BOARD() ? Math.min(1, vis.crouch + 0.32 * Math.abs(vis.lean)) : vis.crouch, edge: BOARD() && !crashed ? vis.bEdgeExtra || 0 : 0, steer: phys.grounded && !BOARD() ? inp.steer * bodySign * (1 + 0.9 * (C.cfg.heli ? 1 : 0)) : 0, plow: BOARD() ? 0 : vis.plow, plowDir: bodySign < 0 ? -1 : 1, air: vis.air, compress: vis.compress,
     speed: phys.speed, grab: trick.grab, grabSide: trick.gs, sup: BOARD() ? 0 : vis.sup || 0, cross: BOARD() ? 0 : vis.cross || 0, daffy: BOARD() ? 0 : vis.daffy || 0, tweak: BOARD() ? 0 : vis.tweak || 0, look: vis.look, tuck: vis.tuck, spin: vis.spin, extend: vis.extend, crash: crashed ? 1 : 0, crashA: vis.crashAngle,
   }, dt);
-  if (Q.ultra) skier.setWind(phys.vel, dt);
   skier.updateLoose(dt, C.height);
   if (blob) {
     // Kontaktschatten: ohne Echtzeit-Schatten immer, mit Schatten beim Snowboard (klebt das Brett optisch an den Schnee)
@@ -2230,6 +2301,7 @@ function tick(dt, render) {
     rew.fx += ((rew.on ? 1 : 0) - rew.fx) * (1 - Math.exp(-dt * 10));
     grade.uniforms.uRew.value = rew.fx < 0.003 ? 0 : rew.fx;
     rewindHud();
+    tutUpdate(dt);
     spray.setFocus(tV.set(phys.pos.x, phys.pos.y + 0.9, phys.pos.z));
     spray.update(dt);
     if (Q.dust) dust.update(time, camera);
@@ -2315,7 +2387,7 @@ function ultraUniforms() {
     tp: (d, lane = 0, speed = 0) => { const L = C.cfg.heli ? { x: C.centerX(d) + lane } : C.mapSlice(d, d + 1, 1).rows[0].lanes[lane]; teleport(L.x, -d); const x0 = C.centerX(d + 6) - C.centerX(d); phys.heading = Math.atan2(x0, 6); phys.vel.set(Math.sin(phys.heading) * speed, 0, -Math.cos(phys.heading) * speed); if (game.mode === 'menu') { game.mode = 'run'; } },
     // Testhilfe: freie Kamera für Standbilder (Position, Blickpunkt), rendert genau ein Bild
     shot: (px, py, pz, lx, ly, lz, fov = 55) => { camera.position.set(px, py, pz); camera.fov = fov; camera.near = 0.3; camera.updateProjectionMatrix(); camera.lookAt(lx, ly, lz); world.sky.position.copy(camera.position); if (Q.ultra) ultraUniforms(); composer.render(); },
-    ultraUniforms, gtao, ufx, HG, restartHeli: () => startRun(true), setGear, setupDonate, shop3d: () => shop3d, SPECIALS, startSpecial, special: () => special, airLeft, timeScale: () => timeScale, specCam, edge: () => boardEdge, finishRun, fwt, fwtScore, applyDropPref, renderMode, heliStart, flowUp, shop, applyEquip,
+    ultraUniforms, gtao, ufx, HG, watchPerformance, renderScale: () => renderScale, qualSetting: () => qualSetting, restartHeli: () => startRun(true), setGear, setupDonate, shop3d: () => shop3d, SPECIALS, startSpecial, special: () => special, airLeft, timeScale: () => timeScale, specCam, edge: () => boardEdge, finishRun, fwt, fwtScore, applyDropPref, renderMode, heliStart, flowUp, shop, applyEquip,
         advance: (sec, noRender) => { const n = Math.round(sec * 60); for (let i = 0; i < n; i++) tick(1 / 60, !noRender && i === n - 1); },
   };
   requestAnimationFrame((t) => { last = t; frame(t); });

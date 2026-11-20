@@ -627,3 +627,16 @@ Gemessen auf diesem Rechner (Apple M4, Fenster 1600 mal 900 bei doppelter Pixeld
 ### Nicht geprüft
 - Kein schwacher Laptop zur Hand; ob Sparsam dort flüssig läuft und die Automatik wirklich erst dann umschaltet, ist nicht am echten Gerät geprüft.
 - Schneestaub und Spuren im Schnee laufen beim Zurückspulen nicht mit zurück (die Spur der verworfenen Fahrt bleibt sichtbar).
+
+## Tutorial, feste Grafikwahl, Handy-Knöpfe, kein Gewandflattern (v41, 2026-11-20)
+
+- **Tutorial:** Beim allerersten Druck auf Start kommt statt des gewählten Modus eine geführte Fahrt im Freeride (eigener ruhiger Berg). Sieben Schritte, jeder zählt erst, wenn man ihn wirklich macht: Lenken links und rechts, Hocke, Bremsen, Springen, Trick in der Luft (Drehung oder Flip angefangen), Zurückspulen, Respawn-Punkt setzen und dorthin zurück. Karte oben in der Mitte mit Schritt, Text (Tastatur oder Handy), Fortschrittsbalken und „Überspringen“; nach jedem Schritt kurz „Gut gemacht“. Am Ende „Geschafft“, nach 8 s oder „Zum Menü“ zurück ins Menü. Danach (auch nach Überspringen oder Esc) kommt es nur noch über Einstellungen > Tutorial > Starten. Im Tutorial werden keine Bestwerte und keine Shop-Punkte gespeichert.
+- **Feste Grafikwahl:** Wer eine Stufe von Hand wählt, behält sie genau so, auch wenn es ruckelt: keine dynamische Auflösung mehr, keine Herabstufung. Bei Ultra kommt bei dauerhaft unter 28 Bildern nur einmal ein Hinweis. Nur „Auto“ passt Auflösung und Stufe an. Am Handy bleiben wie bisher MSAA und Leuchten aus (Absturzschutz unter iOS).
+- **Ultra:** Das flatternde Gewand ist wieder entfernt (Shader-Code gelöscht). Ultra behält Umgebungsverdeckung, Bewegungs- und Tiefenunschärfe, feinere Schatten, Windgangeln, Sichtweite und Schneestaub.
+- **Handy-Knöpfe:** Auf quer gehaltenen Telefonen mit wenig Höhe (seit v39 bei 360 Pixel Höhe) überlappten Menü- und Kamera-Knopf mit Hocke und Stern, Bremse und Minikarte mit der Tempoanzeige; mit dem Zurückspul-Knopf rutschte der Respawn-Knopf in den Sprung-Knopf. Jetzt: kleine Knöpfe als 2 mal 2 Raster links neben der großen Knopfsäule, Säule enger, Tempoanzeige rechts neben der Bremse. Die Tutorial-Karte sitzt dort in der Lücke zwischen linker Anzeige und Knopfraster, kleiner gesetzt; der Vollbild-Knopf macht während des Tutorials Platz (Taste V geht weiter).
+
+### Prüfung
+- Tutorial am Laptop mit simulierten Tasten komplett durchgespielt (alle sieben Schritte, Abschluss, zurück ins Menü, gemerkt); zweiter Start geht direkt in den gewählten Modus; Start über Einstellungen; Überspringen.
+- Handy (Touch-Emulation): Texte in Handy-Fassung, Überspringen antippbar, Zurückspul-Knopf spult, im Heli ausgeblendet.
+- Überlappungsprüfung aller Knöpfe und Anzeigen (Begrenzungsrechtecke) während Tutorial am Boden und in der Luft sowie im normalen Lauf: 1280 mal 720, 740 mal 360, 667 mal 375 und iPhone hochkant (gedrehte Darstellung): keine Überlappung.
+- Feste Grafikwahl mit simulierten Bildraten: Ultra von Hand bei 10 Bildern/s bleibt Ultra mit voller Auflösung (Hinweis erscheint), Niedrig von Hand bei 8 Bildern/s bleibt Niedrig mit 1,4; Auto bei 20 Bildern/s geht Hoch, Mittel, Niedrig, Sparsam; Auto bei 30 Bildern/s hält bei Niedrig.

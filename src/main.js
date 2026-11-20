@@ -1220,7 +1220,8 @@ function finishRun() {
     $('finTime').innerHTML = `${dec1(sc.total)}<small> / 100</small>`;
     const rowsH = [['Linie', dec1(sc.line)], ['Flüssigkeit', dec1(sc.flow)], ['Kontrolle', dec1(sc.control)], ['Sprünge', dec1(sc.air)],
       ['Zeit', fmt(total)], ['Größter Drop', `${Math.round(fwt.maxDrop)} m`], ['Längste Flow-Kette', `×${(1 + Math.min(2, fwt.flowMax * 0.25)).toFixed(2).replace(/0$/, '').replace('.', ',')}`], ['Beste Wertung', dec1(bestSc)]];
-    const gotH = earn(sc.total * 2.5 + 20);   // v30: langsamer (vorher bis 850 je Abfahrt, jetzt bis 270)
+    // v44 angeglichen an Freeride (40 Münzen je 100.000 Punkte, rund 8 je Minute): 2 bis 42 je Abfahrt (vorher bis 270)
+    const gotH = earn(Math.round(sc.total * 0.4 + 2));
     rowsH.push(['Shop-Punkte', `+${num(gotH)}`]);
     $('finStats').innerHTML = rowsH.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
     return;
@@ -1230,8 +1231,10 @@ function finishRun() {
   // Shop-Punkte: getroffene Tore, Länge der Disziplin, Bonus für eine neue Bestzeit
   const lenF = { sl: 1, gs: 1.3, sg: 1.7, dh: 2.1 }[disc] || 1;
   const missed = C.gates.length - game.passed;
-  // v30: etwa ein Drittel von vorher (der Gold-Ski soll ein Ziel über viele Läufe sein, nicht über zwei)
-  rows.push(['Shop-Punkte', `+${num(earn(Math.max(0, (12 + game.passed * 2 - missed * 2) * lenF) + (isBest ? 30 : 0)))}`]);
+  // v44 angeglichen an Freeride (rund 8 Münzen je Minute): sauberer Lauf Slalom 6, Riesentorlauf 8, Super-G 10, Abfahrt 13;
+  // verpasste Tore zählen doppelt dagegen, neue Bestzeit +2 (vorher 50 bis über 200 je Lauf)
+  const quality = C.gates.length ? Math.max(0, (game.passed - 2 * missed) / C.gates.length) : 0;
+  rows.push(['Shop-Punkte', `+${num(earn(Math.round(6 * lenF * quality) + (isBest ? 2 : 0)))}`]);
   $('finStats').innerHTML = rows.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
 }
 

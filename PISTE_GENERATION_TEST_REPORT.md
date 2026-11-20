@@ -681,3 +681,11 @@ Rückmeldung von Noah: Statt Gimmicks wie dem Gewandflattern soll Ultra die Graf
 - Münzen: 100.000 Punkte = 40, 37.400 Punkte = 14.
 - Berge: Kamera fest zur mitwandernden Berg-Gruppe, 82 m Fahrt dazwischen: Bild der Berge praktisch gleich (mittlere Abweichung 0,9 von 255, nur ziehende Wolken). Standbilder Spielansicht Freeride und Rennen, Bergansicht.
 - Alle fünf Stufen in allen vier Welten ohne Fehler; Hoch sieht aus wie vorher.
+
+## Münzen in Rennen und Heli angeglichen (v44, 2026-11-20)
+
+- Auf Noahs Wunsch an Freeride und Freestyle angeglichen (40 Münzen je 100.000 Punkte). Annahme: ein guter Freeride-Lauf bringt rund 100.000 Punkte in etwa 5 Minuten, also rund 8 Münzen je Minute.
+- Rennen: sauberer Lauf Slalom 6, Riesentorlauf 8, Super-G 10, Abfahrt 13 Münzen (je nach Länge), verpasste Tore zählen doppelt dagegen, neue Bestzeit +2. Vorher 50 bis über 200 je Lauf.
+- Heli: Gesamtwertung mal 0,4 plus 2, also 2 bis 42 je Abfahrt (vorher 20 bis 270).
+- Geprüft im Spiel (Zielauswertung mit gesetzten Toren): Slalom sauber mit Bestzeit 8, drei Tore verpasst 4; Riesentorlauf 10 / 5; Super-G 12 / 7; Abfahrt 15 / 7; Heli mit Wertung 51,4 ergibt 23.
+- Nicht geprüft: wie viele Punkte ein Mensch im Freeride wirklich pro Minute holt. Die Annahme von 8 Münzen je Minute lässt sich an den drei Stellen in `src/main.js` (payEndless, Rennen, Heli in finishRun) leicht nachstellen.

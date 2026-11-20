@@ -1,8 +1,9 @@
 // Leistungsstufen: werden im Menü gewählt oder (bei „Auto“) während der Fahrt automatisch heruntergeregelt.
 // pr = höchste Auflösung (Pixel pro CSS-Pixel), minPR = Untergrenze der dynamischen Auflösung.
 // Früher war pr fest (niedrig 0,8): auf einem iPhone (3 Pixel pro CSS-Pixel) war das ein Viertel der Auflösung – stark verpixelt.
-// Ultra (nur von Hand, für starke Rechner): Umgebungsverdeckung, Bewegungs- und Tiefenunschärfe,
-// feinere und weitere Schatten, mehr Sichtweite, dichterer Schneestaub. Die Automatik wählt Ultra nie.
+// Ultra (nur von Hand, für starke Rechner): fein modellierte Fichten im Nahbereich, Licht aus der Himmelskuppel, neutrale
+// Tonkurve, Felsrelief in den Bergen und der Heli-Fernsicht, Wolken mit Eigenschatten, Lichtstrahlen, Umgebungsverdeckung,
+// Bewegungs- und Tiefenunschärfe, feinere Schatten, mehr Sichtweite und Schneestaub. Die Automatik wählt Ultra nie.
 const BASE = { ultra: false, fx: 1, shadowArea: 95, lowq: false };
 export const TIERS = {
   ultra: { pr: 2.0, minPR: 1.25, shadow: 8192, msaa: 4, bloom: true, grid: 1.6, view: 1300, trees: 1, dust: true, budget: 4, patch: 0.4, ultra: true, fx: 1.6, shadowArea: 140 },

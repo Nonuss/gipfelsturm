@@ -5,6 +5,8 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import * as C from './course.js';
 import { makeSnowMaterial, snowUniforms } from './snow.js';
 import { Q } from './quality.js';
+import { ultraTrees } from './ultratrees.js';
+import { CRAG_GLSL } from './ultraglsl.js';
 import { HeliWorld } from './heliworld.js';
 
 export async function loadModels() {
@@ -29,6 +31,8 @@ export const SUN_DIR = new THREE.Vector3(-0.52, 0.56, -0.64).normalize(); // Ric
 const SUN_DEFAULT = SUN_DIR.clone();
 const HAZE = new THREE.Color().setRGB(0.62, 0.77, 0.95);
 const TREE_NAMES = ['TreeA', 'TreeB', 'TreeC'];
+const LOD_R = 110;   // Ultra: Radius, in dem die fein modellierten Fichten stehen
+
 const ROCK_NAMES = ['RockA', 'RockB', 'RockC', 'RockD', 'RockE', 'RockF'];
 
 export class World {
@@ -136,6 +140,7 @@ export class World {
   setSun(v) {
     SUN_DIR.copy(v).normalize();
     snowUniforms.uSunDir.value.copy(SUN_DIR);
+    this.updateSkyEnv();
     this._lx.crossVectors(new THREE.Vector3(0, 1, 0), SUN_DIR).normalize();
     this._ly.crossVectors(SUN_DIR, this._lx).normalize();
   }
@@ -164,9 +169,104 @@ export class World {
     this.sun.shadow.camera.updateProjectionMatrix();
   }
 
+  /** Ultra: Licht aus der Himmelskuppel. Der Himmel (ohne Sonnenscheibe, die ist schon direktes Licht) wird vorgefiltert
+   * und beleuchtet alle Oberflächen: Schatten werden bläulich wie unter freiem Himmel, glatte Flächen spiegeln den Himmel.
+   * Das Halbkugel-Licht wird dafür zurückgenommen. Aus: alles wie vorher (keine Umgebung, volles Halbkugel-Licht). */
+  setSkyLight(on, renderer) {
+    this.skyLightOn = on;
+    if (renderer) this.renderer = renderer;
+    if (!on) {
+      if (this.skyEnv && this.scene.environment === this.skyEnv.texture) this.scene.environment = null;
+      this.hemi.intensity = 1.05;
+      return;
+    }
+    this.updateSkyEnv();
+  }
+  updateSkyEnv() {
+    if (!this.skyLightOn || !this.renderer) return;
+    if (!this.envScene) {
+      const m = this.sky.material.clone();
+      m.fragmentShader = m.fragmentShader.replace('col += vec3(1.0, 0.86, 0.62) * (', 'col += 0.0 * vec3(1.0, 0.86, 0.62) * (');   // Sonne und Sonnenhof sind schon direktes Licht
+      m.uniforms.uSun.value = SUN_DIR;
+      this.envScene = new THREE.Scene();
+      this.envScene.add(new THREE.Mesh(new THREE.SphereGeometry(50, 48, 24), m));
+      this.pmrem = new THREE.PMREMGenerator(this.renderer);
+    }
+    if (this.skyEnv) this.skyEnv.dispose();
+    this.skyEnv = this.pmrem.fromScene(this.envScene, 0.03, 0.1, 100);
+    this.scene.environment = this.skyEnv.texture;
+    this.scene.environmentIntensity = this.envI ?? 0.75;
+    this.hemi.intensity = 1.05 * (this.hemiK ?? 0.5);
+  }
+
+  // ------------------------------------------------------------ Ultra: fein modellierte Fichten im Nahbereich
+  // Jede Baumgruppe bekommt ein zweites Instanz-Modell mit der feinen Fichte. Bäume im Umkreis von LOD_R um die Kamera
+  // wandern dorthin, alle anderen bleiben im einfachen Modell. Gleiche Größe und Stellung, also gleiche Kollisionen.
+  attachLod(im) {
+    if (im.userData.lod) return;
+    const v = im.userData.treeVariant, n = im.count;
+    const near = new THREE.InstancedMesh(ultraTrees(this.models)[v], this.propMat, n);
+    near.count = 0;
+    near.castShadow = true;
+    near.receiveShadow = true;
+    if (im.instanceColor) near.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(n * 3), 3);
+    im.parent.add(near);
+    if (!im.boundingSphere) im.computeBoundingSphere();
+    const e = { im, near, n, mats: im.instanceMatrix.array.slice(0, n * 16), cols: im.instanceColor ? im.instanceColor.array.slice(0, n * 3) : null, sphere: im.boundingSphere.clone(), nNear: -1 };
+    im.userData.lod = e;
+    im.addEventListener('dispose', () => { e.dead = true; });   // Abschnitt bzw. Heli-Kachel abgebaut
+    (this.lods || (this.lods = [])).push(e);
+    this.lodDirty = true;
+  }
+  detachLod(e) {
+    const { im, near, n, mats, cols } = e;
+    im.instanceMatrix.array.set(mats); im.instanceMatrix.needsUpdate = true;
+    if (cols) { im.instanceColor.array.set(cols); im.instanceColor.needsUpdate = true; }
+    im.count = n; im.boundingSphere = e.sphere;
+    if (near.parent) near.parent.remove(near);
+    near.dispose();
+    delete im.userData.lod;
+  }
+  /** Beim Stufenwechsel: Nahbereichs-Bäume an alle stehenden Gruppen anhängen bzw. wieder entfernen. */
+  setTreeDetail(on) {
+    if (!on) { if (this.lods) { for (const e of this.lods) if (!e.dead && e.im.parent) this.detachLod(e); this.lods = []; } return; }
+    const todo = [];
+    this.scene.traverse((o) => { if (o.isInstancedMesh && o.userData.treeVariant !== undefined && !o.userData.lod) todo.push(o); });
+    for (const im of todo) this.attachLod(im);
+  }
+  updateTreeLod(cam) {
+    if (!this.lods || !this.lods.length) return;
+    if (!this.lodPos) this.lodPos = new THREE.Vector3(1e9, 0, 0);
+    if (!this.lodDirty && cam.distanceToSquared(this.lodPos) < 25) return;   // erst nach 5 m Kamerafahrt neu verteilen
+    this.lodPos.copy(cam); this.lodDirty = false;
+    const R = LOD_R, R2 = R * R, cx = cam.x, cz = cam.z;
+    const live = (o) => { while (o.parent) o = o.parent; return o === this.scene; };
+    this.lods = this.lods.filter((e) => !e.dead && live(e.im));   // Gruppen abgebauter Abschnitte und alter Welten vergessen
+    for (const e of this.lods) {
+      const c = e.sphere.center, far = Math.hypot(c.x - cx, c.z - cz) - e.sphere.radius > R;
+      if (far && e.nNear === 0) continue;               // ganz außerhalb und schon alles einfach
+      const { im, near, n, mats, cols } = e, fa = im.instanceMatrix.array, na = near.instanceMatrix.array;
+      const fc = cols && im.instanceColor.array, nc = cols && near.instanceColor.array;
+      let ni = 0, fi = 0;
+      for (let i = 0; i < n; i++) {
+        const k = i * 16, dx = mats[k + 12] - cx, dz = mats[k + 14] - cz, isNear = !far && dx * dx + dz * dz < R2;
+        const j = isNear ? ni++ : fi++;
+        (isNear ? na : fa).set(mats.subarray(k, k + 16), j * 16);
+        if (cols) (isNear ? nc : fc).set(cols.subarray(i * 3, i * 3 + 3), j * 3);
+      }
+      e.nNear = ni;
+      im.count = fi; near.count = ni;
+      im.instanceMatrix.needsUpdate = true; near.instanceMatrix.needsUpdate = true;
+      if (cols) { im.instanceColor.needsUpdate = true; near.instanceColor.needsUpdate = true; }
+      im.computeBoundingSphere(); near.computeBoundingSphere();
+    }
+  }
+
   /** Ultra: zusätzliche Schneestruktur (Windgangeln im Pulver, feinere Körnung). Andere Stufen bleiben unverändert. */
   setUltra(on, extra = []) {
-    for (const m of [this.snowMat, this.snowMatH, ...extra]) {
+    const far = this.heliW ? [this.heliW.farI, this.heliW.farO, this.heliW.farH].filter(Boolean).map((o) => o.material) : [];
+    for (const m of [this.snowMat, this.snowMatH, this.mountainMat, this.sky && this.sky.material, ...far, ...extra]) {
+      if (m && !m.defines) m.defines = {};
       if (!m || !!m.defines.ULTRA === on) continue;
       if (on) m.defines.ULTRA = 1; else delete m.defines.ULTRA;
       m.needsUpdate = true;
@@ -202,11 +302,29 @@ export class World {
           col = mix(col, zen, smoothstep(0.2, 0.95, t));
           float s = max(dot(d, uSun), 0.);
           col += vec3(1.0, 0.86, 0.62) * (pow(s, 1400.) * 40. + pow(s, 90.) * 0.55 + pow(s, 9.) * 0.16);
+#ifdef ULTRA
+          // Ultra: Haufenwolken aus zwei Ebenen, Eigenschatten aus der Dichte Richtung Sonne, helle Ränder im Gegenlicht,
+          // feine Schleier hoch oben und Dunst über dem Horizont
+          vec2 cuv = d.xz / (abs(d.y) + 0.16);
+          vec2 wind = vec2(uTime * 0.005, uTime * 0.0015);
+          vec2 sd = normalize(uSun.xz + 1e-4) * 0.09;
+          float c = fbm(cuv * 1.1 + wind) * 0.72 + fbm(cuv * 3.9 + wind * 1.6 + 4.0) * 0.38;
+          float cs = fbm(cuv * 1.1 + wind + sd) * 0.72 + fbm(cuv * 3.9 + wind * 1.6 + 4.0 + sd * 3.5) * 0.38;
+          float cover = smoothstep(0.6, 0.9, c) * smoothstep(0.02, 0.2, h);
+          float lit = clamp(0.62 + (c - cs) * 3.2, 0.25, 1.15);
+          vec3 ccol = mix(vec3(0.58, 0.66, 0.8), vec3(1.2, 1.14, 1.05), lit);
+          ccol += vec3(1.0, 0.86, 0.62) * pow(s, 7.) * (1.0 - smoothstep(0.6, 1.0, cover)) * 0.9;   // Silberrand
+          col = mix(col, ccol, cover * 0.92);
+          float cirr = smoothstep(0.55, 0.85, fbm(vec2(cuv.x * 0.35, cuv.y * 2.4) + wind * 0.4 + 9.0)) * smoothstep(0.1, 0.5, h);
+          col = mix(col, vec3(1.0, 0.99, 0.98), cirr * 0.22);
+          col = mix(col, hor * 1.06, exp(-max(h, 0.0) * 16.0) * 0.35);
+#else
           vec2 cuv = d.xz / (abs(d.y) + 0.22);
           float c = fbm(cuv * 1.3 + vec2(uTime*0.004, 0.));
           float cl = smoothstep(0.6, 0.86, c) * smoothstep(0.03, 0.25, h) * 0.6;
           vec3 ccol = mix(vec3(0.82, 0.88, 0.97), vec3(1.25, 1.18, 1.08), smoothstep(0.55, 0.9, c) * (0.4 + 0.6*pow(s, 3.)));
           col = mix(col, ccol, cl);
+#endif
           gl_FragColor = vec4(col, 1.0);
         }`,
       side: THREE.BackSide, depthWrite: false, fog: false,
@@ -663,7 +781,9 @@ export class World {
       im.computeBoundingSphere();
       im.castShadow = true;
       im.receiveShadow = true;
+      im.userData.treeVariant = variant;
       parent.add(im);
+      if (Q.ultra) this.attachLod(im);
     }
     for (let v = 0; v < ROCK_NAMES.length; v++) {
       const list = rocks.filter((r) => r.variant === v);
@@ -996,6 +1116,37 @@ export class World {
     this.mountains = new THREE.Group();
     this.scene.add(this.mountains);
     const mat = new THREE.MeshBasicMaterial({ vertexColors: true, fog: false });
+    this.mountainMat = mat;
+    // Ultra: Relief je Bildpunkt (Grate, Rinnen, Felsköpfe) als Höhenfeld in der Beleuchtung, Fels kommt an steilen
+    // Stellen unter dem Schnee hervor. Ohne ULTRA wird nichts davon übersetzt: Bild wie bisher.
+    mat.onBeforeCompile = (sh) => {
+      sh.uniforms.uSunM = { value: SUN_DIR };
+      sh.vertexShader = sh.vertexShader
+        .replace('#include <common>', '#include <common>\n#ifdef ULTRA\nvarying vec3 vCP;\nvarying vec3 vCN;\n#endif')
+        .replace('#include <begin_vertex>', '#include <begin_vertex>\n#ifdef ULTRA\nvCP = (modelMatrix * vec4(transformed, 1.0)).xyz;\nvCN = normalize(mat3(modelMatrix) * normal);\n#endif');
+      sh.fragmentShader = sh.fragmentShader
+        .replace('#include <common>', '#include <common>\n#ifdef ULTRA\nuniform vec3 uSunM;\nvarying vec3 vCP;\nvarying vec3 vCN;\n' + CRAG_GLSL + '\n#endif')
+        .replace('#include <color_fragment>', `#include <color_fragment>
+#ifdef ULTRA
+{
+  vec3 nn = normalize(vCN);
+  float pw = length(fwidth(vCP));
+  float h = n3(vCP / 260.0) * 55.0;
+  h += (1.0 - abs(2.0 * n3(vCP / 85.0 + 7.0) - 1.0)) * 24.0 * (1.0 - smoothstep(22.0, 55.0, pw));
+  h += n3(vCP / 34.0 + 3.0) * 5.5 * (1.0 - smoothstep(7.0, 20.0, pw));
+  h += (1.0 - abs(2.0 * n3(vCP / 13.0 + 9.0) - 1.0)) * 1.1 * (1.0 - smoothstep(2.5, 7.0, pw));
+  vec3 nb = bumpN(vCP, nn, h);
+  float lo = max(dot(nn, uSunM), 0.0), ln = max(dot(nb, uSunM), 0.0);
+  diffuseColor.rgb *= clamp((0.55 + 1.05 * ln) / (0.55 + 1.05 * lo), 0.55, 1.6);
+  float haze = clamp(0.1 + length(vCP - cameraPosition) / 11000.0, 0.1, 0.62);
+  float rockA = smoothstep(0.6, 0.42, nb.y) * smoothstep(0.3, 0.55, nn.y);
+  vec3 rockC = vec3(0.27, 0.285, 0.33) * (0.55 + 1.05 * ln) * (0.8 + 0.4 * n3(vCP / 7.0));
+  rockC = mix(rockC, vec3(0.62, 0.77, 0.95), haze);
+  diffuseColor.rgb = mix(diffuseColor.rgb, rockC, rockA * 0.8);
+}
+#endif`);
+    };
+    mat.customProgramCacheKey = () => 'mount' + (mat.defines && mat.defines.ULTRA ? 'U' : '');
     const light = SUN_DIR;
     const peak = (x, z, baseY, R, H, seed, haze) => {
       const g = new THREE.PlaneGeometry(2 * R, 2 * R, 90, 90);
@@ -1057,6 +1208,7 @@ export class World {
 
   update(dt, time, camPos, playerPos, nextGate) {
     this.sky.position.copy(camPos);
+    if (Q.ultra) this.updateTreeLod(camPos);
     this.sky.material.uniforms.uTime.value = time;
     this.updateSun(playerPos);
     if (this.heliW) this.heliW.update(playerPos);

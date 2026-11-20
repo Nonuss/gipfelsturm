@@ -24,6 +24,7 @@ varying float vU;
 varying float vPow;
 varying float vAO;
 float snowGlint;
+float snowTrack;
 
 float sHash12(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * .1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
 vec3 sHash32(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * vec3(.1031, .1030, .0973)); p3 += dot(p3, p3.yxz + 33.33); return fract((p3.xxy + p3.yzz) * p3.zyx); }
@@ -127,6 +128,9 @@ if (distance(vSnowPos.xz, uClip.xy) > uClip.z) discard;
   diffuseColor.rgb *= mix(vec3(1.0), vec3(0.91, 0.93, 0.97), vPiste*0.8);
   diffuseColor.rgb *= 1.0 - 0.07 * edgeBand * (1.0 - rockF);
   diffuseColor.rgb *= mix(vec3(1.0), vec3(0.80, 0.86, 0.96), tr.r*0.8);
+#ifdef ULTRA
+  diffuseColor.rgb *= mix(vec3(1.0), vec3(0.88, 0.91, 0.97), tr.r);   // Ultra: gepresste Spur etwas dunkler (Himmelslicht hellt sie sonst auf)
+#endif
   diffuseColor.rgb *= mix(vec3(1.0), vec3(0.90, 0.93, 0.98), tr.g*0.7);
   diffuseColor.rgb *= 1.0 - 0.05*cord*(0.5+0.5*cos(ph));
   // Geländeform und Waldboden als Schattierung (vom Gelände-Mesh vorberechnet): hält Wege und Sprünge auch ohne Schatten lesbar
@@ -142,10 +146,15 @@ if (distance(vSnowPos.xz, uClip.xy) > uClip.z) discard;
   snowGlint = (g1 + g2 + g3) * (1.0 - tr.r*0.8) * (1.0 - rockF) * (1.0 + 0.9*vPow);
 #endif
   diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.20, 0.21, 0.24) * (0.55 + 0.9*strata), rockF);
+  snowTrack = max(tr.r, tr.g * 0.6);
 }
 `;
 
 const FRAG_LIGHT = /* glsl */ `
+#ifdef ULTRA
+reflectedLight.indirectSpecular *= 0.22;   // Ultra mit Himmelslicht: rauer Schnee spiegelt den Himmel kaum
+reflectedLight.indirectDiffuse *= 1.0 - 0.42 * snowTrack;   // Spurwände: verdichteter Schnee im Eigenschatten
+#endif
 reflectedLight.directDiffuse *= vSunF;
 reflectedLight.directSpecular *= vSunF;
 reflectedLight.directSpecular += snowGlint * reflectedLight.directDiffuse * 22.0;

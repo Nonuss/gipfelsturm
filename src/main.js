@@ -8,7 +8,7 @@ import { FXAAPass } from 'three/addons/postprocessing/FXAAPass.js';
 import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import * as C from './course.js';
-import { World, loadModels } from './world.js';
+import { World, loadModels, SUN_DIR } from './world.js';
 import { SnowTracks } from './snow.js';
 import { SkiPhysics } from './physics.js';
 import { Skier } from './skier.js';
@@ -73,10 +73,11 @@ const ufx = new ShaderPass({
   uniforms: {
     tDiffuse: { value: null }, tDepth: { value: null }, uInvProj: { value: new THREE.Matrix4() }, uCamWorld: { value: new THREE.Matrix4() },
     tAO: { value: gtao.pdRenderTarget.texture }, uAOI: { value: 1 },
+    uSunUV: { value: new THREE.Vector3() }, uSunCol: { value: new THREE.Color(1.0, 0.86, 0.66) },
     uPrevVP: { value: new THREE.Matrix4() }, uMB: { value: 0 }, uDof: { value: 0 }, uFocus: { value: 5 }, uRes: { value: new THREE.Vector2(1, 1) },
   },
   vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
-  fragmentShader: /* glsl */ `uniform sampler2D tDiffuse; uniform sampler2D tDepth; uniform sampler2D tAO; uniform float uAOI; uniform mat4 uInvProj; uniform mat4 uCamWorld; uniform mat4 uPrevVP;
+  fragmentShader: /* glsl */ `uniform sampler2D tDiffuse; uniform sampler2D tDepth; uniform sampler2D tAO; uniform float uAOI; uniform vec3 uSunUV; uniform vec3 uSunCol; uniform mat4 uInvProj; uniform mat4 uCamWorld; uniform mat4 uPrevVP;
     uniform float uMB; uniform float uDof; uniform float uFocus; uniform vec2 uRes; varying vec2 vUv;
     vec3 vpos(vec2 uv){ float d = texture2D(tDepth, uv).x; vec4 c = uInvProj * vec4(uv * 2.0 - 1.0, d * 2.0 - 1.0, 1.0); return c.xyz / c.w; }
     float coc(float d){ return clamp(abs(d - uFocus) / max(d, 0.1) * uDof, 0.0, 1.0) * 10.0; }
@@ -116,6 +117,22 @@ const ufx = new ShaderPass({
             col = acc / ws;
           }
         }
+      }
+      vec2 sdl = uSunUV.xy - vUv;
+      float fall = exp(-length(sdl * vec2(uRes.x / uRes.y, 1.0)) * 1.7) * uSunUV.z;
+      if (fall > 0.012) {
+        // Lichtstrahlen: vom Bildpunkt Richtung Sonne laufen und zählen, wie viel freier Himmel dazwischen liegt.
+        // Bäume, Grate und der Fahrer schneiden so Schattenbahnen in den hellen Dunst. Zu weit von der Sonne: nichts.
+        vec2 stp = sdl / 16.0, uv = vUv + stp * jit;
+        float acc = 0.0, wsum = 0.0, wgt = 1.0;
+        for (int i = 0; i < 16; i++) {
+          uv += stp;
+          vec2 inb = step(vec2(0.0), uv) * step(uv, vec2(1.0));
+          acc += step(0.99999, texture2D(tDepth, uv).x) * inb.x * inb.y * wgt; wsum += wgt; wgt *= 0.92;
+        }
+        // Dunst liegt in der Luft: auf nahem Schnee und am Fahrer kaum, in der Ferne und am Himmel voll
+        float airW = texture2D(tDepth, vUv).x >= 0.99999 ? 1.0 : smoothstep(80.0, 700.0, dist);
+        col += uSunCol * (acc / wsum) * fall * airW;
       }
       gl_FragColor = vec4(col, 1.0);
     }`,
@@ -207,6 +224,9 @@ function applyQuality() {
   if (dust) dust.points.visible = Q.dust;
   if (patch && Q.patch > 0 && patch.cell !== Q.patch) { const old = patch; scene.remove(old.mesh); old.geo.dispose(); patch = new PowderPatch(scene, Q.patch, Math.round(18 / Q.patch) + 1); }
   if (world) world.setUltra(Q.ultra, patch ? [patch.mesh.material] : []);
+  if (world) world.setTreeDetail(Q.ultra);
+  if (world) world.setSkyLight(Q.ultra, renderer);
+  applyTone();
   // Ultra: mehr Schneestaub (größerer Ringspeicher), mehr Eiskristalle in der Luft
   const sprayMax = Q.ultra ? 16000 : 9000;
   if (spray && spray.max !== sprayMax) { scene.remove(spray.points); spray.geo.dispose(); spray.mat.dispose(); spray = new Spray(scene, sprayMax); }
@@ -214,6 +234,11 @@ function applyQuality() {
   ultraSlowT = 0; ultraWarned = false;
   resize();
   for (const b of $('quality').children) b.classList.toggle('sel', b.dataset.q === qualSetting);
+}
+/** Tonwerte: Ultra mit neutraler Kurve (weißer Schnee, natürliche Farben), sonst wie bisher ACES. Heli knapper belichtet. */
+function applyTone() {
+  renderer.toneMapping = Q.ultra ? THREE.NeutralToneMapping : THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = (C.cfg.heli ? 0.74 : 0.9) * (Q.ultra ? 1.0 : 1);   // viel Schnee in der Fernsicht: etwas knapper belichten
 }
 function chooseQuality(q) {
   qualSetting = q;
@@ -871,7 +896,7 @@ function setKind(kind, seed) {
   game.bestDist = parseInt(localStorage.getItem(BEST_D_KEY + sfx) || '0', 10) || 0;
   C.cfg.treeMul = Q.trees;
   C.setMode(kind === 'endless', seed || 1 + Math.floor(Math.random() * 1e6), style, disc);
-  renderer.toneMappingExposure = C.cfg.heli ? 0.74 : 0.9;   // viel Schnee in der Fernsicht: etwas knapper belichten
+  applyTone();
   if (patch) { const pm = patch.mesh.material, on = !!C.cfg.heli; if (!!pm.defines.HELISUN !== on) { if (on) pm.defines.HELISUN = 1; else delete pm.defines.HELISUN; pm.needsUpdate = true; } }
   world.setMode();
   resetRunState();
@@ -2335,6 +2360,11 @@ function ultraUniforms() {
   u.uDof.value = run ? specCam.w * 1.1 : 0;
   u.uFocus.value = c.distanceTo(tV.set(phys.pos.x, phys.pos.y + 0.9, phys.pos.z));
   u.uRes.value.set(renderer.domElement.width, renderer.domElement.height);
+  // Sonne auf dem Schirm: Strahlen nur, wenn sie vor der Kamera und nicht weit außerhalb des Bildes steht
+  tV.copy(SUN_DIR).multiplyScalar(1000).add(c).project(camera);
+  const inFront = tV.z < 1 && camera.getWorldDirection(tV2).dot(SUN_DIR) > 0.05;
+  const off = Math.max(0, Math.max(Math.abs(tV.x), Math.abs(tV.y)) - 1);
+  u.uSunUV.value.set(tV.x * 0.5 + 0.5, tV.y * 0.5 + 0.5, inFront ? 0.55 * Math.exp(-off * 2.6) : 0);
 }
 
 // ---------------------------------------------------------------- Start

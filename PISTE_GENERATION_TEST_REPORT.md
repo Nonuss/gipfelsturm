@@ -640,3 +640,30 @@ Gemessen auf diesem Rechner (Apple M4, Fenster 1600 mal 900 bei doppelter Pixeld
 - Handy (Touch-Emulation): Texte in Handy-Fassung, Überspringen antippbar, Zurückspul-Knopf spult, im Heli ausgeblendet.
 - Überlappungsprüfung aller Knöpfe und Anzeigen (Begrenzungsrechtecke) während Tutorial am Boden und in der Luft sowie im normalen Lauf: 1280 mal 720, 740 mal 360, 667 mal 375 und iPhone hochkant (gedrehte Darstellung): keine Überlappung.
 - Feste Grafikwahl mit simulierten Bildraten: Ultra von Hand bei 10 Bildern/s bleibt Ultra mit voller Auflösung (Hinweis erscheint), Niedrig von Hand bei 8 Bildern/s bleibt Niedrig mit 1,4; Auto bei 20 Bildern/s geht Hoch, Mittel, Niedrig, Sparsam; Auto bei 30 Bildern/s hält bei Niedrig.
+
+## Ultra wirklich verfeinert (v42, 2026-11-20)
+
+Rückmeldung von Noah: Statt Gimmicks wie dem Gewandflattern soll Ultra die Grafik „komplett verrückt verfeinern“. Alles nur auf Ultra; Hoch, Mittel, Niedrig und Sparsam bleiben unverändert.
+
+| Baustein | Umsetzung |
+|---|---|
+| Fichten | Neue, fein modellierte Fichten (`src/ultratrees.js`, rund 5000 Dreiecke statt 500 bis 700): Stamm, 16 bis 18 Astquirle aus einzelnen hängenden Zweigfächern mit Grat und gezackten Rändern, Schneepolster nur auf der Astmitte, grüne Ränder, dunkle Unterseite; Farben und Maße wie die Vorlage, also gleiche Kollisionen. Ein erster Entwurf aus gestapelten Schürzen sah wie graublaue Lampenschirme aus und wurde verworfen |
+| Detailstufen | Jede Baumgruppe hat ein zweites Instanz-Modell; Bäume im Umkreis von 110 m um die Kamera stehen in der feinen Fassung, der Rest im einfachen Modell. Neu verteilt wird nach 5 m Kamerafahrt. Ohne das waren es über 10.000 feine Bäume und 173 Millionen Dreiecke je Bild (138 ms) |
+| Himmelslicht | Die Himmelskuppel (ohne Sonne und Sonnenhof, die sind schon direktes Licht) wird vorgefiltert und beleuchtet alle Oberflächen; Halbkugel-Licht halbiert. Schatten werden bläulich, glatte Flächen spiegeln den Himmel. Rauer Schnee spiegelt kaum (Spiegelanteil 22 Prozent), gepresste Spuren etwas dunkler, sonst leuchteten sie weiß auf |
+| Tonkurve | Neutrale Kurve statt ACES: weißer Schnee, natürliches Grün, mehr Kontrast in den Bergen. AgX getestet und verworfen (flau, grau) |
+| Berge im Hintergrund | Relief je Bildpunkt als Höhenfeld in der Beleuchtung (Grate, Rinnen, Felsköpfe in vier Stufen, in der Ferne ausgeblendet), an steilen Stellen kommt Fels unter dem Schnee hervor |
+| Heli-Fernsicht | Dasselbe Relief in die echte Beleuchtung der Fernsicht, an steilen Flanken kräftiger |
+| Himmel | Haufenwolken aus zwei Ebenen mit Eigenschatten aus der Dichte Richtung Sonne, Silberrand im Gegenlicht, feine Schleier, Dunst über dem Horizont; tieferes Blau |
+| Lichtstrahlen | Aus der Tiefe: vom Bildpunkt Richtung Sonne gezählt, wie viel freier Himmel dazwischen liegt; Grate, Bäume und Fahrer werfen Schattenbahnen in den warmen Dunst. Nur in der Luft (nahe Flächen bekommen fast nichts), nur wenn die Sonne vor der Kamera steht |
+
+### Prüfung
+- Bildzeit (M4, 3200 mal 1800 Bildpunkte, ausgeblendetes Fenster, 30 Bilder): Rennen Hoch 36, Ultra 57 ms; Freeride 41 / 57; Freestyle 40 / 60; Heli 41 / 60. Einzelkosten auf Ultra: Nachbearbeitung (Verdeckung, Unschärfe, Lichtstrahlen) rund 15 ms, feine Bäume, Himmelslicht und Bergrelief je rund 1 ms.
+- Hoch gegen v41: deterministisches Vergleichsbild (Schneestaub ausgeblendet, feste Kamera) in Rennen, Freeride, Freestyle; Unterschiede nur an den fahrenden Sesselliften und den ziehenden Wolken (zeitabhängig), auch nach vorherigem Ultra im selben Tab.
+- Umschalten Hoch, Ultra, Hoch, Ultra, Niedrig, Ultra, Mittel: Himmelslicht, Halbkugel-Licht, Tonkurve, Schatten, Baumgruppen und Shader-Schalter jedes Mal korrekt gesetzt und zurückgesetzt.
+- Alle fünf Stufen in allen vier Welten gestartet und gefahren, Spezialtrick mit Tiefenunschärfe, Zurückspulen, Menü und Ego-Sicht auf Ultra: keine Fehler in der Konsole.
+- Standbilder: Fichten von nah und fern, Spielansicht, Blick zur Sonne mit Lichtstrahlen, Berge mit und ohne Relief, Heli-Fernsicht, Himmel mit und gegen die Sonne.
+
+### Nicht geprüft
+- Bildrate im sichtbaren Fenster und auf anderen Grafikkarten.
+- Die feinen Fichten wechseln an der 110-m-Grenze sichtbar von der feinen in die einfache Fassung (kein Überblenden).
+- Kein Mensch hat Ultra gespielt.

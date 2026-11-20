@@ -8,6 +8,7 @@
 import * as THREE from 'three';
 import * as C from './course.js';
 import { Q } from './quality.js';
+import { CRAG_GLSL } from './ultraglsl.js';
 import { snowUniforms } from './snow.js';
 import { farArrays } from './helifar.js';
 
@@ -52,13 +53,26 @@ export class HeliWorld {
   farMaterial(outer) {
     const m = new THREE.MeshStandardMaterial({ roughness: 0.93, metalness: 0, vertexColors: false });
     if (outer) { m.polygonOffset = true; m.polygonOffsetFactor = 2; m.polygonOffsetUnits = 8; }
+    if (Q.ultra) m.defines.ULTRA = 1;   // Ultra: Relief je Bildpunkt in der Beleuchtung (world.setUltra schaltet um)
     m.onBeforeCompile = (sh) => {
       Object.assign(sh.uniforms, this.uniforms);
       sh.vertexShader = sh.vertexShader
         .replace('#include <common>', '#include <common>\nattribute vec4 aMat;\nattribute float aAo;\nvarying vec4 vMat;\nvarying float vAo;\nvarying vec3 vW;\nvarying vec3 vNW;')
         .replace('#include <begin_vertex>', '#include <begin_vertex>\nvMat = aMat; vAo = aAo; vW = position; vNW = normal;');
       sh.fragmentShader = sh.fragmentShader
-        .replace('#include <common>', '#include <common>\nvarying vec4 vMat;\nvarying float vAo;\nvarying vec3 vW;\nvarying vec3 vNW;\nuniform vec3 uHole;\n' + GLSL_NOISE)
+        .replace('#include <common>', '#include <common>\nvarying vec4 vMat;\nvarying float vAo;\nvarying vec3 vW;\nvarying vec3 vNW;\nuniform vec3 uHole;\n' + GLSL_NOISE + '\n#ifdef ULTRA\n' + CRAG_GLSL + '\n#endif')
+        .replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
+#ifdef ULTRA
+        {
+          // Ultra: Felsrippen, Buckel und Rinnen als Höhenfeld; an steilen Flanken kräftiger, in der Ferne ausgeblendet
+          float pw = length(fwidth(vW.xz));
+          float steep = smoothstep(0.88, 0.45, normalize(vNW).y);
+          float h = n3(vW / 130.0) * 24.0 * (0.35 + 0.65 * steep);
+          h += (1.0 - abs(2.0 * n3(vW / 40.0 + 7.0) - 1.0)) * 9.0 * steep * (1.0 - smoothstep(10.0, 28.0, pw));
+          h += n3(vW / 13.0 + 3.0) * 1.8 * (1.0 - smoothstep(3.0, 9.0, pw));
+          normal = bumpN(-vViewPosition, normal, h);
+        }
+#endif`)
         .replace('#include <clipping_planes_fragment>', `#include <clipping_planes_fragment>
           ${outer ? '' : 'if (distance(vW.xz, uHole.xy) < uHole.z - 2.0) discard;'}`)
         .replace('#include <color_fragment>', `#include <color_fragment>
@@ -119,7 +133,7 @@ export class HeliWorld {
         }`)
         .replace('#include <lights_fragment_end>', '#include <lights_fragment_end>\nreflectedLight.directDiffuse *= vMat.z;\nreflectedLight.directSpecular *= vMat.z;');
     };
-    m.customProgramCacheKey = () => 'heliFar' + (outer ? 'O' : 'I');
+    m.customProgramCacheKey = () => 'heliFar' + (outer ? 'O' : 'I') + (m.defines.ULTRA ? 'U' : '');
     return m;
   }
 

@@ -610,3 +610,20 @@ Gemessen auf diesem Rechner (Apple M4, Fenster 1600 mal 900 bei doppelter Pixeld
 - Bildrate im sichtbaren Fenster und auf anderen Grafikkarten; der Hinweis bei niedriger Bildrate wurde nicht ausgelöst (läuft nur bei echten Animationsbildern).
 - Die Jacke hat nur rund 500 Eckpunkte, das Flattern ist deshalb eher ein Wellen der Ärmel und des Saums als feiner Faltenwurf. Schatten und Umgebungsverdeckung flattern nicht mit.
 - Kein Mensch hat Ultra gespielt; ob die Bewegungsunschärfe bei hohem Tempo angenehm oder zu stark wirkt, ist offen.
+
+## Stufe Sparsam und Zurückspulen (v40, 2026-11-20)
+
+### Sparsam für sehr schwache Laptops
+- Neue Stufe „Sparsam“ unter Einstellungen und als letzte Stufe der Automatik. Auto geht von Niedrig nur dann auf Sparsam, wenn die Bildrate 6 s lang unter 26 bleibt (Handy unter 22) und die Auflösung schon an ihrer Untergrenze ist. Von Hoch über Mittel auf Niedrig gilt die bisherige Regel.
+- Nicht verpixelt: die Auflösung fällt nie unter die echte Bildschirmauflösung (1 Pixel pro CSS-Pixel, am Handy wie bisher mindestens 2), mit Kantenglättung. Gespart wird an der Überabtastung (Niedrig rendert auf Retina-Bildschirmen 1,4-fach), Sichtweite 600 statt 760 m, Bäume 35 statt 50 Prozent, keine Pulverschicht um den Fahrer, 40 Prozent weniger Schneestaub, gröberes Gelände-Raster (2,8 statt 2,5 m), Heli-Kacheln 170 statt 200 m und Fernsicht wie Niedrig.
+- Gemessen (M4, Fenster 1600 mal 900, doppelte Pixeldichte): Freeride Niedrig 11,9 ms, Sparsam 5,0 ms; Heli 7,8 gegen 5,4 ms; Rennen 7,3 gegen 6,7 ms. Auf Bildschirmen mit einfacher Pixeldichte fällt der Gewinn kleiner aus, weil Niedrig dort schon mit 1,0 rendert.
+
+### Zurückspulen
+- Taste Q halten (Handy: Knopf mit Doppelpfeil rechts oben, halten), in Rennen, Freeride und Freestyle, nicht im Heli (dort ist Knopf ausgeblendet und Taste ohne Wirkung).
+- 30-mal pro Sekunde Spielzeit wird der Zustand gemerkt (Physik, Tricks, Haltung, Punkte, Tore, Spezialtrick), bis 8 s zurück. Die Fahrt läuft doppelt so schnell rückwärts, das Bild wird entsättigt und kühl, oben steht „Zurückspulen“ mit einem Balken für den restlichen Vorrat. Beim Loslassen geht es von dort weiter.
+- Fair bleiben: Die Rennzeit läuft nicht zurück (wer zurückspult, verliert die Zeit), verpasste Tore werden zurückgenommen. In den Endlos-Welten kommen Punkte und Meter auf den Stand von damals, der Combo-Multiplikator fällt auf 1. Ein Sturz lässt sich zurückspulen (Ski wieder an den Füßen). Neustart, Respawn-Punkt und Zurücksetzen leeren den Vorrat.
+- Geprüft: Freeride 1 s gehalten = 2 s zurück (23,6 m bergauf), danach normale Weiterfahrt; Sturz erzwungen und zurückgespult, Ski wieder angelegt; Rennen: verpasstes Tor zurückgenommen, Zeit lief weiter; Heli: keine Wirkung; Handy-Ansicht: Knopf spult zurück, im Heli ausgeblendet.
+
+### Nicht geprüft
+- Kein schwacher Laptop zur Hand; ob Sparsam dort flüssig läuft und die Automatik wirklich erst dann umschaltet, ist nicht am echten Gerät geprüft.
+- Schneestaub und Spuren im Schnee laufen beim Zurückspulen nicht mit zurück (die Spur der verworfenen Fahrt bleibt sichtbar).

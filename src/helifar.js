@@ -33,7 +33,7 @@ function grid(nx, nd, P, H, matFn, skip) {
 
 /** tier: 'low' | 'mid' | 'high' */
 export function farArrays(s, tier) {
-  const fg = s.fg, cg = s.cg, low = tier === 'low';
+  const fg = s.fg, cg = s.cg, low = tier === 'low' || tier === 'minimal';
   // Fels: steil (über ca. 32 Grad) oder scharfe Grate; in der Ferne nach Gefälle des groben Rasters
   const rockOf = (slope, curv) => smoothstep(0.62, 1.0, slope) + clamp(-curv * 120, 0, 0.45) * smoothstep(0.4, 0.75, slope);
   const coarseForest = (x, d, y, slope) => {

@@ -33,6 +33,9 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #9fc3ee; fon
 
 #msg { position: absolute; left: 0; right: 0; top: 23%; text-align: center; font-size: 46px; font-weight: 800; font-style: italic; letter-spacing: 0.03em; opacity: 0; }
 #msg.show { animation: pop 1.5s ease-out forwards; }
+#rew { position: absolute; left: 50%; top: 14%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 22px; font-weight: 800; font-style: italic; letter-spacing: 0.12em; text-transform: uppercase; color: #dfe9ff; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35); pointer-events: none; }
+#rew .rbar { width: 180px; height: 4px; border-radius: 2px; background: rgba(255, 255, 255, 0.22); overflow: hidden; }
+#rew .rbar i { display: block; height: 100%; width: 0; background: #dfe9ff; }
 #msg.good { color: #fff; }
 #msg.bad { color: #ffb199; }
 #msg.gold { color: #ffe27a; }

@@ -130,9 +130,9 @@ composer.addPass(bloom);
 composer.addPass(new OutputPass());
 // Farblook: etwas mehr Kontrast und Sättigung, kühle Schatten, warme Lichter, leichte Vignette (sehr günstig)
 const grade = new ShaderPass({
-  uniforms: { tDiffuse: { value: null }, uVig: { value: 0.22 } },
+  uniforms: { tDiffuse: { value: null }, uVig: { value: 0.22 }, uRew: { value: 0 } },
   vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
-  fragmentShader: `uniform sampler2D tDiffuse; uniform float uVig; varying vec2 vUv;
+  fragmentShader: `uniform sampler2D tDiffuse; uniform float uVig; uniform float uRew; varying vec2 vUv;
     void main(){
       vec3 c = texture2D(tDiffuse, vUv).rgb;
       float l = dot(c, vec3(0.299, 0.587, 0.114));
@@ -140,7 +140,8 @@ const grade = new ShaderPass({
       c = c + (c - 0.5) * 0.06 * (1.0 - abs(c - 0.5) * 2.0);      // sanfte S-Kurve
       c *= mix(vec3(0.97, 0.99, 1.04), vec3(1.03, 1.0, 0.96), smoothstep(0.25, 0.85, l));   // Schatten kühl, Lichter warm
       vec2 q = vUv - 0.5;
-      c *= 1.0 - uVig * smoothstep(0.35, 0.85, length(q * vec2(1.15, 1.0)));
+      c *= 1.0 - (uVig + 0.25 * uRew) * smoothstep(0.35, 0.85, length(q * vec2(1.15, 1.0)));
+      c = mix(c, vec3(dot(c, vec3(0.299, 0.587, 0.114))) * vec3(0.9, 0.97, 1.1), uRew * 0.6);   // Zurückspulen: entsättigt, kühl
       gl_FragColor = vec4(clamp(c, 0.0, 1.0), 1.0);
     }`,
 });
@@ -198,7 +199,7 @@ function applyQuality() {
   renderScale = maxScale();
   C.cfg.treeMul = Q.trees;
   if (world) {
-    world.setLowQuality(Q.tier === 'low');
+    world.setLowQuality(Q.lowq);
     if (Q.shadow > 0) world.setShadowSize(Q.shadow);
     world.setShadowArea(Q.shadowArea);
     if (C.cfg.endless && !C.cfg.heli) scene.fog.far = Q.view - 30;
@@ -250,15 +251,16 @@ function watchPerformance(rawDt) {
   if (qualSetting !== 'auto' || game.mode !== 'run' || document.hidden || rawDt > 0.25) return;
   fpsEma += (1 / Math.max(rawDt, 1e-3) - fpsEma) * 0.05;
   // Handys: im Stromsparmodus sind 30 Bilder/s gedeckelt – das ist kein Grund, die Grafik zu senken
-  const slowFps = isTouch ? 27 : 40, slowNeed = isTouch ? 4 : 2.5;
+  // Von Niedrig auf Sparsam nur bei wirklich schwachen Rechnern: deutlich unter 26 Bildern und 6 s lang
+  const idx = ORDER.indexOf(Q.tier), toMin = ORDER[idx + 1] === 'minimal';
+  const slowFps = toMin ? (isTouch ? 22 : 26) : isTouch ? 27 : 40, slowNeed = toMin ? 6 : isTouch ? 4 : 2.5;
   slowT = fpsEma < slowFps && renderScale <= minScale() + 0.01 ? slowT + rawDt : 0;
-  const idx = ORDER.indexOf(Q.tier);
   if (slowT > slowNeed && idx < ORDER.length - 1) {
     slowT = 0; fpsEma = 60;
     setTier(ORDER[idx + 1]);
     if (!isTouch) localStorage.setItem(AUTO_KEY, Q.tier);   // Handys starten jedes Mal neu oben
     applyQuality();
-    showMsg('Grafik angepasst – läuft jetzt flüssiger', 'good');
+    showMsg(toMin ? 'Grafik auf Sparsam gestellt, damit es flüssig läuft' : 'Grafik angepasst – läuft jetzt flüssiger', 'good');
   }
 }
 
@@ -277,7 +279,7 @@ const game = {
 };
 const PEND_TIME = 1.6;      // so lange muss man nach einer Landung ohne Sturz weiterfahren
 const COMBO_TIME = 14;      // ohne neuen Trick fällt der Multiplikator danach zurück
-const keys = { left: false, right: false, up: false, down: false, space: false, gl: false, gr: false };
+const keys = { left: false, right: false, up: false, down: false, space: false, gl: false, gr: false, rew: false };
 const airKey = { left: false, right: false, up: false, down: false, space: false, gl: false, gr: false };
 const inp = { steer: 0, tuck: 0, brake: 0, jump: false };
 const zeroInp = { steer: 0, tuck: 0, brake: 0, jump: false };
@@ -834,6 +836,7 @@ function demoUpdate(dt) {
 // ---------------------------------------------------------------- Modus
 function resetVisuals() {
   hasPrevSki = false;
+  rew.buf.length = 0; rew.on = false; rew.t = 0;
   Object.assign(vis, { lean: 0, crouch: 0, compress: 0, plow: 0, air: 0, crashAngle: 0, crashSpin: 0, tuck: 0, spin: 0, extend: 0, zoom: 0, shake: 0, crashCam: 0, camSide: 1, flipCam: 0, bigAir: 0, dip: 0 });
   Object.assign(trick, { pitch: 0, yaw: 0, pv: 0, yv: 0, grab: 0, grabT: 0, wasAir: false });
   swYaw = 0; vis.look = 0; vis.specRoll = 0; vis.sup = 0; vis.cross = 0; vis.daffy = 0; vis.tweak = 0; vis.specTuck = 0; vis.avZoom = 0;
@@ -1233,8 +1236,77 @@ function toCheckpoint() {
   showMsg('Zurück auf die Piste', 'good');
 }
 
+// ---------------------------------------------------------------- Zurückspulen (Taste Q halten; nicht im Heli)
+// 30-mal pro Sekunde Spielzeit wird der Zustand gemerkt (Physik, Tricks, Haltung, Punkte, Tore), bis zu 8 s. Beim Halten
+// läuft die Fahrt doppelt so schnell rückwärts; beim Loslassen geht es von dort weiter. Die Laufzeit im Rennen läuft
+// nicht zurück (das Zurückspulen kostet also Zeit), in den Endlos-Welten fällt der Combo-Multiplikator auf 1.
+const REW_HZ = 30, REW_MAX = 8 * REW_HZ;
+const rew = { buf: [], t: 0, acc: 0, on: false, fx: 0 };
+const REW_GAME = ['penalty', 'passed', 'gateIdx', 'topSpeed', 'bestJump', 'score', 'maxD', 'bestTrick', 'bestTrickPts', 'tricks', 'pend', 'pendT', 'combo', 'comboT'];
+const REW_COPY = ['grind', 'gT'];   // kleine Zustands-Objekte kopieren; andere Objekte (Felsen, Rails) bleiben Verweise
+function snapObj(o, skip) {
+  const r = {};
+  for (const k in o) {
+    if (skip && skip.includes(k)) continue;
+    const v = o[k];
+    if (typeof v === 'function') continue;
+    r[k] = v && v.isVector3 ? v.clone() : v && REW_COPY.includes(k) ? { ...v } : v;
+  }
+  return r;
+}
+function loadObj(o, r) { for (const k in r) { const v = r[k]; if (v && v.isVector3) o[k].copy(v); else o[k] = v && REW_COPY.includes(k) ? { ...v } : v; } }
+const rewAllowed = () => game.mode === 'run' && !C.cfg.heli;
+function recordRewind(dt) {
+  if (!rewAllowed()) return;
+  rew.t += dt;
+  if (rew.t < 1 / REW_HZ) return;
+  rew.t = Math.min(rew.t - 1 / REW_HZ, 1 / REW_HZ);
+  const g = {};
+  for (const k of REW_GAME) g[k] = game[k];
+  rew.buf.push({
+    phys: snapObj(phys, ['events', 'gs']), trick: snapObj(trick), vis: snapObj(vis), game: g,
+    m: { swYaw, boardEdge, boardLift, timeScale, quietCrash, lastSpecial, special: special && { ...special }, specW: specCam.w, specU: specCam.u, specMode: specCam.mode, specA0: specCam.a0 },
+  });
+  if (rew.buf.length > REW_MAX) rew.buf.shift();
+}
+function loadRewind(r) {
+  loadObj(phys, r.phys); loadObj(trick, r.trick); loadObj(vis, r.vis);
+  for (const k of REW_GAME) game[k] = r.game[k];
+  const m = r.m;
+  swYaw = m.swYaw; boardEdge = m.boardEdge; boardLift = m.boardLift; timeScale = m.timeScale; quietCrash = m.quietCrash; lastSpecial = m.lastSpecial;
+  special = m.special && { ...m.special };
+  specCam.w = m.specW; specCam.u = m.specU; specCam.mode = m.specMode; specCam.a0 = m.specA0;
+  if (phys.crashed <= 0) skier.attachSkis();
+}
+/** Läuft gerade das Zurückspulen? Spult pro Bild doppelt so viel Zeit zurück, wie vergeht. */
+function rewindStep(dt) {
+  if (!(keys.rew && rewAllowed() && (rew.on || rew.buf.length > 1))) { if (rew.on) endRewind(); return false; }
+  if (!rew.on) { rew.on = true; rew.acc = 0; }
+  rew.acc += dt * 2 * REW_HZ;
+  let n = Math.floor(rew.acc), r = null;
+  rew.acc -= n;
+  while (n-- > 0 && rew.buf.length > 1) r = rew.buf.pop();
+  if (r) loadRewind(r);
+  return true;
+}
+let rewShown = false, rewW = -1;
+function rewindHud() {
+  if (rew.on !== rewShown) { rewShown = rew.on; $('rew').classList.toggle('hidden', !rew.on); }
+  if (!rew.on) return;
+  const w = Math.round(100 * rew.buf.length / REW_MAX);
+  if (w !== rewW) { rewW = w; $('rewFill').style.width = w + '%'; }
+}
+function endRewind() {
+  rew.on = false; rew.t = 0;
+  phys.events.length = 0;
+  hasPrevSki = false;
+  acc = 0;
+  if (C.cfg.endless) { world.updateChunks(-phys.pos.z, true, phys.pos.x); game.combo = 1; game.comboT = 0; }
+  if (patch) patch.reset();
+}
+
 // ---------------------------------------------------------------- Eingabe
-const KEYMAP = { ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right', ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyS: 'down', Space: 'space' };
+const KEYMAP = { KeyQ: 'rew', ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right', ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyS: 'down', Space: 'space' };
 window.addEventListener('keydown', (e) => {
   if (e.repeat) return;
   if (e.target instanceof HTMLInputElement) return;
@@ -2125,9 +2197,10 @@ function tick(dt, render) {
   }
 
   if (game.mode === 'menu' && demo.on) demoUpdate(dt);
+  const rewinding = game.mode !== 'loading' && rewindStep(dt);
   if (game.mode !== 'loading') {
-    acc += dt;
-    while (acc >= H) {
+    if (!rewinding) acc += dt;
+    while (!rewinding && acc >= H) {
       inp.jump = jumpQueued && game.mode === 'run';
       jumpQueued = false;
       if (heli.on && (game.mode === 'countdown' || game.mode === 'menu')) { /* hängt in der Heli-Tür */ }
@@ -2137,12 +2210,15 @@ function tick(dt, render) {
       if (game.mode === 'run') { game.time += H; game.topSpeed = Math.max(game.topSpeed, phys.speed); }
       acc -= H;
     }
+    if (!rewinding) recordRewind(dt);
     if (game.mode === 'run') game.maxD = Math.max(game.maxD, -phys.pos.z);
     handleEvents();
     fwtUpdate(dt);
-    updatePoints(dt);
-    updateTricks(dt);
-    if (game.mode === 'run' && game.kind === 'race') checkGates();
+    if (!rewinding) {
+      updatePoints(dt);
+      updateTricks(dt);
+      if (game.mode === 'run' && game.kind === 'race') checkGates();
+    }
     if (game.mode === 'run' && C.cfg.heli && C.HB.finished(phys.pos.x, -phys.pos.z)) finishRun();
     if (game.mode === 'finished' && game.finishT > 1.6) { $('finish').classList.remove('hidden'); $('hud').classList.add('hidden'); }
 
@@ -2150,9 +2226,10 @@ function tick(dt, render) {
     heliUpdate(dt);
     avalancheUpdate(dt);
     updateCamera(dt, time);
-    stampTracks();
-    emitSpray(dt);
-    emitCrash(dt);
+    if (!rewinding) { stampTracks(); emitSpray(dt); emitCrash(dt); }
+    rew.fx += ((rew.on ? 1 : 0) - rew.fx) * (1 - Math.exp(-dt * 10));
+    grade.uniforms.uRew.value = rew.fx < 0.003 ? 0 : rew.fx;
+    rewindHud();
     spray.setFocus(tV.set(phys.pos.x, phys.pos.y + 0.9, phys.pos.z));
     spray.update(dt);
     if (Q.dust) dust.update(time, camera);

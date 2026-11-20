@@ -149,6 +149,7 @@ export function setupTouch({ isAir, isRunning, onResize }) {
     <div class="tb top">
       <button class="tsm" id="tMenu" aria-label="Menü"><svg viewBox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h14"/></svg></button>
       <button class="tsm" id="tCam" aria-label="Kamera wechseln"><svg viewBox="0 0 24 24"><path d="M3 12s3.5-6 9-6 9 6 9 6-3.5 6-9 6-9-6-9-6z"/><circle cx="12" cy="12" r="2.6"/></svg></button>
+      <button class="tsm" id="tRew" aria-label="Zurückspulen (halten)"><svg viewBox="0 0 24 24"><path d="M11 6l-7 6 7 6z"/><path d="M20 6l-7 6 7 6z"/></svg></button>
       <button class="tsm" id="tCp" aria-label="Respawn-Punkt: tippen zurück, halten neu setzen"><svg viewBox="0 0 24 24"><path d="M6 21V4"/><path d="M6 5h11l-2.5 4L17 13H6"/></svg></button>
     </div>`;
   app.appendChild(ui);
@@ -164,6 +165,7 @@ export function setupTouch({ isAir, isRunning, onResize }) {
   hold($('tJump'), 'Space');
   hold($('tTuck'), 'KeyW');
   hold($('tBrake'), 'KeyS');
+  hold($('tRew'), 'KeyQ');
   const tap = (el, code) => el.addEventListener('click', (e) => { e.preventDefault(); key(code, true); key(code, false); });
   tap($('tMenu'), 'Escape'); tap($('tCam'), 'KeyC'); tap($('tSpec'), 'SpecialRandom');
   // Respawn-Punkt: kurz tippen = zurück (ohne Punkt: zurück auf die Spur), halten = hier neu setzen
@@ -255,7 +257,7 @@ export function setupTouch({ isAir, isRunning, onResize }) {
     setMode,
     mode: () => touch.mode,
     tiltOn: () => touch.wantTilt,
-    setCheckpoints(on) { $('tCp').style.display = on ? '' : 'none'; },
+    setCheckpoints(on) { $('tCp').style.display = on ? '' : 'none'; $('tRew').style.display = on ? '' : 'none'; },
     isRunning,
   };
 }

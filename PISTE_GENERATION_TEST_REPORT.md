@@ -667,3 +667,17 @@ Rückmeldung von Noah: Statt Gimmicks wie dem Gewandflattern soll Ultra die Graf
 - Bildrate im sichtbaren Fenster und auf anderen Grafikkarten.
 - Die feinen Fichten wechseln an der 110-m-Grenze sichtbar von der feinen in die einfache Fassung (kein Überblenden).
 - Kein Mensch hat Ultra gespielt.
+
+## Zurückspulen ohne Punkte-Rückgabe, weniger Münzen, Ultra-Berge fest (v43, 2026-11-20)
+
+| Rückmeldung | Änderung |
+|---|---|
+| „Warum bekommt man seine Punkte wieder, wenn man nach einem Sturz zurückspult?“ | Beim Zurückspulen gehen Punkte, Vormerkung, Combo und Trickzahl nur noch nach unten, nie nach oben. Was ein Sturz gekostet hat, bleibt weg; Punkte aus dem zurückgespulten Stück gibt es nicht doppelt. Sturz, Haltung und Ski werden weiterhin zurückgesetzt |
+| „Für 100.000 Punkte ca. 40 Münzen“ | Freeride und Freestyle: Shop-Münzen = Punkte geteilt durch 2500 (vorher durch 40, also 2500 Münzen für 100.000 Punkte). Rennen und Heli unverändert |
+| „Bei Ultra sehen die Berge hinten komisch aus … sollten sich nicht bewegen“ | Ursache: Die Berg-Kulisse wandert in Freeride und Freestyle mit dem Fahrer mit, das Relief hing an der Weltposition und rutschte über die Hänge. Jetzt liegt es in den Koordinaten der Berge selbst (Gipfel-Geometrien dafür in einen gemeinsamen Raum verschoben, gleiche Lage). Neues Relief nach echten Alpenwänden: Rippen und Rinnen die Wände hinab (senkrecht gestrecktes Rauschen), breite, unregelmäßige, leicht geneigte Felsbänder, Schnee in den Rinnen, schneefreie Rippenkämme, kräftigere Felswände. Zwei Zwischenstände verworfen: Ausrichtung an der Flächennormale ergab Holz- und Marmormaserung, schmale Felsbänder wirkten wie Höhenlinien |
+
+### Prüfung
+- Sturz mit 58.000 Punkten, dann 1,6 s zurückgespult: Punkte bleiben 0, Sturz und lose Ski aufgehoben. Ohne Sturz 62.000 Punkte, 0,8 s zurück: 50.000 (Stand von damals).
+- Münzen: 100.000 Punkte = 40, 37.400 Punkte = 14.
+- Berge: Kamera fest zur mitwandernden Berg-Gruppe, 82 m Fahrt dazwischen: Bild der Berge praktisch gleich (mittlere Abweichung 0,9 von 255, nur ziehende Wolken). Standbilder Spielansicht Freeride und Rennen, Bergansicht.
+- Alle fünf Stufen in allen vier Welten ohne Fehler; Hoch sieht aus wie vorher.

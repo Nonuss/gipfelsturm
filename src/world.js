@@ -1122,27 +1122,40 @@ export class World {
     mat.onBeforeCompile = (sh) => {
       sh.uniforms.uSunM = { value: SUN_DIR };
       sh.vertexShader = sh.vertexShader
-        .replace('#include <common>', '#include <common>\n#ifdef ULTRA\nvarying vec3 vCP;\nvarying vec3 vCN;\n#endif')
-        .replace('#include <begin_vertex>', '#include <begin_vertex>\n#ifdef ULTRA\nvCP = (modelMatrix * vec4(transformed, 1.0)).xyz;\nvCN = normalize(mat3(modelMatrix) * normal);\n#endif');
+        .replace('#include <common>', '#include <common>\n#ifdef ULTRA\nvarying vec3 vCP;\nvarying vec3 vCN;\nvarying vec3 vCW;\n#endif')
+        .replace('#include <begin_vertex>', '#include <begin_vertex>\n#ifdef ULTRA\nvCP = transformed;\nvCN = normal;\nvCW = (modelMatrix * vec4(transformed, 1.0)).xyz;\n#endif');
       sh.fragmentShader = sh.fragmentShader
-        .replace('#include <common>', '#include <common>\n#ifdef ULTRA\nuniform vec3 uSunM;\nvarying vec3 vCP;\nvarying vec3 vCN;\n' + CRAG_GLSL + '\n#endif')
+        .replace('#include <common>', '#include <common>\n#ifdef ULTRA\nuniform vec3 uSunM;\nvarying vec3 vCP;\nvarying vec3 vCN;\nvarying vec3 vCW;\n' + CRAG_GLSL + '\n#endif')
         .replace('#include <color_fragment>', `#include <color_fragment>
 #ifdef ULTRA
 {
+  // Wie echte Alpenwände: Rinnen und Rippen entlang der Falllinie, quer liegende Felsbänder, Schnee in den Rinnen und auf
+  // Absätzen, schneefreie Rippenkämme. Alles in Koordinaten der Berge selbst, das Muster wandert also nie über die Hänge.
   vec3 nn = normalize(vCN);
   float pw = length(fwidth(vCP));
-  float h = n3(vCP / 260.0) * 55.0;
-  h += (1.0 - abs(2.0 * n3(vCP / 85.0 + 7.0) - 1.0)) * 24.0 * (1.0 - smoothstep(22.0, 55.0, pw));
-  h += n3(vCP / 34.0 + 3.0) * 5.5 * (1.0 - smoothstep(7.0, 20.0, pw));
-  h += (1.0 - abs(2.0 * n3(vCP / 13.0 + 9.0) - 1.0)) * 1.1 * (1.0 - smoothstep(2.5, 7.0, pw));
+  float steep = smoothstep(0.9, 0.5, nn.y);
+  // senkrecht gestrecktes Rauschen: in steilen Wänden laufen Rinnen und Rippen damit die Falllinie hinab, ohne Wirbel
+  float r1 = 1.0 - abs(2.0 * n3(vec3(vCP.x / 65.0, vCP.y / 340.0, vCP.z / 65.0)) - 1.0);
+  float r2 = 1.0 - abs(2.0 * n3(vec3(vCP.x / 21.0, vCP.y / 120.0, vCP.z / 21.0) + 5.0) - 1.0);
+  // Felsbänder: breit, unregelmäßig und leicht geneigt (Schichtung), nicht als gleichmäßige Linien
+  float band = smoothstep(0.55, 0.8, n3(vec3(vCP.x / 260.0, (vCP.y + vCP.x * 0.12 + n3(vCP / 90.0) * 40.0) / 48.0, vCP.z / 260.0)));
+  float f1 = 1.0 - smoothstep(10.0, 30.0, pw), f2 = 1.0 - smoothstep(6.0, 18.0, pw);
+  float h = n3(vCP / 240.0) * 26.0 + r1 * 34.0 * steep + r2 * 8.0 * steep * f1 + band * 7.0 * steep * f2;
   vec3 nb = bumpN(vCP, nn, h);
   float lo = max(dot(nn, uSunM), 0.0), ln = max(dot(nb, uSunM), 0.0);
-  diffuseColor.rgb *= clamp((0.55 + 1.05 * ln) / (0.55 + 1.05 * lo), 0.55, 1.6);
-  float haze = clamp(0.1 + length(vCP - cameraPosition) / 11000.0, 0.1, 0.62);
-  float rockA = smoothstep(0.6, 0.42, nb.y) * smoothstep(0.3, 0.55, nn.y);
-  vec3 rockC = vec3(0.27, 0.285, 0.33) * (0.55 + 1.05 * ln) * (0.8 + 0.4 * n3(vCP / 7.0));
-  rockC = mix(rockC, vec3(0.62, 0.77, 0.95), haze);
-  diffuseColor.rgb = mix(diffuseColor.rgb, rockC, rockA * 0.8);
+  diffuseColor.rgb *= clamp((0.55 + 1.05 * ln) / (0.55 + 1.05 * lo), 0.6, 1.5);
+  float haze = clamp(0.1 + length(vCW - cameraPosition) / 11000.0, 0.1, 0.62);
+  vec3 hz = vec3(0.62, 0.77, 0.95);
+  // Schnee in den Rinnen der Felswände (nicht in senkrechten Stellen)
+  float face = smoothstep(0.62, 0.48, nn.y);
+  float gully = smoothstep(0.5, 0.12, r1) * face * smoothstep(0.18, 0.4, nb.y);
+  vec3 snowC = mix(mix(vec3(0.56, 0.66, 0.86), vec3(0.96, 0.975, 1.0), clamp(ln * 1.4, 0.0, 1.0)), hz, haze);
+  diffuseColor.rgb = mix(diffuseColor.rgb, snowC, gully * 0.8);
+  // Fels an steilen Stellen und auf Rippenkämmen im Schnee; Felsbänder etwas dunkler
+  float rockA = smoothstep(0.62, 0.44, nb.y) * smoothstep(0.3, 0.55, nn.y) * (0.45 + 0.55 * r1);
+  diffuseColor.rgb *= 1.0 - 0.16 * face * (1.0 - gully) * (1.0 - haze);   // Felswände kräftiger
+  vec3 rockC = vec3(0.27, 0.28, 0.32) * (0.85 - 0.2 * band) * (0.55 + 1.05 * ln) * (0.85 + 0.3 * n3(vCP / 9.0));
+  diffuseColor.rgb = mix(diffuseColor.rgb, mix(rockC, hz, haze), rockA * 0.8);
 }
 #endif`);
     };
@@ -1188,8 +1201,8 @@ export class World {
         col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b;
       }
       g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+      g.translate(x, baseY, z);   // gleiche Lage wie vorher über m.position; so liegen alle Gipfel in einem Koordinatenraum
       const m = new THREE.Mesh(g, mat);
-      m.position.set(x, baseY, z);
       m.frustumCulled = false;
       this.mountains.add(m);
     };

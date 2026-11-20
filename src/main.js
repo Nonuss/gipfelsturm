@@ -561,12 +561,13 @@ function earn(n, why) {
   if (got) { updateWallet(); if (why) showMsg(`+${num(got)} Shop-Punkte · ${why}`, 'good'); }
   return got;
 }
-/** Freeride und Freestyle: gesicherte Punkte am Ende eines Laufs (Menü oder neuer Lauf), ein Vierzigstel davon (v30, vorher ein Zehntel). */
+/** Freeride und Freestyle: gesicherte Punkte am Ende eines Laufs (Menü oder neuer Lauf) als Shop-Münzen, 40 je 100.000 Punkte
+ * (v43; vorher ein Vierzigstel der Punkte, also 2500 je 100.000). */
 function payEndless() {
   if (tut.on) return 0;
   if (C.cfg.heli || game.kind !== 'endless' || game.paid || !(game.mode === 'run' || game.mode === 'countdown')) return 0;
   game.paid = true;
-  return earn(Math.floor(game.score / 40));
+  return earn(Math.floor(game.score / 2500));
 }
 let shop3d = null;   // 3D-Shop (Laden mit Regal und Puppe), entsteht nach dem Laden der Modelle
 /** Eigene Farben gewählt: Outfit „Eigene Farben“ anlegen. */
@@ -1334,10 +1335,12 @@ function tutUpdate(dt) {
 // ---------------------------------------------------------------- Zurückspulen (Taste Q halten; nicht im Heli)
 // 30-mal pro Sekunde Spielzeit wird der Zustand gemerkt (Physik, Tricks, Haltung, Punkte, Tore), bis zu 8 s. Beim Halten
 // läuft die Fahrt doppelt so schnell rückwärts; beim Loslassen geht es von dort weiter. Die Laufzeit im Rennen läuft
-// nicht zurück (das Zurückspulen kostet also Zeit), in den Endlos-Welten fällt der Combo-Multiplikator auf 1.
+// nicht zurück (das Zurückspulen kostet also Zeit). Punkte gehen beim Zurückspulen nur nach unten, nie nach oben: was ein
+// Sturz gekostet hat, bleibt weg, und Punkte aus dem zurückgespulten Stück gibt es nicht doppelt. Combo fällt auf 1.
 const REW_HZ = 30, REW_MAX = 8 * REW_HZ;
 const rew = { buf: [], t: 0, acc: 0, on: false, fx: 0 };
 const REW_GAME = ['penalty', 'passed', 'gateIdx', 'topSpeed', 'bestJump', 'score', 'maxD', 'bestTrick', 'bestTrickPts', 'tricks', 'pend', 'pendT', 'combo', 'comboT'];
+const REW_DOWN = ['score', 'pend', 'combo', 'tricks'];   // nur nach unten zurücksetzen (nie verlorene Punkte zurückgeben)
 const REW_COPY = ['grind', 'gT'];   // kleine Zustands-Objekte kopieren; andere Objekte (Felsen, Rails) bleiben Verweise
 function snapObj(o, skip) {
   const r = {};
@@ -1366,7 +1369,7 @@ function recordRewind(dt) {
 }
 function loadRewind(r) {
   loadObj(phys, r.phys); loadObj(trick, r.trick); loadObj(vis, r.vis);
-  for (const k of REW_GAME) game[k] = r.game[k];
+  for (const k of REW_GAME) game[k] = REW_DOWN.includes(k) ? Math.min(game[k], r.game[k]) : r.game[k];
   const m = r.m;
   swYaw = m.swYaw; boardEdge = m.boardEdge; boardLift = m.boardLift; timeScale = m.timeScale; quietCrash = m.quietCrash; lastSpecial = m.lastSpecial;
   special = m.special && { ...m.special };

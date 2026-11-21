@@ -11,20 +11,24 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #9fc3ee; fon
 .hidden { display: none !important; }
 
 #hud { position: fixed; inset: 0; pointer-events: none; text-shadow: 0 2px 10px rgba(10, 30, 60, 0.45); }
-.panel { position: absolute; top: 22px; padding: 10px 18px 12px; background: var(--glass); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.18); }
-.tl { left: 24px; }
-.tr { right: 24px; text-align: right; }
-.label { font-size: 13px; letter-spacing: 0.22em; text-transform: uppercase; opacity: 0.75; font-weight: 600; }
+.panel { position: absolute; top: 20px; min-width: 132px; padding: 8px 30px 10px 22px; background: linear-gradient(100deg, rgba(7, 13, 23, 0.82), rgba(7, 13, 23, 0.6)); clip-path: polygon(0 0, 100% 0, calc(100% - 16px) 100%, 0 100%); text-shadow: none; }
+/* Anzeigetafel wie in TV-Sportgrafiken: dunkle schräg abgeschnittene Platte, Akzentkante zur Bildschirmseite */
+.panel::before { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 5px; background: var(--accent); }
+.tl { left: 0; padding-left: calc(28px + env(safe-area-inset-left)); }
+.tr { right: 0; text-align: right; padding: 8px calc(28px + env(safe-area-inset-right)) 10px 34px; clip-path: polygon(0 0, 100% 0, 100% 100%, 16px 100%); }
+.tr::before { left: auto; right: 0; }
+.label { font-size: 12px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
 .big { font-size: 44px; font-weight: 800; font-style: italic; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: 0.01em; }
 .big span { font-size: 24px; opacity: 0.7; }
 .small { font-size: 15px; opacity: 0.85; margin-top: 4px; font-variant-numeric: tabular-nums; min-height: 18px; }
 #penalty { color: #ffb199; }
+#penalty:has(kbd) { color: var(--snow); opacity: 0.9; }
 
 .speedo { position: absolute; left: 28px; bottom: 26px; }
 #speed { font-size: 104px; font-weight: 800; font-style: italic; line-height: 0.82; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
 .unit { font-size: 18px; letter-spacing: 0.24em; text-transform: uppercase; opacity: 0.8; margin-top: 8px; font-weight: 600; }
-.bar { width: 230px; height: 6px; border-radius: 3px; background: rgba(255, 255, 255, 0.25); margin-top: 10px; overflow: hidden; }
-#speedfill { height: 100%; width: 0%; background: linear-gradient(90deg, #fff, #ffd23f 60%, var(--accent)); border-radius: 3px; }
+.bar { width: 230px; height: 7px; background: rgba(7, 13, 23, 0.45); margin-top: 10px; overflow: hidden; transform: skewX(-20deg); }
+#speedfill { height: 100%; width: 0%; background: linear-gradient(90deg, #fff, #ffd23f 60%, var(--accent)); }
 
 #progress { position: absolute; right: 34px; top: 150px; bottom: 90px; width: 6px; border-radius: 3px; background: rgba(255, 255, 255, 0.28); }
 #progfill { position: absolute; top: 0; left: 0; right: 0; height: 0%; background: #fff; border-radius: 3px; }
@@ -33,7 +37,7 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #9fc3ee; fon
 
 #msg { position: absolute; left: 0; right: 0; top: 23%; text-align: center; font-size: 46px; font-weight: 800; font-style: italic; letter-spacing: 0.03em; opacity: 0; }
 #msg.show { animation: pop 1.5s ease-out forwards; }
-#tut { position: fixed; z-index: 40; top: 22px; left: 50%; transform: translateX(-50%); width: min(520px, calc(100% - 400px)); min-width: 300px; box-sizing: border-box; padding: 12px 22px 14px; text-align: center; background: var(--glass); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.18); color: var(--snow); text-shadow: 0 2px 10px rgba(10, 30, 60, 0.45); transition: border-color 0.2s; }
+#tut { position: fixed; z-index: 40; top: 22px; left: 50%; transform: translateX(-50%); width: min(520px, calc(100% - 400px)); min-width: 300px; box-sizing: border-box; padding: 12px 22px 14px; text-align: center; background: var(--glass); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.18); color: var(--snow); text-shadow: 0 2px 10px rgba(10, 30, 60, 0.45); transition: border-color 0.2s; }
 #tut .tstep { font-size: 13px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.8; }
 #tut .ttext { margin: 6px 0 10px; font-size: 19px; font-weight: 600; line-height: 1.4; }
 #tut kbd { height: 24px; min-width: 24px; padding: 0 7px; font-size: 13px; text-shadow: none; vertical-align: 1px; }
@@ -56,7 +60,14 @@ html, body { margin: 0; height: 100%; overflow: hidden; background: #9fc3ee; fon
   70% { opacity: 1; transform: translateY(-4px) scale(1); }
   100% { opacity: 0; transform: translateY(-16px) scale(1); }
 }
-#hint { position: absolute; left: 0; right: 0; bottom: 18px; text-align: center; font-size: 15px; letter-spacing: 0.08em; opacity: 0.7; transition: opacity 1.2s; }
+/* Tastenkappen-Leiste: nur das Nötigste, zwischen Tempoanzeige und Minikarte, verschwindet nach 10 s */
+#hint { position: absolute; left: 290px; right: 200px; bottom: 24px; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 16px; font: 600 14px var(--font); letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.92; transition: opacity 1.2s; }
+#hint span { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+#hint kbd { min-width: 22px; height: 22px; padding: 0 6px; border-radius: 4px; font-size: 12px; box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3); text-shadow: none; }
+#hint.heli .nh { display: none; }
+.small kbd { min-width: 18px; height: 18px; padding: 0 5px; margin: 0 4px 0 6px; border-radius: 3px; font-size: 11px; box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3); vertical-align: 1px; }
+.small kbd:first-child { margin-left: 0; }
+.lives.on { color: #8dffb0; }
 #hint.fade { opacity: 0; }
 
 #count { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 220px; font-weight: 800; font-style: italic; pointer-events: none; text-shadow: 0 8px 40px rgba(10, 30, 60, 0.5); }
@@ -73,10 +84,10 @@ h1 { font-size: clamp(56px, 8vw, 108px); margin: 6px 0 16px; font-weight: 800; f
 .keys span { margin: 0 10px 0 2px; opacity: 0.9; }
 .keys em { font-style: normal; font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: #ffd9a8; margin-right: 6px; }
 .keys div { flex-wrap: wrap; row-gap: 6px; }
-kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 30px; height: 30px; padding: 0 9px; border-radius: 8px; background: rgba(255, 255, 255, 0.92); color: var(--ink); font: 700 15px var(--font); box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25); }
+kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 30px; height: 30px; padding: 0 9px; border-radius: 4px; background: rgba(255, 255, 255, 0.92); color: var(--ink); font: 700 15px var(--font); box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25); }
 kbd.wide { min-width: 96px; }
 button { pointer-events: auto; cursor: pointer; border: 0; font-family: var(--font); color: #fff; }
-.cta { border-radius: 14px; padding: 14px 30px; background: var(--accent); font: italic 800 30px var(--font); letter-spacing: 0.04em; box-shadow: 0 10px 30px rgba(255, 106, 19, 0.45); transition: transform 0.12s, background 0.12s; }
+.cta { border-radius: 4px; padding: 14px 30px; background: var(--accent); font: italic 800 30px var(--font); letter-spacing: 0.04em; box-shadow: 0 4px 0 rgba(0, 0, 0, 0.28); transition: transform 0.12s, background 0.12s; }
 .cta:hover { transform: translateY(-2px); background: #ff7d2e; }
 .cta:active { transform: translateY(1px); }
 button small { font-size: 14px; font-style: normal; font-weight: 600; opacity: 0.85; margin-left: 10px; letter-spacing: 0.12em; text-transform: uppercase; }
@@ -95,7 +106,7 @@ button:disabled { opacity: 0.4; cursor: default; }
 }
 
 .modes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
-.mode { text-align: left; padding: 12px 14px; border-radius: 14px; background: var(--glass); border: 2px solid rgba(255, 255, 255, 0.22); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: border-color 0.12s, background 0.12s; }
+.mode { text-align: left; padding: 12px 14px; border-radius: 4px; background: var(--glass); border: 2px solid rgba(255, 255, 255, 0.22); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: border-color 0.12s, background 0.12s; }
 .mode b { display: block; font: italic 800 24px var(--font); letter-spacing: 0.03em; }
 .mode span { display: block; font: 14px "Avenir Next", "Helvetica Neue", Arial, sans-serif; opacity: 0.85; margin-top: 2px; }
 .mode:hover { border-color: rgba(255, 255, 255, 0.6); }
@@ -107,21 +118,21 @@ button:disabled { opacity: 0.4; cursor: default; }
 .sw { width: 28px; height: 28px; padding: 0; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.55); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25); }
 .sw.sel { outline: 3px solid #fff; outline-offset: 2px; }
 .outfit input[type="color"] { pointer-events: auto; width: 34px; height: 30px; padding: 0; border: 0; background: none; cursor: pointer; }
-.ghost { margin-left: 10px; padding: 14px 20px; border-radius: 14px; background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.3); font: italic 800 22px var(--font); }
+.ghost { margin-left: 10px; padding: 14px 20px; border-radius: 4px; background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.3); font: italic 800 22px var(--font); }
 .ghost small { font-size: 12px; font-style: normal; font-weight: 600; opacity: 0.8; margin-left: 8px; letter-spacing: 0.12em; text-transform: uppercase; }
 .lives { letter-spacing: 0.1em; }
 #progress.off { display: none; }
 .opts { margin: 0 0 18px; pointer-events: auto; }
 .opts summary { cursor: pointer; font-size: 14px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 600; opacity: 0.9; padding: 8px 0; list-style-position: inside; }
 .opts[open] summary { margin-bottom: 6px; }
-.opts .outfit { margin-bottom: 0; padding: 12px 14px; border-radius: 14px; background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.18); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.opts .outfit { margin-bottom: 0; padding: 12px 14px; border-radius: 4px; background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.18); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
 .outfit .row > span { width: 62px; }
 .seg { display: flex; gap: 6px; flex-wrap: wrap; }
-.seg button { padding: 6px 12px; border-radius: 10px; background: rgba(255, 255, 255, 0.14); border: 1px solid rgba(255, 255, 255, 0.25); font: 600 14px var(--font); letter-spacing: 0.08em; }
+.seg button { padding: 6px 12px; border-radius: 4px; background: rgba(255, 255, 255, 0.14); border: 1px solid rgba(255, 255, 255, 0.25); font: 600 14px var(--font); letter-spacing: 0.08em; }
 .seg button.sel { background: var(--accent); border-color: var(--accent); }
-#hint { padding: 0 20px; }
+@media (max-width: 980px) { #hint { display: none; } }
 
-#minimap { position: absolute; right: 24px; bottom: 26px; width: 150px; height: 230px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.25); display: none; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25); }
+#minimap { position: absolute; right: 24px; bottom: 26px; width: 150px; height: 230px; border-radius: 3px; border: 2px solid rgba(7, 13, 23, 0.7); border-top: 4px solid var(--accent); display: none; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3); }
 #zone { position: absolute; left: 0; right: 0; top: 118px; text-align: center; font-size: 22px; letter-spacing: 0.32em; text-transform: uppercase; font-weight: 700; opacity: 0; }
 #zone.show { animation: zonefade 3s ease-out forwards; }
 @keyframes zonefade { 0% { opacity: 0; transform: translateY(-6px); } 12% { opacity: 0.95; transform: translateY(0); } 75% { opacity: 0.95; } 100% { opacity: 0; } }
@@ -215,7 +226,7 @@ html.rot body.touch .kicker { font-size: 11px; }
 .menu .seg.disc button.sel { background: var(--acc); border-color: var(--acc); color: #0b1422; }
 .menu .seg.drops button i { font-style: normal; font-size: 9px; letter-spacing: 1px; margin-left: 5px; opacity: 0.8; vertical-align: 1px; }
 .mrow { display: flex; align-items: center; gap: 26px; margin-top: 22px; flex-wrap: wrap; }
-.menu .cta { background: var(--acc); box-shadow: 0 10px 34px color-mix(in srgb, var(--acc) 50%, transparent); color: #0b1422; transition: transform 0.12s, background 0.4s, box-shadow 0.4s; }
+.menu .cta { background: var(--acc); box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3); color: #0b1422; transition: transform 0.12s, background 0.4s, box-shadow 0.4s; }
 .menu .cta:hover { background: var(--acc); filter: brightness(1.08); }
 .menu .cta small { opacity: 0.7; }
 .mbest { display: grid; gap: 2px; }
@@ -233,9 +244,9 @@ html.rot body.touch .kicker { font-size: 11px; }
 .mdots button.sel { width: 64px; transition: width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .mdots button.sel::after { background: var(--acc); }
 .mtools { position: absolute; right: clamp(20px, 4vw, 60px); bottom: calc(22px + env(safe-area-inset-bottom)); display: flex; gap: 6px; }
-.mtools button, #fsBtn { background: none; padding: 8px 12px; border-radius: 10px; font: 600 14px var(--font); letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.85; transition: background 0.15s, opacity 0.15s; }
+.mtools button, #fsBtn { background: none; padding: 8px 12px; border-radius: 4px; font: 600 14px var(--font); letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.85; transition: background 0.15s, opacity 0.15s; }
 .mtools button:hover, .mtools button.on { background: rgba(255, 255, 255, 0.16); opacity: 1; }
-.dlg { position: absolute; right: clamp(20px, 4vw, 60px); bottom: calc(70px + env(safe-area-inset-bottom)); width: min(430px, calc(100% - 40px)); max-height: 72%; overflow-y: auto; padding: 14px 16px 16px; border-radius: 14px;
+.dlg { position: absolute; right: clamp(20px, 4vw, 60px); bottom: calc(70px + env(safe-area-inset-bottom)); width: min(430px, calc(100% - 40px)); max-height: 72%; overflow-y: auto; padding: 14px 16px 16px; border-radius: 4px;
   background: rgba(10, 20, 36, 0.72); border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35); animation: dlgin 0.22s ease-out both; }
 .dlg.wide { width: min(600px, calc(100% - 40px)); }
 @keyframes dlgin { from { opacity: 0; transform: translateY(10px); } }
@@ -251,7 +262,7 @@ body.nofs .fsrow, body.nofs #fsBtn { display: none; }
 #wipe { position: fixed; inset: 0; pointer-events: none; opacity: 0; z-index: 20; transition: opacity 0.34s ease-out;
   background: radial-gradient(120% 90% at 50% 60%, #ffffff 0%, #eef4ff 55%, #cfe0fb 100%); }
 #wipe.on { opacity: 1; transition: opacity 0.2s ease-in; }
-#fsBtn { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); padding: 8px; pointer-events: auto; background: var(--glass); border: 1px solid rgba(255, 255, 255, 0.18); opacity: 0.55; line-height: 0; }
+#fsBtn { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); padding: 8px; pointer-events: auto; background: rgba(7, 13, 23, 0.6); border: 0; border-radius: 3px; opacity: 0.6; line-height: 0; }
 #fsBtn:hover { opacity: 1; }
 #fsBtn svg { width: 20px; height: 20px; }
 body.touch #fsBtn { top: calc(58px + env(safe-area-inset-top)); z-index: 31; }
@@ -371,17 +382,17 @@ html.rot #shop3d { position: absolute; }
 #shop3d .s3-top { position: absolute; top: calc(14px + env(safe-area-inset-top)); left: clamp(16px, 3vw, 40px); right: clamp(16px, 3vw, 40px); display: flex; align-items: center; gap: 16px; pointer-events: none; }
 #shop3d .s3-top > * { pointer-events: auto; }
 #shop3d .s3-top > b { font: italic 800 30px var(--font); letter-spacing: 0.02em; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); }
-#shop3d .s3-wallet { margin-left: auto; padding: 8px 14px; border-radius: 12px; background: rgba(10, 14, 20, 0.62); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; }
+#shop3d .s3-wallet { margin-left: auto; padding: 8px 14px; border-radius: 4px; background: rgba(10, 14, 20, 0.62); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; }
 #shop3d .s3-wallet b { font: italic 800 18px var(--font); letter-spacing: 0.02em; text-transform: none; color: #ffb37a; margin-left: 6px; }
 #shop3d .s3-x { width: 42px; height: 42px; border-radius: 50%; background: rgba(10, 14, 20, 0.62); font: 400 26px/1 Arial, sans-serif; }
-#shop3d .s3-left, #shop3d .s3-detail { position: absolute; top: calc(76px + env(safe-area-inset-top)); bottom: calc(40px + env(safe-area-inset-bottom)); width: clamp(220px, 24vw, 300px); padding: 12px; border-radius: 16px; background: rgba(12, 16, 23, 0.72); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; overflow: hidden; }
+#shop3d .s3-left, #shop3d .s3-detail { position: absolute; top: calc(76px + env(safe-area-inset-top)); bottom: calc(40px + env(safe-area-inset-bottom)); width: clamp(220px, 24vw, 300px); padding: 12px; border-radius: 4px; background: rgba(12, 16, 23, 0.72); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.1); display: flex; flex-direction: column; overflow: hidden; }
 #shop3d .s3-left { left: clamp(16px, 3vw, 40px); }
 #shop3d .s3-detail { right: clamp(16px, 3vw, 40px); gap: 8px; overflow-y: auto; }
 #shop3d .s3-tabs { display: flex; gap: 4px; margin-bottom: 10px; }
-#shop3d .s3-tabs button { flex: 1; padding: 8px 4px; border-radius: 10px; font: 700 12px var(--font); letter-spacing: 0.08em; text-transform: uppercase; background: rgba(255, 255, 255, 0.08); }
+#shop3d .s3-tabs button { flex: 1; padding: 8px 4px; border-radius: 4px; font: 700 12px var(--font); letter-spacing: 0.08em; text-transform: uppercase; background: rgba(255, 255, 255, 0.08); }
 #shop3d .s3-tabs button.sel { background: #ff6a13; color: #10161f; }
 #shop3d .s3-list { list-style: none; margin: 0; padding: 0; overflow-y: auto; display: grid; gap: 4px; }
-#shop3d .s3-list button { width: 100%; display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.04); border: 1px solid transparent; text-align: left; font: 600 14px var(--font); }
+#shop3d .s3-list button { width: 100%; display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 4px; background: rgba(255, 255, 255, 0.04); border: 1px solid transparent; text-align: left; font: 600 14px var(--font); }
 #shop3d .s3-list button:hover { background: rgba(255, 255, 255, 0.1); }
 #shop3d .s3-list button.sel { border-color: #ff8a3c; background: rgba(255, 106, 19, 0.16); }
 #shop3d .s3-sw { display: flex; height: 22px; border-radius: 6px; overflow: hidden; transform: skewX(-12deg); }
@@ -392,10 +403,10 @@ html.rot #shop3d { position: absolute; }
 #shop3d .s3-kicker { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.7; }
 #shop3d .s3-detail h2 { margin: 0; font: italic 800 28px/1.05 var(--font); }
 #shop3d .s3-detail p { margin: 0; font-size: 14px; line-height: 1.4; opacity: 0.85; }
-#shop3d .s3-detail .s3-trick { padding: 8px 10px; border-radius: 10px; background: rgba(39, 195, 255, 0.12); border: 1px solid rgba(39, 195, 255, 0.35); opacity: 1; font-size: 13px; }
+#shop3d .s3-detail .s3-trick { padding: 8px 10px; border-radius: 4px; background: rgba(39, 195, 255, 0.12); border: 1px solid rgba(39, 195, 255, 0.35); opacity: 1; font-size: 13px; }
 #shop3d .s3-detail .s3-trick b { color: #8fdcff; }
 #shop3d .s3-req { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 13px; }
-#shop3d .s3-req li { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: baseline; padding: 4px 8px; border-radius: 8px; background: rgba(255, 255, 255, 0.06); }
+#shop3d .s3-req li { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: baseline; padding: 4px 8px; border-radius: 4px; background: rgba(255, 255, 255, 0.06); }
 #shop3d .s3-req li b { font-weight: 600; opacity: 0.8; }
 #shop3d .s3-req li em { font-style: normal; color: #ff9a8a; }
 #shop3d .s3-req li.ok em { color: #63e6b0; }

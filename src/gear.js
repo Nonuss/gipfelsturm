@@ -52,24 +52,21 @@ export const SKIS = {
   powder: { name: 'Powder 118', trick: 'slash', st: { tempo: 5, turn: 5, pow: 10, trick: 6, grip: 3 }, len: 1.86, tip: 0.142, waist: 0.118, tail: 0.13, rockT: 0.085, rockL: 0.05, top: ['#ff8a1e', '#14161a', '#fff1d6'], pat: 'mountain', base: '#1a1c22', bind: '#14161a' },
   park: { name: 'Park Twin', trick: 'butter', st: { tempo: 4, turn: 7, pow: 4, trick: 10, grip: 4 }, len: 1.74, tip: 0.124, waist: 0.092, tail: 0.124, rockT: 0.06, rockL: 0.055, twin: true, top: ['#b6ff3a', '#7a2bd9', '#ff3d7f', '#14161a'], pat: 'blocks', base: '#2a1446', bind: '#14161a' },
   wood: { name: 'Holz Classic', st: { tempo: 6, turn: 6, pow: 6, trick: 6, grip: 5 }, len: 1.78, tip: 0.128, waist: 0.084, tail: 0.112, rockT: 0.05, rockL: 0.015, top: ['#a8743f', '#7d5128', '#e8d8b8'], pat: 'wood', base: '#1a1712', bind: '#2b2b2b' },
-  carbon: { name: 'Carbon Pro', trick: 'eurocarve', st: { tempo: 8, turn: 7, pow: 5, trick: 5, grip: 7 }, len: 1.8, tip: 0.13, waist: 0.096, tail: 0.116, rockT: 0.06, rockL: 0.02, top: ['#17191d', '#2a2e36', '#27c3ff'], pat: 'carbon', base: '#0d0e10', bind: '#27c3ff' },
-  gold: { name: 'Gipfel Gold', metal: true, trick: 'butterkombi', st: { tempo: 8, turn: 7, pow: 7, trick: 8, grip: 7 }, len: 1.8, tip: 0.128, waist: 0.088, tail: 0.112, rockT: 0.055, rockL: 0.018, top: ['#e8b64a', '#14161a', '#fbe3a0'], pat: 'gold', base: '#15130d', bind: '#e8b64a' },
-  tele: { name: 'Telemark Nordic', trick: 'telemark', st: { tempo: 5, turn: 8, pow: 6, trick: 6, grip: 6 }, len: 1.76, tip: 0.118, waist: 0.078, tail: 0.104, rockT: 0.04, rockL: 0.01, top: ['#c8102e', '#f2f2f0', '#14161a'], pat: 'tele', base: '#141414', bind: '#2b2b2b' },
-  charger: { name: 'Big Mountain 108', trick: 'hopturn', st: { tempo: 8, turn: 5, pow: 9, trick: 6, grip: 7 }, len: 1.88, tip: 0.138, waist: 0.108, tail: 0.126, rockT: 0.07, rockL: 0.03, top: ['#14161a', '#ff6a13', '#9ad1ff'], pat: 'topo', base: '#16181c', bind: '#ff6a13' },
+  carbon: { name: 'Carbon Pro', st: { tempo: 8, turn: 7, pow: 5, trick: 5, grip: 7 }, len: 1.8, tip: 0.13, waist: 0.096, tail: 0.116, rockT: 0.06, rockL: 0.02, top: ['#17191d', '#2a2e36', '#27c3ff'], pat: 'carbon', base: '#0d0e10', bind: '#27c3ff' },
+  gold: { name: 'Gipfel Gold', metal: true, st: { tempo: 8, turn: 7, pow: 7, trick: 8, grip: 7 }, len: 1.8, tip: 0.128, waist: 0.088, tail: 0.112, rockT: 0.055, rockL: 0.018, top: ['#e8b64a', '#14161a', '#fbe3a0'], pat: 'gold', base: '#15130d', bind: '#e8b64a' },
+  tele: { name: 'Nordic Classic', st: { tempo: 5, turn: 8, pow: 6, trick: 6, grip: 6 }, len: 1.76, tip: 0.118, waist: 0.078, tail: 0.104, rockT: 0.04, rockL: 0.01, top: ['#c8102e', '#f2f2f0', '#14161a'], pat: 'tele', base: '#141414', bind: '#2b2b2b' },
+  charger: { name: 'Big Mountain 108', st: { tempo: 8, turn: 5, pow: 9, trick: 6, grip: 7 }, len: 1.88, tip: 0.138, waist: 0.108, tail: 0.126, rockT: 0.07, rockL: 0.03, top: ['#14161a', '#ff6a13', '#9ad1ff'], pat: 'topo', base: '#16181c', bind: '#ff6a13' },
   speed: { name: 'Weltcup Speed', st: { tempo: 10, turn: 3, pow: 2, trick: 2, grip: 9 }, len: 2.05, tip: 0.104, waist: 0.066, tail: 0.092, rockT: 0.025, rockL: 0.004, top: ['#f6f6f4', '#d7141a', '#14161a'], pat: 'race', base: '#0e1013', bind: '#d7141a', plate: true },
   legend: { name: 'Gipfelsturm Legende', metal: true, trick: 'legend', st: { tempo: 10, turn: 10, pow: 10, trick: 10, grip: 10 }, len: 1.8, tip: 0.132, waist: 0.094, tail: 0.118, rockT: 0.06, rockL: 0.04, twin: true, top: ['#d9dde3', '#0d0e10', '#5ef2ff'], pat: 'legend', base: '#0b0c0e', bind: '#5ef2ff' },
 };
 
 // ------------------------------------------------------------------ Ski-Tricks (Taste E, am Handy der Stern am Boden)
-// Nur bestimmte Ski haben einen eigenen Trick. Alle laufen am Boden und sind mit den anderen Tasten nicht machbar.
+// Nur zwei Ski haben einen eigenen Trick (dazu die Legende, die beide kann). Beide laufen am Boden und sind mit den
+// anderen Tasten nicht machbar.
 export const SKI_TRICKS = {
-  butter: { name: 'Nose Butter 360', text: 'Gewicht auf die Schaufeln, die Enden heben sich, der Ski biegt sich, eine ganze Drehung auf den Spitzen', T: 1.6, pts: 600 },
-  butterkombi: { name: 'Nose-Tail-Butter 360', text: 'Halbe Drehung auf den Schaufeln, halbe auf den Enden', T: 1.8, pts: 900 },
-  slash: { name: 'Powder Slash', text: 'Ski quer stellen und eine Schneewand aufwerfen; im Tiefschnee riesig, kostet Tempo', T: 0.95, pts: 400, minV: 5 },
-  eurocarve: { name: 'Eurocarve', text: 'Bei Tempo ganz flach in die Kurve legen, die Hand streift über den Schnee', T: 1.5, pts: 700, minV: 9 },
-  telemark: { name: 'Telemark-Schwung', text: 'Freie Ferse: ein Fuß vorn, das hintere Knie fast auf dem Ski', T: 1.5, pts: 450, minV: 3 },
-  hopturn: { name: 'Sprungschwung', text: 'Kurz abspringen, die Ski quer drehen und mit Kantengriff landen, wie im Steilhang', T: 0.85, pts: 500, minV: 3 },
-  legend: { name: 'Legenden-Trick', text: 'Wählt selbst: im Pulver ein Slash, bei Tempo in der Kurve ein Eurocarve, sonst ein Nose-Tail-Butter; anderthalbfache Punkte', T: 0, pts: 0 },
+  butter: { name: 'Nose Butter 360', text: 'Gewicht nach vorn auf die Schaufeln: der Ski biegt sich durch, die Enden heben ab, dann eine ruhige ganze Drehung auf den Spitzen', T: 3.1, pts: 700 },
+  slash: { name: 'Powder Slash', text: 'Ski quer stellen und eine Schneewand aufwerfen; im Tiefschnee riesig, kostet Tempo', T: 1.3, pts: 400, minV: 5 },
+  legend: { name: 'Legenden-Trick', text: 'Im Pulver ein Powder Slash, sonst ein Nose Butter 360; anderthalbfache Punkte', T: 0, pts: 0 },
 };
 
 function skiPattern(d, t, x, cols) {

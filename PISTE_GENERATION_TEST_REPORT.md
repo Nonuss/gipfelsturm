@@ -726,3 +726,22 @@ Neu außerdem: Boards „Backcountry Split“ und „Park Pro“, Outfits Freeri
 - Kein Mensch hat die Tricks gespielt; ob sich E im Fahrfluss gut anfühlt, ist offen.
 - Ob die Legenden-Zeiten für Menschen erreichbar sind (sie liegen knapp unter dem Testfahrer).
 - Bildrate im sichtbaren Fenster und auf anderen Grafikkarten; Ultra kostet durch die feinen Bäume in der Ferne mehr als in v44.
+
+## Nur noch Nose Butter und Powder Slash, Ski nie im Schnee, Spiel-HUD statt Web-Karten (v46, 2026-11-22)
+
+| Rückmeldung | Ursache und Änderung |
+|---|---|
+| Die Tricks bringen nichts, nur Powder Slash und bei Freestyle-Ski der Nose Butter | Eurocarve, Telemark-Schwung, Sprungschwung und Nose-Tail-Butter entfernt. Park Twin: Nose Butter 360, Powder 118: Powder Slash, Legende: im Pulver der Slash, sonst der Nose Butter (1,5-fache Punkte). Gipfel Gold, Carbon, Big Mountain und der frühere Telemark-Ski (jetzt „Nordic Classic“) haben keinen eigenen Trick mehr |
+| Teile des Ski verschwinden im Schnee | Drei Ursachen: Beim Butter kippte der ganze Körper um die Hüfte nach vorn und drückte die Schaufeln bis 12 cm in den Schnee; die Biegung war nur eine Näherung, die bei stärkerem Winkel einsank; beim Slash kippte der ganze Körper zur Seite, der äußere Ski tauchte 7 cm ein. Dazu kantete der Pflug die Ski nach innen ein, ohne sie anzuheben. Jetzt: keine Körperkippung mehr beim Butter, exakte Biegung (siehe unten), Slash über die normale Kurvenlage, jeder Ski wird um halbe Breite mal Kantenwinkel angehoben (auch beim Pflug) |
+| Nose Butter zu wenig gebogen, unschön, zu schnell | Wie bei echten Fahrern (Gewicht aus der Hüfte nach vorn, Enden lösen sich, Drehung auf den Schaufeln): Der Ski bleibt unter dem Schuh gerade, biegt sich davor auf einem Kreisbogen bis zum Auflagepunkt am Rocker-Beginn und liegt dort flach auf; die Enden stehen gut 23 Grad hoch. Jeder Punkt wird im Shader entlang des Bogens umgelegt (keine Dehnung, keine Näherung), der Fuß wird genau so weit gekippt und angehoben, dass die Schaufel auf dem Schnee liegt. Hüfte nach vorn über die Schuhspitzen, Arme seitlich vorn. Dauer 3,1 s statt 1,6 s: erst Druck aufbauen, dann eine ruhige ganze Drehung mit weichem Anfang und Ende, zum Schluss wieder flach. Feiner Schneestaub an den Schaufeln |
+| Beim Nose Butter leicht heranzoomen | Kamera rückt langsam um 45 % heran, geht tiefer, schwenkt 1,5 m zur Seite und schaut näher auf den Fahrer, Blickwinkel 8 Grad enger; weich ein- und ausgeblendet |
+| Spiel auf Vibecode-Optik prüfen | Menü, Shop, Zielbildschirm und 3D-Welt wirken stimmig. Auffällig waren das Fahr-HUD und die Knöpfe: eine lange Tastatur-Textzeile über der Tempoanzeige (bei 1024 px zweizeilig, überlappend), abgerundete Glas-Karten, Zeichen wie ✓, ↺, ⚑ und orange Leuchtschatten. Jetzt: Anzeigetafeln wie in TV-Sportgrafiken (dunkle schräg abgeschnittene Platte, orange Kante zur Bildschirmseite, Beschriftung in Akzentfarbe), Tastenkappen-Leiste mit nur den nötigen Tasten zwischen Tempoanzeige und Minikarte (unter 980 px ausgeblendet, nach 10 s weg, im Heli ohne Spezialtricks und Zurückspulen), Respawn-Tafel mit „Offen“ bzw. „Gesetzt“ und Tasten als Kappen, schräger Tempobalken, Minikarte mit Akzentkante, Ecken überall auf 4 px, Knöpfe mit hartem Schlagschatten statt Leuchten |
+
+Tests (versteckter Browser, Bild für Bild):
+- Bodenprüfung: tiefster Punkt beider Ski über dem Gelände, mit derselben Biegung wie im Shader. Auf der Piste: Nose Butter (Park Twin, Legende) und Powder Slash jedes Bild 0 bis 1 cm über dem Schnee; Ausgangslage vor dem Trick −0,2 cm (Rundung der Geländekurve). Normales Fahren, Kurven und Pizza: −0,3 bis 0,7 cm. Im Heli-Pulver liegen die Ski wie bisher rund 5 cm in der Pulverschicht, beim Trick nicht tiefer.
+- Kein Ruck: der Drehpunkt wandert höchstens 5,6 cm pro Bild (gleichmäßige Kreisbahn um die Schaufeln), die Drehung höchstens 5,3 Grad pro Bild.
+- Bewegung hängt nur an der Zeit; nur die Menge Schneestaub folgt der Grafikstufe.
+- Alle fünf Stufen in allen vier Welten mit laufendem Nose Butter: keine Fehler, Bildzeiten wie v45.
+- Handy quer: keine Überlappungen im HUD, Text der Tafeln hält Abstand zur Kamera-Aussparung.
+
+Nicht geprüft: wie sich der Nose Butter in einem sichtbaren Fenster bei echter Bildrate anfühlt, und ob die Zoomstärke gefällt.

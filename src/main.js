@@ -315,7 +315,7 @@ const inp = { steer: 0, tuck: 0, brake: 0, jump: false };
 const zeroInp = { steer: 0, tuck: 0, brake: 0, jump: false };
 const vis = {
   lean: 0, crouch: 0, compress: 0, plow: 0, air: 0, up: new THREE.Vector3(0, 1, 0), crashAngle: 0, crashSpin: 0,
-  tuck: 0, spin: 0, extend: 0, zoom: 0, shake: 0, crashCam: 0,
+  tuck: 0, spin: 0, extend: 0, zoom: 0, shake: 0, crashCam: 0, bcam: 0,
   camSide: 1, flipCam: 0, bigAir: 0, dip: 0, fpv: 0, slide: 0, grindSide: 1, look: 0, avZoom: 0,
 };
 // Renn-Disziplin (Slalom, Riesentorlauf, Super-G, Abfahrt). Wird gemerkt.
@@ -869,7 +869,7 @@ function demoUpdate(dt) {
 function resetVisuals() {
   hasPrevSki = false;
   rew.buf.length = 0; rew.on = false; rew.t = 0;
-  Object.assign(vis, { lean: 0, crouch: 0, compress: 0, plow: 0, air: 0, crashAngle: 0, crashSpin: 0, tuck: 0, spin: 0, extend: 0, zoom: 0, shake: 0, crashCam: 0, camSide: 1, flipCam: 0, bigAir: 0, dip: 0 });
+  Object.assign(vis, { lean: 0, crouch: 0, compress: 0, plow: 0, air: 0, crashAngle: 0, crashSpin: 0, tuck: 0, spin: 0, extend: 0, zoom: 0, shake: 0, crashCam: 0, bcam: 0, camSide: 1, flipCam: 0, bigAir: 0, dip: 0 });
   Object.assign(trick, { pitch: 0, yaw: 0, pv: 0, yv: 0, grab: 0, grabT: 0, wasAir: false });
   swYaw = 0; vis.look = 0; vis.specRoll = 0; vis.sup = 0; vis.cross = 0; vis.daffy = 0; vis.tweak = 0; vis.specTuck = 0; vis.avZoom = 0;
   avCam = 0; avNear = 0; phys.noRockCrash = false;
@@ -933,13 +933,13 @@ function startRun(same) {
   $('finish').classList.add('hidden');
   $('hud').classList.remove('hidden');
   $('hint').classList.remove('fade');
-  setTimeout(() => $('hint').classList.add('fade'), 14000);
+  setTimeout(() => $('hint').classList.add('fade'), 10000);
   Object.assign(game, {
     mode: 'countdown', time: 0, penalty: 0, passed: 0, gateIdx: 0, topSpeed: 0, bestJump: 0, countdown: same === true ? 2.0 : 3.0, lastCount: 4, finishT: 0,
     score: 0, maxD: 0, bestTrick: '', bestTrickPts: 0, tricks: 0, pend: 0, pendT: 0, combo: 1, comboT: 0, paid: false,
   });
-  $('penalty').textContent = '';
-  $('hint').textContent = C.cfg.heli ? HINT_HELI : HINT_STD;
+  $('penalty').textContent = ''; $('penalty').dataset.h = ''; $('gates').dataset.cp = '';
+  $('hint').classList.toggle('heli', !!C.cfg.heli);   // im Heli gibt es weder Zurückspulen noch Spezialtricks am Start
   heliStart();
   fwtReset();
   if (aval) { aval.stop(); aval.cool = 6; } avRisk = 0;
@@ -948,8 +948,6 @@ function startRun(same) {
 // ---------------------------------------------------------------- Heli-Skiing: Absprung aus dem Helikopter
 // Während des Countdowns schwebt der Helikopter über dem Gipfel, der Fahrer steht in der offenen Tür.
 // Bei „Spring!“ fällt er gut 4 m in den Tiefschnee, der Helikopter dreht ab und fliegt davon.
-const HINT_STD = $('hint').textContent;
-const HINT_HELI = 'A/D lenken · W Hocke · S bremsen · Leertaste springen  |  Gipfel bis Tal auf Zeit · ein Sturz heißt zurück zum Gipfel · den Weg suchst du selbst';
 const heli = { on: false, t: 0, pos: new THREE.Vector3(), drop: new THREE.Vector3(), group: null, rotor: null, tail: null, vel: new THREE.Vector3() };
 function heliStart() {
   heli.on = game.kind === 'endless' && game.style === 'heli';
@@ -1276,22 +1274,25 @@ function toCheckpoint() {
 }
 
 // ---------------------------------------------------------------- Ski-Tricks am Boden (Taste E)
-// Nur Ski mit eigenem Trick (gear.js SKI_TRICKS). Läuft am Boden, rein am Körper sichtbar; die Fahrt selbst ändert sich
-// nicht (nur der Slash und der Sprungschwung kosten etwas Tempo, wie in echt). Ein Sturz bricht ab.
+// Nur zwei, wie in echt: Park-Ski (und die Legende) können den Nose Butter, der Powder-Ski den Powder Slash. Läuft am Boden,
+// rein am Körper sichtbar; die Fahrt ändert sich kaum (beide kosten etwas Tempo, wie in echt). Ein Sturz bricht ab.
+// Die Bewegung hängt nur an der Zeit, nicht an der Grafikstufe (nur die Menge Schneestaub skaliert mit Q.fx).
 let skiTrick = null;
 const skiTrickId = () => (!BOARD() && SKIS[shop.equip.ski] && SKIS[shop.equip.ski].trick) || null;
 const skiTrickReady = () => !!skiTrickId() && game.mode === 'run' && phys.grounded && !phys.grind && phys.crashed <= 0 && !special && !skiTrick && !rew.on;
+const smoother = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * t * (t * (t * 6 - 15) + 10); };
 function startSkiTrick() {
   const id0 = skiTrickId();
   if (!id0) { if (game.mode === 'run' && !BOARD()) showMsg('Dieser Ski hat keinen eigenen Trick', 'bad'); return; }
   if (!skiTrickReady()) return;
-  let id = id0;
-  // Legende: wählt selbst, was zur Lage passt
-  if (id0 === 'legend') id = phys.pow > 0.3 && phys.speed > 5 ? 'slash' : phys.speed > 10 && (Math.abs(inp.steer) > 0.3 || Math.abs(phys.aLat) > 3) ? 'eurocarve' : 'butterkombi';
+  // Legende: im Pulver der Slash, sonst der Nose Butter
+  const id = id0 === 'legend' ? (phys.pow > 0.3 && phys.speed > 5 ? 'slash' : 'butter') : id0;
   const def = SKI_TRICKS[id];
   if (def.minV && phys.speed < def.minV) { showMsg(`${def.name} braucht mehr Tempo`, 'bad'); return; }
   const side = Math.abs(inp.steer) > 0.2 ? Math.sign(inp.steer) : phys.aLat ? -Math.sign(phys.aLat) || 1 : 1;
-  skiTrick = { id, def, t: 0, T: def.T, side: id === 'eurocarve' || id === 'telemark' ? (Math.abs(inp.steer) > 0.2 ? Math.sign(inp.steer) : Math.sign(phys.aLat) || 1) : side, legend: id0 === 'legend', off: new THREE.Vector3(), yaw: 0, sprayed: false };
+  // Drehpunkt des Butters: Mitte der flach aufliegenden Schaufeln (Körper-Maßstab 0,94)
+  const zc = id === 'butter' ? -0.94 * (skier.bendS1 + 0.08) : null;
+  skiTrick = { id, def, t: 0, T: def.T, side, zc, legend: id0 === 'legend', off: new THREE.Vector3(), yaw: 0 };
 }
 function endSkiTrick(ok) {
   const st = skiTrick;
@@ -1307,63 +1308,50 @@ const tvA = new THREE.Vector3(), tvB = new THREE.Vector3(), Y_AX = new THREE.Vec
 /** Haltung und Drehung eines laufenden Ski-Tricks (in updateSkier, nach der normalen Körperstellung). Gibt Zusatzwerte
  * für skier.update zurück. */
 function skiTrickPose(dt, pv) {
-  const st = skiTrick, def = st.def;
+  const st = skiTrick;
   st.t += dt;
-  const u = Math.min(1, st.t / st.T), env = smoothstep(0, 0.14, u) * (1 - smoothstep(0.86, 1, u));
-  const P = { butter: 0, butterTail: false, euro: 0, euroSide: st.side, tele: 0, teleLead: st.side, crouch: 0, lean: null, leanW: 0 };
+  const u = Math.min(1, st.t / st.T);
+  const P = { butter: 0, crouch: 0, lean: null, leanW: 0 };
   const baseYaw = pv.rotation.y;
-  let dYaw = 0, roll = 0, lift = 0, zc = null;
-  const sprayAt = (x, y, z, n, size, up) => { for (let i = 0; i < n; i++) spray.emit(x + (Math.random() - 0.5) * 0.5, y + 0.05, z + (Math.random() - 0.5) * 0.5, phys.vel.x * 0.3 + (Math.random() - 0.5) * 2, up * (0.5 + Math.random()), phys.vel.z * 0.3 + (Math.random() - 0.5) * 2, size * (0.6 + Math.random() * 0.6), 0.6 + Math.random() * 0.7); };
+  let dYaw = 0;
   if (st.id === 'butter') {
-    P.butter = env; dYaw = st.side * TAU * smoothstep(0.1, 0.92, u); zc = -0.72; P.crouch = 0.5 * env;
-    pv.rotation.x -= 0.14 * env;
-  } else if (st.id === 'butterkombi') {
-    const a = smoothstep(0.06, 0.94, u); dYaw = st.side * TAU * a;
-    const tail = a > 0.5; P.butterTail = tail; zc = tail ? 0.62 : -0.72;
-    P.butter = tail ? smoothstep(0.5, 0.6, a) * (1 - smoothstep(0.9, 1, a)) : smoothstep(0, 0.1, a) * (1 - smoothstep(0.4, 0.5, a));
-    P.crouch = 0.5 * env;
-    pv.rotation.x += (tail ? 0.12 : -0.14) * P.butter;
+    // Ablauf wie bei echten Fahrern: erst Gewicht nach vorn, die Ski biegen sich durch und die Enden heben ab (gut ein
+    // Fünftel der Zeit), dann eine ruhige ganze Drehung auf den Schaufeln (langsam an, langsam aus), zum Schluss wieder
+    // flach auf beide Ski. Alle Übergänge mit stetiger Beschleunigung, damit nichts ruckt.
+    const env = smoother(0, 0.22, u) * (1 - smoother(0.8, 1, u));
+    P.butter = env; P.crouch = 0.18 * env; P.lean = 0; P.leanW = Math.min(1, env * 1.6);
+    dYaw = st.side * TAU * smoother(0.17, 0.86, u);
+    if (phys.grounded) phys.vel.multiplyScalar(Math.exp(-dt * 0.18 * env));   // die Schaufeln bremsen etwas
+    // feiner Schneestaub an den Schaufeln, solange sie über den Schnee drehen
+    const turnRate = Math.abs(dYaw - st.yaw) / Math.max(dt, 1e-3);
+    if (env > 0.6 && turnRate > 0.6) {
+      tvA.set(0, 0, st.zc).applyAxisAngle(Y_AX, baseYaw + dYaw).add(st.off);
+      tvA.applyQuaternion(skier.root.quaternion).add(skier.root.position);
+      const n = Math.random() < 0.6 * Q.fx ? 1 : 0;
+      for (let i = 0; i < n; i++) spray.emit(tvA.x + (Math.random() - 0.5) * 0.3, tvA.y + 0.04, tvA.z + (Math.random() - 0.5) * 0.3, phys.vel.x * 0.5 + (Math.random() - 0.5) * 1.2, 0.3 + Math.random() * 0.6, phys.vel.z * 0.5 + (Math.random() - 0.5) * 1.2, 0.12 + Math.random() * 0.12, 0.5 + Math.random() * 0.4);
+    }
   } else if (st.id === 'slash') {
-    dYaw = -st.side * 1.25 * env; roll = -st.side * 0.42 * env; P.crouch = 0.65 * env;   // Ski quer in Lenkrichtung, Schnee nach außen
-    if (phys.grounded) phys.vel.multiplyScalar(Math.exp(-dt * 1.0 * env));
-    if (u > 0.18 && u < 0.8) { // Schneewand zur Außenseite: im Pulver riesig
-      const n = Math.round((14 + phys.pow * 26) * Q.fx), r = phys.right, sd = -st.side;
+    // Ski quer in Lenkrichtung, auf der Kante (über die normale Kurvenlage, die Ski bleiben auf dem Schnee), Schnee nach außen
+    const env = smoother(0, 0.28, u) * (1 - smoother(0.62, 1, u));
+    dYaw = -st.side * 1.15 * env; P.lean = st.side * 0.72; P.leanW = env; P.crouch = 0.55 * env;
+    if (phys.grounded) phys.vel.multiplyScalar(Math.exp(-dt * 0.9 * env));
+    if (u > 0.2 && u < 0.75) { // Schneewand zur Außenseite: im Pulver riesig
+      const n = Math.round((10 + phys.pow * 20) * Q.fx * env), r = phys.right, sd = -st.side;
       for (let i = 0; i < n; i++) spray.emit(phys.pos.x + r.x * sd * 0.6, phys.pos.y + 0.15, phys.pos.z + r.z * sd * 0.6,
         r.x * sd * (2 + Math.random() * 5) + phys.vel.x * 0.4, 1.5 + Math.random() * (3 + phys.pow * 4), r.z * sd * (2 + Math.random() * 5) + phys.vel.z * 0.4,
         0.3 + Math.random() * 0.6 + phys.pow * 0.6, 0.8 + Math.random() * 1.2, 3.5, 0.55, 2.4);
     }
-  } else if (st.id === 'eurocarve') {
-    P.lean = st.side * 0.88; P.leanW = env; roll = -st.side * 0.26 * env; P.euro = env; P.crouch = 0.45 * env;
-    if (env > 0.5) { // die Hand zieht eine Schneespur
-      skier.body.updateWorldMatrix(true, false);
-      const h = skier.sides[st.side > 0 ? 1 : 0].hand; tvA.copy(h).applyMatrix4(skier.body.matrixWorld);
-      sprayAt(tvA.x, tvA.y - 0.1, tvA.z, Math.round(3 * Q.fx), 0.18, 0.8);
-    }
-  } else if (st.id === 'telemark') {
-    P.tele = env; P.lean = st.side * 0.45; P.leanW = env; P.crouch = 0.35 * env;
-  } else if (st.id === 'hopturn') {
-    lift = u < 0.62 ? 0.36 * Math.sin(Math.PI * clamp((u - 0.08) / 0.54, 0, 1)) : 0;
-    dYaw = -st.side * 1.3 * smoothstep(0.1, 0.38, u) * (1 - smoothstep(0.62, 0.98, u));
-    P.crouch = (u < 0.1 ? u / 0.1 : u > 0.6 && u < 0.85 ? 1 - Math.abs(u - 0.7) / 0.15 : 0.15) * 0.8;
-    if (!st.sprayed && u > 0.62) { st.sprayed = true; const r = phys.right; for (let i = 0; i < Math.round(40 * Q.fx); i++) spray.emit(phys.pos.x, phys.pos.y + 0.1, phys.pos.z, r.x * st.side * (2 + Math.random() * 4), 1 + Math.random() * 2.5, r.z * st.side * (2 + Math.random() * 4), 0.3 + Math.random() * 0.4, 0.7 + Math.random() * 0.8); phys.vel.multiplyScalar(0.85); }
   }
-  // Drehung um den Auflagepunkt (Schaufel bzw. Ende) statt um die Körpermitte; Versatz am Ende sanft zurück
-  if (zc !== null) {
+  // Butter: Drehung um die aufliegenden Schaufeln statt um die Körpermitte. Der Drehpunkt bleibt fest liegen; nach der
+  // ganzen Drehung ist der Versatz wieder null (der Körper ist einmal um die Schaufeln gekreist).
+  if (st.zc !== null) {
     const y0 = baseYaw + st.yaw, y1 = baseYaw + dYaw;
-    tvA.set(0, 0, zc).applyAxisAngle(Y_AX, y0).add(st.off);            // Auflagepunkt vor dieser Drehung
-    st.off.copy(tvA).sub(tvB.set(0, 0, zc).applyAxisAngle(Y_AX, y1));   // neuer Versatz: Punkt bleibt liegen
+    tvA.set(0, 0, st.zc).applyAxisAngle(Y_AX, y0).add(st.off);
+    st.off.copy(tvA).sub(tvB.set(0, 0, st.zc).applyAxisAngle(Y_AX, y1));
+    pv.position.x += st.off.x; pv.position.z += st.off.z;
   }
   st.yaw = dYaw;
   pv.rotation.y = baseYaw + dYaw;
-  const fade = 1 - smoothstep(0.86, 1, u);
-  pv.position.x += st.off.x * fade; pv.position.z += st.off.z * fade;
-  if (roll) {
-    // Neigen um die Füße (die Ski bleiben im Schnee), nicht um die Hüfte
-    pv.rotation.z += roll;
-    tvA.set(-0.85 * Math.sin(roll), -0.85 * (1 - Math.cos(roll)), 0).applyAxisAngle(Y_AX, pv.rotation.y);
-    pv.position.add(tvA);
-  }
-  pv.position.y += lift;
   if (st.t >= st.T) endSkiTrick(true);
   return P;
 }
@@ -1786,19 +1774,22 @@ function updateCamera(dt, time) {
   camDir.lerp(tV, camSnap ? 1 : 1 - Math.exp(-dt * 3.2)).normalize();
   // Bei Tricks rückt die Kamera heran und schwenkt leicht zur Seite, beim Sturz geht sie auf Abstand
   const fc = vis.flipCam * z, ba = vis.bigAir * (1 - z * 0.6);
-  const dist = (lerp(6.4 + sp * 0.07 - inp.tuck * 0.5 + vis.air * 1.2, 4.6 + fc * 0.8, z) + ba * 3.2 + av * 2.4) * (1 - 0.35 * cc) + cc * 2.6;
+  // Nose Butter: die Kamera rückt langsam etwas heran, geht tiefer und leicht zur Seite, damit man die gebogenen Ski sieht
+  vis.bcam += ((skiTrick && skiTrick.id === 'butter' ? 1 : 0) - vis.bcam) * (1 - Math.exp(-dt * (skiTrick ? 1.8 : 1.2)));
+  const bc = vis.bcam * vis.bcam * (3 - 2 * vis.bcam) * (1 - av) * (1 - cc);
+  const dist = ((lerp(6.4 + sp * 0.07 - inp.tuck * 0.5 + vis.air * 1.2, 4.6 + fc * 0.8, z) + ba * 3.2 + av * 2.4) * (1 - 0.35 * cc) + cc * 2.6) * (1 - 0.45 * bc);
   tV2.copy(p).addScaledVector(camDir, -dist);
-  const side = (2.6 * z + 1.6 * fc) * vis.camSide;
+  const side = (2.6 * z + 1.6 * fc) * vis.camSide + 1.5 * bc;
   tV2.x += -camDir.z * side;
   tV2.z += camDir.x * side;
   const groundY = C.height(tV2.x, tV2.z);
   tV2.y = Math.max(groundY + 1.9 + sp * 0.012, p.y + 1.55);
-  tV2.y = Math.max(groundY + 1.2, lerp(tV2.y, p.y + 1.3 - fc * 0.35, z * 0.75)) + cc * 1.9 + ba * 1.6 - vis.dip * 0.45 + av * 1.5;
+  tV2.y = Math.max(groundY + 1.2, lerp(lerp(tV2.y, p.y + 1.3 - fc * 0.35, z * 0.75), p.y + 1.15, bc)) + cc * 1.9 + ba * 1.6 - vis.dip * 0.45 + av * 1.5;
   camPos.lerp(tV2, camSnap ? 1 : 1 - Math.exp(-dt * (7.5 + cc * 9)));
   const gh = C.height(camPos.x, camPos.z) + 0.9;
   if (camPos.y < gh) camPos.y = gh;
-  tV3.copy(p).addScaledVector(camDir, (6 + ba * 5 + av * 10) * (1 - z) * (1 - cc));
-  tV3.y = lerp(lerp(C.height(tV3.x, tV3.z) + 1.0, p.y + 1.0, 0.5 + vis.air * 0.3 - ba * 0.35 - av * 0.5), p.y + 0.9, Math.max(z, cc));
+  tV3.copy(p).addScaledVector(camDir, (6 + ba * 5 + av * 10) * (1 - z) * (1 - cc) * (1 - 0.6 * bc));
+  tV3.y = lerp(lerp(lerp(C.height(tV3.x, tV3.z) + 1.0, p.y + 1.0, 0.5 + vis.air * 0.3 - ba * 0.35 - av * 0.5), p.y + 0.9, Math.max(z, cc)), p.y + 0.55, bc * 0.6);
   lookSm.lerp(tV3, camSnap ? 1 : 1 - Math.exp(-dt * (11 + z * 8)));
   camSnap = false;
   const sh = Math.pow(clamp(sp / 42, 0, 1), 2) * 0.035 + vis.shake * 0.4;
@@ -1808,7 +1799,7 @@ function updateCamera(dt, time) {
     camPos.z + (C.vnoise(time * 19, 4.1) - 0.5) * sh);
   camera.lookAt(lookSm);
   camera.rotateZ(-vis.lean * 0.09 + (C.vnoise(time * 17, 9.2) - 0.5) * vis.shake * 0.12);
-  let fov = 60 + 22 * smoothstep(8, 44, sp) * (1 - 0.5 * av) + inp.tuck * 2 - 15 * z - 20 * cc + 6 * ba + 3 * av;
+  let fov = 60 + 22 * smoothstep(8, 44, sp) * (1 - 0.5 * av) + inp.tuck * 2 - 15 * z - 20 * cc + 6 * ba + 3 * av - 8 * bc;
 
   // ---- Ego-Sicht (Helmkamera): Augen im Kopf des Fahrers, dreht bei Flips und Spins voll mit,
   // neigt sich in die Kurve, federt bei Landungen, zittert mit Tempo und Untergrund. Beim Sturz Verfolgerkamera.
@@ -2228,14 +2219,14 @@ function updateSkier(dt) {
     pv.quaternion.multiply(qSp.setFromAxisAngle(vAx, -sp.def.ang(u)));
   }
   // Ski-Trick am Boden (Taste E): bricht bei Sturz, Absprung oder Rail ab
-  if (skiTrick && (crashed || BOARD() || phys.grind || (!phys.grounded && skiTrick.id !== 'hopturn') || game.mode !== 'run')) endSkiTrick(false);
+  if (skiTrick && (crashed || BOARD() || phys.grind || !phys.grounded || game.mode !== 'run')) endSkiTrick(false);
   const stp = skiTrick ? skiTrickPose(dt, pv) : null;
   // Rückwärts (Switch) ist der Körper um 180° gedreht: Neigung und Lenkdrehung müssen im Körper gespiegelt werden,
   // sonst lehnt er sich aus der Kurve heraus statt hinein.
   const bodySign = Math.cos(trick.yaw + swYaw);
   skier.update({
     lean: BOARD() ? 0 : stp && stp.lean !== null ? lerp(vis.lean * bodySign, stp.lean, stp.leanW) : vis.lean * bodySign, crouch: BOARD() ? Math.min(1, vis.crouch + 0.32 * Math.abs(vis.lean)) : Math.min(1, vis.crouch + (stp ? stp.crouch : 0)), edge: BOARD() && !crashed ? vis.bEdgeExtra || 0 : 0, steer: phys.grounded && !BOARD() ? inp.steer * bodySign * (1 + 0.9 * (C.cfg.heli ? 1 : 0)) : 0, plow: BOARD() ? 0 : vis.plow, plowDir: bodySign < 0 ? -1 : 1, air: vis.air, compress: vis.compress,
-    butter: stp ? stp.butter : 0, butterTail: stp ? stp.butterTail : false, tele: stp ? stp.tele : 0, teleLead: stp ? stp.teleLead : 1, euro: stp ? stp.euro : 0, euroSide: stp ? stp.euroSide : 1,
+    butter: stp ? stp.butter : 0,
     speed: phys.speed, grab: trick.grab, grabSide: trick.gs, sup: BOARD() ? 0 : vis.sup || 0, cross: BOARD() ? 0 : vis.cross || 0, daffy: BOARD() ? 0 : vis.daffy || 0, tweak: BOARD() ? 0 : vis.tweak || 0, look: vis.look, tuck: vis.tuck, spin: vis.spin, extend: vis.extend, crash: crashed ? 1 : 0, crashA: vis.crashAngle,
   }, dt);
   skier.updateLoose(dt, C.height);
@@ -2336,8 +2327,10 @@ function updateHud(dt) {
   } else if (game.kind === 'endless') {
     $('time').innerHTML = num(totalScore()) + (game.pend > 0 ? `<span class="pend"> +${num(game.pend)}</span>` : '');
     $('best').textContent = `${num(game.maxD)} m${game.combo > 1 ? ` · ×${game.combo.toFixed(1).replace('.0', '')}` : ''} · Rekord ${num(Math.max(game.bestEndless, totalScore()))} P / ${num(Math.max(game.bestDist, game.maxD))} m`;
-    $('gates').innerHTML = game.cp ? '<span class="lives">✓ gesetzt</span>' : '<span class="lives">–</span>';
-    $('penalty').textContent = isTouch ? (game.cp ? '↺ zurück · ⚑ neu setzen' : '⚑ = Punkt setzen') : game.cp ? 'T = zurück · F = neu setzen' : 'F = Punkt setzen';
+    const cpH = game.cp ? 'gesetzt' : 'offen';
+    if ($('gates').dataset.cp !== cpH) { $('gates').dataset.cp = cpH; $('gates').innerHTML = `<span class="lives${game.cp ? ' on' : ''}">${game.cp ? 'Gesetzt' : 'Offen'}</span>`; }
+    const pen = isTouch ? (game.cp ? 'Fahne tippen: zurück, halten: neu' : 'Fahne halten: Punkt setzen') : game.cp ? '<kbd>T</kbd>zurück<kbd>F</kbd>neu' : '<kbd>F</kbd>Punkt setzen';
+    if ($('penalty').dataset.h !== pen) { $('penalty').dataset.h = pen; $('penalty').innerHTML = pen; }
   } else {
     $('time').textContent = fmt(game.time + game.penalty);
     $('gates').innerHTML = `${game.passed}<span>/${C.gates.length}</span>`;

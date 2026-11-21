@@ -46,6 +46,24 @@ function ik(A, T, l1, l2, pole, out) {
   return out.copy(A).addScaledVector(tA, a).addScaledVector(tB, h);
 }
 
+// Ski biegen (Butter): Die Schaufel (bzw. beim Tail-Butter das Ende) liegt flach auf dem Schnee, ab dem Auflagepunkt
+// biegt sich der Ski in einer Kurve nach oben, immer steiler zum Ende hin (Höhe A mal Abstand zum Quadrat). Der Fuß wird
+// so gekippt und angehoben, dass der Schuh auf der Kurve steht (skier.update); der Shader formt den Rest relativ dazu.
+// Bei uBendA = 0 bleibt alles wie vorher.
+function patchBend(mat, uni) {
+  mat.onBeforeCompile = (sh) => {
+    Object.assign(sh.uniforms, uni);
+    sh.vertexShader = sh.vertexShader
+      .replace('#include <common>', '#include <common>\nuniform float uBendA;\nuniform float uBendZ;\nuniform float uBendDir;')
+      .replace('#include <begin_vertex>', `#include <begin_vertex>
+      {
+        float q = max(0.0, uBendDir * (transformed.z - uBendZ));
+        transformed.y += uBendA * (q * q - uBendZ * uBendZ + 2.0 * uBendZ * transformed.z);
+      }`);
+  };
+  mat.customProgramCacheKey = () => 'skiBend';
+}
+
 function makeSkinned(geo, mat) {
   const n = geo.attributes.position.count;
   const b0 = geo.attributes._b0, b1 = geo.attributes._b1, w = geo.attributes._w0;
@@ -83,6 +101,8 @@ export class Skier {
     const fixedMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.55 });
     const lensMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.18, metalness: 0.2 });
     const skiMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.3, metalness: 0.15 });
+    this.bendU = { uBendA: { value: 0 }, uBendZ: { value: -0.72 }, uBendDir: { value: 1 } };
+    patchBend(skiMat, this.bendU);
 
     this.bones = [];
     for (let i = 0; i < 11; i++) {
@@ -149,6 +169,7 @@ export class Skier {
     if (!this._gold) {
       this._gold = new THREE.MeshStandardMaterial({ vertexColors: true, metalness: 1, roughness: 0.24, side: THREE.DoubleSide, transparent: true });
       this._gold.userData.metal = true;
+      patchBend(this._gold, this.bendU);
     }
     if (this.env) this._gold.envMap = this.env;
     return this._gold;
@@ -286,13 +307,20 @@ export class Skier {
     const sup = s.sup || 0, cross = s.cross || 0;   // Spezialtricks: Superman (gestreckt), Iron Cross (Ski gekreuzt)
     const daffy = s.daffy || 0;                     // Daffy: linkes Bein weit nach vorn (Spitze hoch), rechtes nach hinten
     const tweak = s.tweak || 0;                     // Japan Air: Ski hinter dem Körper hochgezogen, Spitzen nach unten
+    // Ski-Tricks am Boden: Butter (Schaufel bzw. Ende gedrückt, Ski gebogen), Telemark (freie Ferse), Eurocarve (Hand am Schnee)
+    const butter = this.gear === 'board' ? 0 : s.butter || 0, bTail = !!s.butterTail;
+    const tele = this.gear === 'board' ? 0 : s.tele || 0, teleLead = s.teleLead || 1;
+    const euro = this.gear === 'board' ? 0 : s.euro || 0, euroSide = s.euroSide || 1;
+    // Biegekurve C(z) = A·q², q = Abstand hinter dem Auflagepunkt; Fuß: Höhe C(0), Neigung C'(0) = -2·A·zc
+    const bA = 0.15 * butter, bZc = bTail ? 0.62 : -0.72, bRise = bA * bZc * bZc, bTh = -Math.atan(-2 * bA * bZc);
+    this.bendU.uBendA.value = bA; this.bendU.uBendZ.value = bZc; this.bendU.uBendDir.value = bTail ? -1 : 1;
     let c = clamp(Math.max(s.crouch + s.compress * 0.7 + air * 0.25, tuck * 0.9, grab * 0.75, cross * 0.7), 0, 1);
     c = lerp(c, 0.08, Math.max(ext, sup, daffy * 0.7));
     if (crash) c = 0.35;
     const plow = s.plow;
     const idle = 1 - clamp(s.speed / 3, 0, 1);
     const bob = Math.sin(this.t * 2.2) * 0.012 * idle + Math.sin(this.t * 31) * 0.004 * clamp(s.speed / 30, 0, 1);
-    const hipH = lerp(1.0, 0.70, c) - 0.09 * Math.abs(lean);
+    const hipH = lerp(1.0, 0.70, c) - 0.09 * Math.abs(lean) - 0.13 * tele;
     const edge = clamp(lean * 1.2, -1.05, 1.05);
     const spinAbs = Math.abs(spin) * (1 - grab) * (1 - tuck);
 
@@ -336,12 +364,22 @@ export class Skier {
         // Pflug: vorwärts Spitzen zusammen, rückwärts Enden zusammen (plowDir = -1) – der Keil öffnet sich immer in Fahrtrichtung
         f.rotation.set(air * 0.1 * (1 - ext) + grab * 0.32 + tuck * 0.12 - sup * 0.35 + daffy * (side < 0 ? 0.6 : -0.55) - tweak * 0.85, side * (plow * 0.33 * (s.plowDir || 1) + grab * 0.22 + cross * 0.75), -(edge - side * plow * 0.28) - side * cross * 0.35);
       }
+      if (butter > 0.001 && !crash) { f.rotation.x += bTh; f.position.y += bRise; }
+      if (tele > 0.001 && !crash) f.position.z += (side === teleLead ? -0.36 : 0.34) * tele;
       f.updateMatrix();
+      // Telemark: hinterer Schuh hebt die Ferse (kippt um die Zehen), der Ski bleibt flach
+      const boot = f.children[0], heel = tele > 0.001 && !crash && side !== teleLead ? -0.55 * tele : 0;
+      if (boot && boot.rotation.x !== heel) {
+        boot.rotation.x = heel;
+        const c0 = Math.cos(heel), s0 = Math.sin(heel), py = 0.03, pz = -0.14, oy = 0.036 - py, oz = -pz;
+        boot.position.set(0, py + oy * c0 - oz * s0, pz + oy * s0 + oz * c0);
+      }
       if (!k.loose) {
         k.ski.position.copy(f.position);
         k.ski.quaternion.copy(f.quaternion);
       }
-      k.ankle.set(0, 0.345, -0.02).applyMatrix4(f.matrix);
+      if (boot && boot.rotation.x !== 0) { boot.updateMatrix(); k.ankle.set(0, 0.309, -0.02).applyMatrix4(boot.matrix).applyMatrix4(f.matrix); }
+      else k.ankle.set(0, 0.345, -0.02).applyMatrix4(f.matrix);
       k.hip.copy(HIP0[i]).applyMatrix4(this.mPel);
       tD.set(side * (0.12 + grab * 0.35 + tuck * 0.3), 0.25, -1);
       ik(k.hip, k.ankle, L_TH, L_SH, tD, k.knee);
@@ -377,6 +415,11 @@ export class Skier {
         if (sup > 0.01) k.hand.lerp(tD.set(side * 0.2, 1.62, -0.62).applyMatrix4(this.mCh), sup);
         if (cross > 0.01) k.hand.lerp(tD.copy(k.shoulder).add(tC.set(side * 0.62, 0.12, -0.12)), cross);
         if (daffy > 0.01) k.hand.lerp(tD.copy(k.shoulder).add(tC.set(side * 0.5, 0.18, side * 0.25)), daffy);   // Arme seitlich zum Ausgleich
+        // Eurocarve: kurveninnere Hand streift über den Schnee, die äußere hält das Gleichgewicht
+        if (euro > 0.01) k.hand.lerp(side === euroSide ? tD.set(side * 0.78, 0.16, -0.05) : tD.copy(k.shoulder).add(tC.set(side * 0.45, 0.25, -0.2)), euro);
+        // Butter und Telemark: Arme weit vorn bzw. seitlich zum Ausbalancieren
+        if (butter > 0.01) k.hand.lerp(tD.copy(k.shoulder).add(tC.set(side * 0.42, -0.08, -0.38)), butter * 0.8);
+        if (tele > 0.01) k.hand.lerp(tD.copy(k.shoulder).add(tC.set(side * 0.5, -0.2, side === teleLead ? -0.35 : 0.1)), tele * 0.7);
       }
       if (this.gear === 'board' && !crash && grab < 0.01) {
         // ohne Stöcke: Arme locker seitlich, leicht vor dem Körper, zum Ausbalancieren

@@ -350,7 +350,7 @@ html.rot .menu .seg.gear button { padding: 6px 10px; font-size: 12px; }
 
 /* Spezialtrick-Stern: nur in der Luft sichtbar */
 #touchUI .tbtn.spec { width: 66px; height: 66px; background: rgba(255, 200, 80, 0.42); opacity: 0; pointer-events: none; transition: opacity 0.15s; }
-#touchUI.air .tbtn.spec { opacity: 1; pointer-events: auto; }
+#touchUI.air .tbtn.spec, #touchUI.skitrick .tbtn.spec { opacity: 1; pointer-events: auto; }
 #touchUI .tbtn.spec svg { fill: rgba(255, 255, 255, 0.9); }
 
 /* Unterstützen (v32): Knopf im Menü und Hinweis im Ziel erscheinen nur mit eingetragenem Spendenlink (src/donate.js) */
@@ -392,6 +392,14 @@ html.rot #shop3d { position: absolute; }
 #shop3d .s3-kicker { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.7; }
 #shop3d .s3-detail h2 { margin: 0; font: italic 800 28px/1.05 var(--font); }
 #shop3d .s3-detail p { margin: 0; font-size: 14px; line-height: 1.4; opacity: 0.85; }
+#shop3d .s3-detail .s3-trick { padding: 8px 10px; border-radius: 10px; background: rgba(39, 195, 255, 0.12); border: 1px solid rgba(39, 195, 255, 0.35); opacity: 1; font-size: 13px; }
+#shop3d .s3-detail .s3-trick b { color: #8fdcff; }
+#shop3d .s3-req { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 13px; }
+#shop3d .s3-req li { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: baseline; padding: 4px 8px; border-radius: 8px; background: rgba(255, 255, 255, 0.06); }
+#shop3d .s3-req li b { font-weight: 600; opacity: 0.8; }
+#shop3d .s3-req li em { font-style: normal; color: #ff9a8a; }
+#shop3d .s3-req li.ok em { color: #63e6b0; }
+#shop3d .s3-list em.lock { color: #ff9a8a; }
 #shop3d .gstats { margin: 4px 0; gap: 6px; }
 #shop3d .gstats li { grid-template-columns: 86px 1fr 20px; font-size: 12px; }
 #shop3d .gstats i { height: 8px; border-radius: 4px; }

@@ -1,6 +1,6 @@
 // Shop im Startmenü: Punkte aus den Läufen sammeln (im Browser gespeichert) und dafür Ski, Snowboards und Outfits kaufen.
 // Gekauftes bleibt gekauft; angelegt wird mit einem Klick. Die Punkte gibt es nur im Spiel, kein echtes Geld.
-import { SKIS, BOARDS } from './gear.js';
+import { SKIS, BOARDS, SKI_TRICKS } from './gear.js';
 
 const KEY = { wallet: 'gipfelsturm_wallet', owned: 'gipfelsturm_owned', equip: 'gipfelsturm_equip', earned: 'gipfelsturm_earned' };
 const START_POINTS = 300;   // Startguthaben: das erste Teil ist gleich erreichbar
@@ -14,6 +14,10 @@ export const OUTFITS = {
   guide: { name: 'Bergführer', text: 'Leuchtorange und Schwarz, gut sichtbar im Gelände', jacket: '#ff6a13', accent: '#23262d', pants: '#23262d', price: 250 },
   snowman: { name: 'Schneemann', text: 'Ganz in Weiß, mit Zylinder und Karottennase', jacket: '#f2f2f0', accent: '#16171b', pants: '#e9e6df', head: 'tophat', price: 1200 },
   gold: { name: 'Gipfelkönig', text: 'Gold und Schwarz mit Krone, für echte Rekordjäger', jacket: '#d4a62a', accent: '#16171b', pants: '#16171b', head: 'crown', price: 3000 },
+  freerider: { name: 'Freerider', text: 'Weite Jacke in Oliv und Sand, gedeckte Farben fürs Gelände', jacket: '#4b5a3c', accent: '#d8c9a3', pants: '#2c2f33', price: 700 },
+  worldcup: { name: 'Weltcup-Rennanzug', text: 'Schwarz mit Neongelb, dazu die Startnummer', jacket: '#16171b', accent: '#e6ff2e', pants: '#16171b', body: 'racer', price: 900 },
+  alpine: { name: 'Alpin Klassik', text: 'Rot und Weiß mit gestreifter Strickmütze und Bommel', jacket: '#b3121f', accent: '#f4f2ee', pants: '#2a2d35', head: 'beanie_alpine', price: 1100 },
+  polar: { name: 'Polarnacht', text: 'Eisweiß und Gletscherblau mit Strickmütze', jacket: '#e9eef3', accent: '#7cc8ff', pants: '#1d2c52', head: 'beanie_polar', price: 1300 },
 };
 const SKI_INFO = {
   allround: ['Taillierter Allround-Ski mit leichtem Rocker an der Schaufel', 0],
@@ -24,7 +28,15 @@ const SKI_INFO = {
   wood: ['Echtholz-Optik mit hellen Seitenwangen', 1000],
   carbon: ['Carbon-Gewebe, blaue Akzente, leichte Bindung', 1400],
   gold: ['Goldene Oberfläche, schwarze Mitte, für die Bestenliste', 2500],
+  tele: ['Telemark-Ski mit freier Ferse: kurvt eng und tanzt im Gelände', 1600],
+  charger: ['108 mm, lang und stabil für steile, offene Hänge und Tiefschnee bei Tempo', 1900],
+  speed: ['2,05 m langer Abfahrtsski mit Rennplatte: das schnellste Gleiten, kaum wendig, keine Tricks', 2200],
+  legend: ['Titan und Carbon, alles auf Höchstwert. Nur für alle, die in allen vier Rennen Spitzenzeiten fahren', 15000],
 };
+// Freischaltung: der Spitzen-Ski braucht Bestzeiten unter diesen Werten in allen vier Rennen (Sekunden inklusive Strafzeit).
+// Zum Vergleich der Renn-Bot mit dem Allround-Ski: Slalom 43,8, Riesentorlauf 56,8, Super-G 78,4, Abfahrt 89,7.
+export const LEGEND_TIMES = { sl: 43, gs: 56, sg: 77, dh: 88 };
+const REQ = { legend: 'race' };
 const BOARD_INFO = {
   classic: ['Twin-Board mit Streifen, das Brett vom Start', 0],
   freestyle: ['Weiches Park-Board mit Schachbrett-Grafik. Das Trick-Brett: dreht schneller, mehr Trickpunkte', 300],
@@ -32,10 +44,12 @@ const BOARD_INFO = {
   powder: ['Swallowtail: Schwalbenschwanz hinten, Nase hoch, für tiefen Pulver', 1100],
   aurora: ['Nachtblau mit Polarlicht-Verlauf', 1300],
   gold: ['Gold mit schwarzen Streifen', 2500],
+  split: ['Splitboard in Oliv und Sand: im Tiefschnee und bei harten Bedingungen zuhause', 1700],
+  pro: ['Kurzes Park-Brett mit Graffiti-Grafik, wendig und verspielt', 1500],
 };
 
 export const CATALOG = {
-  ski: Object.keys(SKIS).map((id) => ({ id, name: SKIS[id].name, text: SKI_INFO[id][0], price: SKI_INFO[id][1], colors: SKIS[id].top, st: SKIS[id].st })),
+  ski: Object.keys(SKIS).map((id) => ({ id, name: SKIS[id].name, text: SKI_INFO[id][0], price: SKI_INFO[id][1], colors: SKIS[id].top, st: SKIS[id].st, trick: SKIS[id].trick ? SKI_TRICKS[SKIS[id].trick] : null, req: REQ[id] || null })),
   board: Object.keys(BOARDS).map((id) => ({ id, name: BOARDS[id].name, text: BOARD_INFO[id][0], price: BOARD_INFO[id][1], colors: BOARDS[id].top, st: BOARDS[id].st })),
   outfit: Object.keys(OUTFITS).map((id) => ({ id, name: OUTFITS[id].name, text: OUTFITS[id].text, price: OUTFITS[id].price, colors: OUTFITS[id].jacket ? [OUTFITS[id].jacket, OUTFITS[id].accent, OUTFITS[id].pants] : ['#1d2c52', '#ff6a13', '#33363b'] })),
 };
@@ -60,9 +74,14 @@ export const shop = {
     return n;
   },
   has(cat, id) { return this.owned.has(`${cat}:${id}`); },
+  /** Freischaltung prüfen (Bestzeiten in allen vier Rennen für den Spitzen-Ski). */
+  unlocked(it) {
+    if (!it || it.req !== 'race') return true;
+    return Object.entries(LEGEND_TIMES).every(([d, lim]) => { const b = parseFloat(read('gipfelsturm_best_' + d, 0)) || 0; return b > 0 && b <= lim; });
+  },
   buy(cat, id) {
     const it = CATALOG[cat].find((q) => q.id === id);
-    if (!it || this.has(cat, id) || this.wallet < it.price) return false;
+    if (!it || this.has(cat, id) || this.wallet < it.price || !this.unlocked(it)) return false;
     this.wallet -= it.price;
     this.owned.add(`${cat}:${id}`);
     this.equip[cat] = id;

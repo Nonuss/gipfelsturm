@@ -49,11 +49,27 @@ export const SKIS = {
   allround: { name: 'Allround', st: { tempo: 5, turn: 5, pow: 5, trick: 5, grip: 5 }, len: 1.72, tip: 0.122, waist: 0.078, tail: 0.106, rockT: 0.045, rockL: 0.012, top: ['#23262d', '#ff6a13', '#f2f2f0'], pat: 'stripe', base: '#14161a', bind: '#ff6a13' },
   slalom: { name: 'Slalom-Racer', st: { tempo: 5, turn: 9, pow: 2, trick: 3, grip: 8 }, len: 1.65, tip: 0.124, waist: 0.066, tail: 0.104, rockT: 0.03, rockL: 0.006, top: ['#e3202b', '#f6f6f4', '#14161a'], pat: 'race', base: '#101216', bind: '#e3202b', plate: true },
   giant: { name: 'Riesentorlauf GS', st: { tempo: 8, turn: 4, pow: 3, trick: 2, grip: 8 }, len: 1.85, tip: 0.112, waist: 0.068, tail: 0.098, rockT: 0.03, rockL: 0.006, top: ['#1d4fd8', '#f6f6f4', '#ffd23f'], pat: 'race', base: '#101216', bind: '#1d4fd8', plate: true },
-  powder: { name: 'Powder 118', st: { tempo: 5, turn: 5, pow: 10, trick: 6, grip: 3 }, len: 1.86, tip: 0.142, waist: 0.118, tail: 0.13, rockT: 0.085, rockL: 0.05, top: ['#ff8a1e', '#14161a', '#fff1d6'], pat: 'mountain', base: '#1a1c22', bind: '#14161a' },
-  park: { name: 'Park Twin', st: { tempo: 4, turn: 7, pow: 4, trick: 10, grip: 4 }, len: 1.74, tip: 0.124, waist: 0.092, tail: 0.124, rockT: 0.06, rockL: 0.055, twin: true, top: ['#b6ff3a', '#7a2bd9', '#ff3d7f', '#14161a'], pat: 'blocks', base: '#2a1446', bind: '#14161a' },
+  powder: { name: 'Powder 118', trick: 'slash', st: { tempo: 5, turn: 5, pow: 10, trick: 6, grip: 3 }, len: 1.86, tip: 0.142, waist: 0.118, tail: 0.13, rockT: 0.085, rockL: 0.05, top: ['#ff8a1e', '#14161a', '#fff1d6'], pat: 'mountain', base: '#1a1c22', bind: '#14161a' },
+  park: { name: 'Park Twin', trick: 'butter', st: { tempo: 4, turn: 7, pow: 4, trick: 10, grip: 4 }, len: 1.74, tip: 0.124, waist: 0.092, tail: 0.124, rockT: 0.06, rockL: 0.055, twin: true, top: ['#b6ff3a', '#7a2bd9', '#ff3d7f', '#14161a'], pat: 'blocks', base: '#2a1446', bind: '#14161a' },
   wood: { name: 'Holz Classic', st: { tempo: 6, turn: 6, pow: 6, trick: 6, grip: 5 }, len: 1.78, tip: 0.128, waist: 0.084, tail: 0.112, rockT: 0.05, rockL: 0.015, top: ['#a8743f', '#7d5128', '#e8d8b8'], pat: 'wood', base: '#1a1712', bind: '#2b2b2b' },
-  carbon: { name: 'Carbon Pro', st: { tempo: 8, turn: 7, pow: 5, trick: 5, grip: 7 }, len: 1.8, tip: 0.13, waist: 0.096, tail: 0.116, rockT: 0.06, rockL: 0.02, top: ['#17191d', '#2a2e36', '#27c3ff'], pat: 'carbon', base: '#0d0e10', bind: '#27c3ff' },
-  gold: { name: 'Gipfel Gold', metal: true, st: { tempo: 8, turn: 7, pow: 7, trick: 8, grip: 7 }, len: 1.8, tip: 0.128, waist: 0.088, tail: 0.112, rockT: 0.055, rockL: 0.018, top: ['#e8b64a', '#14161a', '#fbe3a0'], pat: 'gold', base: '#15130d', bind: '#e8b64a' },
+  carbon: { name: 'Carbon Pro', trick: 'eurocarve', st: { tempo: 8, turn: 7, pow: 5, trick: 5, grip: 7 }, len: 1.8, tip: 0.13, waist: 0.096, tail: 0.116, rockT: 0.06, rockL: 0.02, top: ['#17191d', '#2a2e36', '#27c3ff'], pat: 'carbon', base: '#0d0e10', bind: '#27c3ff' },
+  gold: { name: 'Gipfel Gold', metal: true, trick: 'butterkombi', st: { tempo: 8, turn: 7, pow: 7, trick: 8, grip: 7 }, len: 1.8, tip: 0.128, waist: 0.088, tail: 0.112, rockT: 0.055, rockL: 0.018, top: ['#e8b64a', '#14161a', '#fbe3a0'], pat: 'gold', base: '#15130d', bind: '#e8b64a' },
+  tele: { name: 'Telemark Nordic', trick: 'telemark', st: { tempo: 5, turn: 8, pow: 6, trick: 6, grip: 6 }, len: 1.76, tip: 0.118, waist: 0.078, tail: 0.104, rockT: 0.04, rockL: 0.01, top: ['#c8102e', '#f2f2f0', '#14161a'], pat: 'tele', base: '#141414', bind: '#2b2b2b' },
+  charger: { name: 'Big Mountain 108', trick: 'hopturn', st: { tempo: 8, turn: 5, pow: 9, trick: 6, grip: 7 }, len: 1.88, tip: 0.138, waist: 0.108, tail: 0.126, rockT: 0.07, rockL: 0.03, top: ['#14161a', '#ff6a13', '#9ad1ff'], pat: 'topo', base: '#16181c', bind: '#ff6a13' },
+  speed: { name: 'Weltcup Speed', st: { tempo: 10, turn: 3, pow: 2, trick: 2, grip: 9 }, len: 2.05, tip: 0.104, waist: 0.066, tail: 0.092, rockT: 0.025, rockL: 0.004, top: ['#f6f6f4', '#d7141a', '#14161a'], pat: 'race', base: '#0e1013', bind: '#d7141a', plate: true },
+  legend: { name: 'Gipfelsturm Legende', metal: true, trick: 'legend', st: { tempo: 10, turn: 10, pow: 10, trick: 10, grip: 10 }, len: 1.8, tip: 0.132, waist: 0.094, tail: 0.118, rockT: 0.06, rockL: 0.04, twin: true, top: ['#d9dde3', '#0d0e10', '#5ef2ff'], pat: 'legend', base: '#0b0c0e', bind: '#5ef2ff' },
+};
+
+// ------------------------------------------------------------------ Ski-Tricks (Taste E, am Handy der Stern am Boden)
+// Nur bestimmte Ski haben einen eigenen Trick. Alle laufen am Boden und sind mit den anderen Tasten nicht machbar.
+export const SKI_TRICKS = {
+  butter: { name: 'Nose Butter 360', text: 'Gewicht auf die Schaufeln, die Enden heben sich, der Ski biegt sich, eine ganze Drehung auf den Spitzen', T: 1.6, pts: 600 },
+  butterkombi: { name: 'Nose-Tail-Butter 360', text: 'Halbe Drehung auf den Schaufeln, halbe auf den Enden', T: 1.8, pts: 900 },
+  slash: { name: 'Powder Slash', text: 'Ski quer stellen und eine Schneewand aufwerfen; im Tiefschnee riesig, kostet Tempo', T: 0.95, pts: 400, minV: 5 },
+  eurocarve: { name: 'Eurocarve', text: 'Bei Tempo ganz flach in die Kurve legen, die Hand streift über den Schnee', T: 1.5, pts: 700, minV: 9 },
+  telemark: { name: 'Telemark-Schwung', text: 'Freie Ferse: ein Fuß vorn, das hintere Knie fast auf dem Ski', T: 1.5, pts: 450, minV: 3 },
+  hopturn: { name: 'Sprungschwung', text: 'Kurz abspringen, die Ski quer drehen und mit Kantengriff landen, wie im Steilhang', T: 0.85, pts: 500, minV: 3 },
+  legend: { name: 'Legenden-Trick', text: 'Wählt selbst: im Pulver ein Slash, bei Tempo in der Kurve ein Eurocarve, sonst ein Nose-Tail-Butter; anderthalbfache Punkte', T: 0, pts: 0 },
 };
 
 function skiPattern(d, t, x, cols) {
@@ -67,6 +83,9 @@ function skiPattern(d, t, x, cols) {
     case 'wood': { const g = 0.5 + 0.5 * Math.sin(t * 160 + Math.sin(x * 3 + t * 20) * 2.2); return t > 0.08 && t < 0.92 && Math.abs(x) > 0.86 ? c : mix(a, b, g * 0.7); }
     case 'carbon': { const w = (Math.floor(t * 120) + Math.floor((x + 1) * 6)) % 2; return Math.abs(x) < 0.12 && t > 0.15 && t < 0.85 ? c : w ? a : b; }
     case 'gold': return Math.abs(x) < 0.18 ? c : t > 0.45 && t < 0.55 ? b : a;
+    case 'tele': return (Math.abs(t - 0.3) < 0.05 || Math.abs(t - 0.7) < 0.05) ? b : Math.abs(x) < 0.25 && t > 0.38 && t < 0.62 ? c : a;
+    case 'topo': { const h = Math.sin(t * 26 + Math.sin(x * 2.2 + t * 7) * 1.6); return Math.abs(h) < 0.12 ? c : t > 0.15 && t < 0.3 ? b : a; }
+    case 'legend': { const g = 0.5 + 0.5 * Math.sin(t * 9 - Math.abs(x) * 2.5); return Math.abs(x) < 0.1 ? c : g > 0.82 ? mix(a, c, 0.55) : t > 0.46 && t < 0.54 ? b : a; }
     default: return a;
   }
 }
@@ -144,6 +163,8 @@ export const BOARDS = {
   freeride: { name: 'Freeride Directional', st: { tempo: 7, turn: 5, pow: 7, trick: 4, grip: 6 }, len: 1.62, w: 0.274, shape: 'directional', top: ['#0f6b5a', '#f2f2f0', '#d99a1c'], pat: 'wave', bind: '#14161a' },
   aurora: { name: 'Polarlicht', st: { tempo: 6, turn: 6, pow: 6, trick: 7, grip: 6 }, len: 1.56, w: 0.27, shape: 'twin', top: ['#0b1230', '#35e0a1', '#7a2bd9'], pat: 'aurora', bind: '#35e0a1' },
   gold: { name: 'Gipfel Gold', metal: true, st: { tempo: 8, turn: 7, pow: 7, trick: 8, grip: 7 }, len: 1.58, w: 0.272, shape: 'directional', top: ['#e8b64a', '#14161a'], pat: 'stripes', bind: '#e8b64a' },
+  split: { name: 'Backcountry Split', st: { tempo: 6, turn: 5, pow: 8, trick: 4, grip: 7 }, len: 1.62, w: 0.28, shape: 'directional', top: ['#3d4a3a', '#d8c9a3', '#14161a'], pat: 'split', bind: '#d8c9a3' },
+  pro: { name: 'Park Pro', st: { tempo: 5, turn: 8, pow: 4, trick: 9, grip: 6 }, len: 1.5, w: 0.26, shape: 'twin', top: ['#14161a', '#27c3ff', '#ff3d7f'], pat: 'tags', bind: '#27c3ff' },
 };
 function boardPattern(d, t, z, cols) {
   const [a, b, c] = cols;
@@ -153,6 +174,8 @@ function boardPattern(d, t, z, cols) {
     case 'mountain': { const ridge = 0.15 + 0.55 * Math.abs(Math.sin(t * 9.4)) * Math.abs(Math.cos(t * 3.1)); return (z + 1) / 2 < ridge ? b : (z + 1) / 2 < ridge + 0.08 ? c : a; }
     case 'wave': return Math.sin(t * 18 + z * 2.4) > 0.55 ? b : Math.sin(t * 18 + z * 2.4) < -0.85 ? c : a;
     case 'aurora': { const s = 0.5 + 0.5 * Math.sin(t * 7 + z * 1.6 + Math.sin(t * 3) * 2); return s > 0.66 ? b : s > 0.45 ? mix(b, c, 0.6) : a; }
+    case 'split': return Math.abs(z) < 0.08 ? c : (t > 0.2 && t < 0.25) || (t > 0.75 && t < 0.8) ? b : a;   // Mittelnaht der Teilung
+    case 'tags': { const k = Math.floor(t * 9) + Math.floor((z + 1) * 1.5); return k % 3 === 0 ? b : k % 5 === 0 ? c : a; }
     default: return a;
   }
 }
@@ -245,6 +268,18 @@ export function makeHeadItem(kind) {
     // Frottee-Stirnband in Neon mit einem Streifen
     const hb = new THREE.Mesh(new THREE.TorusGeometry(0.134, 0.024, 12, 40), mat('#ff3d7f', 0.95)); hb.rotation.x = Math.PI / 2; hb.position.set(0, 1.79, 0.0); hb.scale.set(1, 1.08, 1.4); grp.add(hb);
     const st = new THREE.Mesh(new THREE.TorusGeometry(0.1375, 0.006, 8, 40), mat('#27c3ff', 0.9)); st.rotation.x = Math.PI / 2; st.position.set(0, 1.79, 0.0); st.scale.set(1, 1.08, 1); grp.add(st);
+  } else if (kind === 'beanie_alpine' || kind === 'beanie_polar') {
+    // Strickmütze mit Rippenbund und Bommel, in Streifen gestrickt (Farben je Ecke)
+    const [ca, cb] = kind === 'beanie_alpine' ? ['#c8102e', '#f4f2ee'] : ['#f2f6fa', '#7cc8ff'];
+    const A = new THREE.Color(ca), Bc = new THREE.Color(cb);
+    const dome = new THREE.SphereGeometry(0.142, 32, 16, 0, Math.PI * 2, 0, Math.PI * 0.55);
+    const dp = dome.attributes.position, dc = new Float32Array(dp.count * 3);
+    for (let i = 0; i < dp.count; i++) { const y = dp.getY(i), band = Math.floor((y + 0.02) / 0.028) % 2; const c = band ? Bc : A; dc[i * 3] = c.r; dc[i * 3 + 1] = c.g; dc[i * 3 + 2] = c.b; }
+    dome.setAttribute('color', new THREE.BufferAttribute(dc, 3));
+    const knit = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1 });
+    const d = new THREE.Mesh(dome, knit); d.scale.set(1, 1.05, 1.02); d.position.set(0, 1.83, 0.005); grp.add(d);
+    const cuff = new THREE.Mesh(new THREE.TorusGeometry(0.142, 0.026, 10, 40), mat(ca, 1)); cuff.rotation.x = Math.PI / 2; cuff.position.set(0, 1.845, 0.005); cuff.scale.set(1, 1.02, 1.1); grp.add(cuff);
+    const pom = new THREE.Mesh(new THREE.IcosahedronGeometry(0.05, 2), mat(cb, 1)); pom.position.set(0, 1.99, 0.01); pom.scale.set(1, 0.92, 1); grp.add(pom);
   } else if (kind === 'crown') {
     // Königskrone: Goldreif mit Rand oben und unten, acht Zacken (vier hohe mit Perlen, vier kleine Lilien), Edelsteine
     // rundum, roter Samt innen, zwei gekreuzte Bügel mit Reichsapfel und Kreuz obenauf

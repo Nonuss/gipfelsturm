@@ -167,7 +167,9 @@ export function setupTouch({ isAir, isRunning, onResize }) {
   hold($('tBrake'), 'KeyS');
   hold($('tRew'), 'KeyQ');
   const tap = (el, code) => el.addEventListener('click', (e) => { e.preventDefault(); key(code, true); key(code, false); });
-  tap($('tMenu'), 'Escape'); tap($('tCam'), 'KeyC'); tap($('tSpec'), 'SpecialRandom');
+  tap($('tMenu'), 'Escape'); tap($('tCam'), 'KeyC');
+  // Stern: in der Luft ein Spezialtrick, am Boden der eigene Trick des Skis (Taste E)
+  $('tSpec').addEventListener('click', (e) => { e.preventDefault(); const code = ui.classList.contains('air') ? 'SpecialRandom' : 'KeyE'; key(code, true); key(code, false); });
   // Respawn-Punkt: kurz tippen = zurück (ohne Punkt: zurück auf die Spur), halten = hier neu setzen
   { const el = $('tCp'); let tm = null, long = false;
     el.addEventListener('pointerdown', (e) => { e.preventDefault(); long = false; el.classList.add('on'); tm = setTimeout(() => { long = true; key('KeyF', true); key('KeyF', false); }, 550); });
@@ -253,6 +255,7 @@ export function setupTouch({ isAir, isRunning, onResize }) {
     },
     setRunning(r) { ui.classList.toggle('active', r); },
     setAir(a) { ui.classList.toggle('air', a); },
+    setSkiTrick(on) { ui.classList.toggle('skitrick', on); },
     setTilt,
     setMode,
     mode: () => touch.mode,

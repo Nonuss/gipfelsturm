@@ -689,3 +689,40 @@ Rückmeldung von Noah: Statt Gimmicks wie dem Gewandflattern soll Ultra die Graf
 - Heli: Gesamtwertung mal 0,4 plus 2, also 2 bis 42 je Abfahrt (vorher 20 bis 270).
 - Geprüft im Spiel (Zielauswertung mit gesetzten Toren): Slalom sauber mit Bestzeit 8, drei Tore verpasst 4; Riesentorlauf 10 / 5; Super-G 12 / 7; Abfahrt 15 / 7; Heli mit Wertung 51,4 ergibt 23.
 - Nicht geprüft: wie viele Punkte ein Mensch im Freeride wirklich pro Minute holt. Die Annahme von 8 Münzen je Minute lässt sich an den drei Stellen in `src/main.js` (payEndless, Rennen, Heli in finishRun) leicht nachstellen.
+
+## Schwarzer Fleck, Grafiklöcher, alle Bäume fein, Ski mit eigenem Trick, Legenden-Ski (v45, 2026-11-21)
+
+| Rückmeldung | Ursache und Änderung |
+|---|---|
+| Schwarzer Fleck am Boden vor dem Fahrer (Ultra) | Die Umgebungsverdeckung (GTAO) rechnete unter dem Fahrer einen dunklen, verrauschten Kontaktschatten. Sie wird jetzt in einem Umkreis von 1,4 bis 2,8 m um den Fahrer ausgeblendet (Weltposition aus der Tiefe), der echte Schatten bleibt. Geprüft im Stand, beim Bremsen und auf dem Board |
+| Seitlich am Berg kein Schnee, man sieht durch (Heli) | Strahlprüfung: Die feinen Kacheln endeten am Rand des Schnittkreises, die grobe Fernsicht war im selben Kreis weggeschnitten; schräg von der Seite traf der Blick in die Lücke. Jetzt: feine Kacheln 60 m über den Kreis hinaus, Fernsicht von beiden Seiten gezeichnet, im Kreis 100 m abgesenkt statt nur weggeschnitten, Tiefenversatz gegen Flimmern. Lochsuche mit magentafarbenem Hintergrund (Himmel und Nebel aus): 0 Löcher in 432 Blickrichtungen auf 6 Bergen und allen Stufen |
+| S in der Luft macht Pizza, damit gehen nur Backflips mit Pizza | Pizza (Schneepflug) nur noch am Boden, nicht beim Grinden und nicht im Sturz; in der Luft löst sie sich schnell auf, nach der Landung kommt sie mit S sofort wieder. Grabs mit gehaltenem S geprüft |
+| Bei Ultra sind nur nahe Bäume fein | Drei Feinheitsstufen statt Fein und Einfach: bis 110 m die feine Fichte (rund 6.400 Dreiecke), bis 380 m eine mittlere mit gleich vielen Astquirlen (rund 2.100), dahinter eine Fern-Fichte aus sternförmigen Astschürzen (rund 480). Alle drei mit innerem Nadelkern: ohne ihn sah man in der Mitte den Stamm zwischen den Quirlen (Pagodenform) und am Kamm schwebende Spitzen. Keine einfache Vorlagen-Fichte mehr auf Ultra |
+| Mehr Ski, gute Ski mit eigenem Trick, immer dieselbe Taste | Taste E (Handy: Sternknopf am Boden) führt den Trick des angelegten Ski aus. Nur am Boden, nur mit Ski, nicht mit anderen Tasten nachzumachen. Die Bewegung ist auf allen Grafikstufen gleich (reine Haltung und Ski-Biegung im Shader) |
+| Ein Ski mit allem auf Maximum, extrem teuer, nur nach extrem guten Zeiten | „Gipfelsturm Legende“: alle Werte 10, 15.000 Punkte, im Shop gesperrt, bis in allen vier Rennen die Bestzeit unter der Grenze liegt (Slalom 43,0 s, Riesentorlauf 56,0 s, Super-G 77,0 s, Abfahrt 88,0 s; der Testfahrer schafft 43,8 / 56,8 / 78,4 / 89,7). Der Shop zeigt die Bedingungen mit den eigenen Bestzeiten; der Legenden-Trick wählt je nach Lage Slash, Eurocarve oder Butter-Kombi und zählt 1,5-fach |
+
+### Ski und Tricks
+
+| Ski | Trick | Bewegung | Punkte |
+|---|---|---|---|
+| Park (Freestyle) | Nose Butter 360 | Ski biegt sich auf der Schaufel, Enden heben ab, volle Drehung auf der Schaufel, bleibt am Boden | 600 |
+| Gold | Nose-Tail-Butter 360 | Halbe Drehung auf der Schaufel, halbe auf dem Ende | 900 |
+| Powder | Powder Slash | Querstellen mit Schneewand, bremst kräftig, ab 5 m/s | 400 |
+| Carbon | Eurocarve | Tiefe Schräglage, Hand zieht durch den Schnee, ab 9 m/s | 700 |
+| Telemark Nordic (neu) | Telemark-Schwung | Ausfallschritt mit gehobener Ferse | 450 |
+| Big Mountain 108 (neu) | Sprungschwung | Kurzer Hüpfer mit Querdrehung, kurzes Bremsen | 500 |
+| Weltcup Speed (neu) | ohne | reiner Renn-Ski | |
+| Gipfelsturm Legende (neu) | Legenden-Trick | siehe oben | 1,5-fach |
+
+Neu außerdem: Boards „Backcountry Split“ und „Park Pro“, Outfits Freerider, Weltcup-Rennanzug, Alpin Klassik und Polarnacht (mit Bommelmützen).
+
+### Prüfung
+- Jeder Trick bis zum Ende gefahren, Punkte gutgeschrieben (Park 780, Gold 1062, Powder 424, Carbon 700, Telemark 477, Big Mountain 530, Legende 1365, mit Combo-Faktor). Ski ohne Trick zeigt einen Hinweis, Board und Luft tun nichts. Haltungen von der Seite und von hinten als Standbild angesehen.
+- Shop mit leerem Spielstand: Legende in der Liste „Gesperrt“, Kaufknopf gesperrt, Kauf verweigert; mit allen vier Zeiten freigeschaltet, Kauf zieht 15.000 ab; mit nur drei Zeiten wieder gesperrt.
+- Handy-Ansicht: Sternknopf wird am Boden mit Trick-Ski aktiv und startet den Nose Butter.
+- Alle fünf Stufen in allen vier Welten ohne Konsolenfehler. Bildzeit (2560 mal 1440 Bildpunkte, ausgeblendetes Fenster, 30 Bilder) Freeride: Ultra 46 bis 50, Hoch 31, Mittel 18, Niedrig 7, Sparsam 5 ms; Rennen Ultra 43, Hoch 27; Heli Ultra 47, Hoch 32. Hoch ist gleich wie in v44.
+
+### Nicht geprüft
+- Kein Mensch hat die Tricks gespielt; ob sich E im Fahrfluss gut anfühlt, ist offen.
+- Ob die Legenden-Zeiten für Menschen erreichbar sind (sie liegen knapp unter dem Testfahrer).
+- Bildrate im sichtbaren Fenster und auf anderen Grafikkarten; Ultra kostet durch die feinen Bäume in der Ferne mehr als in v44.

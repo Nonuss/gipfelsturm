@@ -31,7 +31,7 @@ export const SUN_DIR = new THREE.Vector3(-0.52, 0.56, -0.64).normalize(); // Ric
 const SUN_DEFAULT = SUN_DIR.clone();
 const HAZE = new THREE.Color().setRGB(0.62, 0.77, 0.95);
 const TREE_NAMES = ['TreeA', 'TreeB', 'TreeC'];
-const LOD_R = 110;   // Ultra: Radius, in dem die fein modellierten Fichten stehen
+const LOD_R1 = 110, LOD_R2 = 380;   // Ultra: bis hier feinste, bis hier mittlere Fassung der Fichte, dahinter grobe
 
 const ROCK_NAMES = ['RockA', 'RockB', 'RockC', 'RockD', 'RockE', 'RockF'];
 
@@ -199,35 +199,38 @@ export class World {
     this.hemi.intensity = 1.05 * (this.hemiK ?? 0.5);
   }
 
-  // ------------------------------------------------------------ Ultra: fein modellierte Fichten im Nahbereich
-  // Jede Baumgruppe bekommt ein zweites Instanz-Modell mit der feinen Fichte. Bäume im Umkreis von LOD_R um die Kamera
-  // wandern dorthin, alle anderen bleiben im einfachen Modell. Gleiche Größe und Stellung, also gleiche Kollisionen.
+  // ------------------------------------------------------------ Ultra: alle Bäume als fein modellierte Fichten
+  // Jede Baumgruppe bekommt zwei weitere Instanz-Modelle. Bäume im Umkreis LOD_R1 stehen in der feinsten Fassung, bis LOD_R2
+  // in der mittleren, dahinter in der groben Fassung derselben Fichte (die das einfache Vorlage-Modell ersetzt). So sieht auf
+  // Ultra jeder Baum gleich aus. Gleiche Größe und Stellung, also gleiche Kollisionen. Neu verteilt wird nach 5 m Kamerafahrt.
   attachLod(im) {
     if (im.userData.lod) return;
     const v = im.userData.treeVariant, n = im.count;
-    const near = new THREE.InstancedMesh(ultraTrees(this.models)[v], this.propMat, n);
-    near.count = 0;
-    near.castShadow = true;
-    near.receiveShadow = true;
-    if (im.instanceColor) near.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(n * 3), 3);
-    im.parent.add(near);
+    const mk = (lod) => {
+      const m = new THREE.InstancedMesh(ultraTrees(this.models, lod)[v], this.propMat, n);
+      m.count = 0; m.castShadow = true; m.receiveShadow = true;
+      if (im.instanceColor) m.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(n * 3), 3);
+      im.parent.add(m);
+      return m;
+    };
     if (!im.boundingSphere) im.computeBoundingSphere();
-    const e = { im, near, n, mats: im.instanceMatrix.array.slice(0, n * 16), cols: im.instanceColor ? im.instanceColor.array.slice(0, n * 3) : null, sphere: im.boundingSphere.clone(), nNear: -1 };
+    const e = { im, lv: [mk(0), mk(1), im], n, mats: im.instanceMatrix.array.slice(0, n * 16), cols: im.instanceColor ? im.instanceColor.array.slice(0, n * 3) : null, sphere: im.boundingSphere.clone(), allFar: false, geo0: im.geometry };
+    im.geometry = ultraTrees(this.models, 2)[v];   // grobe Fassung der neuen Fichte statt des Vorlage-Modells
     im.userData.lod = e;
     im.addEventListener('dispose', () => { e.dead = true; });   // Abschnitt bzw. Heli-Kachel abgebaut
     (this.lods || (this.lods = [])).push(e);
     this.lodDirty = true;
   }
   detachLod(e) {
-    const { im, near, n, mats, cols } = e;
+    const { im, n, mats, cols } = e;
+    im.geometry = e.geo0;
     im.instanceMatrix.array.set(mats); im.instanceMatrix.needsUpdate = true;
     if (cols) { im.instanceColor.array.set(cols); im.instanceColor.needsUpdate = true; }
     im.count = n; im.boundingSphere = e.sphere;
-    if (near.parent) near.parent.remove(near);
-    near.dispose();
+    for (const m of [e.lv[0], e.lv[1]]) { if (m.parent) m.parent.remove(m); m.dispose(); }
     delete im.userData.lod;
   }
-  /** Beim Stufenwechsel: Nahbereichs-Bäume an alle stehenden Gruppen anhängen bzw. wieder entfernen. */
+  /** Beim Stufenwechsel: Ultra-Fichten an alle stehenden Gruppen anhängen bzw. wieder entfernen. */
   setTreeDetail(on) {
     if (!on) { if (this.lods) { for (const e of this.lods) if (!e.dead && e.im.parent) this.detachLod(e); this.lods = []; } return; }
     const todo = [];
@@ -239,26 +242,29 @@ export class World {
     if (!this.lodPos) this.lodPos = new THREE.Vector3(1e9, 0, 0);
     if (!this.lodDirty && cam.distanceToSquared(this.lodPos) < 25) return;   // erst nach 5 m Kamerafahrt neu verteilen
     this.lodPos.copy(cam); this.lodDirty = false;
-    const R = LOD_R, R2 = R * R, cx = cam.x, cz = cam.z;
+    const R1 = LOD_R1 * LOD_R1, R2 = LOD_R2 * LOD_R2, cx = cam.x, cz = cam.z;
     const live = (o) => { while (o.parent) o = o.parent; return o === this.scene; };
     this.lods = this.lods.filter((e) => !e.dead && live(e.im));   // Gruppen abgebauter Abschnitte und alter Welten vergessen
+    const cnt = [0, 0, 0];
     for (const e of this.lods) {
-      const c = e.sphere.center, far = Math.hypot(c.x - cx, c.z - cz) - e.sphere.radius > R;
-      if (far && e.nNear === 0) continue;               // ganz außerhalb und schon alles einfach
-      const { im, near, n, mats, cols } = e, fa = im.instanceMatrix.array, na = near.instanceMatrix.array;
-      const fc = cols && im.instanceColor.array, nc = cols && near.instanceColor.array;
-      let ni = 0, fi = 0;
+      const c = e.sphere.center, far = Math.hypot(c.x - cx, c.z - cz) - e.sphere.radius > LOD_R2;
+      if (far && e.allFar) continue;                    // ganz in der groben Stufe und schon so verteilt
+      const { n, mats, cols, lv } = e;
+      cnt[0] = cnt[1] = cnt[2] = 0;
       for (let i = 0; i < n; i++) {
-        const k = i * 16, dx = mats[k + 12] - cx, dz = mats[k + 14] - cz, isNear = !far && dx * dx + dz * dz < R2;
-        const j = isNear ? ni++ : fi++;
-        (isNear ? na : fa).set(mats.subarray(k, k + 16), j * 16);
-        if (cols) (isNear ? nc : fc).set(cols.subarray(i * 3, i * 3 + 3), j * 3);
+        const k = i * 16, dx = mats[k + 12] - cx, dz = mats[k + 14] - cz, d2 = dx * dx + dz * dz;
+        const l = far ? 2 : d2 < R1 ? 0 : d2 < R2 ? 1 : 2, j = cnt[l]++;
+        lv[l].instanceMatrix.array.set(mats.subarray(k, k + 16), j * 16);
+        if (cols) lv[l].instanceColor.array.set(cols.subarray(i * 3, i * 3 + 3), j * 3);
       }
-      e.nNear = ni;
-      im.count = fi; near.count = ni;
-      im.instanceMatrix.needsUpdate = true; near.instanceMatrix.needsUpdate = true;
-      if (cols) { im.instanceColor.needsUpdate = true; near.instanceColor.needsUpdate = true; }
-      im.computeBoundingSphere(); near.computeBoundingSphere();
+      e.allFar = cnt[2] === n;
+      for (let l = 0; l < 3; l++) {
+        const m = lv[l];
+        m.count = cnt[l];
+        m.instanceMatrix.needsUpdate = true;
+        if (cols) m.instanceColor.needsUpdate = true;
+        m.computeBoundingSphere();
+      }
     }
   }
 

@@ -4,7 +4,9 @@
 import * as THREE from 'three';
 import { Skier } from './skier.js';
 import { SKIS, BOARDS, makeSki, makeBoardGeo, STAT_NAMES } from './gear.js';
-import { shop, CATALOG, OUTFITS } from './shop.js';
+import { shop, CATALOG, OUTFITS, LEGEND_TIMES } from './shop.js';
+const DISC_NAME = { sl: 'Slalom', gs: 'Riesentorlauf', sg: 'Super-G', dh: 'Abfahrt' };
+const sec = (v) => v.toFixed(1).replace('.', ',') + ' s';
 
 const num = (n) => Math.round(n).toLocaleString('de-DE');
 // Podest mit Puppe (rechts vorn) und Ständer mit dem Ausstellungsstück (links dahinter): beide in der Bildmitte zwischen den Leisten
@@ -148,7 +150,7 @@ export class Shop3D {
     sk.setSkiDesign(tab === 'ski' ? this.sel.ski : shop.equip.ski);
     sk.setBoardDesign(tab === 'board' ? this.sel.board : shop.equip.board);
     const oid = tab === 'outfit' ? this.sel.outfit : shop.equip.outfit, o = OUTFITS[oid];
-    if (o && o.jacket) { sk.setColors(o.jacket, o.accent, o.pants); sk.setHead(o.head || null); sk.setBody(oid); }
+    if (o && o.jacket) { sk.setColors(o.jacket, o.accent, o.pants); sk.setHead(o.head || null); sk.setBody(o.body || oid); }
     else { const c = this.hooks.customColors(); sk.setColors(c.jacket, c.accent, c.pants); sk.setHead(null); sk.setBody(null); }
     for (const it of this.rackItems) { const on = it.id === this.sel[tab]; it.mark.visible = on; it.g.position.z = on ? -2.05 : -2.2; }
   }
@@ -221,7 +223,7 @@ export class Shop3D {
     ul.innerHTML = list.map((it) => {
       const own = shop.has(cat, it.id), on = shop.equip[cat] === it.id, sel = this.sel[cat] === it.id;
       const sw = it.colors.slice(0, 3).map((c) => `<i style="background:${c}"></i>`).join('');
-      const state = on ? '<em class="on">Angelegt</em>' : own ? '<em>Gekauft</em>' : `<em class="price">${num(it.price)}</em>`;
+      const state = on ? '<em class="on">Angelegt</em>' : own ? '<em>Gekauft</em>' : !shop.unlocked(it) ? '<em class="lock">Gesperrt</em>' : `<em class="price">${num(it.price)}</em>`;
       return `<li><button data-id="${it.id}" class="${sel ? 'sel' : ''}" aria-current="${sel}"><span class="s3-sw">${sw}</span><span class="s3-name">${it.name}</span>${state}</button></li>`;
     }).join('');
     for (const b of ul.querySelectorAll('button')) b.addEventListener('click', () => this.select(b.dataset.id));
@@ -232,12 +234,21 @@ export class Shop3D {
       const v = it.st[k], dv = cur && cur.st && !on ? v - cur.st[k] : 0;
       return `<li><span>${nm}</span><i style="--v:${v * 10}%" role="img" aria-label="${nm} ${v} von 10"></i><em class="${dv > 0 ? 'up' : dv < 0 ? 'dn' : ''}">${dv > 0 ? '+' + dv : dv < 0 ? String(dv).replace('-', '−') : ''}</em></li>`;
     }).join('')}</ul>` : '';
-    const label = on ? 'Angelegt' : own ? 'Anlegen' : `Kaufen · ${num(it.price)} Punkte`;
-    const note = !own && !afford ? `<small>Dir fehlen noch ${num(it.price - shop.wallet)} Punkte. Punkte gibt es für jeden Lauf.</small>`
+    const locked = !own && !shop.unlocked(it);
+    const label = on ? 'Angelegt' : own ? 'Anlegen' : locked ? 'Gesperrt' : `Kaufen · ${num(it.price)} Punkte`;
+    // Spitzen-Ski: nötige Bestzeiten und die eigenen daneben
+    const reqHtml = it.req === 'race' ? `<ul class="s3-req">${Object.entries(LEGEND_TIMES).map(([d, lim]) => {
+      let b = 0; try { b = parseFloat(localStorage.getItem('gipfelsturm_best_' + d)) || 0; } catch {}
+      const ok = b > 0 && b <= lim;
+      return `<li class="${ok ? 'ok' : ''}"><span>${DISC_NAME[d]}</span><b>unter ${sec(lim)}</b><em>${b ? sec(b) : 'noch keine'}</em></li>`;
+    }).join('')}</ul>` : '';
+    const trickHtml = it.trick ? `<p class="s3-trick"><b>Eigener Trick: ${it.trick.name}</b><br>${it.trick.text}. Taste E am Boden, am Handy der Stern.</p>` : '';
+    const note = locked ? '<small>Freigeschaltet, sobald deine Bestzeiten in allen vier Rennen unter diesen Werten liegen.</small>'
+      : !own && !afford ? `<small>Dir fehlen noch ${num(it.price - shop.wallet)} Punkte. Punkte gibt es für jeden Lauf.</small>`
       : !own ? '<small>Nur Spielpunkte, kein echtes Geld.</small>'
       : cat === 'outfit' && id === 'custom' ? '<small>Die Farben stellst du im Menü unter „Outfit“ ein.</small>' : '';
-    this.ui.querySelector('.s3-detail').innerHTML = `<span class="s3-kicker">${KICKER[cat]}${on ? ' · angelegt' : !own ? ' · Vorschau' : ''}</span><h2>${it.name}</h2><p>${it.text}</p>${stats}
-      <button class="cta s3-buy" ${on || (!own && !afford) ? 'disabled' : ''}>${label}</button>${note}`;
+    this.ui.querySelector('.s3-detail').innerHTML = `<span class="s3-kicker">${KICKER[cat]}${on ? ' · angelegt' : !own ? ' · Vorschau' : ''}</span><h2>${it.name}</h2><p>${it.text}</p>${trickHtml}${stats}${reqHtml}
+      <button class="cta s3-buy" ${on || locked || (!own && !afford) ? 'disabled' : ''}>${label}</button>${note}`;
     this.ui.querySelector('.s3-buy').addEventListener('click', () => this.act());
   }
 

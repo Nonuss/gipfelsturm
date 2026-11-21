@@ -53,15 +53,26 @@ export class HeliWorld {
   farMaterial(outer) {
     const m = new THREE.MeshStandardMaterial({ roughness: 0.93, metalness: 0, vertexColors: false });
     if (outer) { m.polygonOffset = true; m.polygonOffsetFactor = 2; m.polygonOffsetUnits = 8; }
+    else { m.polygonOffset = true; m.polygonOffsetFactor = 1; m.polygonOffsetUnits = 4; }   // Kacheln gewinnen in der Überlappung
     if (Q.ultra) m.defines.ULTRA = 1;   // Ultra: Relief je Bildpunkt in der Beleuchtung (world.setUltra schaltet um)
+    // Auch von unten zeichnen: Die grobe Fernsicht liegt auf Graten etwas über dem echten Gelände. Blickt man knapp am Rand
+    // des Kachel-Ausschnitts über eine Kante, läuft der Blick unter der groben Fläche hindurch und traf nur ihre (nicht
+    // gezeichnete) Rückseite: ein Loch, durch das man den Himmel sah. Die Rückseite wird wie die Oberseite beleuchtet.
+    m.side = THREE.DoubleSide;
     m.onBeforeCompile = (sh) => {
       Object.assign(sh.uniforms, this.uniforms);
       sh.vertexShader = sh.vertexShader
-        .replace('#include <common>', '#include <common>\nattribute vec4 aMat;\nattribute float aAo;\nvarying vec4 vMat;\nvarying float vAo;\nvarying vec3 vW;\nvarying vec3 vNW;')
-        .replace('#include <begin_vertex>', '#include <begin_vertex>\nvMat = aMat; vAo = aAo; vW = position; vNW = normal;');
+        .replace('#include <common>', '#include <common>\nattribute vec4 aMat;\nattribute float aAo;\nvarying vec4 vMat;\nvarying float vAo;\nvarying vec3 vW;\nvarying vec3 vNW;\nuniform vec3 uHole;')
+        .replace('#include <begin_vertex>', '#include <begin_vertex>\nvMat = aMat; vAo = aAo; vW = position; vNW = normal;' + (outer ? '' :
+          // Innerhalb des Kachel-Ausschnitts (dort ohnehin unsichtbar) tief absenken, zum Rand weich auslaufend: Ein flacher
+          // Blick über eine Kante kann sonst schon im Ausschnitt unter die grobe Fläche tauchen und nichts mehr treffen.
+          '\ntransformed.y -= 100.0 * (1.0 - smoothstep(uHole.z - 30.0, uHole.z + 10.0, distance(position.xz, uHole.xy)));'));
       sh.fragmentShader = sh.fragmentShader
         .replace('#include <common>', '#include <common>\nvarying vec4 vMat;\nvarying float vAo;\nvarying vec3 vW;\nvarying vec3 vNW;\nuniform vec3 uHole;\n' + GLSL_NOISE + '\n#ifdef ULTRA\n' + CRAG_GLSL + '\n#endif')
         .replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
+#ifdef DOUBLE_SIDED
+        normal *= faceDirection;   // Rückseite wie Oberseite beleuchten
+#endif
 #ifdef ULTRA
         {
           // Ultra: Felsrippen, Buckel und Rinnen als Höhenfeld; an steilen Flanken kräftiger, in der Ferne ausgeblendet
@@ -383,7 +394,10 @@ export class HeliWorld {
       r = Math.min(r, Math.hypot(cx - px, cd - d) - 2);
     }
     this.hole.set(px, pz, Math.max(0, r));
-    snowUniforms.uClip.value.set(px, pz, Math.max(0, r) + 1);
+    // Die feinen Kacheln dürfen über den Ausschnitt hinaus gezeichnet werden: Ein flacher Blick über eine Kante taucht
+    // sonst innen in die (dort ausgeschnittene) grobe Fernsicht ein und trifft das echte Gelände knapp außerhalb, wo die
+    // Kacheln abgeschnitten waren: ein Loch. In der Überlappung gewinnen die Kacheln (Tiefenversatz der Fernsicht).
+    snowUniforms.uClip.value.set(px, pz, Math.max(0, r) + 60);
   }
 
   update(playerPos) { this.updateTiles(playerPos.x, playerPos.z); }

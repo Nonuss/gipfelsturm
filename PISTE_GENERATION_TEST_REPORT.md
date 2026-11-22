@@ -795,3 +795,18 @@ Tests: vier Butter Bild für Bild ohne Ski-Teil im Schnee; gemessene Drehung pro
 | Nose Butter zu einfach, bei echten Fahrern sieht man jede Unebenheit im Trick | Das Spiel misst die Schneehöhe unter den Schaufeln gegenüber der Ebene unter den Füßen, dazu kleine Buckel der Schneedecke (nur nach oben, nie in den Schnee). Buckel heben die Ski an, die Knie fangen gut die Hälfte ab, die Hüfte geht mit; in Mulden drückt er die Schaufeln stärker hinunter. Steigt der Schnee unter den Spitzen schnell an, haken die Schaufeln: die Drehung stockt kurz und holt danach auf, die Knie federn ein, Oberkörper und Arme machen einen Ausgleichsschlag. Dazu nach echten Tipps (Fahrerforen, Freeskier): Blick über die Schulter in Drehrichtung, Arme zur Schaufel und ständig balancierend, am Ende ein kleiner Hopser aus den Schaufeln, die Enden klatschen mit etwas Schneestaub auf, die Knie fangen die Landung ab |
 
 Tests: Butter auf vier verschiedenen Pistenstellen und im Heli-Pulver Bild für Bild ohne Ski-Teil im Schnee (tiefster Wert gleich der Ausgangslage), Buckel unter den Schaufeln gemessen −1 bis +2 cm. Slash im Heli-Tiefschnee: große Fahne und Wolke im Bild, gewischte Rinne. Leistung: Slash im Tiefschnee kostet keine messbare Bildzeit (Hoch 80 ms ohne, 72 ms mit; Ultra 99 / 95 ms, beides bei 2560 mal 1600 im ausgeblendeten Fenster, also Rauschen). Alle Stufen in Rennen, Freeride und Heli ohne Fehler.
+
+## Shop-Münzen 2,5-fach: rund 20 je Minute (v52, 2026-11-22)
+
+Rückmeldung: Das Geld ist jetzt sehr wenig, gemessen an den Preisen (Legende 15.000); nicht extrem viel mehr, aber etwas mehr.
+
+Rechnung mit v44 (rund 8 Münzen je Minute guten Fahrens): ein Ski für 1.000 brauchte gut 2 Stunden, Gipfel Gold (2.500) gut 5 Stunden, die Legende 31 Stunden, alles im Shop (rund 49.700) gut 100 Stunden. Neu 2,5-fach, rund 20 je Minute, in allen Modi gleich:
+
+| Modus | v44 | v52 |
+|---|---|---|
+| Freeride und Freestyle | 40 je 100.000 Punkte | 100 je 100.000 Punkte |
+| Rennen sauber (Slalom / Riesentorlauf / Super-G / Abfahrt) | 6 / 8 / 10 / 13 | 15 / 20 / 26 / 32 |
+| Neue Bestzeit im Rennen | +2 | +5 |
+| Heli je Abfahrt (Wertung 0 bis 100) | 2 bis 42 | 5 bis 105 |
+
+Damit: Ski für 1.000 rund 50 Minuten, Gipfel Gold gut 2 Stunden, Legende gut 12 Stunden (dazu die Zeitsperre), alles im Shop gut 40 Stunden. Verpasste Tore zählen weiter doppelt dagegen. Geprüft im Spiel: Super-G sauber +26, drei Tore verpasst +18, Freeride mit 100.000 Punkten +100.

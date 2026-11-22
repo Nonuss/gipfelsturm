@@ -564,13 +564,14 @@ function earn(n, why) {
   if (got) { updateWallet(); if (why) showMsg(`+${num(got)} Shop-Punkte · ${why}`, 'good'); }
   return got;
 }
-/** Freeride und Freestyle: gesicherte Punkte am Ende eines Laufs (Menü oder neuer Lauf) als Shop-Münzen, 40 je 100.000 Punkte
- * (v43; vorher ein Vierzigstel der Punkte, also 2500 je 100.000). */
+/** Freeride und Freestyle: gesicherte Punkte am Ende eines Laufs (Menü oder neuer Lauf) als Shop-Münzen, 100 je 100.000
+ * Punkte. Alle Modi zahlen rund 20 Münzen je Minute guten Fahrens (v52; v43/v44 waren es 8 je Minute, 40 je 100.000:
+ * zu wenig für die Preise, ein Ski für 1.000 brauchte gut 2 Stunden, die Legende 31 Stunden). */
 function payEndless() {
   if (tut.on) return 0;
   if (C.cfg.heli || game.kind !== 'endless' || game.paid || !(game.mode === 'run' || game.mode === 'countdown')) return 0;
   game.paid = true;
-  return earn(Math.floor(game.score / 2500));
+  return earn(Math.floor(game.score / 1000));
 }
 let shop3d = null;   // 3D-Shop (Laden mit Regal und Puppe), entsteht nach dem Laden der Modelle
 /** Eigene Farben gewählt: Outfit „Eigene Farben“ anlegen. */
@@ -1221,8 +1222,8 @@ function finishRun() {
     $('finTime').innerHTML = `${dec1(sc.total)}<small> / 100</small>`;
     const rowsH = [['Linie', dec1(sc.line)], ['Flüssigkeit', dec1(sc.flow)], ['Kontrolle', dec1(sc.control)], ['Sprünge', dec1(sc.air)],
       ['Zeit', fmt(total)], ['Größter Drop', `${Math.round(fwt.maxDrop)} m`], ['Längste Flow-Kette', `×${(1 + Math.min(2, fwt.flowMax * 0.25)).toFixed(2).replace(/0$/, '').replace('.', ',')}`], ['Beste Wertung', dec1(bestSc)]];
-    // v44 angeglichen an Freeride (40 Münzen je 100.000 Punkte, rund 8 je Minute): 2 bis 42 je Abfahrt (vorher bis 270)
-    const gotH = earn(Math.round(sc.total * 0.4 + 2));
+    // wie Freeride rund 20 Münzen je Minute: 5 bis 105 je Abfahrt (v44: 2 bis 42)
+    const gotH = earn(Math.round(sc.total * 1.0 + 5));
     rowsH.push(['Shop-Punkte', `+${num(gotH)}`]);
     $('finStats').innerHTML = rowsH.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
     return;
@@ -1232,10 +1233,10 @@ function finishRun() {
   // Shop-Punkte: getroffene Tore, Länge der Disziplin, Bonus für eine neue Bestzeit
   const lenF = { sl: 1, gs: 1.3, sg: 1.7, dh: 2.1 }[disc] || 1;
   const missed = C.gates.length - game.passed;
-  // v44 angeglichen an Freeride (rund 8 Münzen je Minute): sauberer Lauf Slalom 6, Riesentorlauf 8, Super-G 10, Abfahrt 13;
-  // verpasste Tore zählen doppelt dagegen, neue Bestzeit +2 (vorher 50 bis über 200 je Lauf)
+  // wie Freeride rund 20 Münzen je Minute: sauberer Lauf Slalom 15, Riesentorlauf 20, Super-G 26, Abfahrt 32;
+  // verpasste Tore zählen doppelt dagegen, neue Bestzeit +5 (v44: 6 bis 13, Bestzeit +2)
   const quality = C.gates.length ? Math.max(0, (game.passed - 2 * missed) / C.gates.length) : 0;
-  rows.push(['Shop-Punkte', `+${num(earn(Math.round(6 * lenF * quality) + (isBest ? 2 : 0)))}`]);
+  rows.push(['Shop-Punkte', `+${num(earn(Math.round(15 * lenF * quality) + (isBest ? 5 : 0)))}`]);
   $('finStats').innerHTML = rows.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
 }
 

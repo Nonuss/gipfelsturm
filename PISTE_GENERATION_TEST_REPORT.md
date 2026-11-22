@@ -757,3 +757,15 @@ Nicht geprüft: wie sich der Nose Butter in einem sichtbaren Fenster bei echter 
 Tests: Bodenprüfung Bild für Bild, fünf Butter und ein Slash, kein Ski-Teil unter dem Schnee (tiefster Wert gleich der Ausgangslage, −0,2 cm Geländerundung). Draufsicht auf die Spur geprüft. Alle Stufen in Rennen, Freeride und Heli mit laufendem Butter ohne Fehler, Bildzeiten wie v46.
 
 Nicht geprüft: das Gefühl bei echter Bildrate im sichtbaren Fenster.
+
+## Nose Butter aus dem Schwung: Ausholen, 180er, dann auf die Schaufeln (v48, 2026-11-22)
+
+| Rückmeldung | Änderung |
+|---|---|
+| Unrealistisch, dass er ohne Schwung auf einmal auf den Schaufeln dreht | Neuer Ablauf wie bei echten Fahrern (Tricks entstehen aus Bewegung und Timing, wie es auch das physikbasierte Skispiel Jibbers beschreibt): Ausholen (Oberkörper gegen die Drehung, kurz einfedern), ein 180er auf flachen Ski mit vorausziehendem Oberkörper und Querrutschen, aus diesem Schwung weit nach vorn auf die Schaufeln, die zweite halbe Drehung läuft auf den Spitzen, dann wieder flach auf beide Ski. Gesamt 360 Grad, er fährt danach wieder vorwärts |
+| Nose Butter nach dem 180er etwas schneller | Zweite halbe Drehung in rund 0,7 s (vorher eine ganze Drehung in 3,1 s); ganzer Trick 2,1 bis 2,5 s je nach Versuch. Beim Umsetzen aufs Vorderteil stockt die Drehung kurz |
+| Viel mehr nach vorne lehnen, eher niedrig, nicht weit vom Boden | Hüfte 30 cm statt 20 cm nach vorn, Brust deutlich tiefer über den Knien, Hocke 0,5 statt 0,16, Hände tief vorn; Kippwinkel der Ski 9 bis 12 Grad (vorher bis 12), Füße nur noch wenig angehoben |
+| Ungleichmäßig leicht nach oben und unten | Unruhiges Auf und Ab der Hüfte (zwei überlagerte Rauschwellen, bis gut 5 cm), dazu pumpender Druck auf den Schaufeln, Hocke schwankt, leichtes seitliches Wackeln |
+| Drehpunkt | Beim 180er dreht er um die Körpermitte, auf den Schaufeln um die Spitzen. Der Körper schwenkt dabei um die Spitzen; diese Verschiebung (gut 1,9 m Bogen) läuft direkt in die Fahrt ein statt nachträglich zurückzuspringen |
+
+Tests: fünf Butter Bild für Bild ohne Ski-Teil im Schnee (tiefster Wert gleich der Ausgangslage, −0,3 cm Geländerundung), höchstens 8 Grad Drehung pro Bild auf den Schaufeln, Verschiebung um die Spitzen höchstens 8,7 cm pro Bild (gleichmäßige Kreisbahn, kein Sprung). Spur von oben: Doppellinie, Rutschfleck des 180ers, Schaufelstreifen, wieder Doppellinie. Alle Stufen in Rennen, Freeride und Heli ohne Fehler.

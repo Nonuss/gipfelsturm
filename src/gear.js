@@ -64,7 +64,7 @@ export const SKIS = {
 // Nur zwei Ski haben einen eigenen Trick (dazu die Legende, die beide kann). Beide laufen am Boden und sind mit den
 // anderen Tasten nicht machbar.
 export const SKI_TRICKS = {
-  butter: { name: 'Nose Butter 360', text: 'Gewicht nach vorn auf die Schaufeln: der Ski biegt sich durch, die Enden heben ab, dann eine ruhige ganze Drehung auf den Spitzen', T: 3.1, pts: 700 },
+  butter: { name: 'Nose Butter 360', text: 'Ausholen, ein 180er auf flachen Ski, dann aus dem Schwung weit nach vorn auf die Schaufeln: die Enden heben ab, die zweite halbe Drehung läuft auf den Spitzen', T: 2.3, pts: 700 },
   slash: { name: 'Powder Slash', text: 'Ski quer stellen und eine Schneewand aufwerfen; im Tiefschnee riesig, kostet Tempo', T: 1.3, pts: 400, minV: 5 },
   legend: { name: 'Legenden-Trick', text: 'Im Pulver ein Powder Slash, sonst ein Nose Butter 360; anderthalbfache Punkte', T: 0, pts: 0 },
 };

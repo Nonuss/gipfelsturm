@@ -369,6 +369,7 @@ export class Skier {
     const tweak = s.tweak || 0;                     // Japan Air: Ski hinter dem Körper hochgezogen, Spitzen nach unten
     // Nose Butter (Taste E): Gewicht über den Schaufeln, Ski gebogen, Enden in der Luft
     const butter = this.gear === 'board' ? 0 : clamp(s.butter || 0, 0, 1);
+    const twist = this.gear === 'board' ? 0 : s.twist || 0;   // Oberkörper gegen die Ski verdreht (Ausholen, Mitnehmen)
     // Biegung: s.butterTh (Radiant) aus dem Trick, sonst Standard; schwankt beim echten Butter mit dem Druck
     const bTh = this.gear === 'board' ? 0 : s.butterTh !== undefined ? s.butterTh : BUTTER_TH * butter;
     const bLift = bendLift(bTh, this.bendS0, this.bendS1);
@@ -379,28 +380,28 @@ export class Skier {
     const plow = s.plow * (1 - butter);
     const idle = 1 - clamp(s.speed / 3, 0, 1);
     const bob = Math.sin(this.t * 2.2) * 0.012 * idle + Math.sin(this.t * 31) * 0.004 * clamp(s.speed / 30, 0, 1);
-    const hipH = lerp(1.0, 0.70, c) - 0.09 * Math.abs(lean) + 0.13 * butter;   // beim Butter stehen die Füße höher
+    const hipH = lerp(1.0, 0.70, c) - 0.09 * Math.abs(lean) + 0.05 * butter + (s.bob || 0);   // Butter: Füße etwas höher; bob: Auf und Ab
     const edge = clamp(lean * 1.2, -1.05, 1.05);
     const spinAbs = Math.abs(spin) * (1 - grab) * (1 - tuck);
 
     // Becken
-    tC.set(Math.sin(lean) * hipH * 0.88, Math.cos(lean) * hipH + bob, 0.05 + 0.10 * c - 0.2 * butter);   // Butter: Hüfte nach vorn über die Schuhspitzen
-    eA.set(-(0.10 + 0.30 * c), s.steer * 0.10 + spin * 0.15, -lean * 0.55);
+    tC.set(Math.sin(lean) * hipH * 0.88, Math.cos(lean) * hipH + bob, 0.05 + 0.10 * c - 0.3 * butter);   // Butter: Hüfte weit nach vorn über die Schuhspitzen
+    eA.set(-(0.10 + 0.30 * c + 0.12 * butter), s.steer * 0.10 + spin * 0.15 + twist * 0.35, -lean * 0.55);
     mR.makeRotationFromEuler(eA);
     this.mPel.copy(this.setBone(PEL, tC, mR, P0));
 
     // Oberkörper
-    const bend = 0.34 + 0.70 * c - air * 0.12 * (1 - grab) * (1 - tuck) + 0.22 * butter;
+    const bend = 0.34 + 0.70 * c - air * 0.12 * (1 - grab) * (1 - tuck) + 0.42 * butter;   // Butter: Brust weit über die Knie
     tC.copy(W0).applyMatrix4(this.mPel);
     const look = s.look || 0;   // rückwärts fahren: Oberkörper dreht mit, Kopf schaut über die Schulter in Fahrtrichtung
-    eA.set(-bend, s.steer * 0.18 + spin * 0.45 + grab * 0.2 + look * 0.55 + (crash ? Math.sin(ca * 1.3) * 0.5 : 0), -lean * 0.18);
+    eA.set(-bend, s.steer * 0.18 + spin * 0.45 + twist * 0.65 + grab * 0.2 + look * 0.55 + (crash ? Math.sin(ca * 1.3) * 0.5 : 0), -lean * 0.18);
     qA.setFromEuler(eA);
     mR.makeRotationFromQuaternion(qA);
     this.mCh.copy(this.setBone(CH, tC, mR, W0));
 
     // Kopf: blickt nach vorne, leicht in die Kurve bzw. Drehrichtung
     tC.copy(N0).applyMatrix4(this.mCh);
-    eA.set(bend * 0.8 - tuck * 0.35, s.steer * 0.25 + spin * 0.5 + look * 1.15, 0);
+    eA.set(bend * 0.8 - tuck * 0.35, s.steer * 0.25 + spin * 0.5 - twist * 0.6 + look * 1.15, 0);   // Kopf schaut beim Verdrehen weiter in Fahrtrichtung
     qB.setFromEuler(eA).premultiply(qA);
     mR.makeRotationFromQuaternion(qB).scale(tD.set(1.08, 1.08, 1.08));
     this.setBone(HD, tC, mR, N0);
@@ -472,7 +473,7 @@ export class Skier {
         if (cross > 0.01) k.hand.lerp(tD.copy(k.shoulder).add(tC.set(side * 0.62, 0.12, -0.12)), cross);
         if (daffy > 0.01) k.hand.lerp(tD.copy(k.shoulder).add(tC.set(side * 0.5, 0.18, side * 0.25)), daffy);   // Arme seitlich zum Ausgleich
         // Nose Butter: Arme seitlich vorn, Stöcke zum Ausbalancieren abgespreizt
-        if (butter > 0.01) k.hand.lerp(tD.copy(k.shoulder).add(tC.set(side * 0.46, -0.2, -0.34)), butter * 0.85);
+        if (butter > 0.01) k.hand.lerp(tD.copy(k.shoulder).add(tC.set(side * 0.42, -0.34, -0.36)), butter * 0.85);   // Hände tief vorn
       }
       if (this.gear === 'board' && !crash && grab < 0.01) {
         // ohne Stöcke: Arme locker seitlich, leicht vor dem Körper, zum Ausbalancieren

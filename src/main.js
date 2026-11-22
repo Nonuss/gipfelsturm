@@ -1294,8 +1294,8 @@ function startSkiTrick() {
   const zc = id === 'butter' ? -0.94 * (skier.bendS1 + 0.08) : null;
   // Kein Butter gleicht dem anderen: Dauer, Druck, Rhythmus der Drehung und das Wackeln werden pro Versuch ausgewürfelt
   const R = Math.random;
-  const rnd = { T: 0.88 + 0.24 * R(), th: 0.85 + 0.3 * R(), pIn: 0.17 + 0.09 * R(), k1: 1 + R() * 0.8, k2: 2.5 + R(), p1: R() * TAU, p2: R() * TAU, a1: 0.012 + 0.01 * R(), a2: 0.004 + 0.004 * R(), seed: R() * 50 };
-  skiTrick = { id, def, t: 0, T: def.T * (id === 'butter' ? rnd.T : 1), side, zc, zc0: zc, rnd, legend: id0 === 'legend', off: new THREE.Vector3(), yaw: 0 };
+  const rnd = { T: 0.9 + 0.2 * R(), th: 0.75 + 0.25 * R(), pIn: 0.17 + 0.09 * R(), k1: 1 + R() * 0.8, k2: 1 + R() * 0.8, p1: R() * TAU, p2: R() * TAU, a1: 0.008 + 0.008 * R(), a2: 0.006 + 0.006 * R(), seed: R() * 50 };
+  skiTrick = { id, def, t: 0, T: def.T * (id === 'butter' ? rnd.T : 1), side, zc, zc0: zc, rnd, legend: id0 === 'legend', yaw: 0 };
 }
 function endSkiTrick(ok) {
   const st = skiTrick;
@@ -1314,29 +1314,39 @@ function skiTrickPose(dt, pv) {
   const st = skiTrick;
   st.t += dt;
   const u = Math.min(1, st.t / st.T);
-  const P = { butter: 0, butterTh: undefined, crouch: 0, lean: null, leanW: 0 };
+  const P = { butter: 0, butterTh: undefined, twist: 0, bob: 0, crouch: 0, lean: null, leanW: 0 };
   const baseYaw = pv.rotation.y;
   let dYaw = 0;
   if (st.id === 'butter') {
-    // Ablauf wie bei echten Fahrern: erst Gewicht nach vorn, die Enden lösen sich, dann die Drehung auf den Schaufeln,
-    // zum Schluss wieder flach auf beide Ski. Nichts davon ist gleichmäßig: der Druck auf die Schaufeln pumpt (die Enden
-    // wippen), die Drehung stockt und zieht wieder an, die Schaufeln rutschen ein Stück, der Körper sucht das
-    // Gleichgewicht, dazu feines Zittern. Rauschen aus vnoise, Ausprägung pro Versuch zufällig (rnd).
-    const r = st.rnd, t = st.t, n = (f, o) => C.vnoise(t * f + r.seed, o) * 2 - 1;
-    const env = smoother(0, r.pIn, u) * (1 - smoother(0.8, 1, u));
-    const press = Math.max(0, 1 + 0.14 * n(2.6, 3.1) + 0.06 * n(8.5, 7.3));
+    // Ablauf wie bei echten Fahrern (180 auf Nose Butter): Niemand dreht aus dem Stand auf den Schaufeln. Erst Ausholen
+    // (Oberkörper gegen die Drehung, kurz einfedern), dann ein 180er auf flachen Ski, der Oberkörper zieht voraus; aus
+    // diesem Schwung kippt das Gewicht weit nach vorn auf die Schaufeln, die Enden heben sich, und die zweite halbe
+    // Drehung läuft schneller auf den Spitzen, tief und kompakt. Zum Schluss wieder flach auf beide Ski.
+    // Nichts davon gleichmäßig: der Druck pumpt (Enden wippen), der Körper geht unruhig auf und ab, die Drehung stockt
+    // beim Umsetzen aufs Vorderteil und zieht wieder an, feines Zittern. Ausprägung pro Versuch zufällig (rnd).
+    const r = st.rnd, t = st.t, n = (f, o) => C.vnoise(t * f + r.seed, o) * 2 - 1, sd = st.side;
+    const wind = smoother(0, 0.12, u) * (1 - smoother(0.12, 0.24, u));                 // Ausholen
+    const slide = smoother(0.1, 0.2, u) * (1 - smoother(0.42, 0.52, u));               // 180er auf flachen Ski
+    const env = smoother(0.4, 0.5, u) * (1 - smoother(0.78, 0.9, u));                  // auf den Schaufeln
+    const press = Math.max(0, 1 + 0.16 * n(2.6, 3.1) + 0.07 * n(8.5, 7.3));
     P.butter = env; P.butterTh = BUTTER_TH * r.th * env * press;
-    P.crouch = (0.16 + 0.07 * n(1.9, 11.7)) * env; P.lean = 0.09 * n(1.4, 5.9) * env; P.leanW = Math.min(1, env * 1.6);
-    const w = smoother(r.pIn - 0.04, 0.86, u), J = Math.sin(Math.PI * w) * (r.a1 * Math.sin(TAU * r.k1 * w + r.p1) + r.a2 * Math.sin(TAU * r.k2 * w + r.p2));
-    dYaw = st.side * TAU * (w + J) + st.side * 0.03 * env * n(10, 2.2);
-    st.zc = st.zc0 + 0.06 * env * n(1.2, 9.4);   // die Schaufeln rutschen etwas über den Schnee, der Drehpunkt wandert
-    if (phys.grounded) phys.vel.multiplyScalar(Math.exp(-dt * 0.18 * env));   // die Schaufeln bremsen etwas
+    P.twist = sd * (-0.55 * wind + 0.45 * smoother(0.12, 0.28, u) * (1 - smoother(0.42, 0.56, u)) + 0.15 * smoother(0.45, 0.55, u) * (1 - smoother(0.74, 0.88, u)));
+    P.crouch = 0.3 * wind + 0.22 * slide + (0.5 + 0.1 * n(2.1, 11.7)) * env;
+    P.bob = env * (0.035 * n(3.3, 4.4) + 0.018 * n(7.7, 1.9)) + slide * 0.015 * n(2.4, 8.8);   // unruhiges Auf und Ab
+    P.lean = 0.07 * n(1.4, 5.9) * env; P.leanW = Math.min(1, (env + slide + wind) * 1.6);
+    // Drehwinkel: erste Hälfte über flache Ski, zweite schneller auf den Schaufeln; dazwischen das kurze Stocken
+    const w1 = smoother(0.1, 0.5, u), w2 = smoother(0.45, 0.77, u);
+    const J = Math.sin(Math.PI * w1) * r.a1 * Math.sin(TAU * r.k1 * w1 + r.p1) + Math.sin(Math.PI * w2) * r.a2 * Math.sin(TAU * r.k2 * w2 + r.p2);
+    dYaw = sd * (Math.PI * (w1 + w2) + TAU * J) + sd * 0.025 * env * n(10, 2.2);
+    // Drehpunkt: beim 180er die Körpermitte, auf den Schaufeln die Spitzen (gleitend umgesetzt)
+    st.zc = st.zc0 * env;
+    if (phys.grounded) phys.vel.multiplyScalar(Math.exp(-dt * (0.45 * slide + 0.22 * env)));   // Querrutschen und Schaufeln bremsen
     // feiner Schneestaub an den Schaufeln, solange sie über den Schnee drehen
     const turnRate = Math.abs(dYaw - st.yaw) / Math.max(dt, 1e-3);
     if (env > 0.6 && turnRate > 0.6) {
-      tvA.set(0, 0, st.zc).applyAxisAngle(Y_AX, baseYaw + dYaw).add(st.off);
+      tvA.set(0, 0, st.zc).applyAxisAngle(Y_AX, baseYaw + dYaw);
       tvA.applyQuaternion(skier.root.quaternion).add(skier.root.position);
-      const k = Math.random() < 0.6 * Q.fx ? 1 : 0;
+      const k = Math.random() < 0.7 * Q.fx ? 1 : 0;
       for (let i = 0; i < k; i++) spray.emit(tvA.x + (Math.random() - 0.5) * 0.3, tvA.y + 0.04, tvA.z + (Math.random() - 0.5) * 0.3, phys.vel.x * 0.5 + (Math.random() - 0.5) * 1.2, 0.3 + Math.random() * 0.6, phys.vel.z * 0.5 + (Math.random() - 0.5) * 1.2, 0.12 + Math.random() * 0.12, 0.5 + Math.random() * 0.4);
     }
   } else if (st.id === 'slash') {
@@ -1351,16 +1361,19 @@ function skiTrickPose(dt, pv) {
         0.3 + Math.random() * 0.6 + phys.pow * 0.6, 0.8 + Math.random() * 1.2, 3.5, 0.55, 2.4);
     }
   }
-  // Butter: Drehung um die aufliegenden Schaufeln statt um die Körpermitte. Der Drehpunkt bleibt fest liegen; nach der
-  // ganzen Drehung ist der Versatz wieder null (der Körper ist einmal um die Schaufeln gekreist).
-  if (st.zc !== null) {
+  // Butter: auf den Schaufeln dreht der Körper um die Spitzen, nicht um seine Mitte. Der Drehpunkt bleibt liegen, der
+  // Körper schwenkt um ihn herum; dieser Versatz wird direkt in die Fahrt übernommen (die Position verschiebt sich über
+  // den Schnee, wie in echt), damit am Ende nichts zurückspringt.
+  if (st.zc !== null && st.zc !== 0) {
     const y0 = baseYaw + st.yaw, y1 = baseYaw + dYaw;
-    tvA.set(0, 0, st.zcPrev ?? st.zc).applyAxisAngle(Y_AX, y0).add(st.off);
-    st.zcPrev = st.zc;
-    st.off.copy(tvA).sub(tvB.set(0, 0, st.zc).applyAxisAngle(Y_AX, y1));
-    // am Ende stellt sich der Körper wieder über die Ski (der Restversatz durch das Rutschen der Schaufeln, wenige cm)
-    const back = 1 - smoother(0.86, 1, u);
-    pv.position.x += st.off.x * back; pv.position.z += st.off.z * back;
+    tvA.set(0, 0, st.zc).applyAxisAngle(Y_AX, y0).sub(tvB.set(0, 0, st.zc).applyAxisAngle(Y_AX, y1));
+    tvA.y = 0; tvA.applyQuaternion(skier.root.quaternion);
+    const ox = phys.pos.x, oz = phys.pos.z, nx = ox + tvA.x, nz = oz + tvA.z;
+    if (phys.grounded) {
+      phys.pos.y += C.height(nx, nz) - C.height(ox, oz);
+      phys.pos.x = nx; phys.pos.z = nz;
+      skier.root.position.x += tvA.x; skier.root.position.z += tvA.z; skier.root.position.y = phys.pos.y - (phys.sink || 0) * (Q.patch > 0 ? 0.12 : 0.8);
+    }
   }
   st.yaw = dYaw;
   pv.rotation.y = baseYaw + dYaw;
@@ -2262,7 +2275,7 @@ function updateSkier(dt) {
   const bodySign = Math.cos(trick.yaw + swYaw);
   skier.update({
     lean: BOARD() ? 0 : stp && stp.lean !== null ? lerp(vis.lean * bodySign, stp.lean, stp.leanW) : vis.lean * bodySign, crouch: BOARD() ? Math.min(1, vis.crouch + 0.32 * Math.abs(vis.lean)) : Math.min(1, vis.crouch + (stp ? stp.crouch : 0)), edge: BOARD() && !crashed ? vis.bEdgeExtra || 0 : 0, steer: phys.grounded && !BOARD() ? inp.steer * bodySign * (1 + 0.9 * (C.cfg.heli ? 1 : 0)) : 0, plow: BOARD() ? 0 : vis.plow, plowDir: bodySign < 0 ? -1 : 1, air: vis.air, compress: vis.compress,
-    butter: stp ? stp.butter : 0, butterTh: stp ? stp.butterTh : undefined,
+    butter: stp ? stp.butter : 0, butterTh: stp ? stp.butterTh : undefined, twist: stp ? stp.twist : 0, bob: stp ? stp.bob : 0,
     speed: phys.speed, grab: trick.grab, grabSide: trick.gs, sup: BOARD() ? 0 : vis.sup || 0, cross: BOARD() ? 0 : vis.cross || 0, daffy: BOARD() ? 0 : vis.daffy || 0, tweak: BOARD() ? 0 : vis.tweak || 0, look: vis.look, tuck: vis.tuck, spin: vis.spin, extend: vis.extend, crash: crashed ? 1 : 0, crashA: vis.crashAngle,
   }, dt);
   skier.updateLoose(dt, C.height);

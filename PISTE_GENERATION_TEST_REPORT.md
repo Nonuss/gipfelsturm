@@ -769,3 +769,12 @@ Nicht geprüft: das Gefühl bei echter Bildrate im sichtbaren Fenster.
 | Drehpunkt | Beim 180er dreht er um die Körpermitte, auf den Schaufeln um die Spitzen. Der Körper schwenkt dabei um die Spitzen; diese Verschiebung (gut 1,9 m Bogen) läuft direkt in die Fahrt ein statt nachträglich zurückzuspringen |
 
 Tests: fünf Butter Bild für Bild ohne Ski-Teil im Schnee (tiefster Wert gleich der Ausgangslage, −0,3 cm Geländerundung), höchstens 8 Grad Drehung pro Bild auf den Schaufeln, Verschiebung um die Spitzen höchstens 8,7 cm pro Bild (gleichmäßige Kreisbahn, kein Sprung). Spur von oben: Doppellinie, Rutschfleck des 180ers, Schaufelstreifen, wieder Doppellinie. Alle Stufen in Rennen, Freeride und Heli ohne Fehler.
+
+## Nose Butter federnd, Ski eng zusammen (v49, 2026-11-22)
+
+| Rückmeldung | Änderung |
+|---|---|
+| Ski beim Nose Butter enger zusammen, wie in echt | Auf den Schaufeln halbiert sich der Abstand der Ski (Knie fast aneinander), beim 180er davor schon etwas enger |
+| Drehung zu steif, wie ein perfekter Kreis, er müsste voll bouncen | Federn: auf den Schaufeln drückt er rhythmisch in die Ski und springt aus der Biegung wieder hoch, 3 bis 4,5 Stöße pro Sekunde, jeder Stoß unterschiedlich stark. Beim Hochfedern ist er leicht, die Drehung schießt weiter, die Ski entspannen sich; beim Eindrücken bremst die Drehung, die Ski biegen sich am stärksten, er geht tief (Hüfte bis gut 5 cm auf und ab). Die Drehung läuft damit in Stößen (gemessen: 9 Grad pro Bild, dann fast Stillstand, dann wieder 7 bis 12 Grad) statt gleichmäßig. Der Drehpunkt rückt beim Hochfedern zur Körpermitte und beim Eindrücken ganz nach vorn: der Körper zieht keinen Kreis mehr, sondern einen unruhigen Bogen. Auch der 180er davor federt leicht |
+
+Tests: fünf Butter mit Park Twin und einer mit der Legende Bild für Bild ohne Ski-Teil im Schnee (tiefster Wert gleich der Ausgangslage). Powder Slash unverändert sauber. Alle Stufen in Rennen, Freeride und Heli ohne Fehler.

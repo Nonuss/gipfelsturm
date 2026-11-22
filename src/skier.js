@@ -419,7 +419,8 @@ export class Skier {
         // Kantenwinkel des Bretts über den Körper hinaus (Angulation): Füße und Brett kippen um die Brett-Längsachse
         f.rotation.set(grab * 0.25 + tuck * 0.1 + (s.edge || 0), side * 0.26, 0);
       } else {
-        const stance = 0.17 + 0.07 * Math.abs(lean) + 0.13 * plow + air * 0.03 + grab * 0.03;
+        // Butter (s.narrow): Ski eng zusammen, Knie fast aneinander, wie bei echten Fahrern auf den Schaufeln
+        const stance = (0.17 + 0.07 * Math.abs(lean) + 0.13 * plow + air * 0.03 + grab * 0.03) * (1 - 0.5 * clamp(s.narrow || 0, 0, 1));
         // Kante: der Ski kippt um seine Mitte; um die halbe Breite mal Kantenwinkel anheben, damit die untere Kante genau
         // auf dem Schnee liegt statt einzutauchen (auch beim Pflug, wo die Ski nach innen kanten)
         const rollZ = -(edge - side * plow * 0.28) - side * cross * 0.35;

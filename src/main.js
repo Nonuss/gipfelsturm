@@ -1294,7 +1294,7 @@ function startSkiTrick() {
   const zc = id === 'butter' ? -0.94 * (skier.bendS1 + 0.08) : null;
   // Kein Butter gleicht dem anderen: Dauer, Druck, Rhythmus der Drehung und das Wackeln werden pro Versuch ausgewürfelt
   const R = Math.random;
-  const rnd = { T: 0.9 + 0.2 * R(), th: 0.75 + 0.25 * R(), pIn: 0.17 + 0.09 * R(), k1: 1 + R() * 0.8, k2: 1 + R() * 0.8, p1: R() * TAU, p2: R() * TAU, bf: 3 + R() * 1.5, bp: R() * TAU, a1: 0.008 + 0.008 * R(), a2: 0.006 + 0.006 * R(), seed: R() * 50 };
+  const rnd = { T: 0.9 + 0.2 * R(), th: 0.75 + 0.25 * R(), pIn: 0.17 + 0.09 * R(), k1: 1 + R() * 0.8, k2: 1 + R() * 0.8, p1: R() * TAU, p2: R() * TAU, bf: 1.2 + R() * 0.7, bp: R() * TAU, a1: 0.008 + 0.008 * R(), a2: 0.006 + 0.006 * R(), seed: R() * 50 };
   skiTrick = { id, def, t: 0, T: def.T * (id === 'butter' ? rnd.T : 1), side, zc, zc0: zc, rnd, legend: id0 === 'legend', yaw: 0 };
 }
 function endSkiTrick(ok) {
@@ -1330,21 +1330,22 @@ function skiTrickPose(dt, pv) {
     const env = smoother(0.4, 0.5, u) * (1 - smoother(0.78, 0.9, u));                  // auf den Schaufeln
     // Federn (Bounce): auf den Schaufeln drückt er rhythmisch, aber nie ganz gleich, in die Ski und springt aus der
     // Biegung wieder hoch. Beim Hochfedern ist er leicht und die Drehung schießt ein Stück weiter, beim Eindrücken bremst
-    // sie, die Ski biegen sich am stärksten und er geht tief. Rund 3 bis 4,5 Stöße pro Sekunde, Stärke je Stoß zufällig.
-    const om = r.bf * TAU, ph = om * t + r.bp, amp = 0.75 + 0.25 * n(1.7, 6.6);
+    // sie, die Ski biegen sich am stärksten und er geht tief. Langsam und ungleichmäßig: gut 1 bis 2 Mal pro Sekunde,
+    // der Takt schwankt (Phase mit langsamem Rauschen verschoben), jeder Stoß unterschiedlich hoch.
+    const om = r.bf * TAU, ph = om * t + r.bp + 1.4 * n(0.7, 3.3), amp = 0.65 + 0.35 * n(0.9, 6.6);
     const up = Math.cos(ph) * amp;                                                       // +1 oben (leicht), -1 unten (gedrückt)
     const bounce = env + 0.35 * slide;
     const press = Math.max(0, 1 - 0.32 * up * env + 0.1 * n(2.6, 3.1));
     P.butter = env; P.butterTh = BUTTER_TH * r.th * env * press; P.narrow = Math.max(env, 0.45 * slide);
     P.twist = sd * (-0.55 * wind + 0.45 * smoother(0.12, 0.28, u) * (1 - smoother(0.42, 0.56, u)) + 0.15 * smoother(0.45, 0.55, u) * (1 - smoother(0.74, 0.88, u)));
     P.crouch = 0.3 * wind + 0.22 * slide + (0.48 - 0.16 * up + 0.06 * n(2.1, 11.7)) * env;
-    P.bob = bounce * (0.045 * up + 0.012 * n(7.7, 1.9));                                 // deutliches Auf und Ab
+    P.bob = bounce * (0.06 * up + 0.015 * n(1.3, 1.9));                                  // deutliches, langsames Auf und Ab
     P.lean = 0.08 * n(1.4, 5.9) * env; P.leanW = Math.min(1, (env + slide + wind) * 1.6);
     // Drehwinkel: Zeit verzerrt mit dem Federn (schneller beim Hochfedern, langsamer beim Eindrücken), immer vorwärts
-    const tw = u + bounce * 0.6 * Math.sin(ph) * amp / (om * st.T);
+    const tw = u + bounce * 0.35 * Math.sin(ph) * amp / (om * st.T);
     const w1 = smoother(0.1, 0.5, tw), w2 = smoother(0.45, 0.77, tw);
     const J = Math.sin(Math.PI * w1) * r.a1 * Math.sin(TAU * r.k1 * w1 + r.p1) + Math.sin(Math.PI * w2) * r.a2 * Math.sin(TAU * r.k2 * w2 + r.p2);
-    dYaw = sd * (Math.PI * (w1 + w2) + TAU * J) + sd * 0.02 * env * n(10, 2.2);
+    dYaw = sd * (Math.PI * (w1 + w2) + TAU * J) + sd * 0.012 * env * n(2.5, 2.2);
     // Drehpunkt: beim 180er die Körpermitte, auf den Schaufeln die Spitzen; beim Hochfedern rückt er zur Mitte, beim
     // Eindrücken ganz nach vorn: der Körper zieht keinen Kreis, sondern einen unruhigen, ausfransenden Bogen
     st.zc = st.zc0 * env * (0.72 - 0.28 * up);

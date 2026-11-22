@@ -778,3 +778,11 @@ Tests: fünf Butter Bild für Bild ohne Ski-Teil im Schnee (tiefster Wert gleich
 | Drehung zu steif, wie ein perfekter Kreis, er müsste voll bouncen | Federn: auf den Schaufeln drückt er rhythmisch in die Ski und springt aus der Biegung wieder hoch, 3 bis 4,5 Stöße pro Sekunde, jeder Stoß unterschiedlich stark. Beim Hochfedern ist er leicht, die Drehung schießt weiter, die Ski entspannen sich; beim Eindrücken bremst die Drehung, die Ski biegen sich am stärksten, er geht tief (Hüfte bis gut 5 cm auf und ab). Die Drehung läuft damit in Stößen (gemessen: 9 Grad pro Bild, dann fast Stillstand, dann wieder 7 bis 12 Grad) statt gleichmäßig. Der Drehpunkt rückt beim Hochfedern zur Körpermitte und beim Eindrücken ganz nach vorn: der Körper zieht keinen Kreis mehr, sondern einen unruhigen Bogen. Auch der 180er davor federt leicht |
 
 Tests: fünf Butter mit Park Twin und einer mit der Legende Bild für Bild ohne Ski-Teil im Schnee (tiefster Wert gleich der Ausgangslage). Powder Slash unverändert sauber. Alle Stufen in Rennen, Freeride und Heli ohne Fehler.
+
+## Nose Butter: langsames, ungleichmäßiges Auf und Ab statt Flattern (v50, 2026-11-22)
+
+| Rückmeldung | Änderung |
+|---|---|
+| Das Ruckeln ist zu gleichmäßig und schnell, wie ein Flattern; lieber in der Höhe variieren | Federn jetzt gut 1 bis 2 Mal pro Sekunde statt 3 bis 4,5; der Takt schwankt (Phase mit langsamem Rauschen verschoben), jeder Stoß unterschiedlich hoch. Das Auf und Ab der Hüfte ist größer (bis gut 7 cm statt 5), das schnelle Zittern um die Hochachse und in der Höhe ist fast ganz weg. Die Drehung wird vom Federn nur noch etwa halb so stark beschleunigt und gebremst |
+
+Tests: vier Butter Bild für Bild ohne Ski-Teil im Schnee; gemessene Drehung pro Bild steigt und fällt in zwei bis drei langsamen Wellen statt in schnellen Stößen. Slash unverändert sauber.

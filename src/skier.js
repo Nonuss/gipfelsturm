@@ -23,6 +23,7 @@ const bx = V(0, 0, 0), by = V(0, 0, 0), bz = V(0, 0, 0);
 const mR = new THREE.Matrix4(), mT = new THREE.Matrix4();
 const qA = new THREE.Quaternion(), qB = new THREE.Quaternion(), eA = new THREE.Euler(0, 0, 0, 'YXZ');
 const DOWN = V(0, -1, 0);
+const BO = { y: 0, z: 0 };
 
 /** Drehmatrix, deren -Y entlang dir zeigt und deren -Z möglichst entlang hint. */
 function basis(dir, hint, out) {
@@ -46,47 +47,50 @@ function ik(A, T, l1, l2, pole, out) {
   return out.copy(A).addScaledVector(tA, a).addScaledVector(tB, h);
 }
 
-// Ski biegen (Nose Butter), exakt statt angenähert: Der Fuß kippt mit der Schaufel nach unten (Winkel theta) und hebt sich.
-// Im Fuß-Rahmen bleibt der Ski bis knapp vor der Schuhspitze (uBendS0) gerade, biegt sich dann auf einem Kreisbogen
-// (Krümmung uBendK) bis zum Auflagepunkt (uBendS1) um genau theta nach oben und läuft von dort gerade weiter. Jeder Punkt
-// wird entlang des Bogens umgelegt (keine Dehnung, die Dicke bleibt senkrecht zur Biegelinie). So liegt die Schaufel in der
-// Welt genau flach auf dem Schnee, der Bogen und das Ende liegen darüber: nichts taucht in den Boden.
-// Bei uBendK = 0 bleibt alles wie vorher. Gleiche Rechnung in JS: bendPoint (für die Bodenprüfung).
+// Ski biegen (Nose Butter): Der Fuß kippt mit der Schaufel nach unten (Winkel theta) und hebt sich. Wie bei einem echten
+// Ski ist die Biegung nicht gleichmäßig: unter der Bindung bleibt er steif (gerade bis uBendS0), im Vorderteil biegt er
+// sich, am stärksten in der Mitte, und läuft am Auflagepunkt (uBendS1, Beginn des Schaufel-Rockers) wieder gerade aus.
+// Krümmung = theta mal sin² über die Biegestrecke: kein Knick am Anfang und am Ende. Jeder Punkt wird senkrecht zur
+// Biegelinie umgelegt; die Schaufel liegt in der Welt genau flach auf dem Schnee, Bogen und Ende liegen darüber.
+// Bei uBendT = 0 bleibt alles wie vorher. Gleiche Rechnung in JS: bendPoint (Bodenprüfung, Spuren).
 function patchBend(mat, uni) {
   mat.onBeforeCompile = (sh) => {
     Object.assign(sh.uniforms, uni);
     sh.vertexShader = sh.vertexShader
-      .replace('#include <common>', '#include <common>\nuniform float uBendK;\nuniform float uBendS0;\nuniform float uBendS1;')
+      .replace('#include <common>', '#include <common>\nuniform float uBendT;\nuniform float uBendS0;\nuniform float uBendS1;')
       .replace('#include <begin_vertex>', `#include <begin_vertex>
-      if (uBendK > 1e-4) {
+      if (uBendT > 1e-4) {
         float s = -transformed.z;
         if (s > uBendS0) {
-          float a = min(s, uBendS1) - uBendS0, ph = uBendK * a, e = max(0.0, s - uBendS1);
-          float f = uBendS0 + sin(ph) / uBendK + e * cos(ph) - transformed.y * sin(ph);
-          transformed.y = (1.0 - cos(ph)) / uBendK + e * sin(ph) + transformed.y * cos(ph);
-          transformed.z = -f;
+          float L = uBendS1 - uBendS0, t = min(1.0, (s - uBendS0) / L), e = max(0.0, s - uBendS1), w = 6.2831853 * t;
+          float ph = uBendT * (t - sin(w) / 6.2831853);
+          float u = L * uBendT * (0.5 * t * t + (cos(w) - 1.0) / 39.4784176) + e * sin(uBendT);
+          float f = uBendS0 + L * t + e * cos(uBendT);
+          transformed.z = -(f - transformed.y * sin(ph));
+          transformed.y = u + transformed.y * cos(ph);
         }
       }`);
   };
-  mat.customProgramCacheKey = () => 'skiBend2';
+  mat.customProgramCacheKey = () => 'skiBend3';
 }
 /** JS-Fassung des Shaders: Punkt (y, z) im Fuß-Rahmen gebogen. */
-export function bendPoint(y, z, k, s0, s1, out) {
+export function bendPoint(y, z, th, s0, s1, out) {
   const s = -z;
-  if (k <= 1e-4 || s <= s0) { out.y = y; out.z = z; return out; }
-  const a = Math.min(s, s1) - s0, ph = k * a, e = Math.max(0, s - s1);
-  const f = s0 + Math.sin(ph) / k + e * Math.cos(ph) - y * Math.sin(ph);
-  out.y = (1 - Math.cos(ph)) / k + e * Math.sin(ph) + y * Math.cos(ph);
-  out.z = -f;
+  if (th <= 1e-4 || s <= s0) { out.y = y; out.z = z; return out; }
+  const L = s1 - s0, t = Math.min(1, (s - s0) / L), e = Math.max(0, s - s1), w = 2 * Math.PI * t;
+  const ph = th * (t - Math.sin(w) / (2 * Math.PI));
+  const u = L * th * (0.5 * t * t + (Math.cos(w) - 1) / (4 * Math.PI * Math.PI)) + e * Math.sin(th);
+  const f = s0 + L * t + e * Math.cos(th);
+  out.z = -(f - y * Math.sin(ph));
+  out.y = u + y * Math.cos(ph);
   return out;
 }
-/** Kippwinkel, Krümmung und Hub des Fußes für eine Biegung theta. */
-export function bendFoot(th, s0, s1) {
-  if (th <= 1e-4) return { k: 0, lift: 0 };
-  const k = th / (s1 - s0);
-  return { k, lift: (1 - Math.cos(th)) / k + s0 * Math.sin(th) };
+/** Hub des Fußes, damit der gerade Schaufelteil nach dem Kippen um theta genau auf dem Schnee liegt. */
+export function bendLift(th, s0, s1) {
+  if (th <= 1e-4) return 0;
+  return s1 * Math.sin(th) - 0.5 * (s1 - s0) * th * Math.cos(th);
 }
-export const BUTTER_TH = 0.4;   // volle Biegung: Enden gut 23 Grad hoch, wie bei einem weichen Park-Ski
+export const BUTTER_TH = 0.2;   // mittlere Biegung: Schaufel 11 bis 12 Grad gekippt, Enden gut 20 cm über dem Schnee
 
 function makeSkinned(geo, mat) {
   const n = geo.attributes.position.count;
@@ -125,7 +129,8 @@ export class Skier {
     const fixedMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.55 });
     const lensMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.18, metalness: 0.2 });
     const skiMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.3, metalness: 0.15 });
-    this.bendU = { uBendK: { value: 0 }, uBendS0: { value: 0.16 }, uBendS1: { value: 0.55 } };
+    this.bendU = { uBendT: { value: 0 }, uBendS0: { value: 0.16 }, uBendS1: { value: 0.55 } };
+    this.butterTh = 0;
     this.bendS0 = 0.16; this.bendS1 = 0.55; this.skiHalfW = 0.065;
     patchBend(skiMat, this.bendU);
 
@@ -206,7 +211,8 @@ export class Skier {
     this.skiId = id;
     const g = makeSki(d);
     // Biegung: gerade bis vor die Schuhspitze, Auflagepunkt dort, wo der Schaufel-Rocker beginnt; halbe Breite für die Kante
-    this.bendS0 = 0.16;
+    this.skiDef = d;
+    this.bendS0 = 0.18;
     this.bendS1 = Math.max(0.4, d.len * 0.53 - d.len * (d.twin ? 0.2 : 0.22) - 0.02);
     this.skiHalfW = Math.max(d.tip, d.tail) / 2;
     this.bendU.uBendS0.value = this.bendS0; this.bendU.uBendS1.value = this.bendS1;
@@ -216,6 +222,30 @@ export class Skier {
       const old = k.ski.geometry; k.ski.geometry = g; k.ski.material = d.metal ? this.goldMat() : this.skiMat;
       if (old && !old.userData.shared && old !== g && !this.sides.some((q) => q.ski.geometry === old)) old.dispose();
     }
+  }
+  /** Wo liegt Ski i gerade auf dem Schnee? Tastet die Unterseite (mit Rocker und Butter-Biegung) an 18 Stellen ab und
+   * gibt Anfang und Ende des tiefsten zusammenhängenden Stücks in Koordinaten des Fahrers (root) zurück: x rechts,
+   * y oben, z hinten. Für die Spuren bei Ski-Tricks. */
+  contactSpan(i, out) {
+    const d = this.skiDef || SKIS.allround, k = this.sides[i], L = d.len, z0 = -L * 0.53, z1 = L * 0.47;
+    const zTipR = z0 + L * (d.twin ? 0.2 : 0.22), zTailR = z1 - L * (d.twin ? 0.18 : 0.12), N = 18;
+    this.pivot.updateMatrix(); this.body.updateMatrix(); k.ski.updateMatrix();
+    mT.multiplyMatrices(this.pivot.matrix, this.body.matrix).multiply(k.ski.matrix);
+    const th = this.butterTh, pts = this._cs || (this._cs = Array.from({ length: N + 1 }, () => V(0, 0, 0)));
+    let minY = 1e9;
+    for (let j = 0; j <= N; j++) {
+      const z = z0 + (z1 - z0) * (j / N);
+      let y = 0;
+      if (z < zTipR) { const u = (zTipR - z) / (zTipR - z0); y = d.rockT * u * u * (1.25 - 0.25 * u); }
+      if (z > zTailR) { const u = (z - zTailR) / (z1 - zTailR); y = d.rockL * u * u; }
+      bendPoint(y, z, th, this.bendS0, this.bendS1, BO);
+      pts[j].set(0, BO.y, BO.z).applyMatrix4(mT);
+      if (pts[j].y < minY) minY = pts[j].y;
+    }
+    let a = -1, b = -1;
+    for (let j = 0; j <= N; j++) if (pts[j].y < minY + 0.012) { if (a < 0) a = j; b = j; }
+    out.hx = pts[a].x; out.hz = pts[a].z; out.tx = pts[b].x; out.tz = pts[b].z; out.n = b - a;
+    return out;
   }
   setBoardDesign(id) {
     const d = BOARDS[id] || BOARDS.classic;
@@ -339,8 +369,10 @@ export class Skier {
     const tweak = s.tweak || 0;                     // Japan Air: Ski hinter dem Körper hochgezogen, Spitzen nach unten
     // Nose Butter (Taste E): Gewicht über den Schaufeln, Ski gebogen, Enden in der Luft
     const butter = this.gear === 'board' ? 0 : clamp(s.butter || 0, 0, 1);
-    const bTh = BUTTER_TH * butter, bF = bendFoot(bTh, this.bendS0, this.bendS1);
-    this.bendU.uBendK.value = bF.k;
+    // Biegung: s.butterTh (Radiant) aus dem Trick, sonst Standard; schwankt beim echten Butter mit dem Druck
+    const bTh = this.gear === 'board' ? 0 : s.butterTh !== undefined ? s.butterTh : BUTTER_TH * butter;
+    const bLift = bendLift(bTh, this.bendS0, this.bendS1);
+    this.bendU.uBendT.value = bTh; this.butterTh = bTh;
     let c = clamp(Math.max(s.crouch + s.compress * 0.7 + air * 0.25, tuck * 0.9, grab * 0.75, cross * 0.7), 0, 1);
     c = lerp(c, 0.08, Math.max(ext, sup, daffy * 0.7));
     if (crash) c = 0.35;
@@ -395,7 +427,7 @@ export class Skier {
         f.rotation.set(air * 0.1 * (1 - ext) + grab * 0.32 + tuck * 0.12 - sup * 0.35 + daffy * (side < 0 ? 0.6 : -0.55) - tweak * 0.85, side * (plow * 0.33 * (s.plowDir || 1) + grab * 0.22 + cross * 0.75), rollZ);
       }
       // Nose Butter: Schaufel nach unten gekippt, Fuß so weit angehoben, dass die Schaufel genau auf dem Schnee liegt
-      if (butter > 0.001 && !crash) { f.rotation.x -= bTh; f.position.y += bF.lift + 0.004 * butter; }
+      if (bTh > 1e-4 && !crash) { f.rotation.x -= bTh; f.position.y += bLift + 0.003; }
       f.updateMatrix();
       const boot = f.children[0];
       if (!k.loose) {

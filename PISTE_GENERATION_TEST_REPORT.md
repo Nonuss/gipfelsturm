@@ -745,3 +745,15 @@ Tests (versteckter Browser, Bild für Bild):
 - Handy quer: keine Überlappungen im HUD, Text der Tafeln hält Abstand zur Kamera-Aussparung.
 
 Nicht geprüft: wie sich der Nose Butter in einem sichtbaren Fenster bei echter Bildrate anfühlt, und ob die Zoomstärke gefällt.
+
+## Nose Butter natürlicher: weiche Biegung, unruhige Drehung, echte Spuren (v47, 2026-11-22)
+
+| Rückmeldung | Ursache und Änderung |
+|---|---|
+| Die Ski biegen sich künstlich, zu weit vom Boden | Die Biegung war ein gleichmäßiger Kreisbogen mit Knick am Anfang und Ende, die Enden standen gut 23 Grad hoch. Jetzt biegt sich der Ski wie ein echter: unter der Bindung steif, im Vorderteil am stärksten, zur Schaufel hin wieder gerade (Krümmung mit sin² über die Biegestrecke, ohne Knick). Kippwinkel 11 bis 12 Grad statt 23, die Enden stehen gut 20 cm statt fast einen halben Meter über dem Schnee. Die Schaufel liegt weiterhin exakt flach auf |
+| Er dreht sich in einem perfekten Kreis, ein echter Butter ist zittrig und immer anders | Pro Versuch ausgewürfelt: Dauer (plus oder minus 12 %), Stärke des Drucks, wie schnell er auf die Schaufeln geht, Rhythmus der Drehung. Während des Tricks: der Druck pumpt (die Enden wippen), die Drehung stockt und zieht wieder an, feines Zittern um die Hochachse, der Drehpunkt rutscht ein paar Zentimeter über den Schnee, der Körper wackelt seitlich und in der Hocke. Am Ende stellt er sich wieder über die Ski. Höchstens 6 bis 7 Grad Drehung pro Bild (kein Ruck), Dauer bei fünf Versuchen 2,9 bis 3,4 s |
+| Wie würden die Spuren aussehen? | Bisher wurde bei jedem Bild ein Abdruck über die ganze Skilänge in Fahrtrichtung gestempelt, auch wenn die Ski quer standen oder die Enden in der Luft waren. Jetzt tastet das Spiel bei Ski-Tricks die Unterseite jedes Ski ab (mit Rocker und Biegung) und stempelt nur das Stück, das wirklich aufliegt, in der echten Lage des Ski. Beim Butter: die zwei Linien werden kürzer, wenn sich die Enden heben, dann wischen nur noch die Schaufeln einen flachen, gekratzten Streifen in den Schnee (keine Rille, rutschend mit Schmierspur), danach setzt die Doppelspur wieder ein. Beim Slash: breiter Rutschfleck der quer stehenden Ski |
+
+Tests: Bodenprüfung Bild für Bild, fünf Butter und ein Slash, kein Ski-Teil unter dem Schnee (tiefster Wert gleich der Ausgangslage, −0,2 cm Geländerundung). Draufsicht auf die Spur geprüft. Alle Stufen in Rennen, Freeride und Heli mit laufendem Butter ohne Fehler, Bildzeiten wie v46.
+
+Nicht geprüft: das Gefühl bei echter Bildrate im sichtbaren Fenster.

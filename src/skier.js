@@ -401,7 +401,7 @@ export class Skier {
 
     // Kopf: blickt nach vorne, leicht in die Kurve bzw. Drehrichtung
     tC.copy(N0).applyMatrix4(this.mCh);
-    eA.set(bend * 0.8 - tuck * 0.35, s.steer * 0.25 + spin * 0.5 - twist * 0.6 + look * 1.15, 0);   // Kopf schaut beim Verdrehen weiter in Fahrtrichtung
+    eA.set(bend * 0.8 - tuck * 0.35, s.steer * 0.25 + spin * 0.5 - twist * 0.6 + (s.spot || 0) + look * 1.15, 0);   // Kopf schaut beim Verdrehen weiter in Fahrtrichtung
     qB.setFromEuler(eA).premultiply(qA);
     mR.makeRotationFromQuaternion(qB).scale(tD.set(1.08, 1.08, 1.08));
     this.setBone(HD, tC, mR, N0);
@@ -429,7 +429,7 @@ export class Skier {
         f.rotation.set(air * 0.1 * (1 - ext) + grab * 0.32 + tuck * 0.12 - sup * 0.35 + daffy * (side < 0 ? 0.6 : -0.55) - tweak * 0.85, side * (plow * 0.33 * (s.plowDir || 1) + grab * 0.22 + cross * 0.75), rollZ);
       }
       // Nose Butter: Schaufel nach unten gekippt, Fuß so weit angehoben, dass die Schaufel genau auf dem Schnee liegt
-      if (bTh > 1e-4 && !crash) { f.rotation.x -= bTh; f.position.y += bLift + 0.003; }
+      if (bTh > 1e-4 && !crash) { f.rotation.x -= bTh; f.position.y += bLift + 0.003 + (s.noseLift || 0); }
       f.updateMatrix();
       const boot = f.children[0];
       if (!k.loose) {
@@ -474,7 +474,7 @@ export class Skier {
         if (cross > 0.01) k.hand.lerp(tD.copy(k.shoulder).add(tC.set(side * 0.62, 0.12, -0.12)), cross);
         if (daffy > 0.01) k.hand.lerp(tD.copy(k.shoulder).add(tC.set(side * 0.5, 0.18, side * 0.25)), daffy);   // Arme seitlich zum Ausgleich
         // Nose Butter: Arme seitlich vorn, Stöcke zum Ausbalancieren abgespreizt
-        if (butter > 0.01) k.hand.lerp(tD.copy(k.shoulder).add(tC.set(side * 0.42, -0.34, -0.36)), butter * 0.85);   // Hände tief vorn
+        if (butter > 0.01) { const aw = s.arm; k.hand.lerp(tD.copy(k.shoulder).add(tC.set(side * 0.42 + (aw ? aw[i * 2] : 0), -0.34 + (aw ? aw[i * 2 + 1] : 0), -0.36)), butter * 0.85); }   // Hände tief vorn, balancierend
       }
       if (this.gear === 'board' && !crash && grab < 0.01) {
         // ohne Stöcke: Arme locker seitlich, leicht vor dem Körper, zum Ausbalancieren

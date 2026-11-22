@@ -13,6 +13,7 @@ export class Spray {
     this.grav = new Float32Array(max);
     this.alp = new Float32Array(max);
     this.grow = new Float32Array(max);
+    this.drag = new Float32Array(max);   // Luftwiderstand je Teilchen: Brocken fliegen weit, Staub bleibt hängen
     this.next = 0;
     const g = new THREE.BufferGeometry();
     g.setAttribute('position', new THREE.BufferAttribute(this.pos, 3).setUsage(THREE.DynamicDrawUsage));
@@ -41,23 +42,24 @@ export class Spray {
     scene.add(this.points);
   }
 
-  /** grav: Fallbeschleunigung, alpha: Deckkraft, grow: wie stark die Wolke aufquillt */
-  emit(x, y, z, vx, vy, vz, size, life, grav = 5.5, alpha = 0.55, grow = 2.2) {
+  /** grav: Fallbeschleunigung, alpha: Deckkraft, grow: wie stark die Wolke aufquillt, drag: Luftwiderstand (1/s) */
+  emit(x, y, z, vx, vy, vz, size, life, grav = 5.5, alpha = 0.55, grow = 2.2, drag = 2.2) {
     const i = this.next;
     this.next = (this.next + 1) % this.max;
     this.pos[i * 3] = x; this.pos[i * 3 + 1] = y; this.pos[i * 3 + 2] = z;
     this.vel[i * 3] = vx; this.vel[i * 3 + 1] = vy; this.vel[i * 3 + 2] = vz;
     this.life[i] = life; this.maxLife[i] = life; this.size0[i] = size;
-    this.grav[i] = grav; this.alp[i] = alpha; this.grow[i] = grow;
+    this.grav[i] = grav; this.alp[i] = alpha; this.grow[i] = grow; this.drag[i] = drag;
   }
 
   update(dt) {
-    const { pos, vel, life, maxLife, data, size0, grav, alp, grow } = this;
-    const drag = Math.exp(-dt * 2.2);
+    const { pos, vel, life, maxLife, data, size0, grav, alp, grow } = this, dr = this.drag;
+    const drag0 = Math.exp(-dt * 2.2);
     for (let i = 0; i < this.max; i++) {
       if (life[i] <= 0) { if (data[i * 3 + 1] !== 0) { data[i * 3] = 0; data[i * 3 + 1] = 0; } continue; }
       life[i] -= dt;
       const j = i * 3;
+      const drag = dr[i] === 2.2 ? drag0 : Math.exp(-dt * dr[i]);
       vel[j] *= drag; vel[j + 1] = vel[j + 1] * drag - grav[i] * dt; vel[j + 2] *= drag;
       pos[j] += vel[j] * dt; pos[j + 1] += vel[j + 1] * dt; pos[j + 2] += vel[j + 2] * dt;
       const t = Math.max(0, life[i] / maxLife[i]);

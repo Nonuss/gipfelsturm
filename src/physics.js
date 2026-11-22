@@ -166,12 +166,25 @@ export class SkiPhysics {
           v.set(g.dx * va, g.dy * va, g.dz * va);
           this.grounded = false;
           this.events.push({ type: 'grindStart', kind: g.kind, name: g.name });
-        } else if (Math.abs(lat) < g.w + 0.28 && dyTop <= -0.32 && dyTop > -g.h - 0.3) {
-          // gegen die Seite gefahren: wegdrücken, kein Sturz
-          const out = (g.w + 0.28 - Math.abs(lat)) * Math.sign(lat || 1);
+        } else if (Math.abs(lat) < g.w + 0.34 && dyTop <= -0.32 && dyTop > -g.h - 0.3) {
+          // gegen die Seite gefahren: wegdrücken, kein Sturz. Die Ski werden an der Wand entlang gedreht und das Tempo in
+          // die Wand wird zum Teil in Tempo entlang der Wand (vorher zeigten die Spitzen in die Box hinein, die Kante hielt
+          // die Fahrt in Skirichtung, die Wand schob zurück: man blieb stehen und die Ski steckten sichtbar in der Box)
+          const sg = Math.sign(lat || 1), out = (g.w + 0.34 - Math.abs(lat)) * sg;
           p.x += lx * out; p.z += lz * out;
           const vl = v.x * lx + v.z * lz;
-          if (vl * Math.sign(lat || 1) < 0) { v.x -= lx * vl * 1.2; v.z -= lz * vl * 1.2; }
+          if (vl * sg < 0) {
+            v.x -= lx * vl * 1.08; v.z -= lz * vl * 1.08;
+            const va = v.x * g.dx + v.z * g.dz, dir = va >= 0 ? 1 : -1, give = Math.abs(vl) * 0.45 * dir;
+            v.x += g.dx * give; v.z += g.dz * give;
+          }
+          const along = Math.atan2(g.dx, -g.dz), back = along + Math.PI;
+          const dA = Math.atan2(Math.sin(along - this.heading), Math.cos(along - this.heading));
+          const dB = Math.atan2(Math.sin(back - this.heading), Math.cos(back - this.heading));
+          const d = Math.abs(dA) < Math.abs(dB) ? dA : dB;
+          // nur wegdrehen, wenn die Spitzen zur Wand zeigen (vom Fahrer weg lenken bleibt frei)
+          const fx = Math.sin(this.heading), fz = -Math.cos(this.heading);
+          if ((fx * lx + fz * lz) * sg < 0.05) this.heading += d * Math.min(1, dt * 9);
         }
       });
       if (this.grind) { this.normal.set(0, 1, 0); this.speed = v.length(); return; }
@@ -311,7 +324,15 @@ export class SkiPhysics {
     const k = g.kind === 'box' ? 0.55 : 1;
     // v38: keine Balance mehr, von der man abfallen kann. Die Neigung ist nur noch sichtbar: leichtes Wiegen, A/D lehnt
     // ein wenig zur Seite. Man bleibt auf der Rail bzw. Box bis zum Ende, bis man abspringt oder stehen bleibt.
-    const balT = clamp(-inp.steer * 0.45 + (Math.sin(gr.t * 2.1 + gr.ph) * 0.12 + Math.sin(gr.t * 5.3 + gr.ph * 2) * 0.05) * k, -0.55, 0.55);
+    // Drehen auf der Rail (v53): A/D kräftig gehalten dreht den Körper samt Ski (rund 290 Grad pro Sekunde), beim Loslassen rastet er in der nächsten Viertelstellung ein: gerade (50-50), quer (Boardslide) oder
+    // rückwärts (Switch). Jede neu erreichte Stellung ist ein Swap und zählt extra. Leichtes Lenken lehnt nur.
+    const spinIn = Math.abs(inp.steer) > 0.55 ? Math.sign(inp.steer) * (Math.abs(inp.steer) - 0.55) / 0.45 : 0;
+    gr.rot = gr.rot || 0; gr.swaps = gr.swaps || 0; gr.turn = gr.turn || 0; gr.slot = gr.slot || 0;
+    if (spinIn) { const w = -spinIn * 5.0 * dt; gr.rot += w; gr.turn += Math.abs(w); }
+    else { const tgt = Math.round(gr.rot / (Math.PI / 2)) * (Math.PI / 2); gr.rot += (tgt - gr.rot) * Math.min(1, dt * 14); }
+    const slot = Math.round(gr.rot / (Math.PI / 2));
+    if (slot !== gr.slot && Math.abs(gr.rot - slot * Math.PI / 2) < 0.2) { gr.slot = slot; gr.swaps++; this.events.push({ type: 'grindSwap', slot, kind: g.kind }); }
+    const balT = clamp(-(spinIn ? 0 : inp.steer) * 0.45 + (Math.sin(gr.t * 2.1 + gr.ph) * 0.12 + Math.sin(gr.t * 5.3 + gr.ph * 2) * 0.05) * k, -0.55, 0.55);
     gr.bal += (balT - gr.bal) * Math.min(1, dt * 6);
     gr.s += va * dt;
     this.heading = Math.atan2(g.dx, -g.dz);
@@ -330,7 +351,7 @@ export class SkiPhysics {
       this.grounded = false;
       this.airStart.copy(p);
       if (leave.pop > 1) this.events.push({ type: 'jump' });
-      this.events.push({ type: 'grindEnd', dist: gr.s, kind: g.kind, name: g.name, clean: leave.clean, time: gr.t });
+      this.events.push({ type: 'grindEnd', dist: gr.s, kind: g.kind, name: g.name, clean: leave.clean, time: gr.t, swaps: gr.swaps || 0, turn: gr.turn || 0, rot: gr.rot || 0 });
     } else {
       p.set(g.ax + g.dx * gr.s, g.ay + g.dy * gr.s, g.az + g.dz * gr.s);
       v.set(g.dx * va, g.dy * va, g.dz * va);

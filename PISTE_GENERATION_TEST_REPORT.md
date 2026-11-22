@@ -810,3 +810,16 @@ Rechnung mit v44 (rund 8 Münzen je Minute guten Fahrens): ein Ski für 1.000 br
 | Heli je Abfahrt (Wertung 0 bis 100) | 2 bis 42 | 5 bis 105 |
 
 Damit: Ski für 1.000 rund 50 Minuten, Gipfel Gold gut 2 Stunden, Legende gut 12 Stunden (dazu die Zeitsperre), alles im Shop gut 40 Stunden. Verpasste Tore zählen weiter doppelt dagegen. Geprüft im Spiel: Super-G sauber +26, drei Tore verpasst +18, Freeride mit 100.000 Punkten +100.
+
+## Drehen auf Rails und Boxen, Rail-Kamera, kein Festkleben an Boxen, Geist der Bestzeit (v53, 2026-11-22)
+
+| Rückmeldung | Ursache und Änderung |
+|---|---|
+| Seitlich an Boxen sinkt man ein und kann sich nicht bewegen | Nachgestellt: langsam schräg gegen die Box-Seite blieb man mit Tempo 0 stehen. Die Spitzen zeigten in die Box (sichtbar in der Box), die Kante hielt die Fahrt in Skirichtung, die Wand schob zurück. Jetzt werden die Ski an der Wand entlang gedreht (nur wenn sie zur Wand zeigen, weglenken bleibt frei), knapp die Hälfte des Tempos in die Wand wird Tempo entlang der Wand, Abstand zur Wand 6 cm größer. Geprüft: von 2 km/h-Schrägfahrt auf 6,5 m/s entlang der Box, kein Stehenbleiben |
+| Auf Rails und Boxen drehen | A/D kräftig halten dreht auf Rail und Box (rund 290 Grad pro Sekunde), beim Loslassen rastet der Fahrer in der nächsten Viertelstellung ein: 50-50, Railslide (Board: Boardslide), Switch 50-50. Jede neue Stellung ist ein Swap mit Anzeige; am Ende zählen Swaps extra (Rail 110, Box 80 Punkte je Swap) und eine volle Drehung auf dem Element (360: 300, 720: 700). Nach dem Absprung dreht der Körper in der Luft zurück. Leichtes Lenken lehnt nur wie bisher |
+| Rails und Boxen cooler, mit Zoom | Eigene Kamera beim Grinden: rückt 40 % heran, geht tief und 2,4 m seitlich (Ski und Rail im Profil), Bildwinkel 9 Grad enger, weich ein und aus |
+| Geist der Bestzeit in Rennen, auf schwachen Laptops automatisch aus | Neue Datei `src/ghost.js`: die Fahrt wird in den vier Rennen 15-mal pro Sekunde aufgezeichnet (Lage, Drehung, Haltung) und bei neuer Bestzeit gespeichert (rund 1,7 KB je Sekunde, eine Abfahrt rund 150 KB, pro Disziplin eine). Beim nächsten Lauf fährt ein blauer, durchscheinender Fahrer die Bestfahrt nach, in der Ausrüstung von damals; im Zeitfeld steht der Abstand („Geist +1,78 s“). Einstellungen > Geist der Bestzeit: Auto (an auf Ultra, Hoch, Mittel; aus auf Niedrig und Sparsam), An, Aus. Ein Material, kein Schatten |
+
+Tests: Box-Seite in vier Anfahrten (schräg, langsam, drückend links und rechts), Rail mit Drehung (Swap-Ereignis bei 90 Grad, Kamera im Bild), Geist: Aufzeichnung gespeichert (12 s = 20 KB), zweiter Lauf mit Abstandsanzeige und sichtbarem Geist, Auto zeigt ihn auf Ultra/Hoch/Mittel und nicht auf Niedrig/Sparsam, Bildzeit Hoch mit und ohne Geist im Rauschen (27 / 26 bis 31 ms). Alle Stufen und Welten ohne Fehler.
+
+Nicht geprüft: Drehen auf der Rail mit dem Handy (Neigen über 55 % Ausschlag dreht), wie sich die Swaps anfühlen.

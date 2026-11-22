@@ -12,6 +12,7 @@ import { World, loadModels, SUN_DIR } from './world.js';
 import { SnowTracks } from './snow.js';
 import { SkiPhysics } from './physics.js';
 import { Skier, BUTTER_TH } from './skier.js';
+import { Ghost } from './ghost.js';
 import { Spray, DiamondDust } from './particles.js';
 import { GameAudio } from './audio.js';
 import { Q, setTier, ORDER } from './quality.js';
@@ -315,13 +316,21 @@ const inp = { steer: 0, tuck: 0, brake: 0, jump: false };
 const zeroInp = { steer: 0, tuck: 0, brake: 0, jump: false };
 const vis = {
   lean: 0, crouch: 0, compress: 0, plow: 0, air: 0, up: new THREE.Vector3(0, 1, 0), crashAngle: 0, crashSpin: 0,
-  tuck: 0, spin: 0, extend: 0, zoom: 0, shake: 0, crashCam: 0, bcam: 0,
+  tuck: 0, spin: 0, extend: 0, zoom: 0, shake: 0, crashCam: 0, bcam: 0, rcam: 0, gRot: 0,
   camSide: 1, flipCam: 0, bigAir: 0, dip: 0, fpv: 0, slide: 0, grindSide: 1, look: 0, avZoom: 0,
 };
 // Renn-Disziplin (Slalom, Riesentorlauf, Super-G, Abfahrt). Wird gemerkt.
 let disc = 'sg';
 try { const v = localStorage.getItem('gipfelsturm_disc'); if (v && C.DISCIPLINES[v]) disc = v; } catch {}
 const raceBestKey = () => BEST_KEY + '_' + disc;
+// Geist der Bestzeit (nur die vier Rennen). Auto: an auf Ultra, Hoch und Mittel, aus auf Niedrig und Sparsam (schwache
+// Rechner); von Hand gewählt bleibt es so. sig: passt der Geist zur Strecke (Tore, erste Torposition, Ziel)?
+let ghost = null;
+let ghostSetting = (() => { try { return localStorage.getItem('gipfelsturm_ghost') || 'auto'; } catch { return 'auto'; } })();
+const ghostOn = () => ghostSetting === 'on' || (ghostSetting === 'auto' && (Q.tier === 'ultra' || Q.tier === 'high' || Q.tier === 'mid'));
+const raceSig = () => `${disc}:${C.gates.length}:${C.gates.length ? Math.round(C.gates[0].x * 10) : 0}:${Math.round(C.FINISH_D)}`;
+const ghostRace = () => game.kind === 'race' && !C.cfg.heli;
+function setGhostSetting(v) { ghostSetting = v; try { localStorage.setItem('gipfelsturm_ghost', v); } catch {} syncOpts(); }
 // Ausrüstung: Ski oder Snowboard (gleiche Tasten, eigene Haltung und Tricknamen). Wird gemerkt.
 let gear = 'ski', boardEdge = 0, boardLift = 0;
 try { gear = localStorage.getItem('gipfelsturm_gear') === 'board' ? 'board' : 'ski'; } catch {}
@@ -363,6 +372,7 @@ function syncOpts() {
   const sel = (id, v) => { const el = $(id); if (el) for (const b of el.children) b.classList.toggle('sel', b.dataset.v === v); };
   sel('optSound', audio.muted ? '0' : '1');
   sel('optCam', firstPerson ? '1' : '0');
+  sel('optGhost', ghostSetting);
   sel('optFs', fsOn() ? '1' : '0');
   sel('optGear', gear);
   if (typeof touchCtl !== 'undefined' && touchCtl) sel('optSteer', touchCtl.mode());
@@ -617,6 +627,7 @@ function buildMenuControls() {
   for (const x of document.querySelectorAll('.dlg .x')) x.addEventListener('click', () => { const id = x.closest('.dlg').id; closeDlg(); document.querySelector(`[data-dlg="${id}"]`).focus(); });
   for (const b of $('optSound').children) b.addEventListener('click', () => setMuted(b.dataset.v === '0'));
   for (const b of $('optCam').children) b.addEventListener('click', () => toggleView(b.dataset.v === '1'));
+  for (const b of $('optGhost').children) b.addEventListener('click', () => setGhostSetting(b.dataset.v));
   for (const b of $('optFs').children) b.addEventListener('click', () => toggleFs(b.dataset.v === '1'));
   for (const b of $('optGear').children) b.addEventListener('click', () => { setGear(b.dataset.v); b.blur(); });
   for (const b of $('optDisc').children) b.addEventListener('click', () => { selectDisc(b.dataset.v); b.blur(); });
@@ -870,7 +881,7 @@ function demoUpdate(dt) {
 function resetVisuals() {
   hasPrevSki = false;
   rew.buf.length = 0; rew.on = false; rew.t = 0;
-  Object.assign(vis, { lean: 0, crouch: 0, compress: 0, plow: 0, air: 0, crashAngle: 0, crashSpin: 0, tuck: 0, spin: 0, extend: 0, zoom: 0, shake: 0, crashCam: 0, bcam: 0, camSide: 1, flipCam: 0, bigAir: 0, dip: 0 });
+  Object.assign(vis, { lean: 0, crouch: 0, compress: 0, plow: 0, air: 0, crashAngle: 0, crashSpin: 0, tuck: 0, spin: 0, extend: 0, zoom: 0, shake: 0, crashCam: 0, bcam: 0, rcam: 0, gRot: 0, camSide: 1, flipCam: 0, bigAir: 0, dip: 0 });
   Object.assign(trick, { pitch: 0, yaw: 0, pv: 0, yv: 0, grab: 0, grabT: 0, wasAir: false });
   swYaw = 0; vis.look = 0; vis.specRoll = 0; vis.sup = 0; vis.cross = 0; vis.daffy = 0; vis.tweak = 0; vis.specTuck = 0; vis.avZoom = 0;
   avCam = 0; avNear = 0; phys.noRockCrash = false;
@@ -940,6 +951,7 @@ function startRun(same) {
     score: 0, maxD: 0, bestTrick: '', bestTrickPts: 0, tricks: 0, pend: 0, pendT: 0, combo: 1, comboT: 0, paid: false,
   });
   $('penalty').textContent = ''; $('penalty').dataset.h = ''; $('gates').dataset.cp = '';
+  if (ghost) { if (ghostRace()) { ghost.load(disc, raceSig()); ghost.startRec({ gear, ski: shop.equip.ski, board: shop.equip.board }); } else { ghost.stopRec(); ghost.data = null; } }
   $('hint').classList.toggle('heli', !!C.cfg.heli);   // im Heli gibt es weder Zurückspulen noch Spezialtricks am Start
   heliStart();
   fwtReset();
@@ -1200,6 +1212,11 @@ function updatePoints(dt) {
   }
 }
 
+/** Name der Stellung auf Rail oder Box: Rails fährt man im Grundzustand quer, Boxen gerade. */
+function grindPosName(kind, slot) {
+  const q = (((slot + (kind === 'rail' ? 1 : 0)) % 4) + 4) % 4;
+  return q === 0 ? '50-50' : q === 2 ? 'Switch 50-50' : BOARD() ? 'Boardslide' : 'Railslide';
+}
 function finishRun() {
   game.mode = 'finished';
   game.finishT = 0;
@@ -1207,6 +1224,7 @@ function finishRun() {
   const hk = C.cfg.heli, bk = hk ? 'bestHeli' : 'best';
   const isBest = !game[bk] || total < game[bk];
   if (isBest) { game[bk] = total; localStorage.setItem(hk ? BEST_KEY + '_heli' : raceBestKey(), String(total)); }
+  if (ghost && ghostRace()) { if (isBest) ghost.save(disc, raceSig()); else ghost.stopRec(); }
   audio.finish();
   $('finTitle').textContent = (isBest ? 'Neue Bestzeit!' : hk ? 'Im Tal' : 'Im Ziel') + (hk ? '' : ` · ${C.DISCIPLINES[disc].name}`);
   $('finTime').textContent = fmt(total);
@@ -1870,19 +1888,22 @@ function updateCamera(dt, time) {
   // Nose Butter: die Kamera rückt langsam etwas heran, geht tiefer und leicht zur Seite, damit man die gebogenen Ski sieht
   vis.bcam += ((skiTrick && skiTrick.id === 'butter' ? 1 : 0) - vis.bcam) * (1 - Math.exp(-dt * (skiTrick ? 1.8 : 1.2)));
   const bc = vis.bcam * vis.bcam * (3 - 2 * vis.bcam) * (1 - av) * (1 - cc);
-  const dist = ((lerp(6.4 + sp * 0.07 - inp.tuck * 0.5 + vis.air * 1.2, 4.6 + fc * 0.8, z) + ba * 3.2 + av * 2.4) * (1 - 0.35 * cc) + cc * 2.6) * (1 - 0.45 * bc);
+  // Rail und Box: Kamera rückt heran, geht tief und seitlich (man sieht Ski und Rail im Profil), Bildwinkel enger
+  vis.rcam += ((phys.grind && game.mode === 'run' ? 1 : 0) - vis.rcam) * (1 - Math.exp(-dt * (phys.grind ? 3.5 : 2)));
+  const rc = vis.rcam * vis.rcam * (3 - 2 * vis.rcam) * (1 - cc);
+  const dist = ((lerp(6.4 + sp * 0.07 - inp.tuck * 0.5 + vis.air * 1.2, 4.6 + fc * 0.8, z) + ba * 3.2 + av * 2.4) * (1 - 0.35 * cc) + cc * 2.6) * (1 - 0.45 * bc) * (1 - 0.4 * rc);
   tV2.copy(p).addScaledVector(camDir, -dist);
-  const side = (2.6 * z + 1.6 * fc) * vis.camSide + 1.5 * bc;
+  const side = (2.6 * z + 1.6 * fc) * vis.camSide + 1.5 * bc + 2.4 * rc * vis.grindSide;
   tV2.x += -camDir.z * side;
   tV2.z += camDir.x * side;
   const groundY = C.height(tV2.x, tV2.z);
   tV2.y = Math.max(groundY + 1.9 + sp * 0.012, p.y + 1.55);
-  tV2.y = Math.max(groundY + 1.2, lerp(lerp(tV2.y, p.y + 1.3 - fc * 0.35, z * 0.75), p.y + 1.15, bc)) + cc * 1.9 + ba * 1.6 - vis.dip * 0.45 + av * 1.5;
+  tV2.y = Math.max(groundY + 1.2, lerp(lerp(tV2.y, p.y + 1.3 - fc * 0.35, z * 0.75), p.y + 1.15, Math.max(bc, rc))) + cc * 1.9 + ba * 1.6 - vis.dip * 0.45 + av * 1.5;
   camPos.lerp(tV2, camSnap ? 1 : 1 - Math.exp(-dt * (7.5 + cc * 9)));
   const gh = C.height(camPos.x, camPos.z) + 0.9;
   if (camPos.y < gh) camPos.y = gh;
-  tV3.copy(p).addScaledVector(camDir, (6 + ba * 5 + av * 10) * (1 - z) * (1 - cc) * (1 - 0.6 * bc));
-  tV3.y = lerp(lerp(lerp(C.height(tV3.x, tV3.z) + 1.0, p.y + 1.0, 0.5 + vis.air * 0.3 - ba * 0.35 - av * 0.5), p.y + 0.9, Math.max(z, cc)), p.y + 0.55, bc * 0.6);
+  tV3.copy(p).addScaledVector(camDir, (6 + ba * 5 + av * 10) * (1 - z) * (1 - cc) * (1 - 0.6 * Math.max(bc, rc)));
+  tV3.y = lerp(lerp(lerp(C.height(tV3.x, tV3.z) + 1.0, p.y + 1.0, 0.5 + vis.air * 0.3 - ba * 0.35 - av * 0.5), p.y + 0.9, Math.max(z, cc)), p.y + 0.55, Math.max(bc * 0.6, rc * 0.5));
   lookSm.lerp(tV3, camSnap ? 1 : 1 - Math.exp(-dt * (11 + z * 8)));
   camSnap = false;
   const sh = Math.pow(clamp(sp / 42, 0, 1), 2) * 0.035 + vis.shake * 0.4;
@@ -1892,7 +1913,7 @@ function updateCamera(dt, time) {
     camPos.z + (C.vnoise(time * 19, 4.1) - 0.5) * sh);
   camera.lookAt(lookSm);
   camera.rotateZ(-vis.lean * 0.09 + (C.vnoise(time * 17, 9.2) - 0.5) * vis.shake * 0.12);
-  let fov = 60 + 22 * smoothstep(8, 44, sp) * (1 - 0.5 * av) + inp.tuck * 2 - 15 * z - 20 * cc + 6 * ba + 3 * av - 8 * bc;
+  let fov = 60 + 22 * smoothstep(8, 44, sp) * (1 - 0.5 * av) + inp.tuck * 2 - 15 * z - 20 * cc + 6 * ba + 3 * av - 8 * bc - 9 * rc;
 
   // ---- Ego-Sicht (Helmkamera): Augen im Kopf des Fahrers, dreht bei Flips und Spins voll mit,
   // neigt sich in die Kurve, federt bei Landungen, zittert mit Tempo und Untergrund. Beim Sturz Verfolgerkamera.
@@ -2163,12 +2184,16 @@ function handleEvents() {
       vis.grindSide = -vis.grindSide;
       audio.land(3);
       burst(10, 1.5);
+    } else if (e.type === 'grindSwap') {
+      // neue Stellung auf Rail oder Box erreicht
+      if (game.mode === 'run') { showMsg(grindPosName(e.kind, e.slot), 'good'); audio.land(2); burst(6, 1.2); }
     } else if (e.type === 'grindEnd') {
       if (game.mode === 'run') {
         if (e.clean && e.dist > 1.5) {
           const rail = e.kind === 'rail';
-          const name = BOARD() ? (rail ? 'Boardslide' : '50-50') : rail ? 'Railslide' : '50-50 Box';
-          let pts = Math.round(((rail ? 120 : 70) + e.dist * (rail ? 34 : 22)) * trickMul());
+          const full = e.turn > TAU - 0.4 ? (e.turn > 2 * TAU - 0.4 ? '720 ' : '360 ') : '';
+          const name = (BOARD() ? (rail ? 'Boardslide' : '50-50') : rail ? 'Railslide' : '50-50 Box') + (e.swaps ? ` ${full}mit ${e.swaps} Swap${e.swaps > 1 ? 's' : ''}` : '');
+          let pts = Math.round(((rail ? 120 : 70) + e.dist * (rail ? 34 : 22) + e.swaps * (rail ? 110 : 80) + (full ? (full === '720 ' ? 700 : 300) : 0)) * trickMul());
           pts = addPending(pts, true);
           game.tricks++;
           showMsg(`${name} ${e.dist.toFixed(1).replace('.', ',')} m  +${num(pts)}`, 'gold');
@@ -2308,6 +2333,8 @@ function updateSkier(dt) {
   } else {
     const railSlide = phys.grind && phys.grind.g.kind === 'rail' ? 1 : 0;
     vis.slide += (railSlide * vis.grindSide - vis.slide) * k(14);
+    // Drehung auf Rail und Box (physics: grind.rot); nach dem Absprung dreht der Körper in der Luft zurück (180 out)
+    vis.gRot += ((phys.grind ? phys.grind.rot || 0 : 0) - vis.gRot) * k(phys.grind ? 30 : 7);
     // auf der Rail: Körper quer zur Rail, leichte Neigung (A/D) sichtbar
     const balTilt = phys.grind ? -phys.grind.bal * 0.35 : 0;
     const bs = Math.cos(trick.yaw + swYaw) < 0 ? -1 : 1;
@@ -2315,7 +2342,7 @@ function updateSkier(dt) {
     // den Rest fangen Knie und Hüfte ab (Angulation, wie bei echten Fahrern); Bremsen = Brett quer stellen.
     const bEdge = BOARD() ? -vis.lean * 0.85 * bs : 0, bLean = bEdge * 0.55, bSkid = BOARD() ? vis.plow * 1.05 : 0;
     vis.bEdgeExtra = bEdge - bLean;
-    pv.rotation.set(trick.pitch, -(trick.yaw + swYaw) + vis.slide * 1.45 + bSkid, vis.spin * 0.18 + balTilt + bLean + (vis.specRoll || 0));
+    pv.rotation.set(trick.pitch, -(trick.yaw + swYaw) + vis.slide * 1.45 + vis.gRot + bSkid, vis.spin * 0.18 + balTilt + bLean + (vis.specRoll || 0));
     vis.look += ((BOARD() ? (phys.grind ? 0 : 0.72 * bs) : isSwitch() && !phys.grind ? 1 : 0) - vis.look) * k(6);
     pv.position.set(0, 0.85, 0);
     if (BOARD()) {
@@ -2456,7 +2483,8 @@ function updateHud(dt) {
     const pr = clamp((-phys.pos.z - C.START_D) / (C.FINISH_D - C.START_D), 0, 1) * 100;
     $('progfill').style.height = `${pr}%`;
     $('progdot').style.top = `${pr}%`;
-    $('best').textContent = (game.best ? `Bestzeit ${fmt(game.best)}` : 'Bestzeit –') + (game.score ? ` · ${num(game.score)} P` : '');
+    const gap = ghost && ghostOn() && ghost.data ? ghost.gapAt(game.time, phys.pos.z) : null;
+    $('best').textContent = (game.best ? `Bestzeit ${fmt(game.best)}` : 'Bestzeit –') + (gap !== null && game.time > 1 ? ` · Geist ${gap > 0 ? '+' : '−'}${Math.abs(gap).toFixed(2).replace('.', ',')} s` : '') + (game.score ? ` · ${num(game.score)} P` : '');
   }
 }
 
@@ -2542,6 +2570,11 @@ function tick(dt, render) {
     if (game.mode === 'finished' && game.finishT > 1.6) { $('finish').classList.remove('hidden'); $('hud').classList.add('hidden'); }
 
     updateSkier(dt);
+    if (ghost) {
+      const gr = ghostRace() && (game.mode === 'run' || game.mode === 'countdown' || game.mode === 'finished');
+      if (gr && game.mode === 'run' && !rewinding) ghost.record(game.time, skier, { lean: vis.lean, crouch: vis.crouch, plow: vis.plow, air: vis.air, compress: vis.compress, tuck: vis.tuck, spin: vis.spin, extend: vis.extend, grab: trick.grab });
+      ghost.play(game.mode === 'countdown' ? 0 : game.time, gr && ghostOn(), dt);
+    }
     heliUpdate(dt);
     avalancheUpdate(dt);
     updateCamera(dt, time);
@@ -2601,6 +2634,7 @@ function ultraUniforms() {
   world = new World(scene, models);
   skier = new Skier(models);
   scene.add(skier.root);
+  ghost = new Ghost(models, scene);
   // Spiegelung nur für Metallteile (Gold-Ski, Krone, Medaille): eine kleine vorberechnete Umgebung
   let envTex;
   { const pm = new THREE.PMREMGenerator(renderer); envTex = pm.fromScene(new RoomEnvironment(), 0.04).texture; skier.setEnv(envTex); pm.dispose(); }

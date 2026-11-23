@@ -6,7 +6,7 @@ export class GameAudio {
   }
 
   start() {
-    if (this.ctx) { if (this.ctx.state === 'suspended') this.ctx.resume(); return; }
+    if (this.ctx) { if (this.ctx.state === 'suspended' && !this.bg) this.ctx.resume(); return; }
     const AC = window.AudioContext || window.webkitAudioContext;
     if (!AC) return;
     const ctx = (this.ctx = new AC());
@@ -54,6 +54,14 @@ export class GameAudio {
     const t = this.ctx.currentTime;
     this.heli.g.gain.setTargetAtTime(v * 0.35, t, 0.15);
     this.heliLfo.gain.setTargetAtTime(v * 0.3, t, 0.15);
+  }
+
+  /** Hintergrund (Tab versteckt, Fenster ohne Fokus): Tonausgabe ganz anhalten, danach wieder fortsetzen. */
+  setBackground(bg) {
+    this.bg = bg;
+    if (!this.ctx) return;
+    if (bg && this.ctx.state === 'running') this.ctx.suspend();
+    else if (!bg && this.ctx.state === 'suspended') this.ctx.resume();
   }
 
   setMuted(m) {

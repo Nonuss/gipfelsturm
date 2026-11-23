@@ -864,3 +864,7 @@ Medaillenzeiten neu (Gold / Silber / Bronze, Sekunden): Morgenrot 53,2 / 55,4 / 
 Tests: Heli-Wechsel gemessen (Ladeanzeige während der Erzeugung, beim Umblenden alle 38 Kacheln da, voller Radius 280 m), Start während des Ladens startet danach im Heli, alle fünf Modi im Menü durchgeklickt und gestartet, keine Fehler.
 
 Nicht geprüft: ob Gold in Abfahrt und Super-G für einen Menschen schaffbar ist (3 % unter dem schnellsten Bot); Werte in `src/cup.js` leicht anpassbar.
+
+## Kein Ton im Hintergrund (v56, 2026-11-23)
+
+Rückmeldung: Das Spiel rauscht dauerhaft, auch wenn man nicht spielt (Safari ließ sich nicht schließen). Jetzt hält das Spiel die ganze Tonausgabe an (AudioContext suspend), sobald der Tab versteckt ist, das Fenster minimiert ist oder ein anderes Fenster vorne liegt, auch beim Verlassen der Seite; beim Zurückkehren läuft der Ton weiter. Geprüft: Ton läuft, nach Fensterwechsel angehalten, ein erneuter Start im Hintergrund weckt ihn nicht.

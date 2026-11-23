@@ -646,6 +646,12 @@ function buildMenuControls() {
   $('shopBtn').addEventListener('click', () => { if (!shop3d || game.mode !== 'menu') return; closeDlg(); shop3d.open(); });
   updateWallet();
   try { if (localStorage.getItem('gipfelsturm_muted') === '1') audio.setMuted(true); } catch {}
+  // Kein Ton im Hintergrund: Tab versteckt, Fenster minimiert oder ein anderes Fenster vorn (dann pausiert der Ton ganz)
+  const bgAudio = () => audio.setBackground(document.hidden || !document.hasFocus());
+  document.addEventListener('visibilitychange', bgAudio);
+  window.addEventListener('blur', bgAudio);
+  window.addEventListener('focus', bgAudio);
+  window.addEventListener('pagehide', () => audio.setBackground(true));
   syncOpts();
   for (const b of $('quality').children) {
     b.addEventListener('click', () => {
@@ -2786,7 +2792,7 @@ function ultraUniforms() {
   game.mode = 'menu';
   window.addEventListener('beforeunload', saveEndlessBest);
   window.__game = {
-    selectCup, setCupId: (id) => { cupId = id; }, ghost: () => ghost,
+    selectCup, setCupId: (id) => { cupId = id; }, ghost: () => ghost, audio,
     game, phys, inp, keys, airKey, trick, world, skier, camera, renderer, scene, vis, Q, startRun, setKind, toMenu, setCheckpoint, toCheckpoint, chooseQuality, C,
     avalanche: () => triggerAvalanche(), aval: () => aval,
     tp: (d, lane = 0, speed = 0) => { const L = C.cfg.heli ? { x: C.centerX(d) + lane } : C.mapSlice(d, d + 1, 1).rows[0].lanes[lane]; teleport(L.x, -d); const x0 = C.centerX(d + 6) - C.centerX(d); phys.heading = Math.atan2(x0, 6); phys.vel.set(Math.sin(phys.heading) * speed, 0, -Math.cos(phys.heading) * speed); if (game.mode === 'menu') { game.mode = 'run'; } },

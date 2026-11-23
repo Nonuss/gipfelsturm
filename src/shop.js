@@ -34,8 +34,9 @@ const SKI_INFO = {
   legend: ['Titan und Carbon, alles auf Höchstwert. Nur für alle, die in allen vier Rennen Spitzenzeiten fahren', 15000],
 };
 // Freischaltung: der Spitzen-Ski braucht Bestzeiten unter diesen Werten in allen vier Rennen (Sekunden inklusive Strafzeit).
-// Zum Vergleich der Renn-Bot mit dem Allround-Ski: Slalom 43,8, Riesentorlauf 56,8, Super-G 78,4, Abfahrt 89,7.
-export const LEGEND_TIMES = { sl: 43, gs: 56, sg: 77, dh: 88 };
+// v55 auf Gold-Niveau der Rennserie: schnellster fehlerfreier Bot (tools/cup_fast.mjs) Riesentorlauf 49,2, Super-G 75,9,
+// Abfahrt 88,1; Grenze 2 bzw. 3 % darunter. Slalom unverändert 43,0 (passte; dort ist der Bot mit 39,3 übermenschlich).
+export const LEGEND_TIMES = { sl: 43, gs: 48.2, sg: 73.6, dh: 85.5 };
 const REQ = { legend: 'race' };
 const BOARD_INFO = {
   classic: ['Twin-Board mit Streifen, das Brett vom Start', 0],

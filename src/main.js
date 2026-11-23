@@ -729,6 +729,7 @@ function selectDrop(i) {
     renderMode(true);
     switching = false;
     releaseFrame();
+    if (pendingStart) { pendingStart = false; startRun(); }
   }, 16));
 }
 function raceInfo() {
@@ -829,13 +830,28 @@ async function buildMode() {
     HG.use(seed);
   }
   setKind(id, seed);
-  if (id === 'heli') { applyDropPref(); const dp = C.HB.dropPoint(); world.updateChunks(dp.d, false, dp.x); renderMode(); }
+  // Heli: alle Kacheln am Absprungpunkt sofort bauen (all = true), damit beim Umblenden der ganze Berg steht und nicht
+  // erst Stück für Stück aus der groben Fernsicht auftaucht
+  if (id === 'heli') { applyDropPref(); const dp = C.HB.dropPoint(); world.updateChunks(dp.d, true, dp.x); renderMode(); }
   if (id === 'race') $('menuKicker').textContent = raceInfo().kicker;   // Toranzahl steht erst nach dem Aufbau fest
   if (id === 'cup') $('menuKicker').textContent = cupInfo().kicker;
   demoStart();
   builtIdx = modeIdx;
   menuIntro = RM ? 0 : 1;
   if (id === 'heli') prefetchHeli();
+}
+/** Ladeanzeige beim Moduswechsel: altes Bild abgedunkelt, Text je nach Modus. */
+let modeLoadT = 0;
+function modeLoading(on) {
+  clearTimeout(modeLoadT);
+  const show = (v) => { $('modeLoad').classList.toggle('hidden', !v); snap.classList.toggle('wait', v); };
+  if (!on) { show(false); return; }
+  // erst nach 250 ms zeigen: schnelle Wechsel (Rennpiste, Freeride) blenden ohne Zwischenschritt um
+  modeLoadT = setTimeout(() => {
+    const id = MODES[modeIdx].id;
+    $('modeLoadText').textContent = id === 'heli' ? 'Heli-Berg wird erzeugt' : id === 'cup' ? 'Rennen wird geladen' : id === 'race' ? 'Rennpiste wird geladen' : 'Berg wird erzeugt';
+    show(true);
+  }, 250);
 }
 /** Modus wechseln. Mehrfaches Drücken während des Übergangs springt direkt zum zuletzt gewählten Modus. */
 function selectMode(i, instant) {
@@ -848,11 +864,16 @@ function selectMode(i, instant) {
   if (switching) return;
   switching = true;
   freezeFrame();
-  // erst das eingefrorene Bild zeigen lassen, dann die neue Welt bauen (Heli: im Worker, das Menü bleibt bedienbar)
+  modeLoading(true);
+  // erst das eingefrorene Bild zeigen lassen, dann die neue Welt bauen (Heli: im Worker, das Menü bleibt bedienbar).
+  // Umgeblendet wird erst, wenn die Welt fertig ist und zweimal gezeichnet wurde (Shader übersetzt, Kacheln da).
   requestAnimationFrame(() => setTimeout(async () => {
     while (builtIdx !== modeIdx) await buildMode();
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
     switching = false;
+    modeLoading(false);
     releaseFrame();
+    if (pendingStart) { pendingStart = false; startRun(); }
   }, 16));
 }
 /** Renn-Disziplin wechseln: Rennpiste mit neuen Toren und neuem Start, weicher Übergang wie beim Moduswechsel. */
@@ -872,6 +893,7 @@ function selectDisc(id) {
     renderMode(true);
     switching = false;
     releaseFrame();
+    if (pendingStart) { pendingStart = false; startRun(); }
   }, 16));
 }
 /** Rennen der Serie wechseln: neue Strecke und Stimmung, weicher Übergang wie beim Moduswechsel. */
@@ -891,6 +913,7 @@ function selectCup(id) {
     renderMode(true);
     switching = false;
     releaseFrame();
+    if (pendingStart) { pendingStart = false; startRun(); }
   }, 16));
 }
 function closeDlg() {
@@ -996,7 +1019,10 @@ function applyMood() {
   if (snowfall) snowfall.set((m && m.snow ? m.snow : 0) * (SNOW_Q[Q.tier] || 0.6), m && m.lights ? (m.lights === 'torch' ? [0.85, 0.75, 0.7] : [0.7, 0.75, 0.85]) : [1, 1, 1], m && m.wind ? m.wind : 2.2, m && m.flake ? m.flake : 1);
   applyTone();
 }
+let pendingStart = false;
 function startRun(same) {
+  // Start während eines Moduswechsels (die neue Welt lädt noch): nicht die alte Welt starten, sondern nach dem Laden
+  if (game.mode === 'menu' && switching) { pendingStart = true; return; }
   const fromMenu = game.mode === 'menu';
   if (fromMenu && !tut.on && !tutDone()) { startTutorial(); return; }   // allererster Start: zuerst das Tutorial
   closeDlg();

@@ -851,3 +851,16 @@ Technik: Rennpiste als Variante (`course.js`: Mittellinie, Breite, Steilheit, St
 Tests: alle zehn Rennen geladen und mit Autopilot durch die Tore gefahren, Bilder je Rennen geprüft (Flutlicht zuerst überstrahlt, Gletscher mit hellem Schleier, Sturm zu schwach, Flocken vor der Linse zu groß: alles nachgestellt). Zielbildschirm mit Medaille und Ziel für die nächste, Geist je Serienrennen gespeichert und nach Neuladen sichtbar. Nach einem Nachtrennen sind Rennen, Freeride, Freestyle und Heli wieder Tag. Bildzeit Nachtrennen wie Standardrennen (Hoch 35 bis 41 ms gegen 39, Niedrig 8,4 bis 9,1 gegen 8,6, Sparsam 6,9 bis 7,4 gegen 5,8). Keine Fehler.
 
 Nicht geprüft: wie die Medaillenzeiten sich für Menschen anfühlen (Gold ist knapp über dem schnellen Bot).
+
+## Medaillen und Legenden-Zeiten enger, Heli-Wechsel im Menü lädt zuverlässig (v55, 2026-11-23)
+
+| Rückmeldung | Ursache und Änderung |
+|---|---|
+| Zeiten viel zu leicht, außer Slalom | Die Medaillen beruhten auf einem Bot, der sich auf ein Höchsttempo herunterbremst (Riesentorlauf 14 bis 18 m/s, Super-G 22 bis 30, Abfahrt 28 bis 34): ein Mensch in der Hocke ist dort viel schneller. Neues Werkzeug `tools/cup_fast.mjs` sucht je Rennen das höchste Tempolimit, bei dem der Bot noch alle Tore trifft (Hocke in allen Disziplinen, mehrere Vorausschau-Weiten). Medaillen jetzt eng wie im Weltcup: Abfahrt und Super-G Gold 3 % unter diesem Bot, Silber gleichauf, Bronze 4 % darüber; Riesentorlauf Gold 2 % darunter, Silber 2 %, Bronze 7 % darüber. Slalom unverändert. Legenden-Ski auf Gold-Niveau: Riesentorlauf 48,2 s (vorher 56,0), Super-G 73,6 (77,0), Abfahrt 85,5 (88,0), Slalom 43,0 wie bisher |
+| Beim Umschalten auf Heli sieht man teils nur den Timer und noch den alten Hintergrund | Drei Ursachen: Der Heli-Berg entsteht im Hintergrund (1,5 s und mehr), solange stand das alte Bild unverändert da; danach wurden die Geländekacheln nur Stück für Stück geladen und schon umgeblendet; und Start während des Ladens startete noch die alte Welt (mit Heli-Anzeige). Jetzt: altes Bild abgedunkelt und unscharf mit „Heli-Berg wird erzeugt“ (erst nach 250 ms, schnelle Wechsel ohne Zwischenschritt), alle Kacheln am Absprungpunkt werden vor dem Umblenden gebaut, umgeblendet wird nach zwei gezeichneten Bildern, und Start während des Ladens wartet und läuft danach von selbst los. Gilt für alle Modi und für Disziplin-, Rennen- und Absprungwechsel |
+
+Medaillenzeiten neu (Gold / Silber / Bronze, Sekunden): Morgenrot 53,2 / 55,4 / 58,1; Nebelwand 61,7 / 63,6 / 66,1; Schneesturm 77,3 / 79,7 / 82,9; Gletscher 87,6 / 90,3 / 93,9; Waldkorridor 56,4 / 58,6 / 61,5; Abendrot 76,7 / 79,1 / 82,3; Kamelbuckel 79,0 / 81,4 / 84,7; Fackellauf 49,6 / 51,6 / 54,1; Slalom-Rennen unverändert.
+
+Tests: Heli-Wechsel gemessen (Ladeanzeige während der Erzeugung, beim Umblenden alle 38 Kacheln da, voller Radius 280 m), Start während des Ladens startet danach im Heli, alle fünf Modi im Menü durchgeklickt und gestartet, keine Fehler.
+
+Nicht geprüft: ob Gold in Abfahrt und Super-G für einen Menschen schaffbar ist (3 % unter dem schnellsten Bot); Werte in `src/cup.js` leicht anpassbar.

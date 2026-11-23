@@ -92,9 +92,12 @@ export const CUP = [
     line: 'Riesentorlauf in der Vollmondnacht. Fackeln säumen die Strecke, leichter Schnee fällt.',
     terrain: { cx: [50, 210, 0.5, 20, 96, 2.2, 7, 44, 1.3], wBase: 19 }, trees: 1.3 },
 ];
-// Medaillenzeiten (Sekunden inklusive Strafzeit), aus tools/cup_validate.mjs: Gold = schneller Bot plus 2 %, Silber plus
-// 10 %, Bronze plus 22 %. Werte werden dort ausgegeben und hier eingetragen.
-export const MEDALS = {"flutlicht":[50.7,54.7,60.6],"morgenrot":[61.6,66.4,73.7],"nebel":[67.3,72.6,80.5],"sturm":[82.7,89.2,98.9],"gletscher":[93.2,100.5,111.5],"wald":[65.8,71,78.7],"abendrot":[83.8,90.4,100.3],"buckel":[84.5,91.1,101],"steil":[51.6,55.7,61.7],"fackel":[59.8,64.5,71.5]};
+// Medaillenzeiten (Sekunden inklusive Strafzeit). Grundlage ist der schnellste fehlerfreie Bot (tools/cup_fast.mjs: höchstes
+// Tempolimit, bei dem er noch alle Tore trifft, Hocke in allen Disziplinen). v55, nach Spieltest „viel zu leicht, außer
+// Slalom“: eng wie im Weltcup. Abfahrt und Super-G: Gold 3 % unter dem Bot, Silber gleichauf, Bronze 4 % darüber;
+// Riesentorlauf: Gold 2 % darunter, Silber 2 %, Bronze 7 % darüber. Slalom unverändert (passte): langsamer Bot plus 2 / 10 /
+// 22 % (tools/cup_validate.mjs), denn im Slalom ist der Bot viel schneller als ein Mensch.
+export const MEDALS = {"flutlicht": [50.7, 54.7, 60.6], "morgenrot": [53.2, 55.4, 58.1], "nebel": [61.7, 63.6, 66.1], "sturm": [77.3, 79.7, 82.9], "gletscher": [87.6, 90.3, 93.9], "wald": [56.4, 58.6, 61.5], "abendrot": [76.7, 79.1, 82.3], "buckel": [79.0, 81.4, 84.7], "steil": [51.6, 55.7, 61.7], "fackel": [49.6, 51.6, 54.1]};
 
 export const cupById = (id) => CUP.find((c) => c.id === id) || CUP[0];
 /** Medaille für eine Zeit: 3 Gold, 2 Silber, 1 Bronze, 0 keine. */

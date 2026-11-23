@@ -9,7 +9,7 @@ export { clamp, lerp, smoothstep, mulberry32, vnoise, fbm };
 export const G = 9.81;
 export const EDGE_U = 215;
 export const CHUNK = 100;
-export const cfg = { endless: false, seed: 1, treeMul: 1, heli: false, disc: 'sg' };
+export const cfg = { endless: false, seed: 1, treeMul: 1, heli: false, disc: 'sg', cup: null };
 export let FINISH_D = 2400;
 /** Startpunkt des Rennens (Meter ab Bergstation). Die Disziplinen teilen sich die Rennpiste, starten aber verschieden hoch. */
 export let START_D = 0;
@@ -32,12 +32,17 @@ export let MESH_D1 = 2760;
 const gauss = (d, c, s) => Math.exp(-((d - c) * (d - c)) / (2 * s * s));
 
 // ================================================================ Rennen
+// Streckenform als Variante (RV): Standard ist die bekannte Rennpiste. Die Rennserie (cup.js) setzt eigene Werte:
+// Kurven der Mittellinie (cx: drei Sinuswellen, je Stärke, Länge, Phase), Breite, Steilheit (slope: Faktor, bumps:
+// Steilstufen als Glocken [Ort, Stärke, Breite]). Die Höhentabelle wird bei jedem Wechsel neu gerechnet.
+const RV0 = { cx: [55, 220, 0, 26, 110, 1.3, 8, 47, 0.5], wBase: 20, wAmp: 5, slope: 1, bumps: [[900, 0.13, 110], [1750, 0.12, 100]] };
+let RV = RV0;
 function centerXR(d) {
-  const s = smoothstep(30, 240, d) * (1 - 0.75 * smoothstep(2250, 2450, d));
-  return s * (55 * Math.sin(d / 220) + 26 * Math.sin(d / 110 + 1.3) + 8 * Math.sin(d / 47 + 0.5));
+  const s = smoothstep(30, 240, d) * (1 - 0.75 * smoothstep(2250, 2450, d)), c = RV.cx;
+  return s * (c[0] * Math.sin(d / c[1] + c[2]) + c[3] * Math.sin(d / c[4] + c[5]) + c[6] * Math.sin(d / c[7] + c[8]));
 }
 function halfWidthR(d) {
-  let w = 20 + 5 * Math.sin(d / 150 + 2);
+  let w = RV.wBase + RV.wAmp * Math.sin(d / 150 + 2);
   w = lerp(7, w, smoothstep(0, 70, d));
   w += 16 * smoothstep(2330, 2420, d);
   return w;
@@ -45,7 +50,8 @@ function halfWidthR(d) {
 function slopeR(d) {
   if (d < -5) return 0.45;
   if (d < 3) return 0.0;
-  const main = 0.26 + 0.09 * Math.sin(d / 240 + 1) + 0.045 * Math.sin(d / 71) + 0.13 * gauss(d, 900, 110) + 0.12 * gauss(d, 1750, 100);
+  let main = (0.26 + 0.09 * Math.sin(d / 240 + 1) + 0.045 * Math.sin(d / 71)) * RV.slope;
+  for (const b of RV.bumps) main += b[1] * gauss(d, b[0], b[2]);
   if (d < 45) return lerp(0.02, 0.42, smoothstep(2, 24, d));
   let s = lerp(0.42, main, smoothstep(45, 140, d));
   if (d > 2400) s = lerp(s, -0.05, smoothstep(2400, 2540, d));
@@ -53,7 +59,7 @@ function slopeR(d) {
 }
 const H_STEP = 0.5, H_D0 = -420, H_N = Math.ceil((3800 - H_D0) / H_STEP);
 const H_TAB = new Float32Array(H_N + 1);
-(() => {
+function fillH() {
   let h = 0;
   const i0 = Math.round((0 - H_D0) / H_STEP);
   H_TAB[i0] = 0;
@@ -66,7 +72,10 @@ const H_TAB = new Float32Array(H_N + 1);
     h += slopeR(H_D0 + (i + 0.5) * H_STEP) * H_STEP;
     H_TAB[i] = h;
   }
-})();
+}
+fillH();
+/** Streckenform der Rennpiste setzen (null = Standard). */
+function setRaceVariant(v) { RV = v ? { ...RV0, ...v } : RV0; fillH(); }
 function baseHR(d) {
   const f = clamp((d - H_D0) / H_STEP, 0, H_N - 1e-3);
   const i = Math.floor(f);
@@ -273,7 +282,8 @@ export function nearColliders(z, cb, x = 0) {
 }
 const nearPad = (x, z, m) => pads.some((p) => (x - p.x) ** 2 + (z - p.z) ** 2 < (p.r + m) ** 2);
 
-function genTreesRace(R, d0, d1, out) {
+function genTreesRace(R, d0, d1, out, dens = 1) {
+  if (dens <= 0) return;
   for (let d = d0; d < d1; d += 2.1) {
     for (let s = -1; s <= 1; s += 2) {
       for (let a = 0; a < 5; a++) {
@@ -282,7 +292,7 @@ function genTreesRace(R, d0, d1, out) {
         const x = centerXR(dd) + s * (halfWidthR(dd) + e) + (R() - 0.5) * 2;
         const z = -dd;
         const clump = vnoise(x / 45 + 3, z / 45);
-        const keep = R() < (e < 40 ? 0.42 : 0.3) * (0.35 + clump * 1.5);
+        const keep = R() < (e < 40 ? 0.42 : 0.3) * (0.35 + clump * 1.5) * dens;
         const scale = 0.7 + R() * 0.75;
         const variant = R() < 0.45 ? 0 : R() < 0.6 ? 1 : 2;
         const rot = R() * 6.283, tint = 0.82 + R() * 0.36;
@@ -315,7 +325,7 @@ function genRocksRace(R, d0, d1, count, out) {
 /** Tore einer Disziplin: abwechselnd links und rechts der Mittellinie, Versatz und Abstand leicht unregelmäßig
  *  (Rhythmuswechsel), im Slalom gelegentlich eine Vertikale (drei Tore fast in Falllinie). Vor und nach Sprüngen gerade. */
 function genGates(D) {
-  const R = mulberry32(9157 + D.id.charCodeAt(0) * 31 + D.id.charCodeAt(1));
+  const R = mulberry32(D.seed ? D.seed * 7 + 13 : 9157 + D.id.charCodeAt(0) * 31 + D.id.charCodeAt(1));
   const rr = (a, b) => a + (b - a) * R();
   let side = R() < 0.5 ? 1 : -1, idx = 0, d = D.start + (D.pole ? 24 : 45);
   const end = FINISH_D - (D.pole ? 28 : 45);
@@ -348,10 +358,12 @@ function genGates(D) {
 }
 
 function genRace() {
-  const R = mulberry32(4711);
-  const D = DISCIPLINES[cfg.disc] || DISCIPLINES.sg;
+  const cup = cfg.cup;
+  const R = mulberry32(cup ? cup.seed : 4711);
+  const D = cup ? { ...DISCIPLINES[cup.disc], ...(cup.gate || {}), start: cup.start, seed: cup.seed, kick: [] } : DISCIPLINES[cfg.disc] || DISCIPLINES.sg;
   START_D = D.start;
-  kickers.push(...RACE_KICKERS.filter((k) => D.kick.includes(k.d)));
+  if (cup && cup.kick) kickers.push(...cup.kick.map((k) => ({ u: 0, w: 9, L: 16, h: 1.7, ...k })));
+  else kickers.push(...RACE_KICKERS.filter((k) => D.kick.includes(k.d)));
   const chaletDefs = [
     { d: 2590, u: -56, rot: Math.PI / 2 }, { d: 2640, u: 52, rot: -Math.PI / 2 }, { d: 2565, u: 64, rot: -Math.PI / 2 },
     { d: 2700, u: -34, rot: 0.3 }, { d: 2715, u: 22, rot: -0.25 }, { d: 1105, u: 0, side: 1, e: 15, rot: -Math.PI / 2 },
@@ -376,8 +388,8 @@ function genRace() {
     addCollider(x, z, 1.1, 'stuetze');
   }
   genGates(D);
-  genTreesRace(R, MESH_D0 + 4, MESH_D1 - 6, trees);
-  genRocksRace(R, 20, 2700, 300, rocks);
+  genTreesRace(R, MESH_D0 + 4, MESH_D1 - 6, trees, cup ? cup.trees ?? 1 : 1);
+  genRocksRace(R, 20, 2700, cup ? Math.round(300 * (cup.rocks ?? 1)) : 300, rocks);
   for (let d = 30; d < 2440; d += 36) {
     for (const s of [-1, 1]) {
       const x = centerXR(d) + s * (halfWidthR(d) - 0.4), z = -d;
@@ -754,8 +766,11 @@ export function dropChunk(i) {
   for (let k = i * 5; k < i * 5 + 5; k++) { colliders.delete(k); decks.delete(k); }
 }
 
-export function setMode(endless, seed = 1, style = 'freeride', disc) {
+export function setMode(endless, seed = 1, style = 'freeride', disc, cup = null) {
   if (disc && DISCIPLINES[disc]) cfg.disc = disc;
+  // Rennserie: eigene Strecke (Form, Tore, Sprünge, Wald) auf Basis einer Disziplin; sonst die Standard-Rennpiste
+  cfg.cup = !endless && cup ? cup : null;
+  if (!endless) setRaceVariant(cfg.cup ? cfg.cup.terrain : null);
   START_D = 0;
   cfg.endless = endless;
   cfg.seed = seed;

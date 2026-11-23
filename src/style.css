@@ -224,6 +224,19 @@ html.rot body.touch .kicker { font-size: 11px; }
 .seg.disc { margin-top: 16px; gap: 4px; }
 .menu .seg.disc button { padding: 7px 13px; font-size: 14px; letter-spacing: 0.06em; background: rgba(8, 18, 34, 0.42); border-color: rgba(255, 255, 255, 0.22); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .menu .seg.disc button.sel { background: var(--acc); border-color: var(--acc); color: #0b1422; }
+/* Rennserie: zehn Rennen als Startnummern-Karten in zwei Reihen, Medaille als Metallplakette */
+.cuplist { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; margin-top: 14px; max-width: 760px; pointer-events: auto; }
+.cuplist button { position: relative; display: flex; align-items: center; gap: 8px; min-width: 0; padding: 7px 26px 7px 10px; text-align: left; background: rgba(8, 18, 34, 0.55); border: 1px solid rgba(255, 255, 255, 0.16); border-radius: 3px; font: 600 13px var(--font); letter-spacing: 0.03em; color: #fff; transition: background 0.15s, border-color 0.15s; }
+.cuplist button b { font: italic 800 15px var(--font); color: var(--acc); flex: none; }
+.cuplist button span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cuplist button:hover { border-color: rgba(255, 255, 255, 0.45); }
+.cuplist button.sel { background: var(--acc); border-color: var(--acc); color: #0b1422; }
+.cuplist button.sel b { color: #0b1422; }
+.cuplist .medal { position: absolute; right: 8px; top: 50%; width: 11px; height: 11px; margin-top: -5.5px; border-radius: 50%; border: 1.5px solid rgba(255, 255, 255, 0.28); }
+.cuplist .medal.m1 { border: 0; background: radial-gradient(circle at 35% 30%, #f3c39a, #b06a35 60%, #6d3c19); }
+.cuplist .medal.m2 { border: 0; background: radial-gradient(circle at 35% 30%, #ffffff, #b9c2cc 60%, #6f7884); }
+.cuplist .medal.m3 { border: 0; background: radial-gradient(circle at 35% 30%, #fff3b8, #e2b33c 55%, #8a6413); box-shadow: 0 0 6px rgba(255, 210, 90, 0.6); }
+@media (max-width: 900px) { .cuplist { grid-template-columns: repeat(2, minmax(0, 1fr)); max-height: 30vh; overflow-y: auto; } }
 .menu .seg.drops button i { font-style: normal; font-size: 9px; letter-spacing: 1px; margin-left: 5px; opacity: 0.8; vertical-align: 1px; }
 .mrow { display: flex; align-items: center; gap: 26px; margin-top: 22px; flex-wrap: wrap; }
 .menu .cta { background: var(--acc); box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3); color: #0b1422; transition: transform 0.12s, background 0.4s, box-shadow 0.4s; }

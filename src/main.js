@@ -13,7 +13,8 @@ import { SnowTracks } from './snow.js';
 import { SkiPhysics } from './physics.js';
 import { Skier, BUTTER_TH } from './skier.js';
 import { Ghost } from './ghost.js';
-import { Spray, DiamondDust } from './particles.js';
+import { Spray, DiamondDust, SnowFall } from './particles.js';
+import { CUP, MOODS, cupById, medalFor, MEDALS, MEDAL_NAME } from './cup.js';
 import { GameAudio } from './audio.js';
 import { Q, setTier, ORDER } from './quality.js';
 import { PowderPatch } from './powder.js';
@@ -171,7 +172,7 @@ composer.addPass(grade);
 const fxaa = new FXAAPass();
 composer.addPass(fxaa);
 
-let world, skier, tracks, spray, dust, patch, blob, aval;
+let world, skier, tracks, spray, dust, patch, blob, aval, snowfall;
 const phys = new SkiPhysics();
 const audio = new GameAudio();
 
@@ -196,6 +197,7 @@ function resize() {
   camera.updateProjectionMatrix();
   if (spray) spray.resize(h * pr, camera.fov);
   if (dust) dust.resize(h * pr, camera.fov);
+  if (snowfall) snowfall.resize(h * pr, camera.fov);
 }
 window.addEventListener('resize', resize);
 
@@ -231,6 +233,7 @@ function applyQuality() {
   if (world) world.setTreeDetail(Q.ultra);
   if (world) world.setSkyLight(Q.ultra, renderer);
   applyTone();
+  if (snowfall && C.cfg.cup) applyMood();   // Schneefall-Menge folgt der Stufe
   // Ultra: mehr Schneestaub (größerer Ringspeicher), mehr Eiskristalle in der Luft
   const sprayMax = Q.ultra ? 16000 : 9000;
   if (spray && spray.max !== sprayMax) { scene.remove(spray.points); spray.geo.dispose(); spray.mat.dispose(); spray = new Spray(scene, sprayMax); }
@@ -242,7 +245,7 @@ function applyQuality() {
 /** Tonwerte: Ultra mit neutraler Kurve (weißer Schnee, natürliche Farben), sonst wie bisher ACES. Heli knapper belichtet. */
 function applyTone() {
   renderer.toneMapping = Q.ultra ? THREE.NeutralToneMapping : THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = (C.cfg.heli ? 0.74 : 0.9) * (Q.ultra ? 1.0 : 1);   // viel Schnee in der Fernsicht: etwas knapper belichten
+  renderer.toneMappingExposure = (C.cfg.heli ? 0.74 : 0.9) * (C.cfg.cup && world && world.mood && world.mood.exp ? world.mood.exp / 0.9 : 1);   // viel Schnee in der Fernsicht: etwas knapper belichten; Rennserie: Belichtung der Stimmung
 }
 function chooseQuality(q) {
   qualSetting = q;
@@ -322,13 +325,19 @@ const vis = {
 // Renn-Disziplin (Slalom, Riesentorlauf, Super-G, Abfahrt). Wird gemerkt.
 let disc = 'sg';
 try { const v = localStorage.getItem('gipfelsturm_disc'); if (v && C.DISCIPLINES[v]) disc = v; } catch {}
-const raceBestKey = () => BEST_KEY + '_' + disc;
+const raceBestKey = () => (C.cfg.cup ? BEST_KEY + '_cup_' + C.cfg.cup.id : BEST_KEY + '_' + disc);
+// Rennserie (cup.js): gewähltes Rennen; Name des laufenden Rennens für Ziel und Anzeige
+let cupId = (() => { try { return localStorage.getItem('gipfelsturm_cup') || CUP[0].id; } catch { return CUP[0].id; } })();
+const raceName = () => (C.cfg.cup ? C.cfg.cup.name : C.DISCIPLINES[disc].name);
+const ghostKey = () => (C.cfg.cup ? 'cup_' + C.cfg.cup.id : disc);
 // Geist der Bestzeit (nur die vier Rennen). Auto: an auf Ultra, Hoch und Mittel, aus auf Niedrig und Sparsam (schwache
 // Rechner); von Hand gewählt bleibt es so. sig: passt der Geist zur Strecke (Tore, erste Torposition, Ziel)?
 let ghost = null;
 let ghostSetting = (() => { try { return localStorage.getItem('gipfelsturm_ghost') || 'auto'; } catch { return 'auto'; } })();
-const ghostOn = () => ghostSetting === 'on' || (ghostSetting === 'auto' && (Q.tier === 'ultra' || Q.tier === 'high' || Q.tier === 'mid'));
-const raceSig = () => `${disc}:${C.gates.length}:${C.gates.length ? Math.round(C.gates[0].x * 10) : 0}:${Math.round(C.FINISH_D)}`;
+// v54: Auto blendet ihn nur noch auf Sparsam aus. Vorher auch auf Niedrig; weil Auto die zuletzt gewählte Stufe merkt,
+// war der Geist nach einem Neustart oft weg, obwohl er gespeichert war. Er kostet keine messbare Bildzeit.
+const ghostOn = () => ghostSetting === 'on' || (ghostSetting === 'auto' && Q.tier !== 'minimal');
+const raceSig = () => `${ghostKey()}:${C.gates.length}:${C.gates.length ? Math.round(C.gates[0].x * 10) : 0}:${Math.round(C.FINISH_D)}`;
 const ghostRace = () => game.kind === 'race' && !C.cfg.heli;
 function setGhostSetting(v) { ghostSetting = v; try { localStorage.setItem('gipfelsturm_ghost', v); } catch {} syncOpts(); }
 // Ausrüstung: Ski oder Snowboard (gleiche Tasten, eigene Haltung und Tricknamen). Wird gemerkt.
@@ -652,6 +661,7 @@ function buildMenuControls() {
 // Pulverhang, Freestyle mit einem Fahrer, der über die Kicker springt und greift, Heli-Skiing mit dem Helikopter am Grat.
 const MODES = [
   { id: 'race', name: 'Rennen', kicker: '', line: '', acc: '#ff7a2e' },
+  { id: 'cup', name: 'Rennserie', kicker: '', line: '', acc: '#b994ff' },
   { id: 'endless', name: 'Freeride', kicker: 'Endloser Berg · jedes Mal neu', line: 'Wald, Pulverhänge und Klippen. Punkte zählen erst nach sauberer Landung, ein Sturz kostet alle.', acc: '#63e6b0' },
   { id: 'freestyle', name: 'Freestyle', kicker: 'Endlos · Kicker, Gaps, Rails', line: 'Riesige Sprünge und Rails. Grabs mit Pfeil links und rechts, Rails und Boxen fährst du bis zum Ende.', acc: '#ffd23f' },
   { id: 'heli', name: 'Heli-Skiing', kicker: 'Gipfel bis Tal · Wertung wie im Freeride-Contest', line: 'Der Helikopter setzt dich ab, wo du willst. Bewertet werden Linie, Flüssigkeit, Kontrolle und Sprünge.', acc: '#7cc8ff' },
@@ -725,8 +735,36 @@ function raceInfo() {
   const D = C.DISCIPLINES[disc], len = C.RACE_FINISH - D.start, n = C.cfg.disc === disc && !C.cfg.endless ? C.gates.length : 0;
   return { kicker: `${D.name} · ${len >= 1000 ? (len / 1000).toFixed(1).replace('.', ',') + ' km' : len + ' m'}${n ? ` · ${n} Tore` : ''}`, line: DISC_LINE[disc] + ' Jedes verpasste Tor kostet zwei Sekunden.' };
 }
+const lenText = (len) => (len >= 1000 ? (len / 1000).toFixed(1).replace('.', ',') + ' km' : len + ' m');
+function cupInfo() {
+  const c = cupById(cupId), i = CUP.indexOf(c), n = C.cfg.cup && C.cfg.cup.id === c.id ? C.gates.length : 0;
+  return { kicker: `${String(i + 1).padStart(2, '0')} ${c.name} · ${C.DISCIPLINES[c.disc].name} · ${lenText(C.RACE_FINISH - c.start)}${n ? ` · ${n} Tore` : ''} · ${MOODS[c.mood].name}`, line: c.line };
+}
+const cupBest = (id) => { try { return parseFloat(localStorage.getItem(BEST_KEY + '_cup_' + id) || '0') || 0; } catch { return 0; } };
+/** Auswahl der zehn Rennen: Nummer, Name, Medaille (Gold, Silber, Bronze oder leer) */
+function renderCupList() {
+  const el = $('optCup'), on = MODES[modeIdx].id === 'cup';
+  el.classList.toggle('hidden', !on);
+  if (!on) return;
+  if (!el.children.length) {
+    CUP.forEach((c, i) => {
+      const b = document.createElement('button');
+      b.dataset.v = c.id;
+      b.innerHTML = `<b>${String(i + 1).padStart(2, '0')}</b><span>${c.name}</span><i class="medal" aria-hidden="true"></i>`;
+      b.addEventListener('click', () => { selectCup(c.id); b.blur(); });
+      el.appendChild(b);
+    });
+  }
+  for (const b of el.children) {
+    const id = b.dataset.v, med = medalFor(id, cupBest(id)), sel = id === cupId;
+    b.classList.toggle('sel', sel); b.setAttribute('aria-pressed', String(sel));
+    b.querySelector('.medal').className = 'medal m' + med;
+    b.setAttribute('aria-label', `${cupById(id).name}${med ? ', Medaille ' + MEDAL_NAME[med] : ''}`);
+  }
+}
 function bestText(id) {
   const get = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
+  if (id === 'cup') { const b = cupBest(cupId), med = medalFor(cupId, b); return ['Bestzeit', b ? fmt(b) + (med ? ' · ' + MEDAL_NAME[med] : '') : 'noch keine']; }
   if (id === 'race') { const b = parseFloat(get(raceBestKey()) || '0'); return ['Bestzeit ' + C.DISCIPLINES[disc].short, b ? fmt(b) : 'noch keine']; }
   if (id === 'heli') { const sc = parseFloat(get('gipfelsturm_heli_score') || '0'), b = parseFloat(get(BEST_KEY + '_heli') || '0'); return ['Beste Wertung', sc ? `${sc.toFixed(1).replace('.', ',')} · ${b ? fmt(b) : ''}` : 'noch keine']; }
   const p = parseInt(get(BEST_E_KEY + (id === 'freestyle' ? STYLE_SFX.freestyle : '')) || '0', 10) || 0;
@@ -734,12 +772,13 @@ function bestText(id) {
 }
 function renderMode(anim) {
   const m = MODES[modeIdx];
-  const ri = m.id === 'race' ? raceInfo() : m.id === 'heli' ? heliInfo() : null;
+  const ri = m.id === 'race' ? raceInfo() : m.id === 'cup' ? cupInfo() : m.id === 'heli' ? heliInfo() : null;
   $('menu').style.setProperty('--acc', m.acc);
   $('menuKicker').textContent = ri ? ri.kicker : m.kicker;
   $('optDisc').classList.toggle('hidden', m.id !== 'race');
   for (const b of $('optDisc').children) { const on = b.dataset.v === disc; b.classList.toggle('sel', on); b.setAttribute('aria-pressed', String(on)); }
   renderDrops();
+  renderCupList();
   const h = $('mName');
   h.setAttribute('aria-label', m.name);
   h.classList.toggle('anim', !!anim);
@@ -792,6 +831,7 @@ async function buildMode() {
   setKind(id, seed);
   if (id === 'heli') { applyDropPref(); const dp = C.HB.dropPoint(); world.updateChunks(dp.d, false, dp.x); renderMode(); }
   if (id === 'race') $('menuKicker').textContent = raceInfo().kicker;   // Toranzahl steht erst nach dem Aufbau fest
+  if (id === 'cup') $('menuKicker').textContent = cupInfo().kicker;
   demoStart();
   builtIdx = modeIdx;
   menuIntro = RM ? 0 : 1;
@@ -827,6 +867,25 @@ function selectDisc(id) {
   freezeFrame();
   requestAnimationFrame(() => setTimeout(() => {
     setKind('race');
+    demoStart();
+    menuIntro = RM ? 0 : 1;
+    renderMode(true);
+    switching = false;
+    releaseFrame();
+  }, 16));
+}
+/** Rennen der Serie wechseln: neue Strecke und Stimmung, weicher Übergang wie beim Moduswechsel. */
+function selectCup(id) {
+  if (game.mode !== 'menu' || !CUP.some((c) => c.id === id)) return;
+  if (id === cupId && C.cfg.cup && C.cfg.cup.id === id) return;
+  cupId = id;
+  try { localStorage.setItem('gipfelsturm_cup', id); } catch {}
+  if (MODES[modeIdx].id !== 'cup') { renderMode(); return; }
+  if (switching) return;
+  switching = true;
+  freezeFrame();
+  requestAnimationFrame(() => setTimeout(() => {
+    setKind('cup');
     demoStart();
     menuIntro = RM ? 0 : 1;
     renderMode(true);
@@ -902,6 +961,9 @@ function resetRunState() {
 }
 
 function setKind(kind, seed) {
+  // Rennserie: ein Rennen auf eigener Strecke und in eigener Stimmung; technisch ein Rennen
+  const cupDef = kind === 'cup' ? cupById(cupId) : null;
+  if (cupDef) kind = 'race';
   // 'freestyle' ist eine Endlos-Welt mit eigenem Generator-Stil (fast nur Sprünge)
   const style = kind === 'freestyle' || kind === 'heli' ? kind : 'freeride';
   if (kind === 'freestyle' || kind === 'heli') kind = 'endless';
@@ -911,10 +973,11 @@ function setKind(kind, seed) {
   game.bestEndless = parseInt(localStorage.getItem(BEST_E_KEY + sfx) || '0', 10) || 0;
   game.bestDist = parseInt(localStorage.getItem(BEST_D_KEY + sfx) || '0', 10) || 0;
   C.cfg.treeMul = Q.trees;
-  C.setMode(kind === 'endless', seed || 1 + Math.floor(Math.random() * 1e6), style, disc);
-  applyTone();
+  C.setMode(kind === 'endless', seed || 1 + Math.floor(Math.random() * 1e6), style, cupDef ? cupDef.disc : disc, cupDef);
   if (patch) { const pm = patch.mesh.material, on = !!C.cfg.heli; if (!!pm.defines.HELISUN !== on) { if (on) pm.defines.HELISUN = 1; else delete pm.defines.HELISUN; pm.needsUpdate = true; } }
+  world.setMood(null, true);   // Himmel und Licht zurück auf den klaren Tag (Heli und Freeride setzen Sonne und Nebel selbst)
   world.setMode();
+  applyMood();
   resetRunState();
   game.bestHeli = parseFloat(localStorage.getItem(BEST_KEY + '_heli') || '0') || 0;
   game.best = parseFloat(localStorage.getItem(raceBestKey()) || '0') || 0;
@@ -923,6 +986,16 @@ function setKind(kind, seed) {
   $('progress').classList.toggle('off', kind === 'endless');
 }
 
+/** Stimmung der Rennserie anwenden (Himmel, Licht, Nebel, Lampen, Schneefall, Belichtung); sonst klarer Tag. */
+const SNOW_Q = { ultra: 1, high: 0.8, mid: 0.6, low: 0.4, minimal: 0.25 };
+function applyMood() {
+  const cup = C.cfg.cup, m = cup ? MOODS[cup.mood] : null;
+  if (m) world.setMood(m);
+  else if (!C.cfg.heli) world.setMood(null);   // Nebelfarbe und Berge zurück auf Tag (Heli hat eigenen Dunst)
+  world.buildLamps(m && m.lights, C.START_D, C.FINISH_D);
+  if (snowfall) snowfall.set((m && m.snow ? m.snow : 0) * (SNOW_Q[Q.tier] || 0.6), m && m.lights ? (m.lights === 'torch' ? [0.85, 0.75, 0.7] : [0.7, 0.75, 0.85]) : [1, 1, 1], m && m.wind ? m.wind : 2.2, m && m.flake ? m.flake : 1);
+  applyTone();
+}
 function startRun(same) {
   const fromMenu = game.mode === 'menu';
   if (fromMenu && !tut.on && !tutDone()) { startTutorial(); return; }   // allererster Start: zuerst das Tutorial
@@ -951,7 +1024,7 @@ function startRun(same) {
     score: 0, maxD: 0, bestTrick: '', bestTrickPts: 0, tricks: 0, pend: 0, pendT: 0, combo: 1, comboT: 0, paid: false,
   });
   $('penalty').textContent = ''; $('penalty').dataset.h = ''; $('gates').dataset.cp = '';
-  if (ghost) { if (ghostRace()) { ghost.load(disc, raceSig()); ghost.startRec({ gear, ski: shop.equip.ski, board: shop.equip.board }); } else { ghost.stopRec(); ghost.data = null; } }
+  if (ghost) { if (ghostRace()) { if (ghost.load(ghostKey(), raceSig()) && !ghostOn()) setTimeout(() => showMsg('Geist ausgeblendet (Grafik Sparsam), einschalten unter Einstellungen', 'bad'), 3200); ghost.startRec({ gear, ski: shop.equip.ski, board: shop.equip.board }); } else { ghost.stopRec(); ghost.data = null; } }
   $('hint').classList.toggle('heli', !!C.cfg.heli);   // im Heli gibt es weder Zurückspulen noch Spezialtricks am Start
   heliStart();
   fwtReset();
@@ -1222,11 +1295,11 @@ function finishRun() {
   game.finishT = 0;
   const total = game.time + game.penalty;
   const hk = C.cfg.heli, bk = hk ? 'bestHeli' : 'best';
-  const isBest = !game[bk] || total < game[bk];
+  const isBest = !game[bk] || total < game[bk], prevBest = game[bk];
   if (isBest) { game[bk] = total; localStorage.setItem(hk ? BEST_KEY + '_heli' : raceBestKey(), String(total)); }
-  if (ghost && ghostRace()) { if (isBest) ghost.save(disc, raceSig()); else ghost.stopRec(); }
+  if (ghost && ghostRace()) { if (isBest) ghost.save(ghostKey(), raceSig()); else ghost.stopRec(); }
   audio.finish();
-  $('finTitle').textContent = (isBest ? 'Neue Bestzeit!' : hk ? 'Im Tal' : 'Im Ziel') + (hk ? '' : ` · ${C.DISCIPLINES[disc].name}`);
+  $('finTitle').textContent = (isBest ? 'Neue Bestzeit!' : hk ? 'Im Tal' : 'Im Ziel') + (hk ? '' : ` · ${raceName()}`);
   $('finTime').textContent = fmt(total);
   if (hk) {
     // Freeride-Wertung: Gesamtnote groß, Teilnoten als Zeilen; Rekord wird gemerkt
@@ -1254,7 +1327,16 @@ function finishRun() {
   // wie Freeride rund 20 Münzen je Minute: sauberer Lauf Slalom 15, Riesentorlauf 20, Super-G 26, Abfahrt 32;
   // verpasste Tore zählen doppelt dagegen, neue Bestzeit +5 (v44: 6 bis 13, Bestzeit +2)
   const quality = C.gates.length ? Math.max(0, (game.passed - 2 * missed) / C.gates.length) : 0;
-  rows.push(['Shop-Punkte', `+${num(earn(Math.round(15 * lenF * quality) + (isBest ? 5 : 0)))}`]);
+  // Rennserie: Medaille nach Zeit; die erste Bronze, Silber und Gold je Rennen bringen einmalig Münzen (30 / 60 / 100)
+  let medBonus = 0;
+  if (C.cfg.cup) {
+    const id = C.cfg.cup.id, med = medalFor(id, total), prev = medalFor(id, prevBest), BON = [0, 30, 60, 100];
+    if (med > prev) medBonus = BON[med] - BON[prev];
+    const m = MEDALS[id], next = med === 3 ? '' : ` · ${MEDAL_NAME[med + 1]} unter ${fmt(m[2 - med])}`;
+    rows.unshift(['Medaille', `${med ? MEDAL_NAME[med] : 'keine'}${next}`]);
+    game.lastMedal = med;
+  }
+  rows.push(['Shop-Punkte', `+${num(earn(Math.round(15 * lenF * quality) + (isBest ? 5 : 0) + medBonus))}`]);
   $('finStats').innerHTML = rows.map(([a, b]) => `<div><span>${a}</span><b>${b}</b></div>`).join('');
 }
 
@@ -1621,6 +1703,11 @@ window.addEventListener('keydown', (e) => {
       const i = C.DISC_ORDER.indexOf(disc);
       if (k === 'ArrowUp' || k === 'KeyW' || k === 'ArrowDown' || k === 'KeyS') { e.preventDefault(); selectDisc(C.DISC_ORDER[(i + (k === 'ArrowUp' || k === 'KeyW' ? -1 : 1) + 4) % 4]); return; }
       if (/^Digit[1-4]$/.test(k)) { selectDisc(C.DISC_ORDER[+k.slice(5) - 1]); return; }
+    }
+    if (!open && MODES[modeIdx].id === 'cup') {
+      const i = CUP.findIndex((c) => c.id === cupId);
+      if (k === 'ArrowUp' || k === 'KeyW' || k === 'ArrowDown' || k === 'KeyS') { e.preventDefault(); selectCup(CUP[(i + (k === 'ArrowUp' || k === 'KeyW' ? -1 : 1) + CUP.length) % CUP.length].id); return; }
+      if (/^Digit[0-9]$/.test(k)) { const n = +k.slice(5); selectCup(CUP[(n + 9) % 10].id); return; }
     }
     if (!open && (k === 'ArrowLeft' || k === 'KeyA' || k === 'ArrowRight' || k === 'KeyD')) { e.preventDefault(); selectMode(modeIdx + (k === 'ArrowLeft' || k === 'KeyA' ? -1 : 1)); return; }
   }
@@ -2586,6 +2673,8 @@ function tick(dt, render) {
     spray.setFocus(tV.set(phys.pos.x, phys.pos.y + 0.9, phys.pos.z));
     spray.update(dt);
     if (Q.dust) dust.update(time, camera);
+    snowfall.update(time, camera);
+    world.updateLamps(camera.position, phys.pos, time);
     world.update(dt, time, camera.position, phys.pos, game.kind === 'race' && (game.mode === 'run' || game.mode === 'countdown') ? C.gates[game.gateIdx] : null);
     // auf der Rail: metallisches Kratzen über das Rutsch-Geräusch
     audio.update(phys.speed, phys.grind ? 2.5 + phys.speed * 0.12 : phys.skid + inp.brake * phys.speed * 0.15, clamp(Math.abs(phys.aLat) / 14, 0, 1), phys.grounded || !!phys.grind, phys.grind ? 0 : phys.off, phys.grind ? 0 : phys.pow);
@@ -2660,6 +2749,7 @@ function ultraUniforms() {
   spray = new Spray(scene);
   aval = new Avalanche(scene);
   dust = new DiamondDust(scene);
+  snowfall = new SnowFall(scene);
   applyQuality();
   $('ver').textContent = 'v' + __GAME_VERSION__;   // zeigt, welche Fassung der Browser gerade lädt
   await selectMode(modeIdx, true);
@@ -2670,6 +2760,7 @@ function ultraUniforms() {
   game.mode = 'menu';
   window.addEventListener('beforeunload', saveEndlessBest);
   window.__game = {
+    selectCup, setCupId: (id) => { cupId = id; }, ghost: () => ghost,
     game, phys, inp, keys, airKey, trick, world, skier, camera, renderer, scene, vis, Q, startRun, setKind, toMenu, setCheckpoint, toCheckpoint, chooseQuality, C,
     avalanche: () => triggerAvalanche(), aval: () => aval,
     tp: (d, lane = 0, speed = 0) => { const L = C.cfg.heli ? { x: C.centerX(d) + lane } : C.mapSlice(d, d + 1, 1).rows[0].lanes[lane]; teleport(L.x, -d); const x0 = C.centerX(d + 6) - C.centerX(d); phys.heading = Math.atan2(x0, 6); phys.vel.set(Math.sin(phys.heading) * speed, 0, -Math.cos(phys.heading) * speed); if (game.mode === 'menu') { game.mode = 'run'; } },

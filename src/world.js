@@ -145,6 +145,97 @@ export class World {
     this._ly.crossVectors(SUN_DIR, this._lx).normalize();
   }
 
+  /** Stimmung der Rennserie (cup.js MOODS) setzen; null = klarer Wintertag. keepSunFog: Sonnenrichtung und Nebel nicht
+   * anfassen (Heli und Freeride haben eigene). */
+  setMood(m, keepSunFog) {
+    m = m || {};
+    const u = this.sky.material.uniforms, c = (o, v, d) => o.setRGB(...(v || d));
+    c(u.uZen.value, m.zen, [0.07, 0.24, 0.66]); c(u.uMid.value, m.mid, [0.26, 0.52, 0.92]); c(u.uHor.value, m.hor, [0.62, 0.77, 0.95]);
+    c(u.uHalo.value, m.halo, [1.0, 0.86, 0.62]); c(u.uCloud.value, m.cloud, [1, 1, 1]);
+    u.uCloudK.value = m.cloudK ?? 1; u.uStars.value = m.stars || 0; u.uMoon.value = m.moon || 0;
+    c(this.sun.color, m.sunCol, [1.0, 0.94, 0.84]); this.sun.intensity = m.sunI ?? 2.7;
+    c(this.hemi.color, m.hemiSky, [0.5, 0.68, 1.0]); c(this.hemi.groundColor, m.hemiGround, [0.72, 0.8, 1.0]);
+    this.moodHemi = m.hemiI ?? 1.05;
+    this.hemi.intensity = this.moodHemi * (this.skyLightOn ? this.hemiK ?? 0.5 : 1);
+    this.mood = m;
+    // ferne Berge sind unbeleuchtet (eingebrannte Farben): je Stimmung einfärben, im Nebel und Sturm ausblenden
+    if (this.mountainMat) this.mountainMat.color.setRGB(...(m.mtn || [1, 1, 1]));
+    if (this.mountains && !keepSunFog) this.mountains.visible = !m.hideMtn;
+    if (!keepSunFog) {
+      if (this.scene.fog && this.scene.fog.isFog) {
+        this.scene.fog.color.setRGB(...(m.fog || [HAZE.r, HAZE.g, HAZE.b]));
+        if (m.fogNear !== undefined) { this.scene.fog.near = m.fogNear; this.scene.fog.far = m.fogFar; }
+      }
+      this.setSun(m.sun ? new THREE.Vector3(...m.sun) : SUN_DEFAULT);
+    } else this.updateSkyEnv();
+  }
+
+  /** Lichter entlang der Rennstrecke: Flutlichtmasten oder Fackeln (Rennserie, Nacht). Lichtinseln auf dem Schnee rechnet
+   * der Schnee-Shader (die 24 nächsten Lampen), Fahrer und Tore beleuchten zwei Punktlichter an den nächsten Lampen. */
+  buildLamps(kind, d0, d1) {
+    if (this.lampGrp) { this.scene.remove(this.lampGrp); this.lampGrp.traverse((o) => { if (o.geometry) o.geometry.dispose(); }); this.lampGrp = null; }
+    for (const L of this.lampLights || []) this.scene.remove(L);
+    this.lampLights = [];
+    this.lamps = [];
+    this.lampKind = kind || null;
+    snowUniforms.uLampN.value = 0;
+    if (!kind) return;
+    const flood = kind === 'flood', g = new THREE.Group();
+    const pts = [];
+    if (flood) {
+      let s = 1;
+      for (let d = d0 - 10; d < d1 + 30; d += 34) {
+        const w = C.halfWidth(d), cx = C.centerX(d), x = cx + s * (w + 3.2), z = -d, y = C.height(x, z);
+        pts.push({ x, y, z, s, d, px: cx + s * w * 0.3, pz: z, r: 20, I: 0.5, hy: y + 11 });
+        s = -s;
+      }
+    } else {
+      for (let d = d0 - 6; d < d1 + 20; d += 10.5) for (const s of [-1, 1]) {
+        const w = C.halfWidth(d), x = C.centerX(d) + s * (w + 0.9), z = -d, y = C.height(x, z);
+        pts.push({ x, y, z, s, d, px: x - s * 1.2, pz: z, r: 5.2, I: 0.6, hy: y + 1.45 });
+      }
+    }
+    const n = pts.length, M = new THREE.Matrix4(), Q = new THREE.Quaternion(), S = new THREE.Vector3(1, 1, 1), P = new THREE.Vector3();
+    const poleMat = new THREE.MeshStandardMaterial({ color: flood ? 0x3a3f47 : 0x2a1d14, roughness: 0.7, metalness: flood ? 0.5 : 0 });
+    const headMat = new THREE.MeshBasicMaterial({ color: flood ? new THREE.Color().setRGB(4.0, 3.7, 3.2) : new THREE.Color().setRGB(4.5, 1.9, 0.45), fog: true });
+    const poleGeo = flood ? new THREE.CylinderGeometry(0.14, 0.22, 11, 8).translate(0, 5.5, 0) : new THREE.CylinderGeometry(0.04, 0.05, 1.3, 6).translate(0, 0.65, 0);
+    const headGeo = flood ? new THREE.BoxGeometry(1.5, 0.5, 0.9) : new THREE.ConeGeometry(0.11, 0.34, 7).translate(0, 0.17, 0);
+    const poles = new THREE.InstancedMesh(poleGeo, poleMat, n), heads = new THREE.InstancedMesh(headGeo, headMat, n);
+    pts.forEach((p, i) => {
+      M.compose(P.set(p.x, p.y - 0.2, p.z), Q.identity(), S); poles.setMatrixAt(i, M);
+      if (flood) Q.setFromEuler(new THREE.Euler(0, 0, 0.5 * p.s));   // Scheinwerfer zur Piste geneigt
+      M.compose(P.set(p.x - (flood ? p.s * 0.5 : 0), p.hy - (flood ? 0 : 0.1), p.z), Q, S); heads.setMatrixAt(i, M);
+    });
+    poles.castShadow = flood; g.add(poles, heads);
+    this.lampHeads = heads;
+    this.scene.add(g);
+    this.lampGrp = g;
+    this.lamps = pts;
+    snowUniforms.uLampCol.value.setRGB(...(flood ? [1.0, 0.93, 0.8] : [1.0, 0.55, 0.22]));
+    for (let i = 0; i < 2; i++) {
+      const L = new THREE.PointLight(flood ? 0xfff0d8 : 0xff9a45, 0, flood ? 60 : 14, flood ? 1.4 : 2);
+      this.scene.add(L); this.lampLights.push(L);
+    }
+  }
+  /** Lampen fürs Bild: die 24 nächsten an der Kamera in den Schnee-Shader, zwei Punktlichter an die nächsten am Fahrer. */
+  updateLamps(cam, pos, time) {
+    if (!this.lamps || !this.lamps.length) return;
+    const flood = this.lampKind === 'flood', L = this.lamps, U = snowUniforms.uLamps.value;
+    const near = L.map((p, i) => [(p.px - cam.x) ** 2 + (p.pz - cam.z) ** 2, i]).sort((a, b) => a[0] - b[0]);
+    const k = Math.min(24, near.length);
+    for (let j = 0; j < k; j++) {
+      const p = L[near[j][1]], fl = flood ? 1 : 0.85 + 0.15 * Math.sin(time * 13 + p.d) * Math.sin(time * 7.3 + p.d * 1.7);
+      U[j].set(p.px, p.pz, p.r, p.I * fl);
+    }
+    snowUniforms.uLampN.value = k;
+    const nr = L.map((p, i) => [(p.x - pos.x) ** 2 + (p.z - pos.z) ** 2, i]).sort((a, b) => a[0] - b[0]);
+    this.lampLights.forEach((Lt, j) => {
+      const p = L[nr[j][1]], fl = flood ? 1 : 0.8 + 0.2 * Math.sin(time * 11 + p.d * 2);
+      Lt.position.set(flood ? p.px : p.x, p.hy + (flood ? -1 : 0.2), p.z);
+      Lt.intensity = (flood ? 70 : 4) * fl;
+    });
+  }
+
   setLowQuality(low) {
     const mh = this.snowMatH;
     if (mh && !!mh.defines.LOWQ !== low) { if (low) mh.defines.LOWQ = 1; else delete mh.defines.LOWQ; mh.needsUpdate = true; }
@@ -177,7 +268,7 @@ export class World {
     if (renderer) this.renderer = renderer;
     if (!on) {
       if (this.skyEnv && this.scene.environment === this.skyEnv.texture) this.scene.environment = null;
-      this.hemi.intensity = 1.05;
+      this.hemi.intensity = this.moodHemi ?? 1.05;
       return;
     }
     this.updateSkyEnv();
@@ -186,8 +277,8 @@ export class World {
     if (!this.skyLightOn || !this.renderer) return;
     if (!this.envScene) {
       const m = this.sky.material.clone();
-      m.fragmentShader = m.fragmentShader.replace('col += vec3(1.0, 0.86, 0.62) * (', 'col += 0.0 * vec3(1.0, 0.86, 0.62) * (');   // Sonne und Sonnenhof sind schon direktes Licht
-      m.uniforms.uSun.value = SUN_DIR;
+      m.fragmentShader = m.fragmentShader.replace('col += uHalo * mix(', 'col += 0.0 * uHalo * mix(');   // Sonne und Sonnenhof sind schon direktes Licht
+      m.uniforms = this.sky.material.uniforms;   // gleiche Werte wie der sichtbare Himmel (auch bei Stimmungswechsel)
       this.envScene = new THREE.Scene();
       this.envScene.add(new THREE.Mesh(new THREE.SphereGeometry(50, 48, 24), m));
       this.pmrem = new THREE.PMREMGenerator(this.renderer);
@@ -196,7 +287,7 @@ export class World {
     this.skyEnv = this.pmrem.fromScene(this.envScene, 0.03, 0.1, 100);
     this.scene.environment = this.skyEnv.texture;
     this.scene.environmentIntensity = this.envI ?? 0.75;
-    this.hemi.intensity = 1.05 * (this.hemiK ?? 0.5);
+    this.hemi.intensity = (this.moodHemi ?? 1.05) * (this.hemiK ?? 0.5);
   }
 
   // ------------------------------------------------------------ Ultra: alle Bäume als fein modellierte Fichten
@@ -292,22 +383,30 @@ export class World {
   // ------------------------------------------------------------ Himmel
   buildSky() {
     const mat = new THREE.ShaderMaterial({
-      uniforms: { uSun: { value: SUN_DIR }, uTime: { value: 0 } },
+      uniforms: { uSun: { value: SUN_DIR }, uTime: { value: 0 }, uZen: { value: new THREE.Color().setRGB(0.07, 0.24, 0.66) }, uMid: { value: new THREE.Color().setRGB(0.26, 0.52, 0.92) },
+        uHor: { value: new THREE.Color().setRGB(0.62, 0.77, 0.95) }, uHalo: { value: new THREE.Color().setRGB(1.0, 0.86, 0.62) }, uCloud: { value: new THREE.Color(1, 1, 1) },
+        uCloudK: { value: 1 }, uStars: { value: 0 }, uMoon: { value: 0 } },
       vertexShader: 'varying vec3 vDir; void main(){ vDir = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
       fragmentShader: /* glsl */ `
-        varying vec3 vDir; uniform vec3 uSun; uniform float uTime;
+        varying vec3 vDir; uniform vec3 uSun; uniform float uTime; uniform vec3 uZen; uniform vec3 uMid; uniform vec3 uHor; uniform vec3 uHalo; uniform vec3 uCloud; uniform float uCloudK; uniform float uStars; uniform float uMoon;
         float h12(vec2 p){ vec3 p3 = fract(vec3(p.xyx)*.1031); p3 += dot(p3, p3.yzx+33.33); return fract((p3.x+p3.y)*p3.z); }
         float n2(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.-2.*f); return mix(mix(h12(i),h12(i+vec2(1,0)),f.x), mix(h12(i+vec2(0,1)),h12(i+vec2(1,1)),f.x), f.y); }
         float fbm(vec2 p){ float a=0.5, s=0.; for(int i=0;i<5;i++){ s+=a*n2(p); p=p*2.03+7.1; a*=0.5; } return s; }
         void main(){
           vec3 d = normalize(vDir);
           float h = d.y;
-          vec3 zen = vec3(0.07, 0.24, 0.66), mid = vec3(0.26, 0.52, 0.92), hor = vec3(0.62, 0.77, 0.95);
+          vec3 zen = uZen, mid = uMid, hor = uHor;   // Stimmung (Rennserie): Farben je Tageszeit
           float t = clamp(h, 0., 1.);
           vec3 col = mix(hor, mid, smoothstep(0.0, 0.28, t));
           col = mix(col, zen, smoothstep(0.2, 0.95, t));
           float s = max(dot(d, uSun), 0.);
-          col += vec3(1.0, 0.86, 0.62) * (pow(s, 1400.) * 40. + pow(s, 90.) * 0.55 + pow(s, 9.) * 0.16);
+          // Nacht: Sterne (hinter den Wolken) und statt der Sonne ein kleiner, kühler Mond mit schwachem Hof
+          if (uStars > 0.) {
+            vec2 sp = d.xz / (d.y + 0.18) * 150.; vec2 sc = floor(sp);
+            float st = step(0.984, h12(sc)) * smoothstep(0.45, 0.05, length(fract(sp) - 0.5)) * smoothstep(0.03, 0.25, h);
+            col += vec3(0.85, 0.9, 1.0) * st * uStars * (0.35 + 0.65 * h12(sc + 3.7)) * (0.8 + 0.2 * sin(uTime * 3. + h12(sc) * 50.));
+          }
+          col += uHalo * mix(pow(s, 1400.) * 40. + pow(s, 90.) * 0.55 + pow(s, 9.) * 0.16, pow(s, 3000.) * 9. + pow(s, 160.) * 0.18 + pow(s, 12.) * 0.05, uMoon);
 #ifdef ULTRA
           // Ultra: Haufenwolken aus zwei Ebenen, Eigenschatten aus der Dichte Richtung Sonne, helle Ränder im Gegenlicht,
           // feine Schleier hoch oben und Dunst über dem Horizont
@@ -318,9 +417,9 @@ export class World {
           float cs = fbm(cuv * 1.1 + wind + sd) * 0.72 + fbm(cuv * 3.9 + wind * 1.6 + 4.0 + sd * 3.5) * 0.38;
           float cover = smoothstep(0.6, 0.9, c) * smoothstep(0.02, 0.2, h);
           float lit = clamp(0.62 + (c - cs) * 3.2, 0.25, 1.15);
-          vec3 ccol = mix(vec3(0.58, 0.66, 0.8), vec3(1.2, 1.14, 1.05), lit);
-          ccol += vec3(1.0, 0.86, 0.62) * pow(s, 7.) * (1.0 - smoothstep(0.6, 1.0, cover)) * 0.9;   // Silberrand
-          col = mix(col, ccol, cover * 0.92);
+          vec3 ccol = mix(vec3(0.58, 0.66, 0.8), vec3(1.2, 1.14, 1.05), lit) * uCloud;
+          ccol += uHalo * pow(s, 7.) * (1.0 - smoothstep(0.6, 1.0, cover)) * 0.9;   // Silberrand
+          col = mix(col, ccol, cover * 0.92 * uCloudK);
           float cirr = smoothstep(0.55, 0.85, fbm(vec2(cuv.x * 0.35, cuv.y * 2.4) + wind * 0.4 + 9.0)) * smoothstep(0.1, 0.5, h);
           col = mix(col, vec3(1.0, 0.99, 0.98), cirr * 0.22);
           col = mix(col, hor * 1.06, exp(-max(h, 0.0) * 16.0) * 0.35);
@@ -328,8 +427,8 @@ export class World {
           vec2 cuv = d.xz / (abs(d.y) + 0.22);
           float c = fbm(cuv * 1.3 + vec2(uTime*0.004, 0.));
           float cl = smoothstep(0.6, 0.86, c) * smoothstep(0.03, 0.25, h) * 0.6;
-          vec3 ccol = mix(vec3(0.82, 0.88, 0.97), vec3(1.25, 1.18, 1.08), smoothstep(0.55, 0.9, c) * (0.4 + 0.6*pow(s, 3.)));
-          col = mix(col, ccol, cl);
+          vec3 ccol = mix(vec3(0.82, 0.88, 0.97), vec3(1.25, 1.18, 1.08), smoothstep(0.55, 0.9, c) * (0.4 + 0.6*pow(s, 3.))) * uCloud;
+          col = mix(col, ccol, cl * uCloudK);
 #endif
           gl_FragColor = vec4(col, 1.0);
         }`,

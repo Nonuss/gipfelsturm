@@ -119,3 +119,49 @@ export class DiamondDust {
     this.mat.uniforms.uScale.value = h / (2 * Math.tan((fov * Math.PI) / 360));
   }
 }
+
+/** Schneefall (Rennserie: Sturm, Nebel, Fackellauf): Flocken in einem Würfel um die Kamera, fallen schräg mit dem Wind,
+ * taumeln leicht. Stärke 0 bis 1 regelt, wie viele gezeichnet werden; die Menge folgt zusätzlich der Grafikstufe. */
+export class SnowFall {
+  constructor(scene, count = 9000) {
+    this.count = count;
+    const p = new Float32Array(count * 3), r = new Float32Array(count);
+    for (let i = 0; i < count; i++) { p[i * 3] = Math.random(); p[i * 3 + 1] = Math.random(); p[i * 3 + 2] = Math.random(); r[i] = Math.random(); }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(p, 3));
+    g.setAttribute('aRnd', new THREE.BufferAttribute(r, 1));
+    this.mat = new THREE.ShaderMaterial({
+      uniforms: { uTime: { value: 0 }, uCam: { value: new THREE.Vector3() }, uScale: { value: 600 }, uWind: { value: 2.2 }, uSize: { value: 1 }, uLight: { value: new THREE.Color(1, 1, 1) } },
+      vertexShader: `attribute float aRnd; uniform float uTime; uniform vec3 uCam; uniform float uScale; uniform float uWind; uniform float uSize; varying float vA;
+        void main(){
+          vec3 box = vec3(56., 34., 56.);
+          float fall = 1.3 + aRnd * 1.1;
+          vec3 w = position * box + vec3(uTime * uWind * (0.7 + aRnd * 0.6) + sin(uTime * 1.3 + aRnd * 60.) * 0.5, -uTime * fall, uTime * 0.6 + cos(uTime * 1.1 + aRnd * 40.) * 0.4);
+          w = mod(w - uCam, box) - box * 0.5 + uCam;
+          vec4 mv = viewMatrix * vec4(w, 1.0);
+          float dist = -mv.z;
+          vA = smoothstep(27., 14., dist) * smoothstep(1.2, 3.0, dist);   // ganz nah keine riesigen Flecken vor der Linse
+          gl_PointSize = (0.05 + 0.06 * aRnd) * uSize * uScale / max(0.3, dist);
+          gl_Position = projectionMatrix * mv; }`,
+      fragmentShader: `varying float vA; uniform vec3 uLight;
+        void main(){ float d = length(gl_PointCoord - 0.5); float a = smoothstep(0.5, 0.1, d) * vA * 0.85; if (a < 0.01) discard;
+          gl_FragColor = vec4(uLight, a); }`,
+      transparent: true, depthWrite: false,
+    });
+    this.points = new THREE.Points(g, this.mat);
+    this.points.frustumCulled = false;
+    this.points.renderOrder = 6;
+    this.points.visible = false;
+    scene.add(this.points);
+  }
+  /** k: Stärke 0 bis 1 (mal Grafikstufe), light: Farbe der Flocken (Nacht dunkler, bei Fackeln wärmer) */
+  set(k, light, wind = 2.2, size = 1) {
+    this.mat.uniforms.uWind.value = wind; this.mat.uniforms.uSize.value = size;
+    const n = Math.round(this.count * Math.min(1, k));
+    this.points.visible = n > 0;
+    this.points.geometry.setDrawRange(0, n);
+    if (light) this.mat.uniforms.uLight.value.setRGB(...light);
+  }
+  update(time, cam) { if (!this.points.visible) return; this.mat.uniforms.uTime.value = time; this.mat.uniforms.uCam.value.copy(cam.position); }
+  resize(h, fov) { this.mat.uniforms.uScale.value = h / (2 * Math.tan((fov * Math.PI) / 360)); }
+}

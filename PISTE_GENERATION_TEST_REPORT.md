@@ -823,3 +823,31 @@ Damit: Ski für 1.000 rund 50 Minuten, Gipfel Gold gut 2 Stunden, Legende gut 12
 Tests: Box-Seite in vier Anfahrten (schräg, langsam, drückend links und rechts), Rail mit Drehung (Swap-Ereignis bei 90 Grad, Kamera im Bild), Geist: Aufzeichnung gespeichert (12 s = 20 KB), zweiter Lauf mit Abstandsanzeige und sichtbarem Geist, Auto zeigt ihn auf Ultra/Hoch/Mittel und nicht auf Niedrig/Sparsam, Bildzeit Hoch mit und ohne Geist im Rauschen (27 / 26 bis 31 ms). Alle Stufen und Welten ohne Fehler.
 
 Nicht geprüft: Drehen auf der Rail mit dem Handy (Neigen über 55 % Ausschlag dreht), wie sich die Swaps anfühlen.
+
+## Rennserie mit zehn Rennen, Geist bleibt sichtbar (v54, 2026-11-23)
+
+| Rückmeldung | Ursache und Änderung |
+|---|---|
+| Geist nur direkt danach sichtbar, nach Neustart weg | Der Geist war gespeichert, aber ausgeblendet: Auto zeigte ihn nur auf Ultra, Hoch und Mittel. Grafik Auto merkt sich am Rechner die zuletzt gewählte Stufe; ging die Automatik während des Spielens auf Niedrig, startete die nächste Sitzung auf Niedrig und der Geist blieb aus. Jetzt blendet Auto ihn nur auf Sparsam aus (er kostet keine messbare Bildzeit), und ist er ausgeblendet, sagt das Spiel es beim Start. Geprüft: nach Neuladen auf Niedrig und Hoch sichtbar. Gespeichert bleibt er wie bisher dauerhaft im Browser, je Disziplin und je Serienrennen eine Bestfahrt |
+| Keine Bestenliste, dafür 10 Rennen, die richtig gut aussehen, in eigenem Feld | Neuer Modus „Rennserie“ im Menü (02 von 05) mit eigener Auswahl als zehn Startnummern-Karten, Medaille je Rennen sichtbar. Jedes Rennen hat eine eigene Strecke (Kurven, Breite, Steilheit, Sprünge, Wald, Felsen) und eine eigene Stimmung; Bestzeit, Geist und Medaillen je Rennen; erste Bronze, Silber, Gold je Rennen einmalig 30 / 60 / 100 Münzen |
+
+Die zehn Rennen (`src/cup.js`):
+
+| Nr. | Rennen | Disziplin, Länge | Stimmung | Besonderheit |
+|---|---|---|---|---|
+| 01 | Flutlicht-Slalom | Slalom, 520 m | Nacht, Sternenhimmel | Flutlichtmasten, Lichtinseln auf der Piste |
+| 02 | Morgenrot | Riesentorlauf, 980 m | Sonnenaufgang, Gegenlicht | rosa Schnee, lange Schatten |
+| 03 | Nebelwand | Super-G, 1,5 km | dichter Nebel, Sicht unter 200 m | Tore tauchen spät auf |
+| 04 | Schneesturm | Abfahrt, 2,1 km | dichter Schneefall mit Wind | zwei Sprünge im Grau |
+| 05 | Gletscher | Abfahrt, 2,4 km | tiefblauer Himmel | keine Bäume, Felsen, breite Piste, drei weite Sprünge |
+| 06 | Waldkorridor | Riesentorlauf, 1,05 km | Nachmittag | schmale Piste durch dichten Wald |
+| 07 | Abendrot | Super-G, 1,75 km | Sonnenuntergang | rosa Schnee, violette Schatten |
+| 08 | Kamelbuckel | Abfahrt, 2,2 km | sonnig | drei Doppelsprünge kurz hintereinander |
+| 09 | Steilhang | Slalom, 540 m | klarer Morgen | steilster Hang der Serie |
+| 10 | Fackellauf | Riesentorlauf, 950 m | Vollmondnacht, leichter Schneefall | Fackeln säumen die Strecke, flackerndes Licht |
+
+Technik: Rennpiste als Variante (`course.js`: Mittellinie, Breite, Steilheit, Steilstufen; die Standardpiste bleibt genau gleich, gleiche Tore, gleiche Bot-Zeiten). Stimmungen (`world.setMood`): Himmelsfarben, Sonne oder Mond, Halbkugel-Licht, Nebel, Belichtung, Sterne, Wolkenfarbe, Färbung der fernen Berge (im Nebel und Sturm ausgeblendet). Nachtlicht: Masten bzw. Fackeln als Instanzen, Lichtinseln im Schnee-Shader (24 nächste Lampen), zwei Punktlichter an den nächsten Lampen für Fahrer und Tore. Schneefall als eigene Teilchen um die Kamera, Menge nach Grafikstufe. Medaillenzeiten aus dem Renn-Bot (`tools/cup_validate.mjs`, alle zehn Rennen fehlerfrei fahrbar): Gold = schnellster fehlerfreier Bot plus 2 %, Silber plus 10 %, Bronze plus 22 %.
+
+Tests: alle zehn Rennen geladen und mit Autopilot durch die Tore gefahren, Bilder je Rennen geprüft (Flutlicht zuerst überstrahlt, Gletscher mit hellem Schleier, Sturm zu schwach, Flocken vor der Linse zu groß: alles nachgestellt). Zielbildschirm mit Medaille und Ziel für die nächste, Geist je Serienrennen gespeichert und nach Neuladen sichtbar. Nach einem Nachtrennen sind Rennen, Freeride, Freestyle und Heli wieder Tag. Bildzeit Nachtrennen wie Standardrennen (Hoch 35 bis 41 ms gegen 39, Niedrig 8,4 bis 9,1 gegen 8,6, Sparsam 6,9 bis 7,4 gegen 5,8). Keine Fehler.
+
+Nicht geprüft: wie die Medaillenzeiten sich für Menschen anfühlen (Gold ist knapp über dem schnellen Bot).

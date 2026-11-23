@@ -8,6 +8,10 @@ export const snowUniforms = {
   uTrackRes: { value: 2048 },
   uSunDir: { value: new THREE.Vector3(0, 1, 0) },
   uClip: { value: new THREE.Vector3(0, 0, 1e9) },   // Heli-Berg: Kacheln nur innerhalb dieses Kreises (x, z, Radius)
+  // Rennserie bei Nacht: Lichtinseln von Flutlicht oder Fackeln (x, z, Radius, Stärke), die 24 nächsten an der Kamera
+  uLamps: { value: Array.from({ length: 24 }, () => new THREE.Vector4()) },
+  uLampN: { value: 0 },
+  uLampCol: { value: new THREE.Color(1, 0.9, 0.75) },
 };
 
 const FRAG_HEAD = /* glsl */ `
@@ -17,6 +21,9 @@ uniform float uTrackSize;
 uniform float uTrackRes;
 uniform vec3 uSunDir;
 uniform vec3 uClip;
+uniform vec4 uLamps[24];
+uniform float uLampN;
+uniform vec3 uLampCol;
 varying float vSunF;
 varying vec3 vSnowPos;
 varying float vPiste;
@@ -151,6 +158,18 @@ if (distance(vSnowPos.xz, uClip.xy) > uClip.z) discard;
 `;
 
 const FRAG_LIGHT = /* glsl */ `
+if (uLampN > 0.5) {
+  // Lichtinseln: weicher Kegel um jede Lampe, zur Mitte heller; leicht von der Oberflächenneigung abhängig
+  vec3 ls = vec3(0.);
+  for (int i = 0; i < 24; i++) {
+    if (float(i) >= uLampN) break;
+    vec4 L = uLamps[i];
+    vec2 dd = vSnowPos.xz - L.xy;
+    float q = dot(dd, dd) / (L.z * L.z);
+    ls += uLampCol * L.w * exp(-q * 2.4);
+  }
+  reflectedLight.directDiffuse += diffuseColor.rgb * ls;
+}
 #ifdef ULTRA
 reflectedLight.indirectSpecular *= 0.22;   // Ultra mit Himmelslicht: rauer Schnee spiegelt den Himmel kaum
 reflectedLight.indirectDiffuse *= 1.0 - 0.42 * snowTrack;   // Spurwände: verdichteter Schnee im Eigenschatten

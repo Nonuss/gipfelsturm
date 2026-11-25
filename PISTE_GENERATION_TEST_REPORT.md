@@ -868,3 +868,16 @@ Nicht geprüft: ob Gold in Abfahrt und Super-G für einen Menschen schaffbar ist
 ## Kein Ton im Hintergrund (v56, 2026-11-23)
 
 Rückmeldung: Das Spiel rauscht dauerhaft, auch wenn man nicht spielt (Safari ließ sich nicht schließen). Jetzt hält das Spiel die ganze Tonausgabe an (AudioContext suspend), sobald der Tab versteckt ist, das Fenster minimiert ist oder ein anderes Fenster vorne liegt, auch beim Verlassen der Seite; beim Zurückkehren läuft der Ton weiter. Geprüft: Ton läuft, nach Fensterwechsel angehalten, ein erneuter Start im Hintergrund weckt ihn nicht.
+
+## Rennserie im Feld Rennen, Tutorial zeigt das Menü (v57, 2026-11-25)
+
+| Wunsch | Änderung |
+|---|---|
+| Kein eigenes Startfeld für die Rennserie | Das Menü hat wieder vier Felder. Im Feld Rennen steht neben Slalom, Riesentorlauf, Super-G und Abfahrt der Knopf „Weitere Rennen ansehen“. Er öffnet die zehn Karten mit Medaille; „Zurück zu den Hauptrennen“ (oder Esc) führt zur zuletzt gewählten Disziplin auf der Standardpiste am Tag. Überzeile, Text, Bestzeit und Medaille folgen immer der Wahl. Bestzeiten, Geister und gemerktes Rennen bleiben gültig; wer zuletzt im alten Modus Rennserie war, landet im Feld Rennen mit seinem Rennen |
+| Tutorial soll auch das Menü zeigen | Nach dem Fahrteil folgt ein Rundgang (`src/tour.js`) mit sieben Schritten: Shop, Outfit, Einstellungen, Steuerung, Ski oder Snowboard, Moduswahl, „Weitere Rennen ansehen“. Das echte Element ist hervorgehoben, der Rest abgedunkelt und gesperrt. Weiter und Überspringen per Maus, Finger, Enter, Leertaste, Pfeile, Esc. Überspringen und Esc beenden alles und merken es; danach ist die vorher gewählte Welt wieder da |
+
+Technik: eine gemeinsame Ladeschleife (`loadSel`) für Modus, Disziplin und Serienrennen. Vorher ging eine Wahl verloren, wenn gerade eine andere Welt lud (gewählt und angezeigt war dann ein anderes Rennen als gebaut); jetzt wird immer die zuletzt gewählte gebaut. Menüpfeile überdecken keinen Text und keine Knöpfe mehr.
+
+Tests: Wechsel hin und zurück auch bei gleicher Disziplin, schnelles Durchdrücken, Moduswechsel und Start während des Ladens, Tastatur mit Fokus, alter gespeicherter Modus. Überlappungen rechnerisch geprüft in 14 Fenstergrößen von 400 mal 760 bis 1440 mal 900, dazu Handy quer 568 mal 320, 667 mal 375, 844 mal 390 und hochkant gedreht 320 mal 568, 375 mal 667, 390 mal 844: keine (auf sehr schmalen Fenstern scrollen die Karten). Rundgang in denselben Größen: Karte nie auf dem Ziel, immer im Bild; Esc und Überspringen an jeder Stelle, Neustart über Einstellungen, Klick und Wischen auf das abgedunkelte Menü tun nichts. Alle vier Modi und vier Serienrennen gestartet (Flutlicht, Fackellauf, Nebelwand, Gletscher), danach Freeride und Standardrennen wieder Tag, Zielbildschirm mit Silber und Gold, keine Konsolenfehler. `tools/race_validate.mjs` unverändert (bekannter Slalom-Fehlerlauf in Stil 2).
+
+Nicht geprüft: echtes Handy (Finger, Kerbe, Safari), die Bewegung der Einblendungen bei echter Bildrate, der Fahrteil des Tutorials von Hand, reduzierte Bewegung nur über die Stilregel. Bekannt und nicht geändert: Im Serienrennen richten sich die Shop-Münzen nach der zuletzt gewählten Disziplin statt nach der des Rennens.

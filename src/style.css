@@ -224,6 +224,16 @@ html.rot body.touch .kicker { font-size: 11px; }
 .seg.disc { margin-top: 16px; gap: 4px; }
 .menu .seg.disc button { padding: 7px 13px; font-size: 14px; letter-spacing: 0.06em; background: rgba(8, 18, 34, 0.42); border-color: rgba(255, 255, 255, 0.22); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .menu .seg.disc button.sel { background: var(--acc); border-color: var(--acc); color: #0b1422; }
+/* Feld Rennen: vier Disziplinen und der Knopf zu den zehn weiteren Rennen; offen ersetzen die Karten diese Zeile */
+.racepick { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-top: 16px; }
+.racepick .seg.disc { margin-top: 0; }
+#cupOpen, #cupBack { display: inline-flex; align-items: center; gap: 7px; padding: 7px 13px; border-radius: 4px; background: rgba(8, 18, 34, 0.42); border: 1px solid var(--acc); color: #fff; font: 600 14px var(--font); letter-spacing: 0.06em; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); transition: background 0.15s, color 0.15s; }
+#cupOpen:hover { background: var(--acc); color: #0b1422; }
+#cupBack { border-color: rgba(255, 255, 255, 0.3); padding-left: 9px; }
+#cupBack:hover { border-color: #fff; }
+#cupBack svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.cupbox { margin-top: 16px; }
+.cupbox .cuplist { margin-top: 8px; }
 /* Rennserie: zehn Rennen als Startnummern-Karten in zwei Reihen, Medaille als Metallplakette */
 .cuplist { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; margin-top: 14px; max-width: 760px; pointer-events: auto; }
 .cuplist button { position: relative; display: flex; align-items: center; gap: 8px; min-width: 0; padding: 7px 26px 7px 10px; text-align: left; background: rgba(8, 18, 34, 0.55); border: 1px solid rgba(255, 255, 255, 0.16); border-radius: 3px; font: 600 13px var(--font); letter-spacing: 0.03em; color: #fff; transition: background 0.15s, border-color 0.15s; }
@@ -236,7 +246,23 @@ html.rot body.touch .kicker { font-size: 11px; }
 .cuplist .medal.m1 { border: 0; background: radial-gradient(circle at 35% 30%, #f3c39a, #b06a35 60%, #6d3c19); }
 .cuplist .medal.m2 { border: 0; background: radial-gradient(circle at 35% 30%, #ffffff, #b9c2cc 60%, #6f7884); }
 .cuplist .medal.m3 { border: 0; background: radial-gradient(circle at 35% 30%, #fff3b8, #e2b33c 55%, #8a6413); box-shadow: 0 0 6px rgba(255, 210, 90, 0.6); }
-@media (max-width: 900px) { .cuplist { grid-template-columns: repeat(2, minmax(0, 1fr)); max-height: 30vh; overflow-y: auto; } }
+/* Karten offen: Name kleiner, damit alles über Start passt. Maße nach der Menüfläche (gilt auch in der gedrehten Handy-Ansicht) */
+.menu.cupopen #mName { font-size: clamp(40px, min(13cqw, 19cqh), 150px); }
+@container (max-width: 760px) { .cuplist { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@container (max-width: 900px) and (min-height: 521px) { .menu.cupopen #mName { font-size: clamp(36px, min(13cqw, 11cqh), 110px); } }
+@container (max-width: 640px) and (min-height: 521px) { .cuplist { grid-template-columns: repeat(2, minmax(0, 1fr)); max-height: 24cqh; overflow-y: auto; }
+  .menu.cupopen #mName { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }   /* Platz für die Karten, die Überzeile nennt das Rennen */
+  .menu.cupopen .mline { margin-top: 8px; } }
+@container (max-width: 480px) and (min-height: 521px) { .menu.cupopen .mline { font-size: 14px; margin-top: 8px; } .menu.cupopen .mrow { margin-top: 14px; gap: 12px 20px; } .menu.cupopen .kicker { font-size: 13px; letter-spacing: 0.14em; } }
+@container (max-height: 520px) {
+  .racepick { margin-top: 8px; gap: 6px 10px; }
+  #cupOpen, #cupBack { padding: 5px 9px; font-size: 12px; }
+  .cupbox { margin-top: 6px; } .cupbox .cuplist { margin-top: 5px; gap: 4px; max-width: none; }
+  .cuplist button { padding: 6px 20px 6px 7px; gap: 6px; font-size: 12px; } .cuplist button b { font-size: 13px; }
+  .cuplist .medal { right: 6px; width: 10px; height: 10px; margin-top: -5px; }
+  .menu.cupopen #mName { font-size: clamp(28px, 13cqh, 60px); margin-top: 2px; }
+  .menu.cupopen .mline { margin-top: 4px; max-width: none; font-size: 13px; }
+}
 .menu .seg.drops button i { font-style: normal; font-size: 9px; letter-spacing: 1px; margin-left: 5px; opacity: 0.8; vertical-align: 1px; }
 .mrow { display: flex; align-items: center; gap: 26px; margin-top: 22px; flex-wrap: wrap; }
 .menu .cta { background: var(--acc); box-shadow: 0 4px 0 rgba(0, 0, 0, 0.3); color: #0b1422; transition: transform 0.12s, background 0.4s, box-shadow 0.4s; }
@@ -313,6 +339,12 @@ html.rot .mdots { bottom: calc(12px + env(safe-area-inset-bottom)); }
 html.rot .mtools { bottom: calc(8px + env(safe-area-inset-bottom)); }
 html.rot .mtools button { font-size: 12px; padding: 7px 8px; letter-spacing: 0.14em; }
 html.rot .dlg { bottom: calc(48px + env(safe-area-inset-bottom)); max-height: 78%; }
+/* Pfeile neben dem Text (breit) oder darüber (schmal), nie auf Text oder Knöpfen */
+@media (min-width: 901px) and (min-height: 521px) { .mmain, .mtop, .mdots { left: 96px; } }
+@media (max-width: 900px) and (min-height: 521px) { .marrow { top: calc(62px + env(safe-area-inset-top)); } }
+@media (max-width: 640px) and (min-height: 521px) { .marrow { width: 44px; height: 44px; top: calc(52px + env(safe-area-inset-top)); } .mdots { bottom: calc(66px + env(safe-area-inset-bottom)); } .mmain { bottom: 112px; } }
+@media (max-width: 480px) and (min-height: 521px) { .mdots { bottom: calc(82px + env(safe-area-inset-bottom)); } .mmain { bottom: 120px; } }
+@media (max-width: 640px) and (min-height: 521px) and (max-height: 680px) { .mmain { bottom: 98px; } .mrow { margin-top: 12px; gap: 10px 20px; } .menu .cta { padding: 9px 22px; font-size: 22px; } }
 @media (max-width: 720px) { .mline { font-size: 15px; } .mtools button { letter-spacing: 0.12em; padding: 8px 8px; } }
 @media (prefers-reduced-motion: reduce) {
   #mName span, .mline, .dlg { animation: none; }
@@ -487,3 +519,45 @@ html.rot #touchUI .tb.right { gap: 8px; }
 html.rot body.touch .speedo { left: 106px; bottom: 18px; }
 /* Während des Tutorials liegt die Karte oben in der Mitte; der Vollbild-Knopf (Taste V geht weiter) macht Platz */
 html.tutorial #fsBtn { display: none; }
+
+/* Menü-Rundgang (zweiter Teil des Tutorials): alles außer dem gezeigten Element abgedunkelt, daneben die Karte */
+#tour { position: fixed; inset: 0; z-index: 45; --acc: #ff7a2e; color: #fff; touch-action: none; }
+#tourSvg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+#tourDim { fill: rgba(5, 11, 20, 0.76); }
+#tourRing { fill: none; stroke: var(--acc); stroke-width: 2.5; }
+#tourCard { position: absolute; left: 0; top: 0; width: min(360px, calc(100% - 20px)); padding: 14px 18px 14px; border-radius: 4px; background: #0d1a2c; border: 1px solid rgba(255, 255, 255, 0.22); border-left: 5px solid var(--acc); box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45); }
+#tourCard.in { animation: tourin 0.22s ease-out both; }
+@keyframes tourin { from { opacity: 0; transform: translateY(6px); } }
+#tourCard .tstep { font-size: 12px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.75; }
+#tourTitle { display: block; margin-top: 4px; font: italic 800 25px/1.1 var(--font); letter-spacing: 0.02em; }
+#tourText { margin: 6px 0 14px; font: 16px/1.4 "Avenir Next", "Helvetica Neue", Arial, sans-serif; }
+.tourbtns { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.tourbtns button { border-radius: 4px; padding: 10px 18px; min-height: 42px; font: 700 16px var(--font); letter-spacing: 0.05em; }
+#tourSkip { background: none; padding-left: 0; padding-right: 8px; font-weight: 600; opacity: 0.85; text-decoration: underline; text-underline-offset: 3px; }
+#tourSkip:hover { opacity: 1; }
+#tourNext { margin-left: auto; background: var(--acc); color: #0b1422; }
+#tourNext:hover { filter: brightness(1.08); }
+#tour :focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+@media (max-height: 500px) { #tourCard { width: min(330px, calc(100% - 20px)); padding: 10px 14px; } #tourTitle { font-size: 21px; } #tourText { margin: 3px 0 6px; font-size: 14px; line-height: 1.32; } .tourbtns button { min-height: 38px; padding-top: 6px; padding-bottom: 6px; } }
+html.rot #tourCard { width: min(330px, calc(100% - 20px)); padding: 10px 14px; } html.rot #tourTitle { font-size: 21px; } html.rot #tourText { margin: 3px 0 6px; font-size: 14px; line-height: 1.32; } html.rot .tourbtns button { min-height: 38px; padding-top: 6px; padding-bottom: 6px; }
+@media (prefers-reduced-motion: reduce) { #tourCard.in { animation: none; } }
+
+/* Handy quer (auch gedreht): Pfeile in eigenen Rändern links und rechts, Text und Knöpfe dazwischen */
+@container (max-height: 520px) {
+  .mmain, .mtop { left: calc(62px + env(safe-area-inset-left)); right: calc(62px + env(safe-area-inset-right)); }
+  .mdots { left: calc(62px + env(safe-area-inset-left)); }
+  .marrow.prev { left: calc(10px + env(safe-area-inset-left)); } .marrow.next { right: calc(10px + env(safe-area-inset-right)); }
+}
+@container (max-height: 520px) and (max-width: 700px) {
+  .mdots { gap: 5px; } .mdots button { width: 22px; } .mdots button.sel { width: 38px; }
+  .menu.cupopen .kicker { letter-spacing: 0.16em; }
+}
+@container (max-height: 520px) and (max-width: 620px) {
+  .cuplist button { padding: 5px 18px 5px 5px; gap: 4px; font-size: 11px; letter-spacing: 0; } .cuplist button b { font-size: 11px; } .cuplist .medal { right: 4px; }
+}
+@container (max-height: 345px) {
+  .menu.cupopen #mName { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .menu #mName { font-size: clamp(36px, 18cqh, 70px); }
+  .menu.cupopen .mline { font-size: 12px; line-height: 1.25; margin-top: 2px; }
+  .menu .cupbox { margin-top: 4px; } .menu .mrow { margin-top: 7px; }
+}

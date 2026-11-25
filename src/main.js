@@ -14,6 +14,7 @@ import { SkiPhysics } from './physics.js';
 import { Skier, BUTTER_TH } from './skier.js';
 import { Ghost } from './ghost.js';
 import { Spray, DiamondDust, SnowFall } from './particles.js';
+import { createTour } from './tour.js';
 import { CUP, MOODS, cupById, medalFor, MEDALS, MEDAL_NAME } from './cup.js';
 import { GameAudio } from './audio.js';
 import { Q, setTier, ORDER } from './quality.js';
@@ -327,7 +328,12 @@ let disc = 'sg';
 try { const v = localStorage.getItem('gipfelsturm_disc'); if (v && C.DISCIPLINES[v]) disc = v; } catch {}
 const raceBestKey = () => (C.cfg.cup ? BEST_KEY + '_cup_' + C.cfg.cup.id : BEST_KEY + '_' + disc);
 // Rennserie (cup.js): gewähltes Rennen; Name des laufenden Rennens für Ziel und Anzeige
-let cupId = (() => { try { return localStorage.getItem('gipfelsturm_cup') || CUP[0].id; } catch { return CUP[0].id; } })();
+let cupId = (() => { try { return cupById(localStorage.getItem('gipfelsturm_cup')).id; } catch { return CUP[0].id; } })();
+// Feld Rennen: raceCup = ein Rennen der Serie ist gewählt (sonst eine der vier Disziplinen), cupOpen = die zehn Karten sind offen.
+// Bis v56 war die Serie ein eigener Modus 'cup'; ein so gespeicherter Modus führt ins Feld Rennen mit dem gemerkten Serienrennen.
+const RACE_CUP_KEY = 'gipfelsturm_race_cup';
+let raceCup = (() => { try { if (localStorage.getItem('gipfelsturm_mode') === 'cup') localStorage.setItem(RACE_CUP_KEY, '1'); return localStorage.getItem(RACE_CUP_KEY) === '1'; } catch { return false; } })();
+let cupOpen = raceCup;
 const raceName = () => (C.cfg.cup ? C.cfg.cup.name : C.DISCIPLINES[disc].name);
 const ghostKey = () => (C.cfg.cup ? 'cup_' + C.cfg.cup.id : disc);
 // Geist der Bestzeit (nur die vier Rennen). Auto: an auf Ultra, Hoch und Mittel, aus auf Niedrig und Sparsam (schwache
@@ -640,6 +646,9 @@ function buildMenuControls() {
   for (const b of $('optFs').children) b.addEventListener('click', () => toggleFs(b.dataset.v === '1'));
   for (const b of $('optGear').children) b.addEventListener('click', () => { setGear(b.dataset.v); b.blur(); });
   for (const b of $('optDisc').children) b.addEventListener('click', () => { selectDisc(b.dataset.v); b.blur(); });
+  // mit der Tastatur bleibt der Fokus dort, wo es weitergeht (die Knöpfe blenden sich gegenseitig aus); mit Maus und Finger kein Fokus
+  $('cupOpen').addEventListener('click', (e) => { openCup(); if (e.detail === 0) ($('optCup').querySelector('.sel') || $('optCup').firstChild).focus(); });
+  $('cupBack').addEventListener('click', (e) => { selectDisc(disc); if (e.detail === 0) $('cupOpen').focus(); });
   for (const b of $('optSteer').children) b.addEventListener('click', async () => { if (touchCtl) await touchCtl.setMode(b.dataset.v); syncOpts(); });
   $('fsBtn').addEventListener('click', () => { toggleFs(); $('fsBtn').blur(); });
   shop.onChange = () => { updateWallet(); if (shop3d) shop3d.refresh(); };
@@ -667,7 +676,6 @@ function buildMenuControls() {
 // Pulverhang, Freestyle mit einem Fahrer, der über die Kicker springt und greift, Heli-Skiing mit dem Helikopter am Grat.
 const MODES = [
   { id: 'race', name: 'Rennen', kicker: '', line: '', acc: '#ff7a2e' },
-  { id: 'cup', name: 'Rennserie', kicker: '', line: '', acc: '#b994ff' },
   { id: 'endless', name: 'Freeride', kicker: 'Endloser Berg · jedes Mal neu', line: 'Wald, Pulverhänge und Klippen. Punkte zählen erst nach sauberer Landung, ein Sturz kostet alle.', acc: '#63e6b0' },
   { id: 'freestyle', name: 'Freestyle', kicker: 'Endlos · Kicker, Gaps, Rails', line: 'Riesige Sprünge und Rails. Grabs mit Pfeil links und rechts, Rails und Boxen fährst du bis zum Ende.', acc: '#ffd23f' },
   { id: 'heli', name: 'Heli-Skiing', kicker: 'Gipfel bis Tal · Wertung wie im Freeride-Contest', line: 'Der Helikopter setzt dich ab, wo du willst. Bewertet werden Linie, Flüssigkeit, Kontrolle und Sprünge.', acc: '#7cc8ff' },
@@ -735,11 +743,11 @@ function selectDrop(i) {
     renderMode(true);
     switching = false;
     releaseFrame();
-    if (pendingStart) { pendingStart = false; startRun(); }
+    runPending();
   }, 16));
 }
 function raceInfo() {
-  const D = C.DISCIPLINES[disc], len = C.RACE_FINISH - D.start, n = C.cfg.disc === disc && !C.cfg.endless ? C.gates.length : 0;
+  const D = C.DISCIPLINES[disc], len = C.RACE_FINISH - D.start, n = C.cfg.disc === disc && !C.cfg.endless && !C.cfg.cup ? C.gates.length : 0;
   return { kicker: `${D.name} · ${len >= 1000 ? (len / 1000).toFixed(1).replace('.', ',') + ' km' : len + ' m'}${n ? ` · ${n} Tore` : ''}`, line: DISC_LINE[disc] + ' Jedes verpasste Tor kostet zwei Sekunden.' };
 }
 const lenText = (len) => (len >= 1000 ? (len / 1000).toFixed(1).replace('.', ',') + ' km' : len + ' m');
@@ -750,8 +758,11 @@ function cupInfo() {
 const cupBest = (id) => { try { return parseFloat(localStorage.getItem(BEST_KEY + '_cup_' + id) || '0') || 0; } catch { return 0; } };
 /** Auswahl der zehn Rennen: Nummer, Name, Medaille (Gold, Silber, Bronze oder leer) */
 function renderCupList() {
-  const el = $('optCup'), on = MODES[modeIdx].id === 'cup';
-  el.classList.toggle('hidden', !on);
+  const el = $('optCup'), race = MODES[modeIdx].id === 'race', on = race && cupOpen;
+  $('racePick').classList.toggle('hidden', !race || cupOpen);
+  $('cupBox').classList.toggle('hidden', !on);
+  $('cupOpen').setAttribute('aria-expanded', String(on));
+  $('menu').classList.toggle('cupopen', on);
   if (!on) return;
   if (!el.children.length) {
     CUP.forEach((c, i) => {
@@ -763,32 +774,33 @@ function renderCupList() {
     });
   }
   for (const b of el.children) {
-    const id = b.dataset.v, med = medalFor(id, cupBest(id)), sel = id === cupId;
+    const id = b.dataset.v, med = medalFor(id, cupBest(id)), sel = raceCup && id === cupId;
     b.classList.toggle('sel', sel); b.setAttribute('aria-pressed', String(sel));
     b.querySelector('.medal').className = 'medal m' + med;
+    if (sel && el.scrollHeight > el.clientHeight) b.scrollIntoView({ block: 'nearest' });   // schmale Fenster: die Karten scrollen
     b.setAttribute('aria-label', `${cupById(id).name}${med ? ', Medaille ' + MEDAL_NAME[med] : ''}`);
   }
 }
 function bestText(id) {
   const get = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
-  if (id === 'cup') { const b = cupBest(cupId), med = medalFor(cupId, b); return ['Bestzeit', b ? fmt(b) + (med ? ' · ' + MEDAL_NAME[med] : '') : 'noch keine']; }
-  if (id === 'race') { const b = parseFloat(get(raceBestKey()) || '0'); return ['Bestzeit ' + C.DISCIPLINES[disc].short, b ? fmt(b) : 'noch keine']; }
+  if (id === 'race' && raceCup) { const b = cupBest(cupId), med = medalFor(cupId, b); return ['Bestzeit', b ? fmt(b) + (med ? ' · ' + MEDAL_NAME[med] : '') : 'noch keine']; }
+  if (id === 'race') { const b = parseFloat(get(BEST_KEY + '_' + disc) || '0'); return ['Bestzeit ' + C.DISCIPLINES[disc].short, b ? fmt(b) : 'noch keine']; }
   if (id === 'heli') { const sc = parseFloat(get('gipfelsturm_heli_score') || '0'), b = parseFloat(get(BEST_KEY + '_heli') || '0'); return ['Beste Wertung', sc ? `${sc.toFixed(1).replace('.', ',')} · ${b ? fmt(b) : ''}` : 'noch keine']; }
   const p = parseInt(get(BEST_E_KEY + (id === 'freestyle' ? STYLE_SFX.freestyle : '')) || '0', 10) || 0;
   return ['Rekord', p ? `${num(p)} Punkte` : 'noch keiner'];
 }
+/** Texte und Auswahl des Menüs zur aktuellen Wahl. anim: true = Name und Text fahren ein, 'line' = nur der Text. */
 function renderMode(anim) {
   const m = MODES[modeIdx];
-  const ri = m.id === 'race' ? raceInfo() : m.id === 'cup' ? cupInfo() : m.id === 'heli' ? heliInfo() : null;
+  const ri = m.id === 'race' ? (raceCup ? cupInfo() : raceInfo()) : m.id === 'heli' ? heliInfo() : null;
   $('menu').style.setProperty('--acc', m.acc);
   $('menuKicker').textContent = ri ? ri.kicker : m.kicker;
-  $('optDisc').classList.toggle('hidden', m.id !== 'race');
-  for (const b of $('optDisc').children) { const on = b.dataset.v === disc; b.classList.toggle('sel', on); b.setAttribute('aria-pressed', String(on)); }
+  for (const b of $('optDisc').children) { const on = !raceCup && b.dataset.v === disc; b.classList.toggle('sel', on); b.setAttribute('aria-pressed', String(on)); }
   renderDrops();
   renderCupList();
   const h = $('mName');
   h.setAttribute('aria-label', m.name);
-  h.classList.toggle('anim', !!anim);
+  h.classList.toggle('anim', anim === true);
   h.innerHTML = [...m.name].map((c, i) => `<span aria-hidden="true" style="--i:${i}">${c}</span>`).join('');
   const l = $('mLine');
   l.textContent = ri ? ri.line : m.line;
@@ -799,7 +811,9 @@ function renderMode(anim) {
   $('mIdx').textContent = String(modeIdx + 1).padStart(2, '0');
   [...$('mDots').children].forEach((b, i) => { b.classList.toggle('sel', i === modeIdx); b.setAttribute('aria-pressed', String(i === modeIdx)); });
 }
-let switching = false, builtIdx = -1, menuIntro = 0;
+// was gewählt ist (und welche Welt dafür stehen muss); builtSel: was zuletzt gebaut wurde
+const menuSel = () => { const id = MODES[modeIdx].id; return id !== 'race' ? id : raceCup ? 'cup:' + cupId : 'race:' + disc; };
+let switching = false, builtSel = '', menuIntro = 0;
 // Übergang zwischen den Modi: das aktuelle Bild wird eingefroren (2D-Leinwand über dem 3D-Bild), dahinter entsteht die
 // neue Welt, dann löst sich das eingefrorene Bild mit leichtem Zoom und Unschärfe auf, während die neue Kamera einfährt.
 const snap = $('snap'), snapCtx = snap.getContext('2d');
@@ -826,23 +840,22 @@ let heliNext = 0;
 const newSeed = () => 1 + Math.floor(Math.random() * 1e6);
 function prefetchHeli() { heliNext = newSeed(); HG.request(heliNext, Q.tier); }
 async function buildMode() {
-  const id = MODES[modeIdx].id;
+  const id = MODES[modeIdx].id, sel = menuSel();
   let seed;
   if (id === 'heli') {
     seed = heliNext || newSeed();
     heliNext = 0;
     await HG.request(seed, Q.tier);
-    if (MODES[modeIdx].id !== id) { heliNext = seed; return; }   // inzwischen weitergeblättert: Berg für später aufheben
+    if (menuSel() !== sel) { heliNext = seed; return; }   // inzwischen weitergeblättert: Berg für später aufheben
     HG.use(seed);
   }
-  setKind(id, seed);
+  setKind(id === 'race' && raceCup ? 'cup' : id, seed);
   // Heli: alle Kacheln am Absprungpunkt sofort bauen (all = true), damit beim Umblenden der ganze Berg steht und nicht
   // erst Stück für Stück aus der groben Fernsicht auftaucht
   if (id === 'heli') { applyDropPref(); const dp = C.HB.dropPoint(); world.updateChunks(dp.d, true, dp.x); renderMode(); }
-  if (id === 'race') $('menuKicker').textContent = raceInfo().kicker;   // Toranzahl steht erst nach dem Aufbau fest
-  if (id === 'cup') $('menuKicker').textContent = cupInfo().kicker;
+  if (id === 'race') $('menuKicker').textContent = (raceCup ? cupInfo() : raceInfo()).kicker;   // Toranzahl steht erst nach dem Aufbau fest
   demoStart();
-  builtIdx = modeIdx;
+  builtSel = sel;
   menuIntro = RM ? 0 : 1;
   if (id === 'heli') prefetchHeli();
 }
@@ -855,7 +868,7 @@ function modeLoading(on) {
   // erst nach 250 ms zeigen: schnelle Wechsel (Rennpiste, Freeride) blenden ohne Zwischenschritt um
   modeLoadT = setTimeout(() => {
     const id = MODES[modeIdx].id;
-    $('modeLoadText').textContent = id === 'heli' ? 'Heli-Berg wird erzeugt' : id === 'cup' ? 'Rennen wird geladen' : id === 'race' ? 'Rennpiste wird geladen' : 'Berg wird erzeugt';
+    $('modeLoadText').textContent = id === 'heli' ? 'Heli-Berg wird erzeugt' : id === 'race' ? (raceCup ? 'Rennen wird geladen' : 'Rennpiste wird geladen') : 'Berg wird erzeugt';
     show(true);
   }, 250);
 }
@@ -863,64 +876,58 @@ function modeLoading(on) {
 function selectMode(i, instant) {
   i = (i + MODES.length) % MODES.length;
   if (!instant && game.mode !== 'menu') return;
+  if (i !== modeIdx) cupOpen = raceCup;   // Karten nur offen lassen, wenn daraus gewählt wurde
   modeIdx = i;
   try { localStorage.setItem(MODE_KEY, MODES[i].id); } catch {}
   renderMode(!instant);
   if (instant) return buildMode().then(() => { menuIntro = 0; });
-  if (switching) return;
+  loadSel();
+}
+/** Welt zur aktuellen Wahl im Hintergrund laden (Modus, Disziplin, Rennen der Serie), weicher Übergang. Wird während des
+ *  Ladens etwas anderes gewählt, baut die Schleife gleich die neue Wahl. */
+function loadSel() {
+  if (switching || builtSel === menuSel()) return;
   switching = true;
   freezeFrame();
   modeLoading(true);
   // erst das eingefrorene Bild zeigen lassen, dann die neue Welt bauen (Heli: im Worker, das Menü bleibt bedienbar).
   // Umgeblendet wird erst, wenn die Welt fertig ist und zweimal gezeichnet wurde (Shader übersetzt, Kacheln da).
   requestAnimationFrame(() => setTimeout(async () => {
-    while (builtIdx !== modeIdx) await buildMode();
-    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    do {
+      while (builtSel !== menuSel()) await buildMode();
+      await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    } while (builtSel !== menuSel());
     switching = false;
     modeLoading(false);
     releaseFrame();
-    if (pendingStart) { pendingStart = false; startRun(); }
+    runPending();
   }, 16));
 }
-/** Renn-Disziplin wechseln: Rennpiste mit neuen Toren und neuem Start, weicher Übergang wie beim Moduswechsel. */
+/** Wahl im Feld Rennen merken: Disziplin, Rennen der Serie und welches von beiden gilt. */
+function saveRaceSel() {
+  try { localStorage.setItem('gipfelsturm_disc', disc); localStorage.setItem('gipfelsturm_cup', cupId); localStorage.setItem(RACE_CUP_KEY, raceCup ? '1' : '0'); } catch {}
+}
+/** Renn-Disziplin wählen (auch der Rückweg aus der Rennserie): Standardpiste am Tag mit eigenen Toren und eigenem Start. */
 function selectDisc(id) {
   if (!C.DISCIPLINES[id] || game.mode !== 'menu') return;
-  if (id === disc && C.cfg.disc === id) return;
-  disc = id;
-  try { localStorage.setItem('gipfelsturm_disc', id); } catch {}
-  if (MODES[modeIdx].id !== 'race') { renderMode(); return; }
-  if (switching) return;
-  switching = true;
-  freezeFrame();
-  requestAnimationFrame(() => setTimeout(() => {
-    setKind('race');
-    demoStart();
-    menuIntro = RM ? 0 : 1;
-    renderMode(true);
-    switching = false;
-    releaseFrame();
-    if (pendingStart) { pendingStart = false; startRun(); }
-  }, 16));
+  disc = id; raceCup = false; cupOpen = false;
+  saveRaceSel();
+  renderMode('line');
+  if (MODES[modeIdx].id === 'race') loadSel();
 }
-/** Rennen der Serie wechseln: neue Strecke und Stimmung, weicher Übergang wie beim Moduswechsel. */
+/** Rennen der Serie wählen: eigene Strecke und Stimmung. */
 function selectCup(id) {
   if (game.mode !== 'menu' || !CUP.some((c) => c.id === id)) return;
-  if (id === cupId && C.cfg.cup && C.cfg.cup.id === id) return;
-  cupId = id;
-  try { localStorage.setItem('gipfelsturm_cup', id); } catch {}
-  if (MODES[modeIdx].id !== 'cup') { renderMode(); return; }
-  if (switching) return;
-  switching = true;
-  freezeFrame();
-  requestAnimationFrame(() => setTimeout(() => {
-    setKind('cup');
-    demoStart();
-    menuIntro = RM ? 0 : 1;
-    renderMode(true);
-    switching = false;
-    releaseFrame();
-    if (pendingStart) { pendingStart = false; startRun(); }
-  }, 16));
+  cupId = id; raceCup = true; cupOpen = true;
+  saveRaceSel();
+  renderMode('line');
+  if (MODES[modeIdx].id === 'race') loadSel();
+}
+/** Die zehn Karten öffnen; geladen wird erst, wenn man eine wählt. */
+function openCup() {
+  if (game.mode !== 'menu') return;
+  cupOpen = true;
+  renderMode();
 }
 function closeDlg() {
   for (const d of document.querySelectorAll('.dlg')) d.classList.add('hidden');
@@ -1025,7 +1032,12 @@ function applyMood() {
   if (snowfall) snowfall.set((m && m.snow ? m.snow : 0) * (SNOW_Q[Q.tier] || 0.6), m && m.lights ? (m.lights === 'torch' ? [0.85, 0.75, 0.7] : [0.7, 0.75, 0.85]) : [1, 1, 1], m && m.wind ? m.wind : 2.2, m && m.flake ? m.flake : 1);
   applyTone();
 }
-let pendingStart = false;
+let pendingStart = false;   // Start (true) oder Tutorial ('tut') während des Ladens gedrückt: läuft danach von selbst los
+function runPending() {
+  const p = pendingStart;
+  pendingStart = false;
+  if (p === 'tut') startTutorial(); else if (p) startRun();
+}
 function startRun(same) {
   // Start während eines Moduswechsels (die neue Welt lädt noch): nicht die alte Welt starten, sondern nach dem Laden
   if (game.mode === 'menu' && switching) { pendingStart = true; return; }
@@ -1261,8 +1273,12 @@ function heliUpdate(dt) {
   audio.setHeli(heli.group.visible ? clamp(1 - dist / 260, 0, 1) : 0);
 }
 
-function toMenu() {
+/** Zurück ins Menü. toTour: nach dem Fahrteil des Tutorials geht es dort mit dem Menü-Rundgang weiter. */
+function toMenu(toTour) {
   if (game.mode === 'loading') return;
+  pendingStart = false;
+  // Rundgang: im Feld Rennen, Karten zu (nur dort gibt es „Weitere Rennen ansehen“); danach kommt die alte Wahl zurück
+  if (toTour === true) { tourBack = { mode: modeIdx, open: cupOpen }; modeIdx = 0; cupOpen = false; }
   saveEndlessBest();
   payEndless();
   game.mode = 'menu';
@@ -1277,6 +1293,7 @@ function toMenu() {
   if (MODES[modeIdx].id === 'heli' && C.cfg.heli) { renderMode(); demoStart(); }
   else selectMode(modeIdx, true);
   if (tut.on) closeTutorial();
+  if (toTour === true) startTour();
 }
 
 const totalScore = () => Math.round(game.score);
@@ -1606,19 +1623,41 @@ const TUT = [
   { d: `${kb('F')}: Respawn-Punkt setzen, ${kb('T')}: dorthin zurück. Probier beides.`, t: 'Fahnen-Knopf halten: Respawn-Punkt setzen. Kurz tippen: dorthin zurück. Probier beides.',
     run: () => (game.cp ? 0.5 : 0) + (tut.cpBack ? 0.5 : 0) },
 ];
-const TUT_END = { d: `Geschafft! Im Menü wählst du Rennen, Freeride, Freestyle oder Heli-Skiing. Spezialtricks liegen auf ${kb('1')} bis ${kb('0')}, alle Tasten stehen unter Steuerung.`,
-  t: 'Geschafft! Im Menü wählst du Rennen, Freeride, Freestyle oder Heli-Skiing. Der Stern-Knopf in der Luft zeigt Spezialtricks, alles Weitere steht unter Steuerung.' };
+const TUT_END = { d: `Geschafft! Spezialtricks liegen auf ${kb('1')} bis ${kb('0')}. Weiter geht es im Menü.`,
+  t: 'Geschafft! Der Stern-Knopf in der Luft zeigt Spezialtricks. Weiter geht es im Menü.' };
+// Zweiter Teil nach der Fahrt: Rundgang durch das Menü (tour.js), hebt die echten Elemente hervor
+const TOUR = [
+  { sel: ['#shopBtn'], title: 'Shop', d: 'Mit den Punkten aus allen Läufen kaufst du hier Ski, Snowboards und Outfits.' },
+  { sel: ['[data-dlg="dlgOutfit"]'], title: 'Outfit', d: 'Hier ziehst du gekaufte Outfits an oder mischst eigene Farben.' },
+  { sel: ['[data-dlg="dlgSettings"]'], title: 'Einstellungen', d: 'Grafik, Ton, Kamera und Geist der Bestzeit. Auch dieses Tutorial startest du hier noch einmal.', t: 'Grafik, Ton, Kamera und Lenkung. Auch dieses Tutorial startest du hier noch einmal.' },
+  { sel: ['[data-dlg="dlgKeys"]'], title: 'Steuerung', d: 'Alle Tasten und Tricks zum Nachlesen.', t: 'Alle Knöpfe und Gesten zum Nachlesen.' },
+  { sel: ['#optGear'], title: 'Ski oder Snowboard', d: 'Hier wechselst du zwischen Ski und Snowboard, auch mit Taste B.', t: 'Hier wechselst du zwischen Ski und Snowboard.' },
+  { sel: ['#mPrev', '#mNext'], title: 'Modus wählen', d: 'Rennen, Freeride, Freestyle und Heli-Skiing: mit diesen Pfeilen oder den Pfeiltasten.', t: 'Rennen, Freeride, Freestyle und Heli-Skiing: mit diesen Pfeilen oder zur Seite wischen.' },
+  { sel: ['#cupOpen'], title: 'Weitere Rennen', d: 'Zehn weitere Rennen mit eigener Strecke, eigener Stimmung und Medaillen.' },
+];
+const tour = createTour();
+let tourBack = null;
+function startTour() {
+  closeDlg();
+  tour.start(TOUR.map((s) => ({ sel: s.sel, title: s.title, text: isTouch && s.t ? s.t : s.d })), () => {
+    const b = tourBack;
+    tourBack = null;
+    if (b && b.mode !== modeIdx) selectMode(b.mode); else { cupOpen = !!(b && b.open); renderMode(); }
+    $('startBtn').focus({ preventScroll: true });
+  });
+}
 function tutShow() {
   const end = tut.i >= TUT.length, st = end ? TUT_END : TUT[tut.i];
   $('tut').classList.toggle('ok', end);
-  $('tutStep').textContent = end ? 'Tutorial fertig' : `Tutorial ${tut.i + 1} von ${TUT.length}`;
+  $('tutStep').textContent = end ? 'Fahren geschafft' : `Tutorial ${tut.i + 1} von ${TUT.length}`;
   $('tutText').innerHTML = isTouch ? st.t : st.d;
-  $('tutSkip').textContent = end ? 'Zum Menü' : 'Überspringen';
+  $('tutSkip').textContent = end ? 'Weiter' : 'Überspringen';
   tut.w = -1; tutBar(end ? 1 : 0);
 }
 function tutBar(p) { const w = Math.round(p * 100); if (w !== tut.w) { tut.w = w; $('tutFill').style.width = w + '%'; } }
 function startTutorial() {
   closeDlg();
+  if (game.mode === 'menu' && switching) { pendingStart = 'tut'; return; }   // die gewählte Welt lädt noch
   if (game.mode !== 'menu') toMenu();
   Object.assign(tut, { on: true, i: 0, p: 0, ok: 0, a: 0, b: 0, cpBack: false, endT: 0 });
   setKind('endless', 4711);   // ruhiger Freeride-Berg
@@ -1627,7 +1666,7 @@ function startTutorial() {
   document.documentElement.classList.add('tutorial');
   tutShow();
 }
-/** Tutorial schließen und merken (auch nach Überspringen oder Esc): kommt nur noch über die Einstellungen. */
+/** Fahrteil schließen und das Tutorial als erledigt merken (auch nach Überspringen oder Esc): kommt nur noch über die Einstellungen. */
 function closeTutorial() {
   tut.on = false;
   try { localStorage.setItem(TUT_KEY, '1'); } catch {}
@@ -1636,7 +1675,7 @@ function closeTutorial() {
 }
 function tutUpdate(dt) {
   if (!tut.on || game.mode === 'menu') return;
-  if (tut.i >= TUT.length) { tut.endT += dt; if (tut.endT > 8) toMenu(); return; }
+  if (tut.i >= TUT.length) { tut.endT += dt; if (tut.endT > 8) toMenu(true); return; }
   if (tut.ok > 0) { tut.ok -= dt; if (tut.ok <= 0) { tut.i++; tut.a = 0; tut.b = 0; tutShow(); } return; }
   if (game.mode !== 'run') return;
   tut.p = clamp(TUT[tut.i].run(dt), 0, 1);
@@ -1723,6 +1762,7 @@ window.addEventListener('keydown', (e) => {
   if (e.target instanceof HTMLInputElement) return;
   const k = e.code;
   if (game.mode === 'menu') {
+    if (tour.on) { tour.key(e); return; }
     const open = document.querySelector('.dlg:not(.hidden)');
     if (k === 'Escape' && open) { const id = open.id; closeDlg(); document.querySelector(`[data-dlg="${id}"]`)?.focus(); return; }
     if (!open && k === 'KeyB') { setGear(BOARD() ? 'ski' : 'board'); return; }
@@ -1732,14 +1772,16 @@ window.addEventListener('keydown', (e) => {
       if (/^Digit[1-9]$/.test(k)) { selectDrop(+k.slice(5) - 1); return; }
     }
     if (!open && MODES[modeIdx].id === 'race') {
-      const i = C.DISC_ORDER.indexOf(disc);
-      if (k === 'ArrowUp' || k === 'KeyW' || k === 'ArrowDown' || k === 'KeyS') { e.preventDefault(); selectDisc(C.DISC_ORDER[(i + (k === 'ArrowUp' || k === 'KeyW' ? -1 : 1) + 4) % 4]); return; }
-      if (/^Digit[1-4]$/.test(k)) { selectDisc(C.DISC_ORDER[+k.slice(5) - 1]); return; }
-    }
-    if (!open && MODES[modeIdx].id === 'cup') {
-      const i = CUP.findIndex((c) => c.id === cupId);
-      if (k === 'ArrowUp' || k === 'KeyW' || k === 'ArrowDown' || k === 'KeyS') { e.preventDefault(); selectCup(CUP[(i + (k === 'ArrowUp' || k === 'KeyW' ? -1 : 1) + CUP.length) % CUP.length].id); return; }
-      if (/^Digit[0-9]$/.test(k)) { const n = +k.slice(5); selectCup(CUP[(n + 9) % 10].id); return; }
+      const up = k === 'ArrowUp' || k === 'KeyW', down = k === 'ArrowDown' || k === 'KeyS';
+      if (cupOpen) {   // Rennserie: Pfeile und W/S blättern (erster Druck: gemerktes Rennen), Ziffern 1 bis 0, Esc zurück
+        if (up || down) { e.preventDefault(); const i = CUP.findIndex((c) => c.id === cupId); selectCup(CUP[raceCup ? (i + (up ? -1 : 1) + CUP.length) % CUP.length : i].id); return; }
+        if (/^Digit[0-9]$/.test(k)) { selectCup(CUP[(+k.slice(5) + 9) % 10].id); return; }
+        if (k === 'Escape') { const inBox = $('cupBox').contains(document.activeElement); selectDisc(disc); if (inBox) $('cupOpen').focus(); return; }
+      } else {
+        const i = C.DISC_ORDER.indexOf(disc);
+        if (up || down) { e.preventDefault(); selectDisc(C.DISC_ORDER[(i + (up ? -1 : 1) + 4) % 4]); return; }
+        if (/^Digit[1-4]$/.test(k)) { selectDisc(C.DISC_ORDER[+k.slice(5) - 1]); return; }
+      }
     }
     if (!open && (k === 'ArrowLeft' || k === 'KeyA' || k === 'ArrowRight' || k === 'KeyD')) { e.preventDefault(); selectMode(modeIdx + (k === 'ArrowLeft' || k === 'KeyA' ? -1 : 1)); return; }
   }
@@ -1753,6 +1795,7 @@ window.addEventListener('keydown', (e) => {
     // Tricks zählen nur für Tasten, die erst in der Luft gedrückt werden
     if (game.mode === 'run' && !phys.grounded) airKey[name] = true;
   }
+  if (k === 'Enter' && tut.on && tut.i >= TUT.length) { toMenu(true); return; }   // Fahrteil fertig: weiter zum Menü-Rundgang
   if (game.mode === 'run') { const sd = SPECIALS.find((q) => q.key === k || q.key.replace('Digit', 'Numpad') === k); if (sd) { startSpecial(sd); return; } if (k === 'SpecialRandom') { startSpecial(null); return; } }
   if (k === 'Space' || k === 'Enter') {
     if (game.mode === 'menu' || (game.mode === 'finished' && game.finishT > 1.2)) startRun();
@@ -1779,14 +1822,14 @@ const touchCtl = setupTouch({ isAir: () => game.mode === 'run' && !phys.grounded
 $('startBtn').addEventListener('click', () => { if (touchCtl) touchCtl.onStart(); if (game.mode === 'menu') startRun(); });
 $('againBtn').addEventListener('click', () => { if (touchCtl) touchCtl.onStart(); startRun(); });
 $('menuBtn').addEventListener('click', () => toMenu());
-$('tutSkip').addEventListener('click', () => toMenu());
+$('tutSkip').addEventListener('click', () => toMenu(tut.on && tut.i >= TUT.length));   // Überspringen beendet alles, am Ende des Fahrteils geht es ins Menü weiter
 $('tutStart').addEventListener('click', () => { if (touchCtl) touchCtl.onStart(); startTutorial(); });
 $('mPrev').addEventListener('click', () => selectMode(modeIdx - 1));
 $('mNext').addEventListener('click', () => selectMode(modeIdx + 1));
 // Handy und Maus: im Menü seitlich wischen wechselt den Modus
 let swX = null, swY = 0;
 window.addEventListener('pointerdown', (e) => {
-  if (game.mode !== 'menu' || e.target.closest('button, input, .dlg')) return;
+  if (game.mode !== 'menu' || e.target.closest('button, input, .dlg, #tour')) return;
   swX = view.rot ? e.clientY : e.clientX; swY = view.rot ? e.clientX : e.clientY;
 });
 window.addEventListener('pointerup', (e) => {
@@ -2792,6 +2835,7 @@ function ultraUniforms() {
   game.mode = 'menu';
   window.addEventListener('beforeunload', saveEndlessBest);
   window.__game = {
+    selectDisc, selectMode, openCup, menuSel, builtSel: () => builtSel, switching: () => switching, tour, tut, TUT, startTutorial, startTour: () => toMenu(true),
     selectCup, setCupId: (id) => { cupId = id; }, ghost: () => ghost, audio,
     game, phys, inp, keys, airKey, trick, world, skier, camera, renderer, scene, vis, Q, startRun, setKind, toMenu, setCheckpoint, toCheckpoint, chooseQuality, C,
     avalanche: () => triggerAvalanche(), aval: () => aval,

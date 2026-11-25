@@ -1,4 +1,4 @@
-// Rennserie: zehn eigene Rennen. Jedes hat eine eigene Strecke (Kurven, Breite, Steilheit, Sprünge, Wald) auf Basis
+// Rennserie („Weitere Rennen ansehen“ im Feld Rennen): zehn eigene Rennen. Jedes hat eine eigene Strecke (Kurven, Breite, Steilheit, Sprünge, Wald) auf Basis
 // einer Disziplin und eine eigene Stimmung (Tageszeit, Licht, Wetter). Medaillenzeiten aus dem Renn-Bot
 // (tools/cup_validate.mjs): Gold knapp über dem schnellen Bot, Silber und Bronze mit Abstand.
 //

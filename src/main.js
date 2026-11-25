@@ -1371,7 +1371,7 @@ function finishRun() {
   const rows = hk ? [['Höhenmeter', `${num(-C.baseH(C.FINISH_D))} m`], ['Höchsttempo', `${Math.round(game.topSpeed * 3.6)} km/h`], ['Weitester Sprung', `${game.bestJump.toFixed(1).replace('.', ',')} m`], ['Bestzeit', fmt(game.bestHeli)]] : [['Tore', `${game.passed}/${C.gates.length}`], ['Strafzeit', `+${game.penalty.toFixed(0)} s`], ['Trickpunkte', num(game.score)],
     ['Höchsttempo', `${Math.round(game.topSpeed * 3.6)} km/h`], ['Weitester Sprung', `${game.bestJump.toFixed(1).replace('.', ',')} m`], ['Bestzeit', fmt(game.best)]];
   // Shop-Punkte: getroffene Tore, Länge der Disziplin, Bonus für eine neue Bestzeit
-  const lenF = { sl: 1, gs: 1.3, sg: 1.7, dh: 2.1 }[disc] || 1;
+  const lenF = { sl: 1, gs: 1.3, sg: 1.7, dh: 2.1 }[C.cfg.disc] || 1;
   const missed = C.gates.length - game.passed;
   // wie Freeride rund 20 Münzen je Minute: sauberer Lauf Slalom 15, Riesentorlauf 20, Super-G 26, Abfahrt 32;
   // verpasste Tore zählen doppelt dagegen, neue Bestzeit +5 (v44: 6 bis 13, Bestzeit +2)
